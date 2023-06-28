@@ -1,0 +1,427 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{11259B51-C586-4DE7-8ECB-4FC420E08D54}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Dispetcher2</RootNamespace>
+    <AssemblyName>Dispetcher2</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>\\Ascon\Dispetcher\UpdatesDisp2\Application Files\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Unc</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>false</MapFileExtensions>
+    <InstallUrl>\\Ascon\Dispetcher\UpdatesDisp2\</InstallUrl>
+    <UpdateUrl>\\Ascon\Dispetcher\UpdatesDisp2\Application Files\</UpdateUrl>
+    <WebPage>publish.htm</WebPage>
+    <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
+    <ApplicationRevision>4</ApplicationRevision>
+    <ApplicationVersion>2.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <CreateDesktopShortcut>true</CreateDesktopShortcut>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>false</BootstrapperEnabled>
+    <BootstrapperComponentsLocation>Relative</BootstrapperComponentsLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Computer.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>false</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>FF4761871C65EF24FAA3D99807952387A25E8EFE</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>DispetcherKey2023.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>lib\Microsoft.Office.Interop.Excel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Office.Interop.Word, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Office.Interop.Word.15.0.4797.1004\lib\net20\Microsoft.Office.Interop.Word.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="office, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>lib\office.dll</HintPath>
+    </Reference>
+    <Reference Include="SourceGrid">
+      <HintPath>lib\SourceGrid.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Class\C_Brigade.cs" />
+    <Compile Include="Class\C_DataBase.cs" />
+    <Compile Include="Class\C_DbWorker.cs" />
+    <Compile Include="Class\C_Departments.cs" />
+    <Compile Include="Class\C_Details.cs" />
+    <Compile Include="Class\C_ExampleDB.cs" />
+    <Compile Include="Class\C_Excel.cs" />
+    <Compile Include="Class\C_F_Orders.cs" />
+    <Compile Include="Class\C_Gper.cs" />
+    <Compile Include="Class\C_Orders.cs" />
+    <Compile Include="Class\C_Reports.cs" />
+    <Compile Include="Class\C_TimeSheets.cs" />
+    <Compile Include="Class\C_TimeSheetsV1.cs" />
+    <Compile Include="Class\C_UpdaterSP.cs" />
+    <Compile Include="Class\C_Users.cs" />
+    <Compile Include="Class\С_TreeViewOrders.cs" />
+    <Compile Include="Controls\MyButtonMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MyCheckBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MyGrid\MyCell.cs" />
+    <Compile Include="Controls\MyGrid\MyGrid.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\MyGrid\MyHeader.cs" />
+    <Compile Include="Controls\MyTabControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ucProdCal.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ucProdCal.Designer.cs">
+      <DependentUpon>ucProdCal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DialogsForms\dF_Brigade.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DialogsForms\dF_Brigade.Designer.cs">
+      <DependentUpon>dF_Brigade.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DialogsForms\dF_Tehnology.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DialogsForms\dF_Tehnology.Designer.cs">
+      <DependentUpon>dF_Tehnology.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DialogsForms\dF_Workers.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DialogsForms\dF_Workers.Designer.cs">
+      <DependentUpon>dF_Workers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="F_Brigade.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="F_Brigade.Designer.cs">
+      <DependentUpon>F_Brigade.cs</DependentUpon>
+    </Compile>
+    <Compile Include="F_Fact.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="F_Fact.Designer.cs">
+      <DependentUpon>F_Fact.cs</DependentUpon>
+    </Compile>
+    <Compile Include="F_Index.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="F_Index.Designer.cs">
+      <DependentUpon>F_Index.cs</DependentUpon>
+    </Compile>
+    <Compile Include="F_IndexLogo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="F_IndexLogo.Designer.cs">
+      <DependentUpon>F_IndexLogo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="F_Kit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="F_Kit.Designer.cs">
+      <DependentUpon>F_Kit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="F_Login.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="F_Login.Designer.cs">
+      <DependentUpon>F_Login.cs</DependentUpon>
+    </Compile>
+    <Compile Include="F_Orders.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="F_Orders.Designer.cs">
+      <DependentUpon>F_Orders.cs</DependentUpon>
+    </Compile>
+    <Compile Include="F_Planning.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="F_Planning.Designer.cs">
+      <DependentUpon>F_Planning.cs</DependentUpon>
+    </Compile>
+    <Compile Include="F_ProductionCalendar.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="F_ProductionCalendar.Designer.cs">
+      <DependentUpon>F_ProductionCalendar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="F_Reports.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="F_Reports.Designer.cs">
+      <DependentUpon>F_Reports.cs</DependentUpon>
+    </Compile>
+    <Compile Include="F_ReportsPlan.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="F_ReportsPlan.Designer.cs">
+      <DependentUpon>F_ReportsPlan.cs</DependentUpon>
+    </Compile>
+    <Compile Include="F_SearchSHCM.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="F_SearchSHCM.Designer.cs">
+      <DependentUpon>F_SearchSHCM.cs</DependentUpon>
+    </Compile>
+    <Compile Include="F_Settings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="F_Settings.Designer.cs">
+      <DependentUpon>F_Settings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="F_Technology.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="F_Technology.Designer.cs">
+      <DependentUpon>F_Technology.cs</DependentUpon>
+    </Compile>
+    <Compile Include="F_TimeSheets.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="F_TimeSheets.Designer.cs">
+      <DependentUpon>F_TimeSheets.cs</DependentUpon>
+    </Compile>
+    <Compile Include="F_Users.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="F_Users.Designer.cs">
+      <DependentUpon>F_Users.cs</DependentUpon>
+    </Compile>
+    <Compile Include="F_Workers.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="F_Workers.Designer.cs">
+      <DependentUpon>F_Workers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WorkWithDatabase.cs" />
+    <EmbeddedResource Include="Controls\ucProdCal.resx">
+      <DependentUpon>ucProdCal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DialogsForms\dF_Brigade.resx">
+      <DependentUpon>dF_Brigade.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DialogsForms\dF_Tehnology.resx">
+      <DependentUpon>dF_Tehnology.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DialogsForms\dF_Workers.resx">
+      <DependentUpon>dF_Workers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="F_Brigade.resx">
+      <DependentUpon>F_Brigade.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="F_Fact.resx">
+      <DependentUpon>F_Fact.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="F_Index.resx">
+      <DependentUpon>F_Index.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="F_IndexLogo.resx">
+      <DependentUpon>F_IndexLogo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="F_Kit.resx">
+      <DependentUpon>F_Kit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="F_Login.resx">
+      <DependentUpon>F_Login.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="F_Orders.resx">
+      <DependentUpon>F_Orders.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="F_Planning.resx">
+      <DependentUpon>F_Planning.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="F_ProductionCalendar.resx">
+      <DependentUpon>F_ProductionCalendar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="F_Reports.resx">
+      <DependentUpon>F_Reports.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="F_ReportsPlan.resx">
+      <DependentUpon>F_ReportsPlan.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="F_SearchSHCM.resx">
+      <DependentUpon>F_SearchSHCM.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="F_Settings.resx">
+      <DependentUpon>F_Settings.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="F_Technology.resx">
+      <DependentUpon>F_Technology.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="F_TimeSheets.resx">
+      <DependentUpon>F_TimeSheets.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="F_Users.resx">
+      <DependentUpon>F_Users.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="F_Workers.resx">
+      <DependentUpon>F_Workers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+    <None Include="Properties\app.manifest" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Picture\Orders.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Picture\Users.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Picture\niipm.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Computer.ico" />
+    <None Include="Picture\Search.png" />
+    <None Include="Picture\help32.png" />
+    <None Include="Picture\Equipment.png" />
+    <None Include="Picture\Settings.png" />
+    <None Include="Picture\Planning.png" />
+    <None Include="Picture\Report.png" />
+    <None Include="Picture\OperFact.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 и x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>Клиентский профиль .NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Установщик Windows 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
