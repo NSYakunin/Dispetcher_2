@@ -115,7 +115,12 @@ namespace Dispetcher2.Class
             //Ds.Tables["Users"].Columns.Add("isValid");
         }
 
-
+        public static string GetServerName()
+        {
+            SqlConnectionStringBuilder b = new SqlConnectionStringBuilder(ConnStrDispetcher2);
+            string s = b.DataSource;
+            return s;
+        }
 
     }
 }

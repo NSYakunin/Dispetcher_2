@@ -179,3 +179,35 @@ C:\Users\NSYakunin\Desktop\Dispetcher 2\obj\x86\Release\Dispetcher2.application
 C:\Users\NSYakunin\Desktop\Dispetcher 2\obj\x86\Release\Dispetcher2.csproj.CopyComplete
 C:\Users\NSYakunin\Desktop\Dispetcher 2\obj\x86\Release\Dispetcher2.exe
 C:\Users\NSYakunin\Desktop\Dispetcher 2\obj\x86\Release\Dispetcher2.pdb
+C:\Work\Reps\obj\x86\Release\Dispetcher2.csproj.AssemblyReference.cache
+C:\Work\Reps\obj\x86\Release\Dispetcher2.Controls.ucProdCal.resources
+C:\Work\Reps\obj\x86\Release\Dispetcher2.DialogsForms.dF_Brigade.resources
+C:\Work\Reps\obj\x86\Release\Dispetcher2.DialogsForms.dF_Tehnology.resources
+C:\Work\Reps\obj\x86\Release\Dispetcher2.DialogsForms.dF_Workers.resources
+C:\Work\Reps\obj\x86\Release\Dispetcher2.F_Brigade.resources
+C:\Work\Reps\obj\x86\Release\Dispetcher2.F_Fact.resources
+C:\Work\Reps\obj\x86\Release\Dispetcher2.F_Index.resources
+C:\Work\Reps\obj\x86\Release\Dispetcher2.F_IndexLogo.resources
+C:\Work\Reps\obj\x86\Release\Dispetcher2.F_Kit.resources
+C:\Work\Reps\obj\x86\Release\Dispetcher2.F_Login.resources
+C:\Work\Reps\obj\x86\Release\Dispetcher2.F_Orders.resources
+C:\Work\Reps\obj\x86\Release\Dispetcher2.F_Planning.resources
+C:\Work\Reps\obj\x86\Release\Dispetcher2.F_ProductionCalendar.resources
+C:\Work\Reps\obj\x86\Release\Dispetcher2.F_Reports.resources
+C:\Work\Reps\obj\x86\Release\Dispetcher2.F_ReportsPlan.resources
+C:\Work\Reps\obj\x86\Release\Dispetcher2.F_SearchSHCM.resources
+C:\Work\Reps\obj\x86\Release\Dispetcher2.F_Settings.resources
+C:\Work\Reps\obj\x86\Release\Dispetcher2.F_Technology.resources
+C:\Work\Reps\obj\x86\Release\Dispetcher2.F_TimeSheets.resources
+C:\Work\Reps\obj\x86\Release\Dispetcher2.F_Users.resources
+C:\Work\Reps\obj\x86\Release\Dispetcher2.F_Workers.resources
+C:\Work\Reps\obj\x86\Release\Dispetcher2.Properties.Resources.resources
+C:\Work\Reps\obj\x86\Release\Dispetcher2.csproj.GenerateResource.cache
+C:\Work\Reps\obj\x86\Release\Dispetcher2.exe
+C:\Work\Reps\obj\x86\Release\Dispetcher2.pdb
+C:\Work\Reps\bin\Release\Dispetcher2.exe.config
+C:\Work\Reps\bin\Release\Dispetcher2.exe
+C:\Work\Reps\bin\Release\Dispetcher2.pdb
+C:\Work\Reps\bin\Release\SourceGrid.dll
+C:\Work\Reps\obj\x86\Release\Dispetcher2.csproj.CoreCompileInputs.cache
+C:\Work\Reps\obj\x86\Release\Dispetcher2.csproj.CopyComplete
