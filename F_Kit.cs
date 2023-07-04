@@ -206,46 +206,76 @@ namespace Dispetcher2
             }
         }
 
-        private void LoadDataOfLoodsman(int PK_IdOrder, string OrderNum)
+        // Старая версия работает медленно
+        //private void LoadDataOfLoodsman(int PK_IdOrder, string OrderNum)
+        //{
+        //    //Загружаем список узлов и сборок
+        //    if (PK_IdOrder > 0)
+        //    {
+
+
+        //        C_DataBase DB = new C_DataBase(C_Gper.ConnStrDispetcher2);
+        //        string sql = "SELECT OD.Position,spD.IdLoodsman,spD.ShcmDetail,OD.AmountDetails" + "\n" +
+        //                     "FROM [Dispetcher2].[dbo].[OrdersDetails] OD" + "\n" +
+        //                     "Inner Join Sp_Details spD On spD.PK_IdDetail = OD.FK_IdDetail" + "\n" +
+        //                     "Where OD.FK_IdOrder = " + PK_IdOrder + " and spD.FK_IdTypeDetail in (232,346)";
+
+        //        DB.Select_DT(ref DT_Details, sql);
+        //    }
+        //    if (DT_Details.Rows.Count == 0) MessageBox.Show("В заказе отсутствуют позиции с типом \"сборка\".", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        //    else
+        //    {
+        //        long IdLoodsman = 0;
+        //        string Position = "", ShcmDetail = "", AmountDetails = "";
+        //        DataTable DT = new DataTable();
+        //        string str = "";
+        //        if (chB_235Kit.Checked) str = " v.idtype in (235,343) "; else str = " v.idtype = 343 ";
+        //        foreach (DataRow rowDT in DT_Details.Rows)
+        //        {
+        //            Position = rowDT.ItemArray[0].ToString().Trim();
+        //            ShcmDetail = rowDT.ItemArray[2].ToString().Trim();
+        //            AmountDetails = rowDT.ItemArray[3].ToString().Trim();
+        //            if (long.TryParse(rowDT.ItemArray[1].ToString().Trim(), out IdLoodsman))
+        //            {
+        //                C_DataBase DB = new C_DataBase(C_Gper.ConStr_Loodsman);
+        //                string sql = "Select '" + Position + "' as Position,'" + ShcmDetail + "' as ShcmDetail, '" + AmountDetails + "' as AmountDetails,r.minquantity *" + AmountDetails + " as minquantity,v.idtype,v.product as NameProduct,v.id,'" + OrderNum + "' as OrderNum" + "\n" +
+        //                      "from НИИПМ.dbo.rvwRelations r" + "\n" +
+        //                      "left join НИИПМ.dbo.rvwVersions v on v.id=r.idchild" + "\n" +
+        //                    //"Where v.idtype in (235,343) and r.idparent = " + IdLoodsman;
+        //                      "Where " + str + " and r.idparent = " + IdLoodsman;
+        //                //"Where v.idtype in (235,343) and r.idparent = " + 311341;//IdLoodsman;
+        //                DB.Select_DT(ref DT, sql);
+        //                DT_Kit.Merge(DT, true);
+        //            }
+        //        }
+        //    }
+        //}
+
+        // Новая версия работает быстрее в 10 раз
+        void LoadDataOfLoodsman(int PK_IdOrder, string OrderNum)
         {
-            //Загружаем список узлов и сборок
-            if (PK_IdOrder > 0)
+            C_DataBase DB = new C_DataBase(C_Gper.ConnStrDispetcher2);
+            DT_Details = DB.GetOrderDetail(PK_IdOrder);
+            if (DT_Details.Rows.Count == 0)
             {
-
-                
-                C_DataBase DB = new C_DataBase(C_Gper.ConnStrDispetcher2);
-                string sql = "SELECT OD.Position,spD.IdLoodsman,spD.ShcmDetail,OD.AmountDetails" + "\n" +
-                             "FROM [Dispetcher2].[dbo].[OrdersDetails] OD" + "\n" +
-                             "Inner Join Sp_Details spD On spD.PK_IdDetail = OD.FK_IdDetail" + "\n" +
-                             "Where OD.FK_IdOrder = " + PK_IdOrder + " and spD.FK_IdTypeDetail in (232,346)";
-
-                DB.Select_DT(ref DT_Details, sql);
+                MessageBox.Show("В заказе отсутствуют позиции с типом \"сборка\".", "Внимание!!!", MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
+                return;
             }
-            if (DT_Details.Rows.Count == 0) MessageBox.Show("В заказе отсутствуют позиции с типом \"сборка\".", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            else
+            long IdLoodsman = 0;
+            string Position = "", ShcmDetail = "", AmountDetails = "";
+            bool standard = chB_235Kit.Checked;
+
+            foreach (DataRow rowDT in DT_Details.Rows)
             {
-                long IdLoodsman = 0;
-                string Position = "", ShcmDetail = "", AmountDetails = "";
-                DataTable DT = new DataTable();
-                string str = "";
-                if (chB_235Kit.Checked) str = " v.idtype in (235,343) "; else str = " v.idtype = 343 ";
-                foreach (DataRow rowDT in DT_Details.Rows)
+                Position = rowDT.ItemArray[0].ToString().Trim();
+                ShcmDetail = rowDT.ItemArray[2].ToString().Trim();
+                AmountDetails = rowDT.ItemArray[3].ToString().Trim();
+                if (long.TryParse(rowDT.ItemArray[1].ToString().Trim(), out IdLoodsman))
                 {
-                    Position = rowDT.ItemArray[0].ToString().Trim();
-                    ShcmDetail = rowDT.ItemArray[2].ToString().Trim();
-                    AmountDetails = rowDT.ItemArray[3].ToString().Trim();
-                    if (long.TryParse(rowDT.ItemArray[1].ToString().Trim(), out IdLoodsman))
-                    {
-                        C_DataBase DB = new C_DataBase(C_Gper.ConStr_Loodsman);
-                        string sql = "Select '" + Position + "' as Position,'" + ShcmDetail + "' as ShcmDetail, '" + AmountDetails + "' as AmountDetails,r.minquantity *" + AmountDetails + " as minquantity,v.idtype,v.product as NameProduct,v.id,'" + OrderNum + "' as OrderNum" + "\n" +
-                              "from НИИПМ.dbo.rvwRelations r" + "\n" +
-                              "left join НИИПМ.dbo.rvwVersions v on v.id=r.idchild" + "\n" +
-                            //"Where v.idtype in (235,343) and r.idparent = " + IdLoodsman;
-                              "Where " + str + " and r.idparent = " + IdLoodsman;
-                        //"Where v.idtype in (235,343) and r.idparent = " + 311341;//IdLoodsman;
-                        DB.Select_DT(ref DT, sql);
-                        DT_Kit.Merge(DT, true);
-                    }
+                    DataTable DT = DB.GetDetailKit(Position, ShcmDetail, AmountDetails, OrderNum,
+                        IdLoodsman, standard);
+                    DT_Kit.Merge(DT, true);
                 }
             }
         }

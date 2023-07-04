@@ -14,6 +14,7 @@ namespace Dispetcher2
 {
     public partial class F_Settings : Form
     {
+        KitUpdaterControl kuc = null;
         public F_Settings()
         {
             InitializeComponent();
@@ -674,6 +675,41 @@ namespace Dispetcher2
             //string IP = System.Net.Dns.GetHostByName(HostName).AddressList[0].ToString(); //Устарело
             tB_HostName.Text = HostName;
             tB_IP.Text = IP;
+        }
+
+        private void KitUpdaterButton_Click(object sender, EventArgs e)
+        {
+            KitUpdaterButton.Enabled = false;
+            if (kuc == null)
+            {
+                kuc = new KitUpdaterControl();
+                kuc.FinishEvent += OnFinishEvent;
+                KitElementHost.Child = kuc;
+            }
+            kuc.Start();
+        }
+
+        private void OnFinishEvent(object sender, EventArgs e)
+        {
+            // Необработанное исключение типа "System.InvalidOperationException"
+            // Недопустимая операция в нескольких потоках: попытка доступа к элементу управления 'KitUpdaterButton' не из того потока, в котором он был создан.
+            // KitUpdaterButton.Enabled = true;
+
+            this.BeginInvoke(new MethodInvoker(this.AfterFinish));
+        }
+
+        void AfterFinish()
+        {
+            KitUpdaterButton.Enabled = true;
+        }
+
+        private void F_Settings_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (kuc != null)
+            {
+                kuc.Stop();
+                kuc = null;
+            }
         }
     }
 }
