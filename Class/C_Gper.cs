@@ -9,6 +9,7 @@ namespace Dispetcher2.Class
 {
     sealed class C_Gper
     {
+        //testset
         public static SqlConnection con = new SqlConnection();//using System.Data.SqlClient;
         //***********************************************************************************************************************************************************
         //Data Source=Loodsman;Initial Catalog=Dispetcher;Integrated Security=true //oldDispetcher connection string
