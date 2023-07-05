@@ -633,7 +633,7 @@ namespace Dispetcher2
                 cmd.CommandTimeout = 100;
                 cmd.CommandText = "select v.Product, a.value, v.dateofCreate,v.id,v.idtype from rvwVersions v " +
                                   "inner join rvwAttributes a on a.idversion=v.id " +
-                                  "where a.idattr=235 and v.idtype in (232,233) and v.product like '%" + tB_ShCM2.Text.Trim().Replace("ЩЦМ", "").Replace("щцм", "") + "%' and  v.idstate in (36,40)";
+                                  "where a.idattr=235 and v.idtype in (232,233) and v.product like '%" + tB_ShCM2.Text.Trim().Replace("ЩЦМ", "").Replace("щцм", "") + "%' and  v.idstate in (36,40,30)";
                 //"where a.idattr=235 and v.idtype in (232,233,278) and v.product like '" + tB_ShCM.Text.Trim() + "' and v.idstate=40 order by idstate desc"; //235 - Название ЩЦМ idstate(статус)=36-Проектирование,40-Утвержден
 
 
