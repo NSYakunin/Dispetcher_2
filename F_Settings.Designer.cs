@@ -62,6 +62,10 @@
             this.tB_IdLoodsman = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.tabPage_OldDispetcher = new System.Windows.Forms.TabPage();
+            this.groupBox22 = new System.Windows.Forms.GroupBox();
+            this.tB_IP = new System.Windows.Forms.TextBox();
+            this.tB_HostName = new System.Windows.Forms.TextBox();
+            this.button3 = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tB_Info_UpdateAllDataDetails = new System.Windows.Forms.TextBox();
             this.panel3 = new System.Windows.Forms.Panel();
@@ -98,6 +102,8 @@
             this.numUD_Amount = new System.Windows.Forms.NumericUpDown();
             this.groupBox18 = new System.Windows.Forms.GroupBox();
             this.dTP_PlannedDate = new System.Windows.Forms.DateTimePicker();
+            this.KitUpdaterButton = new System.Windows.Forms.Button();
+            this.KitElementHost = new System.Windows.Forms.Integration.ElementHost();
             this.groupBox16 = new System.Windows.Forms.GroupBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.btn_DeleteNotes = new System.Windows.Forms.Button();
@@ -132,12 +138,6 @@
             this.tB_SHCMFolder = new System.Windows.Forms.TextBox();
             this.btn_InsertFolder = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
-            this.groupBox22 = new System.Windows.Forms.GroupBox();
-            this.tB_IP = new System.Windows.Forms.TextBox();
-            this.tB_HostName = new System.Windows.Forms.TextBox();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
-            this.groupBox15 = new System.Windows.Forms.GroupBox();
             this.gBoxSettingsMenu.SuspendLayout();
             this.flowLayoutPanel_UserAccess.SuspendLayout();
             this.myTabC_Settings.SuspendLayout();
@@ -150,6 +150,7 @@
             this.tableLayoutPanel1.SuspendLayout();
             this.panel5.SuspendLayout();
             this.tabPage_OldDispetcher.SuspendLayout();
+            this.groupBox22.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.panel3.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -184,8 +185,6 @@
             this.tabPageAdd_L_Detail.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.panel4.SuspendLayout();
-            this.groupBox22.SuspendLayout();
-            this.groupBox15.SuspendLayout();
             this.SuspendLayout();
             // 
             // gBoxSettingsMenu
@@ -196,7 +195,7 @@
             this.gBoxSettingsMenu.Margin = new System.Windows.Forms.Padding(5);
             this.gBoxSettingsMenu.Name = "gBoxSettingsMenu";
             this.gBoxSettingsMenu.Padding = new System.Windows.Forms.Padding(5);
-            this.gBoxSettingsMenu.Size = new System.Drawing.Size(232, 632);
+            this.gBoxSettingsMenu.Size = new System.Drawing.Size(232, 685);
             this.gBoxSettingsMenu.TabIndex = 18;
             this.gBoxSettingsMenu.TabStop = false;
             // 
@@ -212,7 +211,7 @@
             this.flowLayoutPanel_UserAccess.Location = new System.Drawing.Point(5, 21);
             this.flowLayoutPanel_UserAccess.Margin = new System.Windows.Forms.Padding(5);
             this.flowLayoutPanel_UserAccess.Name = "flowLayoutPanel_UserAccess";
-            this.flowLayoutPanel_UserAccess.Size = new System.Drawing.Size(222, 606);
+            this.flowLayoutPanel_UserAccess.Size = new System.Drawing.Size(222, 659);
             this.flowLayoutPanel_UserAccess.TabIndex = 0;
             this.flowLayoutPanel_UserAccess.WrapContents = false;
             // 
@@ -279,7 +278,7 @@
             this.myTabC_Settings.Margin = new System.Windows.Forms.Padding(4);
             this.myTabC_Settings.Name = "myTabC_Settings";
             this.myTabC_Settings.SelectedIndex = 0;
-            this.myTabC_Settings.Size = new System.Drawing.Size(852, 632);
+            this.myTabC_Settings.Size = new System.Drawing.Size(852, 685);
             this.myTabC_Settings.TabIndex = 7;
             this.myTabC_Settings.TabStop = false;
             // 
@@ -290,7 +289,7 @@
             this.tabPage_Sp.Location = new System.Drawing.Point(4, 25);
             this.tabPage_Sp.Name = "tabPage_Sp";
             this.tabPage_Sp.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_Sp.Size = new System.Drawing.Size(844, 603);
+            this.tabPage_Sp.Size = new System.Drawing.Size(844, 656);
             this.tabPage_Sp.TabIndex = 2;
             this.tabPage_Sp.Text = "tabPage_Sp";
             // 
@@ -304,7 +303,7 @@
             this.groupBox4.Margin = new System.Windows.Forms.Padding(5);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(5);
-            this.groupBox4.Size = new System.Drawing.Size(838, 597);
+            this.groupBox4.Size = new System.Drawing.Size(838, 650);
             this.groupBox4.TabIndex = 23;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Загрузка справочника деталей из ПО\"ЛОЦМАН\"";
@@ -314,7 +313,7 @@
             this.panel8.Controls.Add(this.dataGridView1);
             this.panel8.Controls.Add(this.panel7);
             this.panel8.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel8.Location = new System.Drawing.Point(5, 282);
+            this.panel8.Location = new System.Drawing.Point(5, 335);
             this.panel8.Name = "panel8";
             this.panel8.Size = new System.Drawing.Size(828, 228);
             this.panel8.TabIndex = 16;
@@ -406,7 +405,7 @@
             this.dGV_SpDetails.Name = "dGV_SpDetails";
             this.dGV_SpDetails.ReadOnly = true;
             this.dGV_SpDetails.RowHeadersWidth = 4;
-            this.dGV_SpDetails.Size = new System.Drawing.Size(828, 489);
+            this.dGV_SpDetails.Size = new System.Drawing.Size(828, 542);
             this.dGV_SpDetails.TabIndex = 12;
             this.dGV_SpDetails.TabStop = false;
             // 
@@ -478,7 +477,7 @@
             this.tableLayoutPanel1.Controls.Add(this.lbl_RowsCount, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.panel5, 0, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(5, 510);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(5, 563);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -576,9 +575,48 @@
             this.tabPage_OldDispetcher.Margin = new System.Windows.Forms.Padding(4);
             this.tabPage_OldDispetcher.Name = "tabPage_OldDispetcher";
             this.tabPage_OldDispetcher.Padding = new System.Windows.Forms.Padding(4);
-            this.tabPage_OldDispetcher.Size = new System.Drawing.Size(844, 603);
+            this.tabPage_OldDispetcher.Size = new System.Drawing.Size(844, 656);
             this.tabPage_OldDispetcher.TabIndex = 0;
             this.tabPage_OldDispetcher.Text = "tabPage_OldDispetcher";
+            // 
+            // groupBox22
+            // 
+            this.groupBox22.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox22.Controls.Add(this.tB_IP);
+            this.groupBox22.Controls.Add(this.tB_HostName);
+            this.groupBox22.Controls.Add(this.button3);
+            this.groupBox22.Location = new System.Drawing.Point(524, 516);
+            this.groupBox22.Name = "groupBox22";
+            this.groupBox22.Size = new System.Drawing.Size(313, 79);
+            this.groupBox22.TabIndex = 22;
+            this.groupBox22.TabStop = false;
+            // 
+            // tB_IP
+            // 
+            this.tB_IP.Location = new System.Drawing.Point(7, 50);
+            this.tB_IP.Margin = new System.Windows.Forms.Padding(4);
+            this.tB_IP.Name = "tB_IP";
+            this.tB_IP.Size = new System.Drawing.Size(177, 23);
+            this.tB_IP.TabIndex = 4;
+            // 
+            // tB_HostName
+            // 
+            this.tB_HostName.Location = new System.Drawing.Point(7, 19);
+            this.tB_HostName.Margin = new System.Windows.Forms.Padding(4);
+            this.tB_HostName.Name = "tB_HostName";
+            this.tB_HostName.Size = new System.Drawing.Size(177, 23);
+            this.tB_HostName.TabIndex = 3;
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(192, 18);
+            this.button3.Margin = new System.Windows.Forms.Padding(4);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(111, 54);
+            this.button3.TabIndex = 2;
+            this.button3.Text = "Узнать мой IP";
+            this.button3.UseVisualStyleBackColor = false;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // groupBox3
             // 
@@ -778,7 +816,7 @@
             this.tabPage_TURV.Margin = new System.Windows.Forms.Padding(4);
             this.tabPage_TURV.Name = "tabPage_TURV";
             this.tabPage_TURV.Padding = new System.Windows.Forms.Padding(4);
-            this.tabPage_TURV.Size = new System.Drawing.Size(844, 603);
+            this.tabPage_TURV.Size = new System.Drawing.Size(844, 656);
             this.tabPage_TURV.TabIndex = 1;
             this.tabPage_TURV.Text = "tabPage_TURV";
             this.tabPage_TURV.Enter += new System.EventHandler(this.tabPage_TURV_Enter);
@@ -793,7 +831,8 @@
             this.tableLayoutPanel2.Controls.Add(this.dGV_Orders, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.groupBox17, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.panel6, 1, 1);
-            this.tableLayoutPanel2.Controls.Add(this.groupBox15, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(this.KitUpdaterButton, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.KitElementHost, 1, 2);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(4, 215);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -801,7 +840,7 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 52F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 144F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(836, 384);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(836, 437);
             this.tableLayoutPanel2.TabIndex = 10;
             // 
             // gB_OrderName
@@ -843,7 +882,7 @@
             this.dGV_Orders.Name = "dGV_Orders";
             this.dGV_Orders.ReadOnly = true;
             this.dGV_Orders.RowHeadersWidth = 4;
-            this.dGV_Orders.Size = new System.Drawing.Size(142, 180);
+            this.dGV_Orders.Size = new System.Drawing.Size(142, 233);
             this.dGV_Orders.TabIndex = 12;
             this.dGV_Orders.TabStop = false;
             // 
@@ -886,7 +925,7 @@
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel6.Location = new System.Drawing.Point(153, 55);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(669, 182);
+            this.panel6.Size = new System.Drawing.Size(669, 235);
             this.panel6.TabIndex = 1001;
             // 
             // groupBox21
@@ -993,6 +1032,27 @@
             this.dTP_PlannedDate.Size = new System.Drawing.Size(174, 23);
             this.dTP_PlannedDate.TabIndex = 0;
             this.dTP_PlannedDate.Value = new System.DateTime(1900, 1, 1, 0, 0, 0, 0);
+            // 
+            // KitUpdaterButton
+            // 
+            this.KitUpdaterButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.KitUpdaterButton.Location = new System.Drawing.Point(3, 391);
+            this.KitUpdaterButton.Name = "KitUpdaterButton";
+            this.KitUpdaterButton.Size = new System.Drawing.Size(111, 43);
+            this.KitUpdaterButton.TabIndex = 1002;
+            this.KitUpdaterButton.Text = "Обновить Sp_Kit";
+            this.KitUpdaterButton.UseVisualStyleBackColor = true;
+            this.KitUpdaterButton.Click += new System.EventHandler(this.KitUpdaterButton_Click);
+            // 
+            // KitElementHost
+            // 
+            this.KitElementHost.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.KitElementHost.Location = new System.Drawing.Point(153, 296);
+            this.KitElementHost.Name = "KitElementHost";
+            this.KitElementHost.Size = new System.Drawing.Size(669, 138);
+            this.KitElementHost.TabIndex = 1003;
+            this.KitElementHost.Text = "KitElementHost";
+            this.KitElementHost.Child = null;
             // 
             // groupBox16
             // 
@@ -1328,7 +1388,7 @@
             this.tabPageAdd_L_Detail.Controls.Add(this.groupBox5);
             this.tabPageAdd_L_Detail.Location = new System.Drawing.Point(4, 25);
             this.tabPageAdd_L_Detail.Name = "tabPageAdd_L_Detail";
-            this.tabPageAdd_L_Detail.Size = new System.Drawing.Size(844, 603);
+            this.tabPageAdd_L_Detail.Size = new System.Drawing.Size(844, 656);
             this.tabPageAdd_L_Detail.TabIndex = 3;
             this.tabPageAdd_L_Detail.Text = "tabPageAdd_L_Detail";
             // 
@@ -1440,75 +1500,19 @@
             this.label4.TabIndex = 10;
             this.label4.Text = "ЩЦМ (Например: ЩЦМ 4.492.692КнР)";
             // 
-            // groupBox22
-            // 
-            this.groupBox22.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox22.Controls.Add(this.tB_IP);
-            this.groupBox22.Controls.Add(this.tB_HostName);
-            this.groupBox22.Controls.Add(this.button3);
-            this.groupBox22.Location = new System.Drawing.Point(524, 516);
-            this.groupBox22.Name = "groupBox22";
-            this.groupBox22.Size = new System.Drawing.Size(313, 79);
-            this.groupBox22.TabIndex = 22;
-            this.groupBox22.TabStop = false;
-            // 
-            // tB_IP
-            // 
-            this.tB_IP.Location = new System.Drawing.Point(7, 50);
-            this.tB_IP.Margin = new System.Windows.Forms.Padding(4);
-            this.tB_IP.Name = "tB_IP";
-            this.tB_IP.Size = new System.Drawing.Size(177, 23);
-            this.tB_IP.TabIndex = 4;
-            // 
-            // tB_HostName
-            // 
-            this.tB_HostName.Location = new System.Drawing.Point(7, 19);
-            this.tB_HostName.Margin = new System.Windows.Forms.Padding(4);
-            this.tB_HostName.Name = "tB_HostName";
-            this.tB_HostName.Size = new System.Drawing.Size(177, 23);
-            this.tB_HostName.TabIndex = 3;
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(192, 18);
-            this.button3.Margin = new System.Windows.Forms.Padding(4);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(111, 54);
-            this.button3.TabIndex = 2;
-            this.button3.Text = "Узнать мой IP";
-            this.button3.UseVisualStyleBackColor = false;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // button4
-            // 
-            this.button4.Location = new System.Drawing.Point(16, 22);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(163, 37);
-            this.button4.TabIndex = 1002;
-            this.button4.Text = "Обновить Sp_Kit";
-            this.button4.UseVisualStyleBackColor = true;
-            // 
-            // groupBox15
-            // 
-            this.groupBox15.Controls.Add(this.button4);
-            this.groupBox15.Location = new System.Drawing.Point(153, 243);
-            this.groupBox15.Name = "groupBox15";
-            this.groupBox15.Size = new System.Drawing.Size(669, 137);
-            this.groupBox15.TabIndex = 1002;
-            this.groupBox15.TabStop = false;
-            // 
             // F_Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.InactiveBorder;
-            this.ClientSize = new System.Drawing.Size(1084, 632);
+            this.ClientSize = new System.Drawing.Size(1084, 685);
             this.Controls.Add(this.myTabC_Settings);
             this.Controls.Add(this.gBoxSettingsMenu);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "F_Settings";
             this.Text = "F_Settings";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.F_Settings_FormClosing);
             this.Load += new System.EventHandler(this.F_Settings_Load);
             this.gBoxSettingsMenu.ResumeLayout(false);
             this.flowLayoutPanel_UserAccess.ResumeLayout(false);
@@ -1525,6 +1529,8 @@
             this.panel5.ResumeLayout(false);
             this.panel5.PerformLayout();
             this.tabPage_OldDispetcher.ResumeLayout(false);
+            this.groupBox22.ResumeLayout(false);
+            this.groupBox22.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.panel3.ResumeLayout(false);
@@ -1569,9 +1575,6 @@
             this.groupBox5.PerformLayout();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
-            this.groupBox22.ResumeLayout(false);
-            this.groupBox22.PerformLayout();
-            this.groupBox15.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1685,7 +1688,7 @@
         private System.Windows.Forms.TextBox tB_IP;
         private System.Windows.Forms.TextBox tB_HostName;
         private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.GroupBox groupBox15;
+        private System.Windows.Forms.Button KitUpdaterButton;
+        private System.Windows.Forms.Integration.ElementHost KitElementHost;
     }
 }
