@@ -138,6 +138,7 @@
             this.tB_SHCMFolder = new System.Windows.Forms.TextBox();
             this.btn_InsertFolder = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
+            this.ImportData1CButton = new System.Windows.Forms.Button();
             this.gBoxSettingsMenu.SuspendLayout();
             this.flowLayoutPanel_UserAccess.SuspendLayout();
             this.myTabC_Settings.SuspendLayout();
@@ -195,7 +196,7 @@
             this.gBoxSettingsMenu.Margin = new System.Windows.Forms.Padding(5);
             this.gBoxSettingsMenu.Name = "gBoxSettingsMenu";
             this.gBoxSettingsMenu.Padding = new System.Windows.Forms.Padding(5);
-            this.gBoxSettingsMenu.Size = new System.Drawing.Size(232, 685);
+            this.gBoxSettingsMenu.Size = new System.Drawing.Size(232, 795);
             this.gBoxSettingsMenu.TabIndex = 18;
             this.gBoxSettingsMenu.TabStop = false;
             // 
@@ -211,7 +212,7 @@
             this.flowLayoutPanel_UserAccess.Location = new System.Drawing.Point(5, 21);
             this.flowLayoutPanel_UserAccess.Margin = new System.Windows.Forms.Padding(5);
             this.flowLayoutPanel_UserAccess.Name = "flowLayoutPanel_UserAccess";
-            this.flowLayoutPanel_UserAccess.Size = new System.Drawing.Size(222, 659);
+            this.flowLayoutPanel_UserAccess.Size = new System.Drawing.Size(222, 769);
             this.flowLayoutPanel_UserAccess.TabIndex = 0;
             this.flowLayoutPanel_UserAccess.WrapContents = false;
             // 
@@ -278,7 +279,7 @@
             this.myTabC_Settings.Margin = new System.Windows.Forms.Padding(4);
             this.myTabC_Settings.Name = "myTabC_Settings";
             this.myTabC_Settings.SelectedIndex = 0;
-            this.myTabC_Settings.Size = new System.Drawing.Size(852, 685);
+            this.myTabC_Settings.Size = new System.Drawing.Size(852, 795);
             this.myTabC_Settings.TabIndex = 7;
             this.myTabC_Settings.TabStop = false;
             // 
@@ -816,7 +817,7 @@
             this.tabPage_TURV.Margin = new System.Windows.Forms.Padding(4);
             this.tabPage_TURV.Name = "tabPage_TURV";
             this.tabPage_TURV.Padding = new System.Windows.Forms.Padding(4);
-            this.tabPage_TURV.Size = new System.Drawing.Size(844, 656);
+            this.tabPage_TURV.Size = new System.Drawing.Size(844, 766);
             this.tabPage_TURV.TabIndex = 1;
             this.tabPage_TURV.Text = "tabPage_TURV";
             this.tabPage_TURV.Enter += new System.EventHandler(this.tabPage_TURV_Enter);
@@ -831,16 +832,15 @@
             this.tableLayoutPanel2.Controls.Add(this.dGV_Orders, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.groupBox17, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.panel6, 1, 1);
-            this.tableLayoutPanel2.Controls.Add(this.KitUpdaterButton, 0, 2);
             this.tableLayoutPanel2.Controls.Add(this.KitElementHost, 1, 2);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(4, 215);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 3;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 52F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 144F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(836, 437);
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 38.16047F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 61.83953F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(836, 547);
             this.tableLayoutPanel2.TabIndex = 10;
             // 
             // gB_OrderName
@@ -882,7 +882,8 @@
             this.dGV_Orders.Name = "dGV_Orders";
             this.dGV_Orders.ReadOnly = true;
             this.dGV_Orders.RowHeadersWidth = 4;
-            this.dGV_Orders.Size = new System.Drawing.Size(142, 233);
+            this.tableLayoutPanel2.SetRowSpan(this.dGV_Orders, 2);
+            this.dGV_Orders.Size = new System.Drawing.Size(142, 487);
             this.dGV_Orders.TabIndex = 12;
             this.dGV_Orders.TabStop = false;
             // 
@@ -917,6 +918,8 @@
             // 
             // panel6
             // 
+            this.panel6.Controls.Add(this.ImportData1CButton);
+            this.panel6.Controls.Add(this.KitUpdaterButton);
             this.panel6.Controls.Add(this.groupBox21);
             this.panel6.Controls.Add(this.groupBox20);
             this.panel6.Controls.Add(this.btn_EditOrder);
@@ -925,7 +928,7 @@
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel6.Location = new System.Drawing.Point(153, 55);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(669, 235);
+            this.panel6.Size = new System.Drawing.Size(669, 182);
             this.panel6.TabIndex = 1001;
             // 
             // groupBox21
@@ -977,7 +980,7 @@
             this.btn_EditOrder.Location = new System.Drawing.Point(9, 124);
             this.btn_EditOrder.Margin = new System.Windows.Forms.Padding(4);
             this.btn_EditOrder.Name = "btn_EditOrder";
-            this.btn_EditOrder.Size = new System.Drawing.Size(337, 58);
+            this.btn_EditOrder.Size = new System.Drawing.Size(337, 43);
             this.btn_EditOrder.TabIndex = 29;
             this.btn_EditOrder.Text = "Сохранить изменения";
             this.btn_EditOrder.UseVisualStyleBackColor = false;
@@ -1035,8 +1038,7 @@
             // 
             // KitUpdaterButton
             // 
-            this.KitUpdaterButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.KitUpdaterButton.Location = new System.Drawing.Point(3, 391);
+            this.KitUpdaterButton.Location = new System.Drawing.Point(353, 123);
             this.KitUpdaterButton.Name = "KitUpdaterButton";
             this.KitUpdaterButton.Size = new System.Drawing.Size(111, 43);
             this.KitUpdaterButton.TabIndex = 1002;
@@ -1047,9 +1049,9 @@
             // KitElementHost
             // 
             this.KitElementHost.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.KitElementHost.Location = new System.Drawing.Point(153, 296);
+            this.KitElementHost.Location = new System.Drawing.Point(153, 243);
             this.KitElementHost.Name = "KitElementHost";
-            this.KitElementHost.Size = new System.Drawing.Size(669, 138);
+            this.KitElementHost.Size = new System.Drawing.Size(669, 301);
             this.KitElementHost.TabIndex = 1003;
             this.KitElementHost.Text = "KitElementHost";
             this.KitElementHost.Child = null;
@@ -1500,12 +1502,21 @@
             this.label4.TabIndex = 10;
             this.label4.Text = "ЩЦМ (Например: ЩЦМ 4.492.692КнР)";
             // 
+            // ImportData1CButton
+            // 
+            this.ImportData1CButton.Location = new System.Drawing.Point(470, 123);
+            this.ImportData1CButton.Name = "ImportData1CButton";
+            this.ImportData1CButton.Size = new System.Drawing.Size(134, 43);
+            this.ImportData1CButton.TabIndex = 1003;
+            this.ImportData1CButton.Text = "Импорт данных из файлов 1С";
+            this.ImportData1CButton.UseVisualStyleBackColor = true;
+            // 
             // F_Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.InactiveBorder;
-            this.ClientSize = new System.Drawing.Size(1084, 685);
+            this.ClientSize = new System.Drawing.Size(1084, 795);
             this.Controls.Add(this.myTabC_Settings);
             this.Controls.Add(this.gBoxSettingsMenu);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -1690,5 +1701,6 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button KitUpdaterButton;
         private System.Windows.Forms.Integration.ElementHost KitElementHost;
+        private System.Windows.Forms.Button ImportData1CButton;
     }
 }
