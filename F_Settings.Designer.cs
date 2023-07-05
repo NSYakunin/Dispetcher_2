@@ -92,6 +92,8 @@
             this.groupBox17 = new System.Windows.Forms.GroupBox();
             this.tB_OrderNum = new System.Windows.Forms.TextBox();
             this.panel6 = new System.Windows.Forms.Panel();
+            this.ImportData1CButton = new System.Windows.Forms.Button();
+            this.KitUpdaterButton = new System.Windows.Forms.Button();
             this.groupBox21 = new System.Windows.Forms.GroupBox();
             this.dTP_StartOrdDate = new System.Windows.Forms.DateTimePicker();
             this.groupBox20 = new System.Windows.Forms.GroupBox();
@@ -102,7 +104,6 @@
             this.numUD_Amount = new System.Windows.Forms.NumericUpDown();
             this.groupBox18 = new System.Windows.Forms.GroupBox();
             this.dTP_PlannedDate = new System.Windows.Forms.DateTimePicker();
-            this.KitUpdaterButton = new System.Windows.Forms.Button();
             this.KitElementHost = new System.Windows.Forms.Integration.ElementHost();
             this.groupBox16 = new System.Windows.Forms.GroupBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
@@ -138,7 +139,6 @@
             this.tB_SHCMFolder = new System.Windows.Forms.TextBox();
             this.btn_InsertFolder = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
-            this.ImportData1CButton = new System.Windows.Forms.Button();
             this.gBoxSettingsMenu.SuspendLayout();
             this.flowLayoutPanel_UserAccess.SuspendLayout();
             this.myTabC_Settings.SuspendLayout();
@@ -290,7 +290,7 @@
             this.tabPage_Sp.Location = new System.Drawing.Point(4, 25);
             this.tabPage_Sp.Name = "tabPage_Sp";
             this.tabPage_Sp.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_Sp.Size = new System.Drawing.Size(844, 656);
+            this.tabPage_Sp.Size = new System.Drawing.Size(844, 766);
             this.tabPage_Sp.TabIndex = 2;
             this.tabPage_Sp.Text = "tabPage_Sp";
             // 
@@ -304,7 +304,7 @@
             this.groupBox4.Margin = new System.Windows.Forms.Padding(5);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(5);
-            this.groupBox4.Size = new System.Drawing.Size(838, 650);
+            this.groupBox4.Size = new System.Drawing.Size(838, 760);
             this.groupBox4.TabIndex = 23;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Загрузка справочника деталей из ПО\"ЛОЦМАН\"";
@@ -314,7 +314,7 @@
             this.panel8.Controls.Add(this.dataGridView1);
             this.panel8.Controls.Add(this.panel7);
             this.panel8.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel8.Location = new System.Drawing.Point(5, 335);
+            this.panel8.Location = new System.Drawing.Point(5, 445);
             this.panel8.Name = "panel8";
             this.panel8.Size = new System.Drawing.Size(828, 228);
             this.panel8.TabIndex = 16;
@@ -406,7 +406,7 @@
             this.dGV_SpDetails.Name = "dGV_SpDetails";
             this.dGV_SpDetails.ReadOnly = true;
             this.dGV_SpDetails.RowHeadersWidth = 4;
-            this.dGV_SpDetails.Size = new System.Drawing.Size(828, 542);
+            this.dGV_SpDetails.Size = new System.Drawing.Size(828, 652);
             this.dGV_SpDetails.TabIndex = 12;
             this.dGV_SpDetails.TabStop = false;
             // 
@@ -478,7 +478,7 @@
             this.tableLayoutPanel1.Controls.Add(this.lbl_RowsCount, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.panel5, 0, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(5, 563);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(5, 673);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -576,7 +576,7 @@
             this.tabPage_OldDispetcher.Margin = new System.Windows.Forms.Padding(4);
             this.tabPage_OldDispetcher.Name = "tabPage_OldDispetcher";
             this.tabPage_OldDispetcher.Padding = new System.Windows.Forms.Padding(4);
-            this.tabPage_OldDispetcher.Size = new System.Drawing.Size(844, 656);
+            this.tabPage_OldDispetcher.Size = new System.Drawing.Size(844, 766);
             this.tabPage_OldDispetcher.TabIndex = 0;
             this.tabPage_OldDispetcher.Text = "tabPage_OldDispetcher";
             // 
@@ -931,6 +931,25 @@
             this.panel6.Size = new System.Drawing.Size(669, 182);
             this.panel6.TabIndex = 1001;
             // 
+            // ImportData1CButton
+            // 
+            this.ImportData1CButton.Location = new System.Drawing.Point(470, 123);
+            this.ImportData1CButton.Name = "ImportData1CButton";
+            this.ImportData1CButton.Size = new System.Drawing.Size(134, 43);
+            this.ImportData1CButton.TabIndex = 1003;
+            this.ImportData1CButton.Text = "Импорт данных из файлов 1С";
+            this.ImportData1CButton.UseVisualStyleBackColor = true;
+            // 
+            // KitUpdaterButton
+            // 
+            this.KitUpdaterButton.Location = new System.Drawing.Point(353, 123);
+            this.KitUpdaterButton.Name = "KitUpdaterButton";
+            this.KitUpdaterButton.Size = new System.Drawing.Size(111, 43);
+            this.KitUpdaterButton.TabIndex = 1002;
+            this.KitUpdaterButton.Text = "Обновить Sp_Kit";
+            this.KitUpdaterButton.UseVisualStyleBackColor = true;
+            this.KitUpdaterButton.Click += new System.EventHandler(this.KitUpdaterButton_Click);
+            // 
             // groupBox21
             // 
             this.groupBox21.Controls.Add(this.dTP_StartOrdDate);
@@ -1035,16 +1054,6 @@
             this.dTP_PlannedDate.Size = new System.Drawing.Size(174, 23);
             this.dTP_PlannedDate.TabIndex = 0;
             this.dTP_PlannedDate.Value = new System.DateTime(1900, 1, 1, 0, 0, 0, 0);
-            // 
-            // KitUpdaterButton
-            // 
-            this.KitUpdaterButton.Location = new System.Drawing.Point(353, 123);
-            this.KitUpdaterButton.Name = "KitUpdaterButton";
-            this.KitUpdaterButton.Size = new System.Drawing.Size(111, 43);
-            this.KitUpdaterButton.TabIndex = 1002;
-            this.KitUpdaterButton.Text = "Обновить Sp_Kit";
-            this.KitUpdaterButton.UseVisualStyleBackColor = true;
-            this.KitUpdaterButton.Click += new System.EventHandler(this.KitUpdaterButton_Click);
             // 
             // KitElementHost
             // 
@@ -1390,7 +1399,7 @@
             this.tabPageAdd_L_Detail.Controls.Add(this.groupBox5);
             this.tabPageAdd_L_Detail.Location = new System.Drawing.Point(4, 25);
             this.tabPageAdd_L_Detail.Name = "tabPageAdd_L_Detail";
-            this.tabPageAdd_L_Detail.Size = new System.Drawing.Size(844, 656);
+            this.tabPageAdd_L_Detail.Size = new System.Drawing.Size(844, 766);
             this.tabPageAdd_L_Detail.TabIndex = 3;
             this.tabPageAdd_L_Detail.Text = "tabPageAdd_L_Detail";
             // 
@@ -1501,15 +1510,6 @@
             this.label4.Size = new System.Drawing.Size(257, 17);
             this.label4.TabIndex = 10;
             this.label4.Text = "ЩЦМ (Например: ЩЦМ 4.492.692КнР)";
-            // 
-            // ImportData1CButton
-            // 
-            this.ImportData1CButton.Location = new System.Drawing.Point(470, 123);
-            this.ImportData1CButton.Name = "ImportData1CButton";
-            this.ImportData1CButton.Size = new System.Drawing.Size(134, 43);
-            this.ImportData1CButton.TabIndex = 1003;
-            this.ImportData1CButton.Text = "Импорт данных из файлов 1С";
-            this.ImportData1CButton.UseVisualStyleBackColor = true;
             // 
             // F_Settings
             // 
