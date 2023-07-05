@@ -88,8 +88,8 @@ namespace Dispetcher2.Class
             try
             {
                 string Where = "";
-                if (idloodsman == 0) Where = "where a.idattr=235 and v.idtype in (232,233) and  v.idstate in (36,40) and v.id>" + _MaxID;
-                else Where = "where a.idattr=235 and v.idtype in (232,233) and  v.idstate in (36,40) and v.id=" + idloodsman;
+                if (idloodsman == 0) Where = "where a.idattr=235 and v.idtype in (232,233) and  v.idstate in (36,40,30) and v.id>" + _MaxID;
+                else Where = "where a.idattr=235 and v.idtype in (232,233) and  v.idstate in (36,40,30) and v.id=" + idloodsman;
                 C_Gper.con.ConnectionString = C_Gper.ConStr_Loodsman;
                 SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//seconds //using System.Data.SqlClient;
                 cmd.Connection = C_Gper.con;
