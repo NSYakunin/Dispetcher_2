@@ -41,20 +41,164 @@ namespace Dispetcher2.Class
             }
         }
 
+        /// <summary>
+        /// Получение списка сборок заказа
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// Идентификатор заказа
+        /// <returns></returns>
+        public DataTable GetOrderDetail(int orderId)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection cn = new SqlConnection())
+            {
+                cn.ConnectionString = C_Gper.ConnStrDispetcher2;
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.Connection = cn;
+                    cmd.CommandText = "[dbo].[GetOrderDetail]";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@OrderId", orderId);
 
+                    using (SqlDataAdapter ad = new SqlDataAdapter())
+                    {
+                        ad.SelectCommand = cmd;
+                        ad.Fill(dt);
+                    }
+                }
+            }
+            return dt;
+        }
 
+        // Получение комплектации сборки из БД Лоцман
+        public DataTable GetDetailKit(string position, string shcmDetail, string amountDetails,
+            string orderNum, long idLoodsman, bool standard)
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection cn = new SqlConnection())
+            {
+                cn.ConnectionString = C_Gper.ConStr_Loodsman;
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.Connection = cn;
+                    cmd.CommandText = "[NIIPM].[GetDetailKit]";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Position", position);
+                    cmd.Parameters.AddWithValue("@ShcmDetail", shcmDetail);
+                    cmd.Parameters.AddWithValue("@AmountDetails", amountDetails);
+                    cmd.Parameters.AddWithValue("@OrderNum", orderNum);
+                    cmd.Parameters.AddWithValue("@IdLoodsman", idLoodsman);
 
+                    SqlParameter sp = new SqlParameter();
+                    sp.ParameterName = "@Standard";
+                    sp.SqlDbType = SqlDbType.Bit;
+                    sp.Value = standard;
+                    cmd.Parameters.Add(sp);
 
+                    using (SqlDataAdapter ad = new SqlDataAdapter())
+                    {
+                        ad.SelectCommand = cmd;
+                        ad.Fill(dt);
+                    }
+                }
+            }
+            return dt;
+        }
 
+        /// <summary>
+        /// Получение полного списка комплектации из БД Лоцман
+        /// </summary>
+        /// <returns></returns>
+        public DataTable GetAllKits()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection cn = new SqlConnection())
+            {
+                cn.ConnectionString = C_Gper.ConStr_Loodsman;
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.Connection = cn;
+                    cmd.CommandText = "[NIIPM].[GetAllKit]";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    using (SqlDataAdapter ad = new SqlDataAdapter())
+                    {
+                        ad.SelectCommand = cmd;
+                        ad.Fill(dt);
+                    }
+                }
+            }
+            return dt;
+        }
 
+        /// <summary>
+        /// Получение всех сборок из БД Диспетчер
+        /// </summary>
+        /// <returns></returns>
+        public DataTable GetDetail()
+        {
+            DataTable dt = new DataTable();
+            using (SqlConnection cn = new SqlConnection())
+            {
+                cn.ConnectionString = C_Gper.ConnStrDispetcher2;
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.Connection = cn;
+                    cmd.CommandText = "[dbo].[GetDetail]";
+                    cmd.CommandType = CommandType.StoredProcedure;
 
+                    using (SqlDataAdapter ad = new SqlDataAdapter())
+                    {
+                        ad.SelectCommand = cmd;
+                        ad.Fill(dt);
+                    }
+                }
+            }
+            return dt;
+        }
 
+        /// <summary>
+        /// Удаление комплектации для сборки
+        /// </summary>
+        /// <param name="idLoodsman">Идентификатор сборки в Лоцмане</param>
+        public void DeleteKit(long idLoodsman)
+        {
+            using (SqlConnection cn = new SqlConnection())
+            {
+                cn.ConnectionString = C_Gper.ConnStrDispetcher2;
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.Connection = cn;
+                    cmd.CommandText = "[dbo].[DeleteKit]";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@IdLoodsman", idLoodsman);
+                    cn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
 
-
-
-
-
-
-
+        // Вставка одной детали комплектации
+        public void InsertKit(long idLoodsman, int idKit, string nameProduct, double minquantity,
+            int idTypeKit, int idstate)
+        {
+            using (SqlConnection cn = new SqlConnection())
+            {
+                cn.ConnectionString = C_Gper.ConnStrDispetcher2;
+                using (SqlCommand cmd = new SqlCommand())
+                {
+                    cmd.Connection = cn;
+                    cmd.CommandText = "[dbo].[InsertKit]";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@PK_IdKit", idKit);
+                    cmd.Parameters.AddWithValue("@NameProduct", nameProduct);
+                    cmd.Parameters.AddWithValue("@minquantity", minquantity);
+                    cmd.Parameters.AddWithValue("@FK_IdTypeKit", idTypeKit);
+                    cmd.Parameters.AddWithValue("@idstate", idstate);
+                    cmd.Parameters.AddWithValue("@IdLoodsman", idLoodsman);
+                    cn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }
