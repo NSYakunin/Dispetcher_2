@@ -11,6 +11,7 @@ namespace Dispetcher2.Class
 {
     class C_Brigade
     {
+        // ку
         const int _CmdTimeout = 60; //seconds SqlCommand cmd = new SqlCommand() { CommandTimeout = CmdTimeout};
         int _PK_IdBrigade = 0;
         string _FullName;
