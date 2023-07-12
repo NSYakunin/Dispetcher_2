@@ -439,13 +439,40 @@ namespace Dispetcher2
             DT_Kit.Clear();
         }
 
+        private void копироватьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dGV_Kit.GetCellCount(DataGridViewElementStates.Selected) > 0)
+            {
+                try
+                {
+                    Clipboard.SetDataObject(dGV_Kit.GetClipboardContent());
+                }
+                catch (System.Runtime.InteropServices.ExternalException)
+                {
+                    MessageBox.Show("Копирование невозможно");
+                }
+                finally
+                {
+                    dGV_Kit.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                }
+            }
+        }
 
+        private void dGV_Kit_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                dGV_Kit.ClearSelection();
+                dGV_Kit.SelectionMode = DataGridViewSelectionMode.CellSelect;
+                dGV_Kit[e.ColumnIndex, e.RowIndex].Selected = true;
+            }
 
-
-
-
-
-
-
+            if (e.Button == MouseButtons.Left)
+            {
+                dGV_Kit.ClearSelection();
+                dGV_Kit.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                dGV_Kit[e.ColumnIndex, e.RowIndex].Selected = true;
+            }
+        }
     }
 }
