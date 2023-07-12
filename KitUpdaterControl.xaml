@@ -8,6 +8,12 @@
     <StackPanel>
         <TextBlock Text="{Binding Status, Mode=OneWay}" FontSize="16" />
         <ProgressBar Height="0.5cm" Value="{Binding Progress, Mode=OneWay}" />
-        <ListBox FontSize="16" ItemsSource="{Binding ErrorCollection, Mode=OneWay}" />
+        <ListBox x:Name="errorListBox" FontSize="16">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Text}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
     </StackPanel>
 </UserControl>

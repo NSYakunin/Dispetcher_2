@@ -15,6 +15,7 @@ namespace Dispetcher2
     public partial class F_Settings : Form
     {
         KitUpdaterControl kuc = null;
+        ImportDataControl idc = null;
         public F_Settings()
         {
             InitializeComponent();
@@ -680,6 +681,7 @@ namespace Dispetcher2
         private void KitUpdaterButton_Click(object sender, EventArgs e)
         {
             KitUpdaterButton.Enabled = false;
+            ImportData1CButton.Enabled = false;
             if (kuc == null)
             {
                 kuc = new KitUpdaterControl();
@@ -701,6 +703,7 @@ namespace Dispetcher2
         void AfterFinish()
         {
             KitUpdaterButton.Enabled = true;
+            ImportData1CButton.Enabled = true;
         }
 
         private void F_Settings_FormClosing(object sender, FormClosingEventArgs e)
@@ -710,6 +713,19 @@ namespace Dispetcher2
                 kuc.Stop();
                 kuc = null;
             }
+        }
+
+        private void ImportData1CButton_Click(object sender, EventArgs e)
+        {
+            KitUpdaterButton.Enabled = false;
+            ImportData1CButton.Enabled = false;
+            if (idc == null)
+            {
+                idc = new ImportDataControl();
+                idc.FinishEvent += OnFinishEvent;
+                KitElementHost.Child = idc;
+            }
+            
         }
     }
 }

@@ -838,8 +838,8 @@
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 3;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 52F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 38.16047F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 61.83953F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 181F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(836, 547);
             this.tableLayoutPanel2.TabIndex = 10;
             // 
@@ -928,7 +928,7 @@
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel6.Location = new System.Drawing.Point(153, 55);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(669, 182);
+            this.panel6.Size = new System.Drawing.Size(669, 175);
             this.panel6.TabIndex = 1001;
             // 
             // ImportData1CButton
@@ -939,6 +939,7 @@
             this.ImportData1CButton.TabIndex = 1003;
             this.ImportData1CButton.Text = "Импорт данных из файлов 1С";
             this.ImportData1CButton.UseVisualStyleBackColor = true;
+            this.ImportData1CButton.Click += new System.EventHandler(this.ImportData1CButton_Click);
             // 
             // KitUpdaterButton
             // 
@@ -1058,9 +1059,9 @@
             // KitElementHost
             // 
             this.KitElementHost.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.KitElementHost.Location = new System.Drawing.Point(153, 243);
+            this.KitElementHost.Location = new System.Drawing.Point(153, 236);
             this.KitElementHost.Name = "KitElementHost";
-            this.KitElementHost.Size = new System.Drawing.Size(669, 301);
+            this.KitElementHost.Size = new System.Drawing.Size(669, 308);
             this.KitElementHost.TabIndex = 1003;
             this.KitElementHost.Text = "KitElementHost";
             this.KitElementHost.Child = null;

@@ -25,12 +25,12 @@ namespace Dispetcher2
         KitUpdater ku = null;
         ProgressViewModel pvm = new ProgressViewModel();
 
-        KitUpdater.ErrorDelegate errDel;
-
         public KitUpdaterControl()
         {
             InitializeComponent();
-            errDel = this.ProcessNewError;
+            pvm.SetDispatcher(this.Dispatcher);
+            this.DataContext = pvm;
+            errorListBox.ItemsSource = pvm.ErrorList;
         }
 
         public void Start()
@@ -39,29 +39,10 @@ namespace Dispetcher2
             if (ku == null)
             {
                 ku = new KitUpdater(pvm);
-                this.DataContext = pvm;
                 ku.FinishEvent += OnFinishEvent;
-                ku.NewError += OnNewError;
             }
             
             ku.Start();
-        }
-
-        private void OnNewError(string text)
-        {
-            // errDel - делегат, хранящий адрес метода ProcessNewError
-            // pa - массив параметров метода ProcessNewError
-            object[] pa = new object[1];
-            pa[0] = text;
-
-            // Асинхронный вызов делегата в потоке этого элемента управления
-            // BeginInvoke добавляет делегат в очередь событий элемента управления
-            this.Dispatcher.BeginInvoke(errDel, pa);
-        }
-
-        void ProcessNewError(string text)
-        {
-            pvm.ErrorCollection.Add(text);
         }
 
         private void OnFinishEvent(object sender, EventArgs e)
@@ -71,7 +52,7 @@ namespace Dispetcher2
 
         public void Stop()
         {
-            ku.Stop();
+            if (ku != null) ku.Stop();
         }
     }
 }

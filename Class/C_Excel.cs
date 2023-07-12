@@ -11,19 +11,14 @@ using Microsoft.Office.Interop.Excel;
 using Microsoft.Office.Interop;
 using System.Runtime.InteropServices;
 using Dispetcher2.Class;
+using System.Data;
 using System.Data.SqlClient;
 
 namespace Dispetcher2.Class
 {
     class C_Excel
     {
-        private static void ReleaseExcel(object excel)
-        {
-            // Уничтожение объекта Excel.
-            Marshal.ReleaseComObject(excel);//using System.Runtime.InteropServices;
-            // Вызываем сборщик мусора для немедленной очистки памяти
-            GC.GetTotalMemory(true);
-        }
+
 
 #region Загрузка данных из расцеховки
         public void ReadExcelRas(string _WayFile,int _PK_IdOrder, ref System.Data.DataTable _DT_Excel, out string _ErrorsDataPos)
@@ -317,8 +312,66 @@ namespace Dispetcher2.Class
                 return false;
             }
         }
-#endregion
+        #endregion
 
+        public Receipt ReadExcel_1C(string wayFile)
+        {
+            Receipt rec = new Receipt();
+            try
+            {
 
+                Microsoft.Office.Interop.Excel.Application Excel = new Microsoft.Office.Interop.Excel.Application() { Visible = false, DisplayAlerts = false };
+                Microsoft.Office.Interop.Excel.Workbook ExcelWorkBook;
+                Microsoft.Office.Interop.Excel.Worksheet ExcelWorkSheet;
+                Microsoft.Office.Interop.Excel.Range ExcelRange;
+                ExcelWorkBook = Excel.Workbooks.Open(wayFile, 0, true, 5, "", "", true, Microsoft.Office.Interop.Excel.XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
+                ExcelWorkSheet = (Microsoft.Office.Interop.Excel.Worksheet)ExcelWorkBook.Worksheets.get_Item(1);
+                ExcelRange = ExcelWorkSheet.UsedRange;
+                object _Val = null;
+                string _OrderNum = null, _Name1CKit = null;
+                long _IdLoodsman, _PK_1С_IdKit;
+                double _AmountKit;
+                int _Position = 0;
+                _Val = (ExcelRange.Cells[2, 4] as Range).Value2;//_OrderNum
+                if (_Val == null) _OrderNum = ""; else _OrderNum = _Val.ToString().Trim();
+
+                _Val = (ExcelRange.Cells[4, 2] as Range).Value2;//_NumLimit
+                if (_Val == null) rec.NumLimit = ""; 
+                    else rec.NumLimit = _Val.ToString().Remove(0, _Val.ToString().IndexOf("№") + 1).Trim();
+                _Val = (ExcelRange.Cells[4, 9] as Range).Value2;//_DateLimit
+                if (_Val != null) DateTime.TryParse(_Val.ToString(), out rec.DateLimit);
+                if (rec.NumLimit != "" & rec.DateLimit.Year > 1)
+                    for (int NumRows = 19; NumRows <= ExcelRange.Rows.Count - 5; NumRows++)
+                    {
+                        //_Position
+                        _Val = (ExcelRange.Cells[NumRows, 1] as Range).Value2;//_Position
+                        if (_Val == null | !int.TryParse(_Val.ToString(), out _Position)) rec.AddError("_Position - err., ");
+                        _Val = (ExcelRange.Cells[NumRows, 3] as Range).Value2;//_IdLoodsman
+                        if (_Val == null | !long.TryParse(_Val.ToString(), out _IdLoodsman)) rec.AddError("_IdLoodsman - err., ");
+                        _Val = (ExcelRange.Cells[NumRows, 4] as Range).Value2;//_PK_1С_IdKit
+                        if (_Val == null | !long.TryParse(_Val.ToString(), out _PK_1С_IdKit)) rec.AddError("_PK_1С_IdKit - err., ");
+                        _Val = (ExcelRange.Cells[NumRows, 5] as Range).Value2;//_Name1CKit
+                        if (_Val == null) _Name1CKit = ""; else _Name1CKit = _Val.ToString().Trim();
+                        _Val = (ExcelRange.Cells[NumRows, 9] as Range).Value2;//_AmountKit
+                        if (_Val == null | !double.TryParse(_Val.ToString(), out _AmountKit)) rec.AddError("_AmountKit - err., ");
+                        if (rec.ErrorList.Count > 0)
+                        {
+                            rec.ReceiptData.Clear();
+                            break;
+                        }
+                        else
+                            rec.ReceiptData.Rows.Add(_Position, _IdLoodsman, _PK_1С_IdKit, _Name1CKit, _AmountKit);
+                    }//for
+
+                Excel.Quit();
+                
+                Excel = null;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Не работает. " + ex.Message, "Внимание!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return rec;
+        }
     }
 }
