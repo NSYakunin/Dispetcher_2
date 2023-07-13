@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +9,7 @@ namespace Dispetcher2.Class
 {
     sealed class C_Gper
     {
+
         public static SqlConnection con = new SqlConnection();//using System.Data.SqlClient;
         //***********************************************************************************************************************************************************
         //Data Source=Loodsman;Initial Catalog=Dispetcher;Integrated Security=true //oldDispetcher connection string
@@ -19,12 +20,12 @@ namespace Dispetcher2.Class
         private static string _NameBase_Dispetcher = "Dispetcher";
         public static string ConnStrDispetcher = "Data Source=" + _NameServ_Dispetcher + ";Initial Catalog=" + _NameBase_Dispetcher + ";Integrated Security=true";
         //***********************************************************************************************************************************************************
-        //private static string _NameServ_Dispetcher2 = "ASCON";
-        private static string _NameServ_Dispetcher2 = "TESTSRV";
+        private static string _NameServ_Dispetcher2 = "ASCON";
+        //private static string _NameServ_Dispetcher2 = "Loodsman";
         private static string _NameBase_Dispetcher2 = "Dispetcher2";
         //private static string _NameBase_Dispetcher2 = "Disp2_TEST";
-        public static string ConnStrDispetcher2 = "Data Source=" + _NameServ_Dispetcher2 + ";Initial Catalog=" + _NameBase_Dispetcher2 + ";Integrated Security=true";
-        //public static string ConnStrDispetcher2 = "Data Source=" + _NameServ_Dispetcher2 + ";Initial Catalog=" + _NameBase_Dispetcher2 + ";Persist Security Info=False;Trusted_Connection=False;User ID=test;Password=test123456789";
+        //public static string ConnStrDispetcher2 = "Data Source=" + _NameServ_Dispetcher2 + ";Initial Catalog=" + _NameBase_Dispetcher2 + ";Integrated Security=true";
+        public static string ConnStrDispetcher2 = "Data Source=" + _NameServ_Dispetcher2 + ";Initial Catalog=" + _NameBase_Dispetcher2 + ";Persist Security Info=False;Trusted_Connection=False;User ID=test;Password=test123456789";
         //public static string ConnStrDispetcher2 = "Data Source=" + _NameServ_Dispetcher2 + ";Initial Catalog=" + _NameBase_Dispetcher2 + ";Persist Security Info=False;Trusted_Connection=False;User ID=test;Password=RPSsql12345";
         //***********************************************************************************************************************************************************
         private static string _NameServ_DispetcherASCON = "ASCON";

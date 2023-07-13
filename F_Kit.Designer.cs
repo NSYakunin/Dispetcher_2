@@ -28,16 +28,34 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.dGV_Kit = new System.Windows.Forms.DataGridView();
+            this.Col_NumRow = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Col_Position = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Col_SHCM = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Col_Amount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Col_NameKit = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Col_PlanKit = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Col_FactKit = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Col_Order = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Col_IdLoodsmanKit = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Col_1C_loodsman_IdKit = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Col_1C_IdKit = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dGV_KitcontextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.копироватьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dGV_Orders = new System.Windows.Forms.DataGridView();
             this.Col_PK_IdOrder = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Col_OrderNum = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dGV_OrderscontextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.копироватьВБуферToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.tB_OrderNum = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.tB_IdLoodsmanKit = new System.Windows.Forms.TextBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.lbl_RowsCount = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -51,30 +69,19 @@
             this.radioBtn_Disp = new System.Windows.Forms.RadioButton();
             this.btn_OrderDetails = new System.Windows.Forms.Button();
             this.btn_ExpKitToExcel = new System.Windows.Forms.Button();
-            this.Col_NumRow = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Col_Position = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Col_SHCM = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Col_Amount = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Col_NameKit = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Col_PlanKit = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Col_FactKit = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Col_Order = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Col_IdLoodsmanKit = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Col_1C_loodsman_IdKit = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Col_1C_IdKit = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.groupBox7 = new System.Windows.Forms.GroupBox();
-            this.tB_IdLoodsmanKit = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dGV_Kit)).BeginInit();
+            this.dGV_KitcontextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dGV_Orders)).BeginInit();
+            this.dGV_OrderscontextMenuStrip.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.groupBox7.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            this.groupBox7.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -129,6 +136,7 @@
             this.Col_IdLoodsmanKit,
             this.Col_1C_loodsman_IdKit,
             this.Col_1C_IdKit});
+            this.dGV_Kit.ContextMenuStrip = this.dGV_KitcontextMenuStrip;
             this.dGV_Kit.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dGV_Kit.Location = new System.Drawing.Point(3, 19);
             this.dGV_Kit.Margin = new System.Windows.Forms.Padding(4);
@@ -139,6 +147,113 @@
             this.dGV_Kit.Size = new System.Drawing.Size(821, 469);
             this.dGV_Kit.TabIndex = 14;
             this.dGV_Kit.TabStop = false;
+            this.dGV_Kit.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dGV_Kit_CellMouseDown);
+            // 
+            // Col_NumRow
+            // 
+            this.Col_NumRow.Frozen = true;
+            this.Col_NumRow.HeaderText = "№";
+            this.Col_NumRow.MinimumWidth = 20;
+            this.Col_NumRow.Name = "Col_NumRow";
+            this.Col_NumRow.ReadOnly = true;
+            this.Col_NumRow.Width = 60;
+            // 
+            // Col_Position
+            // 
+            this.Col_Position.HeaderText = "П";
+            this.Col_Position.MinimumWidth = 30;
+            this.Col_Position.Name = "Col_Position";
+            this.Col_Position.ReadOnly = true;
+            this.Col_Position.ToolTipText = "Позиция";
+            this.Col_Position.Width = 70;
+            // 
+            // Col_SHCM
+            // 
+            this.Col_SHCM.HeaderText = "ЩЦМ";
+            this.Col_SHCM.MinimumWidth = 20;
+            this.Col_SHCM.Name = "Col_SHCM";
+            this.Col_SHCM.ReadOnly = true;
+            this.Col_SHCM.Width = 180;
+            // 
+            // Col_Amount
+            // 
+            this.Col_Amount.HeaderText = "Кол-во";
+            this.Col_Amount.MinimumWidth = 20;
+            this.Col_Amount.Name = "Col_Amount";
+            this.Col_Amount.ReadOnly = true;
+            this.Col_Amount.Width = 80;
+            // 
+            // Col_NameKit
+            // 
+            this.Col_NameKit.HeaderText = "Наименование комплектации";
+            this.Col_NameKit.MinimumWidth = 100;
+            this.Col_NameKit.Name = "Col_NameKit";
+            this.Col_NameKit.ReadOnly = true;
+            this.Col_NameKit.Width = 370;
+            // 
+            // Col_PlanKit
+            // 
+            this.Col_PlanKit.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.Col_PlanKit.HeaderText = "План";
+            this.Col_PlanKit.MinimumWidth = 50;
+            this.Col_PlanKit.Name = "Col_PlanKit";
+            this.Col_PlanKit.ReadOnly = true;
+            this.Col_PlanKit.Width = 50;
+            // 
+            // Col_FactKit
+            // 
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.Col_FactKit.DefaultCellStyle = dataGridViewCellStyle1;
+            this.Col_FactKit.HeaderText = "Факт";
+            this.Col_FactKit.MinimumWidth = 50;
+            this.Col_FactKit.Name = "Col_FactKit";
+            this.Col_FactKit.ReadOnly = true;
+            this.Col_FactKit.Visible = false;
+            this.Col_FactKit.Width = 50;
+            // 
+            // Col_Order
+            // 
+            this.Col_Order.HeaderText = "Заказ";
+            this.Col_Order.MinimumWidth = 50;
+            this.Col_Order.Name = "Col_Order";
+            this.Col_Order.ReadOnly = true;
+            this.Col_Order.Width = 160;
+            // 
+            // Col_IdLoodsmanKit
+            // 
+            this.Col_IdLoodsmanKit.HeaderText = "№к.Лоц.";
+            this.Col_IdLoodsmanKit.Name = "Col_IdLoodsmanKit";
+            this.Col_IdLoodsmanKit.ReadOnly = true;
+            // 
+            // Col_1C_loodsman_IdKit
+            // 
+            this.Col_1C_loodsman_IdKit.HeaderText = "№к.Лоц.1С";
+            this.Col_1C_loodsman_IdKit.Name = "Col_1C_loodsman_IdKit";
+            this.Col_1C_loodsman_IdKit.ReadOnly = true;
+            this.Col_1C_loodsman_IdKit.Visible = false;
+            // 
+            // Col_1C_IdKit
+            // 
+            this.Col_1C_IdKit.HeaderText = "№комп.1С ";
+            this.Col_1C_IdKit.Name = "Col_1C_IdKit";
+            this.Col_1C_IdKit.ReadOnly = true;
+            this.Col_1C_IdKit.Visible = false;
+            // 
+            // dGV_KitcontextMenuStrip
+            // 
+            this.dGV_KitcontextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.копироватьToolStripMenuItem});
+            this.dGV_KitcontextMenuStrip.Name = "contextMenuStrip1";
+            this.dGV_KitcontextMenuStrip.Size = new System.Drawing.Size(187, 26);
+            // 
+            // копироватьToolStripMenuItem
+            // 
+            this.копироватьToolStripMenuItem.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.копироватьToolStripMenuItem.Image = global::Dispetcher2.Properties.Resources.icons8_скопировать_30;
+            this.копироватьToolStripMenuItem.Name = "копироватьToolStripMenuItem";
+            this.копироватьToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.копироватьToolStripMenuItem.Text = "Копировать в буфер";
+            this.копироватьToolStripMenuItem.Click += new System.EventHandler(this.копироватьToolStripMenuItem_Click);
             // 
             // dGV_Orders
             // 
@@ -150,6 +265,7 @@
             this.dGV_Orders.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Col_PK_IdOrder,
             this.Col_OrderNum});
+            this.dGV_Orders.ContextMenuStrip = this.dGV_OrderscontextMenuStrip;
             this.dGV_Orders.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dGV_Orders.Location = new System.Drawing.Point(12, 56);
             this.dGV_Orders.Margin = new System.Windows.Forms.Padding(4);
@@ -159,6 +275,7 @@
             this.dGV_Orders.Size = new System.Drawing.Size(142, 489);
             this.dGV_Orders.TabIndex = 12;
             this.dGV_Orders.TabStop = false;
+            this.dGV_Orders.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dGV_Orders_CellMouseDown);
             this.dGV_Orders.SelectionChanged += new System.EventHandler(this.dGV_Orders_SelectionChanged);
             this.dGV_Orders.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dGV_Orders_KeyDown);
             // 
@@ -179,6 +296,21 @@
             this.Col_OrderNum.Name = "Col_OrderNum";
             this.Col_OrderNum.ReadOnly = true;
             this.Col_OrderNum.Width = 136;
+            // 
+            // dGV_OrderscontextMenuStrip
+            // 
+            this.dGV_OrderscontextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.копироватьВБуферToolStripMenuItem});
+            this.dGV_OrderscontextMenuStrip.Name = "dGV_KitcontextMenuStrip";
+            this.dGV_OrderscontextMenuStrip.Size = new System.Drawing.Size(187, 26);
+            // 
+            // копироватьВБуферToolStripMenuItem
+            // 
+            this.копироватьВБуферToolStripMenuItem.Image = global::Dispetcher2.Properties.Resources.icons8_скопировать_30;
+            this.копироватьВБуферToolStripMenuItem.Name = "копироватьВБуферToolStripMenuItem";
+            this.копироватьВБуферToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.копироватьВБуферToolStripMenuItem.Text = "Копировать в буфер";
+            this.копироватьВБуферToolStripMenuItem.Click += new System.EventHandler(this.копироватьВБуферToolStripMenuItem_Click);
             // 
             // groupBox6
             // 
@@ -214,6 +346,28 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(833, 52);
             this.panel1.TabIndex = 14;
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Controls.Add(this.tB_IdLoodsmanKit);
+            this.groupBox7.Dock = System.Windows.Forms.DockStyle.Left;
+            this.groupBox7.Location = new System.Drawing.Point(417, 0);
+            this.groupBox7.Margin = new System.Windows.Forms.Padding(0);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(232, 52);
+            this.groupBox7.TabIndex = 16;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "№к.Лоц.";
+            // 
+            // tB_IdLoodsmanKit
+            // 
+            this.tB_IdLoodsmanKit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tB_IdLoodsmanKit.Location = new System.Drawing.Point(3, 19);
+            this.tB_IdLoodsmanKit.MaxLength = 50;
+            this.tB_IdLoodsmanKit.Name = "tB_IdLoodsmanKit";
+            this.tB_IdLoodsmanKit.Size = new System.Drawing.Size(226, 23);
+            this.tB_IdLoodsmanKit.TabIndex = 3;
+            this.tB_IdLoodsmanKit.TextChanged += new System.EventHandler(this.tB_IdLoodsmanKit_TextChanged);
             // 
             // groupBox4
             // 
@@ -368,118 +522,6 @@
             this.btn_ExpKitToExcel.UseVisualStyleBackColor = false;
             this.btn_ExpKitToExcel.Click += new System.EventHandler(this.btn_ExpKitToExcel_Click);
             // 
-            // Col_NumRow
-            // 
-            this.Col_NumRow.Frozen = true;
-            this.Col_NumRow.HeaderText = "№";
-            this.Col_NumRow.MinimumWidth = 20;
-            this.Col_NumRow.Name = "Col_NumRow";
-            this.Col_NumRow.ReadOnly = true;
-            this.Col_NumRow.Width = 60;
-            // 
-            // Col_Position
-            // 
-            this.Col_Position.HeaderText = "П";
-            this.Col_Position.MinimumWidth = 30;
-            this.Col_Position.Name = "Col_Position";
-            this.Col_Position.ReadOnly = true;
-            this.Col_Position.ToolTipText = "Позиция";
-            this.Col_Position.Width = 70;
-            // 
-            // Col_SHCM
-            // 
-            this.Col_SHCM.HeaderText = "ЩЦМ";
-            this.Col_SHCM.MinimumWidth = 20;
-            this.Col_SHCM.Name = "Col_SHCM";
-            this.Col_SHCM.ReadOnly = true;
-            this.Col_SHCM.Width = 180;
-            // 
-            // Col_Amount
-            // 
-            this.Col_Amount.HeaderText = "Кол-во";
-            this.Col_Amount.MinimumWidth = 20;
-            this.Col_Amount.Name = "Col_Amount";
-            this.Col_Amount.ReadOnly = true;
-            this.Col_Amount.Width = 80;
-            // 
-            // Col_NameKit
-            // 
-            this.Col_NameKit.HeaderText = "Наименование комплектации";
-            this.Col_NameKit.MinimumWidth = 100;
-            this.Col_NameKit.Name = "Col_NameKit";
-            this.Col_NameKit.ReadOnly = true;
-            this.Col_NameKit.Width = 370;
-            // 
-            // Col_PlanKit
-            // 
-            this.Col_PlanKit.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.Col_PlanKit.HeaderText = "План";
-            this.Col_PlanKit.MinimumWidth = 50;
-            this.Col_PlanKit.Name = "Col_PlanKit";
-            this.Col_PlanKit.ReadOnly = true;
-            this.Col_PlanKit.Width = 50;
-            // 
-            // Col_FactKit
-            // 
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.Col_FactKit.DefaultCellStyle = dataGridViewCellStyle2;
-            this.Col_FactKit.HeaderText = "Факт";
-            this.Col_FactKit.MinimumWidth = 50;
-            this.Col_FactKit.Name = "Col_FactKit";
-            this.Col_FactKit.ReadOnly = true;
-            this.Col_FactKit.Visible = false;
-            this.Col_FactKit.Width = 50;
-            // 
-            // Col_Order
-            // 
-            this.Col_Order.HeaderText = "Заказ";
-            this.Col_Order.MinimumWidth = 50;
-            this.Col_Order.Name = "Col_Order";
-            this.Col_Order.ReadOnly = true;
-            this.Col_Order.Width = 160;
-            // 
-            // Col_IdLoodsmanKit
-            // 
-            this.Col_IdLoodsmanKit.HeaderText = "№к.Лоц.";
-            this.Col_IdLoodsmanKit.Name = "Col_IdLoodsmanKit";
-            this.Col_IdLoodsmanKit.ReadOnly = true;
-            // 
-            // Col_1C_loodsman_IdKit
-            // 
-            this.Col_1C_loodsman_IdKit.HeaderText = "№к.Лоц.1С";
-            this.Col_1C_loodsman_IdKit.Name = "Col_1C_loodsman_IdKit";
-            this.Col_1C_loodsman_IdKit.ReadOnly = true;
-            this.Col_1C_loodsman_IdKit.Visible = false;
-            // 
-            // Col_1C_IdKit
-            // 
-            this.Col_1C_IdKit.HeaderText = "№комп.1С ";
-            this.Col_1C_IdKit.Name = "Col_1C_IdKit";
-            this.Col_1C_IdKit.ReadOnly = true;
-            this.Col_1C_IdKit.Visible = false;
-            // 
-            // groupBox7
-            // 
-            this.groupBox7.Controls.Add(this.tB_IdLoodsmanKit);
-            this.groupBox7.Dock = System.Windows.Forms.DockStyle.Left;
-            this.groupBox7.Location = new System.Drawing.Point(417, 0);
-            this.groupBox7.Margin = new System.Windows.Forms.Padding(0);
-            this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(232, 52);
-            this.groupBox7.TabIndex = 16;
-            this.groupBox7.TabStop = false;
-            this.groupBox7.Text = "№к.Лоц.";
-            // 
-            // tB_IdLoodsmanKit
-            // 
-            this.tB_IdLoodsmanKit.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tB_IdLoodsmanKit.Location = new System.Drawing.Point(3, 19);
-            this.tB_IdLoodsmanKit.MaxLength = 50;
-            this.tB_IdLoodsmanKit.Name = "tB_IdLoodsmanKit";
-            this.tB_IdLoodsmanKit.Size = new System.Drawing.Size(226, 23);
-            this.tB_IdLoodsmanKit.TabIndex = 3;
-            this.tB_IdLoodsmanKit.TextChanged += new System.EventHandler(this.tB_IdLoodsmanKit_TextChanged);
-            // 
             // F_Kit
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -495,10 +537,14 @@
             this.tableLayoutPanel1.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dGV_Kit)).EndInit();
+            this.dGV_KitcontextMenuStrip.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dGV_Orders)).EndInit();
+            this.dGV_OrderscontextMenuStrip.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
             this.panel1.ResumeLayout(false);
+            this.groupBox7.ResumeLayout(false);
+            this.groupBox7.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox3.ResumeLayout(false);
@@ -507,8 +553,6 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.groupBox7.ResumeLayout(false);
-            this.groupBox7.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -550,5 +594,9 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Col_1C_IdKit;
         private System.Windows.Forms.GroupBox groupBox7;
         private System.Windows.Forms.TextBox tB_IdLoodsmanKit;
+        private System.Windows.Forms.ContextMenuStrip dGV_KitcontextMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem копироватьToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip dGV_OrderscontextMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem копироватьВБуферToolStripMenuItem;
     }
 }
