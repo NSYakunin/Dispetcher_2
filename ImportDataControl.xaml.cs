@@ -84,5 +84,11 @@ namespace Dispetcher2
             Stop();
         }
 
+        private void OnCopyMenu(object sender, RoutedEventArgs e)
+        {
+            if (pvm.SelectedItem != null)
+                if (pvm.SelectedItem.Tag != null)
+                    Clipboard.SetText(pvm.SelectedItem.Tag.ToString());
+        }
     }
 }

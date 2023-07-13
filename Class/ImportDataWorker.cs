@@ -79,8 +79,10 @@ namespace Dispetcher2.Class
             {
                 if (stopFlag == true) break;
                 var dir = dirs[i];
-                string s = DateTime.Now.ToString() + ": Обработка файла " + Path.GetFileName(dir);
+                string name = Path.GetFileName(dir);
+                string s = DateTime.Now.ToString() + ": Обработка файла " + name;
                 ei = new ErrorItem(i+1, s);
+                ei.Tag = name;
                 pvm.Status = s;
                 pvm.AddToList(ei);
                 ProcessFile(dir);
@@ -108,7 +110,8 @@ namespace Dispetcher2.Class
                 if (rec.ErrorList.Count > 0)
                 {
                     //foreach (var e in rec.ErrorList) pvm.AddToList(e);
-                    ei = new ErrorItem(666, "Файл содержит ошибки. Обработка прекращена.");
+                    ei = new ErrorItem(666, "Файл содержит ошибки. Обработка прекращена: " + name);
+                    ei.Tag = name;
                     pvm.AddToList(ei);
                     return;
                 }
@@ -116,14 +119,16 @@ namespace Dispetcher2.Class
                 var id = GetOrderId(rec.OrderNum1С);
                 if (id == null)
                 {
-                    ei = new ErrorItem(666, "Не найдено соответствие по полю №заказа лимитки в БД ПО \"Диспетчер\"");
+                    ei = new ErrorItem(666, "Не найдено соответствие по полю №заказа лимитки в БД ПО \"Диспетчер\": " + rec.OrderNum1С);
+                    ei.Tag = rec.OrderNum1С;
                     pvm.AddToList(ei);
                     return;
                 }
 
                 if (rec.ReceiptData.Rows.Count < 1)
                 {
-                    ei = new ErrorItem(666, "В лимитной накладной нет строк с данными");
+                    ei = new ErrorItem(666, "В лимитной накладной нет строк с данными: " + name);
+                    ei.Tag = name;
                     pvm.AddToList(ei);
                     return;
                 }

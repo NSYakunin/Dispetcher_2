@@ -9,6 +9,7 @@ namespace Dispetcher2.Class
     {
         int idvalue;
         string textvalue;
+        object tag = null;
 
         public ErrorItem(int id, string text)
         {
@@ -25,6 +26,12 @@ namespace Dispetcher2.Class
         {
             get { return textvalue; }
             set { textvalue = value; }
+        }
+
+        public object Tag
+        {
+            get { return tag; }
+            set { tag = value; }
         }
     }
 }
