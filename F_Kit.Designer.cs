@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.dGV_Kit = new System.Windows.Forms.DataGridView();
@@ -44,10 +44,13 @@
             this.Col_IdLoodsmanKit = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Col_1C_loodsman_IdKit = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Col_1C_IdKit = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.dGV_KitcontextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.копироватьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dGV_Orders = new System.Windows.Forms.DataGridView();
             this.Col_PK_IdOrder = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Col_OrderNum = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dGV_OrderscontextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.копироватьВБуферToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.tB_OrderNum = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -66,12 +69,12 @@
             this.radioBtn_Disp = new System.Windows.Forms.RadioButton();
             this.btn_OrderDetails = new System.Windows.Forms.Button();
             this.btn_ExpKitToExcel = new System.Windows.Forms.Button();
-            this.копироватьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1.SuspendLayout();
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dGV_Kit)).BeginInit();
-            this.contextMenuStrip1.SuspendLayout();
+            this.dGV_KitcontextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dGV_Orders)).BeginInit();
+            this.dGV_OrderscontextMenuStrip.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.panel1.SuspendLayout();
             this.groupBox7.SuspendLayout();
@@ -133,7 +136,7 @@
             this.Col_IdLoodsmanKit,
             this.Col_1C_loodsman_IdKit,
             this.Col_1C_IdKit});
-            this.dGV_Kit.ContextMenuStrip = this.contextMenuStrip1;
+            this.dGV_Kit.ContextMenuStrip = this.dGV_KitcontextMenuStrip;
             this.dGV_Kit.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dGV_Kit.Location = new System.Drawing.Point(3, 19);
             this.dGV_Kit.Margin = new System.Windows.Forms.Padding(4);
@@ -199,8 +202,8 @@
             // 
             // Col_FactKit
             // 
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.Col_FactKit.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.Col_FactKit.DefaultCellStyle = dataGridViewCellStyle1;
             this.Col_FactKit.HeaderText = "Факт";
             this.Col_FactKit.MinimumWidth = 50;
             this.Col_FactKit.Name = "Col_FactKit";
@@ -236,12 +239,21 @@
             this.Col_1C_IdKit.ReadOnly = true;
             this.Col_1C_IdKit.Visible = false;
             // 
-            // contextMenuStrip1
+            // dGV_KitcontextMenuStrip
             // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.dGV_KitcontextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.копироватьToolStripMenuItem});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(140, 26);
+            this.dGV_KitcontextMenuStrip.Name = "contextMenuStrip1";
+            this.dGV_KitcontextMenuStrip.Size = new System.Drawing.Size(187, 26);
+            // 
+            // копироватьToolStripMenuItem
+            // 
+            this.копироватьToolStripMenuItem.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.копироватьToolStripMenuItem.Image = global::Dispetcher2.Properties.Resources.icons8_скопировать_30;
+            this.копироватьToolStripMenuItem.Name = "копироватьToolStripMenuItem";
+            this.копироватьToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.копироватьToolStripMenuItem.Text = "Копировать в буфер";
+            this.копироватьToolStripMenuItem.Click += new System.EventHandler(this.копироватьToolStripMenuItem_Click);
             // 
             // dGV_Orders
             // 
@@ -253,6 +265,7 @@
             this.dGV_Orders.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Col_PK_IdOrder,
             this.Col_OrderNum});
+            this.dGV_Orders.ContextMenuStrip = this.dGV_OrderscontextMenuStrip;
             this.dGV_Orders.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dGV_Orders.Location = new System.Drawing.Point(12, 56);
             this.dGV_Orders.Margin = new System.Windows.Forms.Padding(4);
@@ -262,6 +275,7 @@
             this.dGV_Orders.Size = new System.Drawing.Size(142, 489);
             this.dGV_Orders.TabIndex = 12;
             this.dGV_Orders.TabStop = false;
+            this.dGV_Orders.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dGV_Orders_CellMouseDown);
             this.dGV_Orders.SelectionChanged += new System.EventHandler(this.dGV_Orders_SelectionChanged);
             this.dGV_Orders.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dGV_Orders_KeyDown);
             // 
@@ -282,6 +296,21 @@
             this.Col_OrderNum.Name = "Col_OrderNum";
             this.Col_OrderNum.ReadOnly = true;
             this.Col_OrderNum.Width = 136;
+            // 
+            // dGV_OrderscontextMenuStrip
+            // 
+            this.dGV_OrderscontextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.копироватьВБуферToolStripMenuItem});
+            this.dGV_OrderscontextMenuStrip.Name = "dGV_KitcontextMenuStrip";
+            this.dGV_OrderscontextMenuStrip.Size = new System.Drawing.Size(187, 26);
+            // 
+            // копироватьВБуферToolStripMenuItem
+            // 
+            this.копироватьВБуферToolStripMenuItem.Image = global::Dispetcher2.Properties.Resources.icons8_скопировать_30;
+            this.копироватьВБуферToolStripMenuItem.Name = "копироватьВБуферToolStripMenuItem";
+            this.копироватьВБуферToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.копироватьВБуферToolStripMenuItem.Text = "Копировать в буфер";
+            this.копироватьВБуферToolStripMenuItem.Click += new System.EventHandler(this.копироватьВБуферToolStripMenuItem_Click);
             // 
             // groupBox6
             // 
@@ -493,13 +522,6 @@
             this.btn_ExpKitToExcel.UseVisualStyleBackColor = false;
             this.btn_ExpKitToExcel.Click += new System.EventHandler(this.btn_ExpKitToExcel_Click);
             // 
-            // копироватьToolStripMenuItem
-            // 
-            this.копироватьToolStripMenuItem.Name = "копироватьToolStripMenuItem";
-            this.копироватьToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.копироватьToolStripMenuItem.Text = "Копировать";
-            this.копироватьToolStripMenuItem.Click += new System.EventHandler(this.копироватьToolStripMenuItem_Click);
-            // 
             // F_Kit
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -515,8 +537,9 @@
             this.tableLayoutPanel1.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dGV_Kit)).EndInit();
-            this.contextMenuStrip1.ResumeLayout(false);
+            this.dGV_KitcontextMenuStrip.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dGV_Orders)).EndInit();
+            this.dGV_OrderscontextMenuStrip.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
             this.panel1.ResumeLayout(false);
@@ -571,7 +594,9 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Col_1C_IdKit;
         private System.Windows.Forms.GroupBox groupBox7;
         private System.Windows.Forms.TextBox tB_IdLoodsmanKit;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ContextMenuStrip dGV_KitcontextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem копироватьToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip dGV_OrderscontextMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem копироватьВБуферToolStripMenuItem;
     }
 }

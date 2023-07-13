@@ -397,6 +397,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Computer.ico" />
+    <None Include="Resources\icons8-скопировать-30.png" />
     <None Include="Picture\Search.png" />
     <None Include="Picture\help32.png" />
     <None Include="Picture\Equipment.png" />

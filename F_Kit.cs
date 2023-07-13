@@ -441,6 +441,7 @@ namespace Dispetcher2
 
         private void копироватьToolStripMenuItem_Click(object sender, EventArgs e)
         {
+
             if (dGV_Kit.GetCellCount(DataGridViewElementStates.Selected) > 0)
             {
                 try
@@ -472,6 +473,29 @@ namespace Dispetcher2
                 dGV_Kit.ClearSelection();
                 dGV_Kit.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
                 dGV_Kit[e.ColumnIndex, e.RowIndex].Selected = true;
+            }
+        }
+
+        private void копироватьВБуферToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dGV_Orders.GetCellCount(DataGridViewElementStates.Selected) > 0)
+            {
+                Clipboard.SetText(dGV_Orders.GetClipboardContent().GetText().Trim());
+            }
+        }
+
+        private void dGV_Orders_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                dGV_Orders.ClearSelection();
+                dGV_Orders[e.ColumnIndex, e.RowIndex].Selected = true;
+            }
+
+            if (e.Button == MouseButtons.Left)
+            {
+                dGV_Orders.ClearSelection();
+                dGV_Orders[e.ColumnIndex, e.RowIndex].Selected = true;
             }
         }
     }
