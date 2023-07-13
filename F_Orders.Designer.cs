@@ -37,6 +37,13 @@
             this.myTabC_Orders = new Dispetcher2.MyTabControl();
             this.tPageOrders = new System.Windows.Forms.TabPage();
             this.dGV_Orders = new System.Windows.Forms.DataGridView();
+            this.Col_NumOrder = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Col_NameOrder = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Col_CreateOrder = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Col_Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Col_Validation = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.dGV_OrdersContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.копироватьВБуферToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gB_NewOrder = new System.Windows.Forms.GroupBox();
             this.btn_Create_Update = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
@@ -131,15 +138,13 @@
             this.numericUpDChange = new System.Windows.Forms.NumericUpDown();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.tB_PK_IdDetailChange = new System.Windows.Forms.TextBox();
-            this.Col_NumOrder = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Col_NameOrder = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Col_CreateOrder = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Col_Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Col_Validation = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.dGV_AddDetailsFromRasConMenuSrt = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.копироватьВБуферToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.cMStrip_TreeOrder.SuspendLayout();
             this.myTabC_Orders.SuspendLayout();
             this.tPageOrders.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dGV_Orders)).BeginInit();
+            this.dGV_OrdersContextMenuStrip.SuspendLayout();
             this.gB_NewOrder.SuspendLayout();
             this.gBox_Menu.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -187,6 +192,7 @@
             this.groupBox6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDChange)).BeginInit();
             this.groupBox8.SuspendLayout();
+            this.dGV_AddDetailsFromRasConMenuSrt.SuspendLayout();
             this.SuspendLayout();
             // 
             // cMStrip_TreeOrder
@@ -268,6 +274,7 @@
             this.Col_CreateOrder,
             this.Col_Status,
             this.Col_Validation});
+            this.dGV_Orders.ContextMenuStrip = this.dGV_OrdersContextMenuStrip;
             this.dGV_Orders.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dGV_Orders.Location = new System.Drawing.Point(3, 150);
             this.dGV_Orders.Margin = new System.Windows.Forms.Padding(5);
@@ -278,8 +285,63 @@
             this.dGV_Orders.Size = new System.Drawing.Size(990, 450);
             this.dGV_Orders.TabIndex = 9;
             this.dGV_Orders.TabStop = false;
+            this.dGV_Orders.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dGV_Orders_CellMouseDown);
             this.dGV_Orders.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dGV_Orders_KeyDown);
             this.dGV_Orders.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.dGV_Orders_MouseDoubleClick);
+            // 
+            // Col_NumOrder
+            // 
+            this.Col_NumOrder.HeaderText = "№ заказа";
+            this.Col_NumOrder.Name = "Col_NumOrder";
+            this.Col_NumOrder.ReadOnly = true;
+            this.Col_NumOrder.Width = 150;
+            // 
+            // Col_NameOrder
+            // 
+            this.Col_NameOrder.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Col_NameOrder.HeaderText = "Наименование";
+            this.Col_NameOrder.MinimumWidth = 50;
+            this.Col_NameOrder.Name = "Col_NameOrder";
+            this.Col_NameOrder.ReadOnly = true;
+            // 
+            // Col_CreateOrder
+            // 
+            this.Col_CreateOrder.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
+            this.Col_CreateOrder.HeaderText = "Создан";
+            this.Col_CreateOrder.Name = "Col_CreateOrder";
+            this.Col_CreateOrder.ReadOnly = true;
+            this.Col_CreateOrder.Width = 81;
+            // 
+            // Col_Status
+            // 
+            this.Col_Status.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
+            this.Col_Status.HeaderText = "Статус";
+            this.Col_Status.Name = "Col_Status";
+            this.Col_Status.ReadOnly = true;
+            this.Col_Status.Width = 78;
+            // 
+            // Col_Validation
+            // 
+            this.Col_Validation.HeaderText = "V";
+            this.Col_Validation.MinimumWidth = 10;
+            this.Col_Validation.Name = "Col_Validation";
+            this.Col_Validation.ReadOnly = true;
+            this.Col_Validation.Width = 30;
+            // 
+            // dGV_OrdersContextMenuStrip
+            // 
+            this.dGV_OrdersContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.копироватьВБуферToolStripMenuItem});
+            this.dGV_OrdersContextMenuStrip.Name = "dGV_OrdersContextMenuStrip";
+            this.dGV_OrdersContextMenuStrip.Size = new System.Drawing.Size(187, 26);
+            // 
+            // копироватьВБуферToolStripMenuItem
+            // 
+            this.копироватьВБуферToolStripMenuItem.Image = global::Dispetcher2.Properties.Resources.icons8_скопировать_30;
+            this.копироватьВБуферToolStripMenuItem.Name = "копироватьВБуферToolStripMenuItem";
+            this.копироватьВБуферToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.копироватьВБуферToolStripMenuItem.Text = "Копировать в буфер";
+            this.копироватьВБуферToolStripMenuItem.Click += new System.EventHandler(this.копироватьВБуферToolStripMenuItem_Click);
             // 
             // gB_NewOrder
             // 
@@ -476,6 +538,7 @@
             this.С_PK_IdOrderDetail,
             this.С_FK_IdDetail,
             this.С_PositionParent});
+            this.dGV_AddDetailsFromRas.ContextMenuStrip = this.dGV_AddDetailsFromRasConMenuSrt;
             this.dGV_AddDetailsFromRas.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dGV_AddDetailsFromRas.Location = new System.Drawing.Point(3, 55);
             this.dGV_AddDetailsFromRas.Margin = new System.Windows.Forms.Padding(5);
@@ -486,6 +549,7 @@
             this.dGV_AddDetailsFromRas.Size = new System.Drawing.Size(990, 497);
             this.dGV_AddDetailsFromRas.TabIndex = 5;
             this.dGV_AddDetailsFromRas.TabStop = false;
+            this.dGV_AddDetailsFromRas.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dGV_AddDetailsFromRas_CellMouseDown);
             // 
             // С_NameType
             // 
@@ -1142,7 +1206,7 @@
             this.groupBox13.TabIndex = 1001;
             this.groupBox13.TabStop = false;
             this.groupBox13.Text = "№       Операция                                                             Tpd," +
-                " min  Tsh,min";
+    " min  Tsh,min";
             // 
             // nUpD_Tpd
             // 
@@ -1365,44 +1429,20 @@
             this.tB_PK_IdDetailChange.TabIndex = 999;
             this.tB_PK_IdDetailChange.TabStop = false;
             // 
-            // Col_NumOrder
+            // dGV_AddDetailsFromRasConMenuSrt
             // 
-            this.Col_NumOrder.HeaderText = "№ заказа";
-            this.Col_NumOrder.Name = "Col_NumOrder";
-            this.Col_NumOrder.ReadOnly = true;
-            this.Col_NumOrder.Width = 150;
+            this.dGV_AddDetailsFromRasConMenuSrt.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.копироватьВБуферToolStripMenuItem1});
+            this.dGV_AddDetailsFromRasConMenuSrt.Name = "dGV_AddDetailsFromRasConMenuSrt";
+            this.dGV_AddDetailsFromRasConMenuSrt.Size = new System.Drawing.Size(187, 26);
             // 
-            // Col_NameOrder
+            // копироватьВБуферToolStripMenuItem1
             // 
-            this.Col_NameOrder.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Col_NameOrder.HeaderText = "Наименование";
-            this.Col_NameOrder.MinimumWidth = 50;
-            this.Col_NameOrder.Name = "Col_NameOrder";
-            this.Col_NameOrder.ReadOnly = true;
-            // 
-            // Col_CreateOrder
-            // 
-            this.Col_CreateOrder.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
-            this.Col_CreateOrder.HeaderText = "Создан";
-            this.Col_CreateOrder.Name = "Col_CreateOrder";
-            this.Col_CreateOrder.ReadOnly = true;
-            this.Col_CreateOrder.Width = 81;
-            // 
-            // Col_Status
-            // 
-            this.Col_Status.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
-            this.Col_Status.HeaderText = "Статус";
-            this.Col_Status.Name = "Col_Status";
-            this.Col_Status.ReadOnly = true;
-            this.Col_Status.Width = 78;
-            // 
-            // Col_Validation
-            // 
-            this.Col_Validation.HeaderText = "V";
-            this.Col_Validation.MinimumWidth = 10;
-            this.Col_Validation.Name = "Col_Validation";
-            this.Col_Validation.ReadOnly = true;
-            this.Col_Validation.Width = 30;
+            this.копироватьВБуферToolStripMenuItem1.Image = global::Dispetcher2.Properties.Resources.icons8_скопировать_30;
+            this.копироватьВБуферToolStripMenuItem1.Name = "копироватьВБуферToolStripMenuItem1";
+            this.копироватьВБуферToolStripMenuItem1.Size = new System.Drawing.Size(186, 22);
+            this.копироватьВБуферToolStripMenuItem1.Text = "Копировать в буфер";
+            this.копироватьВБуферToolStripMenuItem1.Click += new System.EventHandler(this.копироватьВБуферToolStripMenuItem1_Click);
             // 
             // F_Orders
             // 
@@ -1420,6 +1460,7 @@
             this.myTabC_Orders.ResumeLayout(false);
             this.tPageOrders.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dGV_Orders)).EndInit();
+            this.dGV_OrdersContextMenuStrip.ResumeLayout(false);
             this.gB_NewOrder.ResumeLayout(false);
             this.gB_NewOrder.PerformLayout();
             this.gBox_Menu.ResumeLayout(false);
@@ -1482,6 +1523,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDChange)).EndInit();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
+            this.dGV_AddDetailsFromRasConMenuSrt.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1595,6 +1637,9 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Col_CreateOrder;
         private System.Windows.Forms.DataGridViewTextBoxColumn Col_Status;
         private System.Windows.Forms.DataGridViewCheckBoxColumn Col_Validation;
-
+        private System.Windows.Forms.ContextMenuStrip dGV_OrdersContextMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem копироватьВБуферToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip dGV_AddDetailsFromRasConMenuSrt;
+        private System.Windows.Forms.ToolStripMenuItem копироватьВБуферToolStripMenuItem1;
     }
 }

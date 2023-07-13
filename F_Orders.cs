@@ -1034,7 +1034,6 @@ namespace Dispetcher2
             if (e.KeyCode == Keys.Delete) dGV_AddDetailsInSpOper.Rows.RemoveAt(dGV_AddDetailsInSpOper.SelectedRows[0].Index);
         }
 
-#endregion
 
 
 
@@ -1076,6 +1075,78 @@ namespace Dispetcher2
 
 
 
+        #endregion
 
+        private void копироватьВБуферToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dGV_Orders.GetCellCount(DataGridViewElementStates.Selected) > 0)
+            {
+                try
+                {
+                    Clipboard.SetDataObject(dGV_Orders.GetClipboardContent());
+                }
+                catch (System.Runtime.InteropServices.ExternalException)
+                {
+                    MessageBox.Show("Копирование невозможно");
+                }
+                finally
+                {
+                    dGV_Orders.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                }
+            }
+        }
+
+        private void dGV_Orders_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                dGV_Orders.ClearSelection();
+                dGV_Orders.SelectionMode = DataGridViewSelectionMode.CellSelect;
+                dGV_Orders[e.ColumnIndex, e.RowIndex].Selected = true;
+            }
+
+            if (e.Button == MouseButtons.Left)
+            {
+                dGV_Orders.ClearSelection();
+                dGV_Orders.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                dGV_Orders[e.ColumnIndex, e.RowIndex].Selected = true;
+            }
+        }
+
+        private void копироватьВБуферToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (dGV_AddDetailsFromRas.GetCellCount(DataGridViewElementStates.Selected) > 0)
+            {
+                try
+                {
+                    Clipboard.SetDataObject(dGV_AddDetailsFromRas.GetClipboardContent());
+                }
+                catch (System.Runtime.InteropServices.ExternalException)
+                {
+                    MessageBox.Show("Копирование невозможно");
+                }
+                finally
+                {
+                    dGV_AddDetailsFromRas.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                }
+            }
+        }
+
+        private void dGV_AddDetailsFromRas_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                dGV_AddDetailsFromRas.ClearSelection();
+                dGV_AddDetailsFromRas.SelectionMode = DataGridViewSelectionMode.CellSelect;
+                dGV_AddDetailsFromRas[e.ColumnIndex, e.RowIndex].Selected = true;
+            }
+
+            if (e.Button == MouseButtons.Left)
+            {
+                dGV_AddDetailsFromRas.ClearSelection();
+                dGV_AddDetailsFromRas.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                dGV_AddDetailsFromRas[e.ColumnIndex, e.RowIndex].Selected = true;
+            }
+        }
     }
 }
