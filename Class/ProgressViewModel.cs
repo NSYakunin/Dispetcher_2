@@ -15,6 +15,7 @@ namespace Dispetcher2.Class
         double progress = 0;
         string status = "Подготовка...";
         BindingList<ErrorItem> errblist = new BindingList<ErrorItem>();
+        ErrorItem selit;
 
         Dispatcher disp = null;
         delegate void ErrorHandler(ErrorItem ei);
@@ -39,6 +40,16 @@ namespace Dispetcher2.Class
             {
                 status = value;
                 OnPropertyChanged("Status");
+            }
+        }
+
+        public ErrorItem SelectedItem
+        {
+            get { return selit; }
+            set
+            {
+                selit = value;
+                OnPropertyChanged("SelectedItem");
             }
         }
 
