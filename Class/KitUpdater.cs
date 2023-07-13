@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
-using System.Threading;
+using System.Threading.Tasks;
 using Dispetcher2.Class;
 
 namespace Dispetcher2.Class
@@ -17,14 +17,10 @@ namespace Dispetcher2.Class
 
         ProgressViewModel pvm;
 
-        ManualResetEvent endEvent = new ManualResetEvent(false);
+        Task mainTask = null;
         bool stopFlag = false;
-        bool workFlag = false;
         
         public event EventHandler FinishEvent;
-
-        public delegate void ErrorDelegate(string text);
-        public event ErrorDelegate NewError;
 
         public KitUpdater(ProgressViewModel value)
         {
@@ -33,30 +29,34 @@ namespace Dispetcher2.Class
 
         public void Start()
         {
-            if (workFlag) return;
-            stopFlag = false;
-            endEvent.Reset();
-            var t = new Thread(this.Main);
-            t.Start();
+            if (mainTask == null)
+            {
+                stopFlag = false;
+                mainTask = new Task(this.Main);
+                mainTask.Start();
+            }
         }
 
         public void Stop()
         {
-            if (workFlag == false) return;
-            stopFlag = true;
-            endEvent.WaitOne();
+
+            if (mainTask != null)
+            {
+                stopFlag = true;
+                mainTask.Wait();
+                mainTask.Dispose();
+                mainTask = null;
+            }
         }
 
         void Main()
         {
-            workFlag = true;
-            
             pvm.Progress = 0;
             pvm.Status = "Начало работы...";
             LoadDataTables();
 
             int i = 0;
-            double cnt = detailTable.Rows.Count;
+            int cnt = detailTable.Rows.Count;
             while (stopFlag == false && i < cnt)
             {
                 try
@@ -67,59 +67,58 @@ namespace Dispetcher2.Class
 
                     if (i % 10 == 0)
                     {
-                        pvm.Progress = 100.0 * i / cnt;
+                        pvm.Progress = 100.0 * i / (double)cnt;
                         pvm.Status = String.Format("Выполнено: {0}%...", pvm.Progress.ToString("0.00"));
                     }
                 }
                 catch (Exception ex)
                 {
-                    string msg = ex.Message;
                     // Так нельзя делать из другого потока, будет исключение:
+                    //string msg = ex.Message;
                     //pvm.ErrorCollection.Add(msg);
                     // Можно так:
-                    if (NewError != null) NewError(msg);
+                    ErrorItem ei1 = new ErrorItem(i, ex.Message);
+                    pvm.AddToList(ei1);
                 }
                 i = i + 1;
             }
             pvm.Status = "Обновление завершено.";
-            if (pvm.ErrorCollection.Count < 1) if (NewError != null) NewError("Ошибок не произошло");
+            pvm.Progress = 100;
+            
+            ErrorItem ei2 = new ErrorItem(0, "Ошибок не произошло");
+            pvm.AddToList(ei2);
+
             if (FinishEvent != null) FinishEvent(this, new EventArgs());
-            endEvent.Set();
-            workFlag = false;
+            mainTask = null;
         }
 
         void ProcessDetail(long id)
         {
-            DataTable kdt = GetKitDataTable(id);
-            if (kdt.Rows.Count > 0)
-            {
-                db.DeleteKit(id);
-                IEnumerable<DataRow> edr = kdt.AsEnumerable();
-                foreach (DataRow r in edr)
-                {
-                    int idk = r.Field<int>("id");
-                    string name = r.Field<string>("product").Trim();
-                    double minquantity = r.Field<double>("minquantity");
-                    int idtype = r.Field<int>("idtype");
-                    int idstate = r.Field<int>("idstate");
+            var edr = GetKitDataTable(id);
 
-                    db.InsertKit(id, idk, name, minquantity, idtype, idstate);
-                }
+            if (edr.Any<DataRow>()) db.DeleteKit(id);
+
+            foreach (DataRow r in edr)
+            {
+                int idk = r.Field<int>("id");
+                string name = r.Field<string>("product").Trim();
+                double minquantity = r.Field<double>("minquantity");
+                int idtype = r.Field<int>("idtype");
+                int idstate = r.Field<int>("idstate");
+
+                db.InsertKit(id, idk, name, minquantity, idtype, idstate);
             }
         }
 
-        DataTable GetKitDataTable(long idl)
+        IEnumerable<DataRow> GetKitDataTable(long idl)
         {
 
             DataTable dt = kitTable;
             var kits = from dr in dt.AsEnumerable()
                        where dr.Field<int>("idparent") == idl
-                       orderby dr.Field<string>("product")
+                       //orderby dr.Field<string>("product") // тут сортировка не нужна, без нее быстрее
                        select dr;
-            int i = 0;
-            foreach (var x in kits) i++;
-            if (i > 0) return kits.CopyToDataTable<DataRow>();
-            else return new DataTable();
+            return kits;
         }
 
         void LoadDataTables()
