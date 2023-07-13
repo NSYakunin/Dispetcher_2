@@ -1092,6 +1092,7 @@ namespace Dispetcher2
                 finally
                 {
                     dGV_Orders.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                    dGV_Orders.CurrentCell.Selected = true;
                 }
             }
         }
@@ -1128,6 +1129,7 @@ namespace Dispetcher2
                 finally
                 {
                     dGV_AddDetailsFromRas.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                    dGV_AddDetailsFromRas.CurrentCell.Selected = true;
                 }
             }
         }

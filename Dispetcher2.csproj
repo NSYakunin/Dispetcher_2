@@ -150,8 +150,11 @@
     <Compile Include="Class\C_TimeSheetsV1.cs" />
     <Compile Include="Class\C_UpdaterSP.cs" />
     <Compile Include="Class\C_Users.cs" />
+    <Compile Include="Class\ErrorItem.cs" />
+    <Compile Include="Class\ImportDataWorker.cs" />
     <Compile Include="Class\KitUpdater.cs" />
     <Compile Include="Class\ProgressViewModel.cs" />
+    <Compile Include="Class\Receipt.cs" />
     <Compile Include="Class\С_TreeViewOrders.cs" />
     <Compile Include="Controls\MyButtonMenu.cs">
       <SubType>Component</SubType>
@@ -293,6 +296,9 @@
     <Compile Include="F_Workers.Designer.cs">
       <DependentUpon>F_Workers.cs</DependentUpon>
     </Compile>
+    <Compile Include="ImportDataControl.xaml.cs">
+      <DependentUpon>ImportDataControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="KitUpdaterControl.xaml.cs">
       <DependentUpon>KitUpdaterControl.xaml</DependentUpon>
     </Compile>
@@ -429,6 +435,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="ImportDataControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="KitUpdaterControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

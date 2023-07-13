@@ -1,0 +1,71 @@
+﻿<UserControl x:Class="Dispetcher2.ImportDataControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Dispetcher2"
+             mc:Ignorable="d" Height="350" Width="850" FontSize="16" >
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="430" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <ListBox x:Name="errorListBox" Grid.Column="1" Grid.Row="0" SelectedItem="{Binding SelectedItem}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Text}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+            <ListBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Click="OnCopyMenu">
+                        <MenuItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <Path Margin="0,5,0,10" Data="F0 M 0,0 C 0,-2.24 1.76,-4 4,-4 L 10.72,-4 C 11.04,-4 11.36,-3.84 11.68,-3.68
+		                            L 20.96,5.76 C 21.28,5.92 21.44,6.24 21.44,6.72 L 21.44,18.72 C 21.44,20.96 19.52,22.72 17.44,22.72
+		                            L 16,22.72 16,24 C 16,26.24 14.24,28 12,28 L -1.28,28 C -3.52,28 -5.28,26.24 -5.28,24
+		                            L -5.28,5.28 C -5.28,3.2 -3.52,1.28 -1.28,1.28 L 0,1.28 0,0 z
+		                            M 0,4 L -1.28,4 C -2.08,4 -2.56,4.64 -2.56,5.28 L -2.56,24 C -2.56,24.8 -2.08,25.44 -1.28,25.44
+		                            L 12,25.44 C 12.8,25.44 13.44,24.8 13.44,24 L 13.44,22.72 4,22.72 C 1.76,22.72 0,20.96 0,18.72
+		                            L 0,4 z
+		                            M 4,-1.28 C 3.36,-1.28 2.72,-0.8 2.72,0 L 2.72,18.72 C 2.72,19.36 3.36,20 4,20
+		                            L 17.44,20 C 18.08,20 18.72,19.36 18.72,18.72 L 18.72,8 13.44,8 C 11.2,8 9.44,6.24 9.44,4
+		                            L 9.44,-1.28 4,-1.28 z
+		                            M 12,0.64 L 16.8,5.28 13.44,5.28 C 12.64,5.28 12,4.8 12,4 L 12,0.64 z" RenderTransform="1,0,0,1,8,4" Clip="M -8,-4 L -8,28.16 24.16,28.16 24.16,-4 z"  Fill="#ff293644" />
+                                <TextBlock Text="Копировать" Margin="20,0,0,0" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </MenuItem.Header>
+                    </MenuItem>
+                </ContextMenu>
+            </ListBox.ContextMenu>
+        </ListBox>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="100" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <TextBlock Text="Папка файлов Excel:" Margin="10" Width="150" TextAlignment="Right" />
+                <TextBox Width="200" Margin="10" Text="{Binding WayToFolder}" />
+                <Button Content="..." Margin="10" Width="25" x:Name="wayFolderButton" Click="wayFolderButton_Click" />
+            </StackPanel>
+            <StackPanel Grid.Row="1" Orientation="Horizontal">
+                <TextBlock Text="Папка архива:" Margin="10" Width="150" TextAlignment="Right" />
+                <TextBox Width="200" Margin="10" Text="{Binding WayToFolderArchive}" />
+                <Button Content="..." Margin="10" Width="25" x:Name="wayArchiveButton" Click="wayArchiveButton_Click" />
+            </StackPanel>
+            <StackPanel Grid.Row="2" Orientation="Horizontal">
+                <Button Content="Пуск" Width="100" Margin="10" Click="OnStart" />
+                <Button Content="Отмена" Width="100" Margin="10" Click="OnStop" />
+            </StackPanel>
+            <StackPanel Grid.Row="3" Orientation="Vertical">
+                <ProgressBar Height="0.5cm" Value="{Binding Progress, Mode=OneWay}" Margin="10" />
+                <TextBlock Text="{Binding Status, Mode=OneWay}" Margin="10" />
+            </StackPanel>
+            
+        </Grid>
+    </Grid>
+</UserControl>

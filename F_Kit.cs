@@ -455,6 +455,7 @@ namespace Dispetcher2
                 finally
                 {
                     dGV_Kit.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                    dGV_Kit.CurrentCell.Selected = true;
                 }
             }
         }

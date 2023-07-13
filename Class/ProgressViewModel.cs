@@ -4,14 +4,22 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
+using System.Windows.Threading;
 
 namespace Dispetcher2.Class
 {
     public class ProgressViewModel : INotifyPropertyChanged
     {
+        string wayToFolder = @"\\Ascon\DispImport";
+        string wayToFolderArchive = @"\\Ascon\DispImport\Архив";
         double progress = 0;
         string status = "Подготовка...";
-        ObservableCollection<string> errCol = new ObservableCollection<string>();
+        BindingList<ErrorItem> errblist = new BindingList<ErrorItem>();
+        ErrorItem selit;
+
+        Dispatcher disp = null;
+        delegate void ErrorHandler(ErrorItem ei);
+        ErrorHandler eh;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -35,22 +43,68 @@ namespace Dispetcher2.Class
             }
         }
 
+        public ErrorItem SelectedItem
+        {
+            get { return selit; }
+            set
+            {
+                selit = value;
+                OnPropertyChanged("SelectedItem");
+            }
+        }
+
+        public string WayToFolder
+        {
+            get { return wayToFolder; }
+            set
+            {
+                wayToFolder = value;
+                OnPropertyChanged("WayToFolder");
+            }
+        }
+
+        public string WayToFolderArchive
+        {
+            get { return wayToFolderArchive; }
+            set
+            {
+                wayToFolderArchive = value;
+                OnPropertyChanged("WayToFolderArchive");
+            }
+        }
+
         public void OnPropertyChanged(string prop)
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(prop));
         }
 
-        public ObservableCollection<string> ErrorCollection
+        public BindingList<ErrorItem> ErrorList
         {
-            get { return errCol; }
+            get { return errblist; }
         }
 
         public void Reset()
         {
             Progress = 0;
             Status = "Подготовка...";
-            errCol.Clear();
+            errblist.Clear();
+        }
+
+        // Элемент управления ListBox нельзя обновлять из другого потока
+        // Пришлось использовать делигат
+        public void SetDispatcher(Dispatcher disp)
+        {
+            this.disp = disp;
+            eh = (ErrorItem e) => errblist.Add(e);
+        }
+
+        public void AddToList(ErrorItem ei)
+        {
+            ErrorItem[] a = new ErrorItem[] { ei };
+
+            if (disp != null) disp.BeginInvoke(eh, a);
+            else eh(ei);
         }
     }
 }
