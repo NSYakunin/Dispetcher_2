@@ -328,12 +328,13 @@ namespace Dispetcher2.Class
                 ExcelWorkSheet = (Microsoft.Office.Interop.Excel.Worksheet)ExcelWorkBook.Worksheets.get_Item(1);
                 ExcelRange = ExcelWorkSheet.UsedRange;
                 object _Val = null;
-                string _OrderNum = null, _Name1CKit = null;
-                long _IdLoodsman, _PK_1С_IdKit;
+                string _Name1CKit = null;
+                int _IdLoodsman;
+                long _PK_1С_IdKit;
                 double _AmountKit;
                 int _Position = 0;
                 _Val = (ExcelRange.Cells[2, 4] as Range).Value2;//_OrderNum
-                if (_Val == null) _OrderNum = ""; else _OrderNum = _Val.ToString().Trim();
+                if (_Val == null) rec.OrderNum1С = ""; else rec.OrderNum1С = _Val.ToString().Trim();
 
                 _Val = (ExcelRange.Cells[4, 2] as Range).Value2;//_NumLimit
                 if (_Val == null) rec.NumLimit = ""; 
@@ -347,7 +348,7 @@ namespace Dispetcher2.Class
                         _Val = (ExcelRange.Cells[NumRows, 1] as Range).Value2;//_Position
                         if (_Val == null | !int.TryParse(_Val.ToString(), out _Position)) rec.AddError("_Position - err., ");
                         _Val = (ExcelRange.Cells[NumRows, 3] as Range).Value2;//_IdLoodsman
-                        if (_Val == null | !long.TryParse(_Val.ToString(), out _IdLoodsman)) rec.AddError("_IdLoodsman - err., ");
+                        if (_Val == null | !int.TryParse(_Val.ToString(), out _IdLoodsman)) rec.AddError("_IdLoodsman - err., ");
                         _Val = (ExcelRange.Cells[NumRows, 4] as Range).Value2;//_PK_1С_IdKit
                         if (_Val == null | !long.TryParse(_Val.ToString(), out _PK_1С_IdKit)) rec.AddError("_PK_1С_IdKit - err., ");
                         _Val = (ExcelRange.Cells[NumRows, 5] as Range).Value2;//_Name1CKit

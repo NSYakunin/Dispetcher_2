@@ -229,7 +229,7 @@ namespace Dispetcher2.Class
         /// </summary>
         /// <param name="year">Год</param>
         /// <param name="num">Номер</param>
-        public void DeleteRelationsKit(short year, string num)
+        public void DeleteRelationsKit(int year, string num)
         {
             using (SqlConnection cn = new SqlConnection())
             {
@@ -248,8 +248,8 @@ namespace Dispetcher2.Class
         }
 
         // Вставка записи в таблицу RelationsKit
-        public void InsertRelationsKit(short year, string num, int position, int FK_IdOrder,
-            int IdLoodsman, long FK_1С_IdKit, DateTime DateLimit, float AmountKit)
+        public void InsertRelationsKit(int year, string num, int position, int FK_IdOrder,
+            int IdLoodsman, long FK_1С_IdKit, DateTime DateLimit, double AmountKit)
         {
             using (SqlConnection cn = new SqlConnection())
             {
@@ -279,12 +279,12 @@ namespace Dispetcher2.Class
             DataTable dt = new DataTable();
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = C_Gper.ConStr_Loodsman;
+                cn.ConnectionString = C_Gper.ConnStrDispetcher2;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
-                    cmd.CommandText = "Orders";
-                    cmd.CommandType = CommandType.TableDirect;
+                    cmd.CommandText = "Select * From Orders";
+                    cmd.CommandType = CommandType.Text;
 
                     using (SqlDataAdapter ad = new SqlDataAdapter())
                     {
@@ -293,6 +293,10 @@ namespace Dispetcher2.Class
                     }
                 }
             }
+            int c = dt.Columns.IndexOf("OrderNum1С");
+            foreach (DataRow r in dt.Rows)
+                if (r[c] is string) continue;
+                else r[c] = String.Empty;
             return dt;
         }
     }

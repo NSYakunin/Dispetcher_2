@@ -82,47 +82,91 @@ namespace Dispetcher2.Class
                 string s = DateTime.Now.ToString() + ": Обработка файла " + Path.GetFileName(dir);
                 ei = new ErrorItem(i+1, s);
                 pvm.Status = s;
-                pvm.ErrorList.Add(ei);
+                pvm.AddToList(ei);
                 ProcessFile(dir);
 
                 pvm.Progress = (double)(i + 1) * 100.0 / p2;
             }
+
+            pvm.Status = "Обновление завершено.";
+            pvm.Progress = 100;
+
+            // в следующий раз перечитаем таблицу Orders чтобы обновить соответствия
+            orderDt.Dispose();
+            orderDt = null;
+
+            if (FinishEvent != null) FinishEvent(this, new EventArgs());
+            mainTask = null;
         }
 
         void ProcessFile(string name)
         {
+            ErrorItem ei;
             try
             {
                 Receipt rec = ce.ReadExcel_1C(name);
                 if (rec.ErrorList.Count > 0)
                 {
                     //foreach (var e in rec.ErrorList) pvm.AddToList(e);
-                    ErrorItem ei2 = new ErrorItem(666, "Файл содержит ошибки. Обработка прекращена.");
-                    pvm.AddToList(ei2);
+                    ei = new ErrorItem(666, "Файл содержит ошибки. Обработка прекращена.");
+                    pvm.AddToList(ei);
                     return;
                 }
 
                 var id = GetOrderId(rec.OrderNum1С);
                 if (id == null)
                 {
-                    ErrorItem ei2 = new ErrorItem(666, "Не найдено соответствие по полю №заказа лимитки в БД ПО \"Диспетчер\"");
-                    pvm.AddToList(ei2);
+                    ei = new ErrorItem(666, "Не найдено соответствие по полю №заказа лимитки в БД ПО \"Диспетчер\"");
+                    pvm.AddToList(ei);
                     return;
                 }
+
+                if (rec.ReceiptData.Rows.Count < 1)
+                {
+                    ei = new ErrorItem(666, "В лимитной накладной нет строк с данными");
+                    pvm.AddToList(ei);
+                    return;
+                }
+                int year = rec.DateLimit.Year;
+                string num = rec.NumLimit;
+
+                db.DeleteRelationsKit(year, num);
+
+                foreach(DataRow r in rec.ReceiptData.Rows)
+                {
+                    int Position = r.Field<int>("Position");
+                    int IdLoodsman = r.Field<int>("IdLoodsman");
+                    long PK_1С_IdKit = r.Field<long>("PK_1С_IdKit");
+                    string Name1CKit = r.Field<string>("Name1CKit").Trim();
+                    double AmountKit = r.Field<double>("AmountKit");
+
+                    db.SetSpKit1C(PK_1С_IdKit, Name1CKit);
+                    db.InsertRelationsKit(year, num, Position, id.Value, IdLoodsman, PK_1С_IdKit, rec.DateLimit, AmountKit);
+                }
+
+                string name2 = Path.GetFileName(name);
+                name2 = Path.Combine(pvm.WayToFolderArchive, name2);
+                if (File.Exists(name2)) File.Delete(name2);
+                File.Move(name, name2);
+
+                // tB_Logs.Text += DateTime.Now.ToString() + ": Завершено." + Environment.NewLine;
+                ei = new ErrorItem(1000, DateTime.Now.ToString() + ": Завершено.");
+                pvm.AddToList(ei);
             }
             catch (Exception ex)
             {
-                ErrorItem ei = new ErrorItem(666, ex.Message);
+                ei = new ErrorItem(666, ex.Message);
                 pvm.AddToList(ei);
             }
         }
 
+        //Делаем запрос к базе на наличие OrderNum1С в таблице Orders
         Nullable<int> GetOrderId(string orderNum1C)
         {
-            if (orderDt == null) db.GetAllOrders();
+            if (orderDt == null) orderDt = db.GetAllOrders();
 
             var ords = from dr in orderDt.AsEnumerable()
-                       where dr.Field<string>("OrderNum1С").Trim() == orderNum1C
+                       where dr.Field<string>("OrderNum1С") == orderNum1C
                        select dr;
 
             if (ords.Any<DataRow>())
@@ -130,7 +174,6 @@ namespace Dispetcher2.Class
             return null;
         }
         /*
-        //Делаем запрос к базе на наличие OrderNum1С в таблице Orders
                 C_DataBase DB_Dispetcher = new C_DataBase(C_Gper.ConnStrDispetcher2);
                 
                 string sql = "Select PK_IdOrder From Orders" + "\n" +

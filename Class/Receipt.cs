@@ -29,7 +29,7 @@ namespace Dispetcher2.Class
             ReceiptData = new DataTable();
 
             ReceiptData.Columns.Add("Position", typeof(int));
-            ReceiptData.Columns.Add("IdLoodsman", typeof(long));
+            ReceiptData.Columns.Add("IdLoodsman", typeof(int));
             ReceiptData.Columns.Add("PK_1С_IdKit", typeof(long));
             ReceiptData.Columns.Add("Name1CKit", typeof(string));
             ReceiptData.Columns.Add("AmountKit", typeof(double));

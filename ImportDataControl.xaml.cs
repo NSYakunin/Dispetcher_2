@@ -73,5 +73,16 @@ namespace Dispetcher2
                 if (r == System.Windows.Forms.DialogResult.OK) pvm.WayToFolderArchive = d.SelectedPath;
             }
         }
+
+        private void OnStart(object sender, RoutedEventArgs e)
+        {
+            Start();
+        }
+
+        private void OnStop(object sender, RoutedEventArgs e)
+        {
+            Stop();
+        }
+
     }
 }

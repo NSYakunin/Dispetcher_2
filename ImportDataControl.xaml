@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Dispetcher2"
-             mc:Ignorable="d" Height="329.225" Width="852.783" FontSize="16" >
+             mc:Ignorable="d" Height="350" Width="850" FontSize="16" >
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="430" />
@@ -33,11 +33,11 @@
             <StackPanel Grid.Row="1" Orientation="Horizontal">
                 <TextBlock Text="Папка архива:" Margin="10" Width="150" TextAlignment="Right" />
                 <TextBox Width="200" Margin="10" Text="{Binding WayToFolderArchive}" />
-                <Button Content="..." Margin="10" Width="25" x:Name="wayArchiveButton" />
+                <Button Content="..." Margin="10" Width="25" x:Name="wayArchiveButton" Click="wayArchiveButton_Click" />
             </StackPanel>
             <StackPanel Grid.Row="2" Orientation="Horizontal">
-                <Button Content="Пуск" Width="100" Margin="10" />
-                <Button Content="Отмена" Width="100" Margin="10" />
+                <Button Content="Пуск" Width="100" Margin="10" Click="OnStart" />
+                <Button Content="Отмена" Width="100" Margin="10" Click="OnStop" />
             </StackPanel>
             <StackPanel Grid.Row="3" Orientation="Vertical">
                 <ProgressBar Height="0.5cm" Value="{Binding Progress, Mode=OneWay}" Margin="10" />

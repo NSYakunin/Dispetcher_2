@@ -89,6 +89,7 @@ namespace Dispetcher2.Class
             pvm.AddToList(ei2);
 
             if (FinishEvent != null) FinishEvent(this, new EventArgs());
+            mainTask = null;
         }
 
         void ProcessDetail(long id)
