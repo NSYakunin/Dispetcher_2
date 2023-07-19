@@ -1099,18 +1099,21 @@ namespace Dispetcher2
 
         private void dGV_Orders_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right)
+            if (e.RowIndex >= 0)
             {
-                dGV_Orders.ClearSelection();
-                dGV_Orders.SelectionMode = DataGridViewSelectionMode.CellSelect;
-                dGV_Orders[e.ColumnIndex, e.RowIndex].Selected = true;
-            }
+                if (e.Button == MouseButtons.Right)
+                {
+                    dGV_Orders.ClearSelection();
+                    dGV_Orders.SelectionMode = DataGridViewSelectionMode.CellSelect;
+                    dGV_Orders[e.ColumnIndex, e.RowIndex].Selected = true;
+                }
 
-            if (e.Button == MouseButtons.Left)
-            {
-                dGV_Orders.ClearSelection();
-                dGV_Orders.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-                dGV_Orders[e.ColumnIndex, e.RowIndex].Selected = true;
+                if (e.Button == MouseButtons.Left)
+                {
+                    dGV_Orders.ClearSelection();
+                    dGV_Orders.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                    dGV_Orders[e.ColumnIndex, e.RowIndex].Selected = true;
+                }
             }
         }
 
@@ -1136,18 +1139,21 @@ namespace Dispetcher2
 
         private void dGV_AddDetailsFromRas_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right)
+            if (e.RowIndex >= 0)
             {
-                dGV_AddDetailsFromRas.ClearSelection();
-                dGV_AddDetailsFromRas.SelectionMode = DataGridViewSelectionMode.CellSelect;
-                dGV_AddDetailsFromRas[e.ColumnIndex, e.RowIndex].Selected = true;
-            }
+                if (e.Button == MouseButtons.Right)
+                {
+                    dGV_AddDetailsFromRas.ClearSelection();
+                    dGV_AddDetailsFromRas.SelectionMode = DataGridViewSelectionMode.CellSelect;
+                    dGV_AddDetailsFromRas[e.ColumnIndex, e.RowIndex].Selected = true;
+                }
 
-            if (e.Button == MouseButtons.Left)
-            {
-                dGV_AddDetailsFromRas.ClearSelection();
-                dGV_AddDetailsFromRas.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-                dGV_AddDetailsFromRas[e.ColumnIndex, e.RowIndex].Selected = true;
+                if (e.Button == MouseButtons.Left)
+                {
+                    dGV_AddDetailsFromRas.ClearSelection();
+                    dGV_AddDetailsFromRas.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                    dGV_AddDetailsFromRas[e.ColumnIndex, e.RowIndex].Selected = true;
+                }
             }
         }
     }

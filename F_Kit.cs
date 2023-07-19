@@ -462,18 +462,21 @@ namespace Dispetcher2
 
         private void dGV_Kit_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right)
+            if (e.RowIndex >= 0)
             {
-                dGV_Kit.ClearSelection();
-                dGV_Kit.SelectionMode = DataGridViewSelectionMode.CellSelect;
-                dGV_Kit[e.ColumnIndex, e.RowIndex].Selected = true;
-            }
+                if (e.Button == MouseButtons.Right)
+                {
+                    dGV_Kit.ClearSelection();
+                    dGV_Kit.SelectionMode = DataGridViewSelectionMode.CellSelect;
+                    dGV_Kit[e.ColumnIndex, e.RowIndex].Selected = true;
+                }
 
-            if (e.Button == MouseButtons.Left)
-            {
-                dGV_Kit.ClearSelection();
-                dGV_Kit.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-                dGV_Kit[e.ColumnIndex, e.RowIndex].Selected = true;
+                if (e.Button == MouseButtons.Left)
+                {
+                    dGV_Kit.ClearSelection();
+                    dGV_Kit.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                    dGV_Kit[e.ColumnIndex, e.RowIndex].Selected = true;
+                }
             }
         }
 
@@ -487,16 +490,19 @@ namespace Dispetcher2
 
         private void dGV_Orders_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right)
+            if (e.RowIndex >= 0)
             {
-                dGV_Orders.ClearSelection();
-                dGV_Orders[e.ColumnIndex, e.RowIndex].Selected = true;
-            }
+                if (e.Button == MouseButtons.Right)
+                {
+                    dGV_Orders.ClearSelection();
+                    dGV_Orders[e.ColumnIndex, e.RowIndex].Selected = true;
+                }
 
-            if (e.Button == MouseButtons.Left)
-            {
-                dGV_Orders.ClearSelection();
-                dGV_Orders[e.ColumnIndex, e.RowIndex].Selected = true;
+                if (e.Button == MouseButtons.Left)
+                {
+                    dGV_Orders.ClearSelection();
+                    dGV_Orders[e.ColumnIndex, e.RowIndex].Selected = true;
+                }
             }
         }
     }
