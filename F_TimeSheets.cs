@@ -494,15 +494,17 @@ namespace Dispetcher2
                         //вне зависимости от того уволены они уже или нет
                         //Если табеля нет, то список рабочих формируется исходя из списка работающих на день формирования табеля
                         string where;
-                        if (!chB_Fired.Checked) where = " and (u.DateEnd is null or (Year(u.DateEnd)>=" + (int)numUD_year.Value + " and MONTH(u.DateEnd)>" + (_MONTH - 1) + "))";
+                        if (!chB_Fired.Checked) where = $" and (u.DateEnd is null or (Year(u.DateEnd) >= {(int)numUD_year.Value} and MONTH(u.DateEnd) > {(_MONTH - 1)}))" +
+                            $"and u.DateStart < '{(int)numUD_year.Value}-{_MONTH + 1}-17'";
 
-                        else where = " and MONTH(u.DateEnd)=" + _MONTH + " and Year(u.DateEnd)=" + (int)numUD_year.Value;
+                        else where = " and MONTH(u.DateEnd)=" + _MONTH + " and Year(u.DateEnd)=" + (int)numUD_year.Value + "and MONTH(u.DateStart) >" + (_MONTH - 1) + "))";
                         sql = "Select Distinct(PK_Login) as PK_Login,(LastName+' '+Name+' '+ SecondName) as FullName,NameJob,TabNum,ITR" + "\n" +
                               "From TimeSheets as ts" + "\n" +
                                "Inner join Users as u On u.PK_Login = ts.FK_Login" + "\n" +
                                "LEFT join Sp_job as j On j.Pk_IdJob = u.FK_IdJob" + "\n" +
                                "Where TabNum is not Null" + where + "\n" +
                                "Order by ITR desc,FullName";
+                        Console.WriteLine(sql);
 
                         /*sql = "Select Distinct(PK_Login) as PK_Login,(LastName+' '+Name+' '+ SecondName) as FullName,NameJob,TabNum,ITR" + "\n" +
                           "From TimeSheets as ts" + "\n" +
