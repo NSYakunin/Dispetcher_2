@@ -299,5 +299,40 @@ namespace Dispetcher2.Class
                 else r[c] = String.Empty;
             return dt;
         }
+
+        public List<Order> GetOrderByStatus(int status)
+        {
+            List<Order> orderList = new List<Order>();
+            using (SqlConnection cn = new SqlConnection())
+            {
+                cn.ConnectionString = C_Gper.ConnStrDispetcher2;
+                using (SqlCommand cmd = new SqlCommand() { Connection = cn })
+                {
+                    cmd.CommandType = CommandType.Text;
+                    cmd.CommandText = "Select * From Orders Where FK_IdStatusOrders = @S";
+                    cmd.Parameters.AddWithValue("@S", status);
+                    cn.Open();
+                    using (SqlDataReader r = cmd.ExecuteReader())
+                    {
+                        while(r.Read())
+                        {
+                            Order item = new Order();
+                            orderList.Add(item);
+                            item.SetId(r["PK_IdOrder"]);
+                            item.SetNumber(r["OrderNum"]);
+                            item.SetName(r["OrderName"]);
+                            item.SetCreateDate(r["DateCreateOrder"]);
+                            item.SetStatus(r["FK_IdStatusOrders"]);
+                            item.SetValidationOrder(r["ValidationOrder"]);
+                            item.SetNum1С(r["OrderNum1С"]);
+                            item.SetStartDate(r["StartDate"]);
+                            item.SetPlannedDate(r["PlannedDate"]);
+                            item.SetAmount(r["Amount"]);
+                        }
+                    }
+                }
+            }
+            return orderList;
+        }
     }
 }

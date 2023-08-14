@@ -88,6 +88,13 @@ namespace Dispetcher2
                 tB_OrderNumInfoRep7.DataBindings.Add("Text", BS_Orders, "OrderNum", false, DataSourceUpdateMode.OnPropertyChanged);
                 C_Orders.SelectOrdersData(2, ref DT_Orders);//2-opened
             }
+
+            if (C_Gper.NameReport == 66)
+            {
+                var c = new OrderUserControl();
+                LaborElementHost.Child = c;
+                myTabC_Reports.SelectedTab = LaborTabPage;
+            }
         }
 
         #region rep3 C_Gper.NameReport == 3 Отчёт-наряд по выполненным операциям

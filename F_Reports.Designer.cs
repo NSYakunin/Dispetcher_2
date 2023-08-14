@@ -89,6 +89,8 @@
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tB_OrderNumInfoRep7 = new System.Windows.Forms.TextBox();
             this.tB_OrderNameRep7 = new System.Windows.Forms.TextBox();
+            this.LaborTabPage = new System.Windows.Forms.TabPage();
+            this.LaborElementHost = new System.Windows.Forms.Integration.ElementHost();
             this.myTabC_Reports.SuspendLayout();
             this.tPageRep3.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -110,6 +112,7 @@
             this.groupBox2.SuspendLayout();
             this.panel5.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.LaborTabPage.SuspendLayout();
             this.SuspendLayout();
             // 
             // myTabC_Reports
@@ -118,6 +121,7 @@
             this.myTabC_Reports.Controls.Add(this.tPageRep6);
             this.myTabC_Reports.Controls.Add(this.tPageRep117);
             this.myTabC_Reports.Controls.Add(this.tPageRep7);
+            this.myTabC_Reports.Controls.Add(this.LaborTabPage);
             this.myTabC_Reports.Dock = System.Windows.Forms.DockStyle.Fill;
             this.myTabC_Reports.Location = new System.Drawing.Point(0, 0);
             this.myTabC_Reports.Name = "myTabC_Reports";
@@ -813,6 +817,26 @@
             this.tB_OrderNameRep7.TabIndex = 2;
             this.tB_OrderNameRep7.TabStop = false;
             // 
+            // LaborTabPage
+            // 
+            this.LaborTabPage.Controls.Add(this.LaborElementHost);
+            this.LaborTabPage.Location = new System.Drawing.Point(4, 25);
+            this.LaborTabPage.Name = "LaborTabPage";
+            this.LaborTabPage.Size = new System.Drawing.Size(987, 603);
+            this.LaborTabPage.TabIndex = 4;
+            this.LaborTabPage.Text = "Трудоемкость";
+            this.LaborTabPage.UseVisualStyleBackColor = true;
+            // 
+            // LaborElementHost
+            // 
+            this.LaborElementHost.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LaborElementHost.Location = new System.Drawing.Point(0, 0);
+            this.LaborElementHost.Name = "LaborElementHost";
+            this.LaborElementHost.Size = new System.Drawing.Size(987, 603);
+            this.LaborElementHost.TabIndex = 0;
+            this.LaborElementHost.Text = "LaborElementHost";
+            this.LaborElementHost.Child = null;
+            // 
             // F_Reports
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -856,6 +880,7 @@
             this.panel5.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            this.LaborTabPage.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -923,5 +948,7 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.CheckBox chB_rep7AllOrders;
+        private System.Windows.Forms.TabPage LaborTabPage;
+        private System.Windows.Forms.Integration.ElementHost LaborElementHost;
     }
 }
