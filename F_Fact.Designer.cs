@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dGV_Orders = new System.Windows.Forms.DataGridView();
             this.Col_OrderNum = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.gB_OrderName = new System.Windows.Forms.GroupBox();
@@ -253,8 +253,8 @@
             // 
             // Col_Amount
             // 
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.Col_Amount.DefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.Col_Amount.DefaultCellStyle = dataGridViewCellStyle1;
             this.Col_Amount.Frozen = true;
             this.Col_Amount.HeaderText = "Кол-во";
             this.Col_Amount.MinimumWidth = 20;
@@ -283,13 +283,14 @@
             this.Col_Oper,
             this.Col_Tpd,
             this.Col_Tsh});
+            this.dGV_Tehnology.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dGV_Tehnology.Location = new System.Drawing.Point(3, 19);
             this.dGV_Tehnology.Margin = new System.Windows.Forms.Padding(4);
             this.dGV_Tehnology.MultiSelect = false;
             this.dGV_Tehnology.Name = "dGV_Tehnology";
             this.dGV_Tehnology.ReadOnly = true;
             this.dGV_Tehnology.RowHeadersWidth = 4;
-            this.dGV_Tehnology.Size = new System.Drawing.Size(481, 231);
+            this.dGV_Tehnology.Size = new System.Drawing.Size(479, 226);
             this.dGV_Tehnology.TabIndex = 15;
             this.dGV_Tehnology.TabStop = false;
             // 
@@ -324,7 +325,7 @@
             this.groupBox2.Controls.Add(this.dGV_Tehnology);
             this.groupBox2.Location = new System.Drawing.Point(3, 196);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(485, 283);
+            this.groupBox2.Size = new System.Drawing.Size(485, 248);
             this.groupBox2.TabIndex = 16;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Технология";
@@ -530,8 +531,8 @@
             // 
             // Col_AmountDetails
             // 
-            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.Col_AmountDetails.DefaultCellStyle = dataGridViewCellStyle8;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.Col_AmountDetails.DefaultCellStyle = dataGridViewCellStyle2;
             this.Col_AmountDetails.HeaderText = "Кол-во";
             this.Col_AmountDetails.MinimumWidth = 20;
             this.Col_AmountDetails.Name = "Col_AmountDetails";
@@ -594,7 +595,7 @@
             this.panel2.Controls.Add(this.groupBox2);
             this.panel2.Location = new System.Drawing.Point(146, 3);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(837, 427);
+            this.panel2.Size = new System.Drawing.Size(837, 447);
             this.panel2.TabIndex = 1000;
             // 
             // tableLayoutPanel1
