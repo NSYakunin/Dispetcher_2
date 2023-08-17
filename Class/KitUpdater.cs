@@ -96,17 +96,19 @@ namespace Dispetcher2.Class
         {
             var edr = GetKitDataTable(id);
 
-            if (edr.Any<DataRow>()) db.DeleteKit(id);
-
-            foreach (DataRow r in edr)
+            if (edr.Any())
             {
-                int idk = r.Field<int>("id");
-                string name = r.Field<string>("product").Trim();
-                double minquantity = r.Field<double>("minquantity");
-                int idtype = r.Field<int>("idtype");
-                int idstate = r.Field<int>("idstate");
+                db.DeleteKit(id);
+                foreach (DataRow r in edr)
+                {
+                    int idk = r.Field<int>("id");
+                    string name = r.Field<string>("product").Trim();
+                    double minquantity = r.Field<double>("minquantity");
+                    int idtype = r.Field<int>("idtype");
+                    int idstate = r.Field<int>("idstate");
 
-                db.InsertKit(id, idk, name, minquantity, idtype, idstate);
+                    db.InsertKit(id, idk, name, minquantity, idtype, idstate);
+                }
             }
         }
 

@@ -282,69 +282,11 @@ namespace Dispetcher2
             //toolStripStatusLabel1.Text = this.Size.ToString();
         }
 
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        private void laborToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            C_Gper.NameReport = 66;
+            CheckAndCreateMDI<F_Reports>("F_Reports");
+            this.Text = "ПО \"Диспетчер\"" + " — Трудоемкость";
+        }
     }
 }
