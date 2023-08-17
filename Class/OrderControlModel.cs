@@ -16,6 +16,8 @@ namespace Dispetcher2.Class
         BindingList<Order> orderblist = new BindingList<Order>();
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public List<OperationDictionary> OperationList { get; set; }
+
         public void OnPropertyChanged(string prop)
         {
             if (PropertyChanged != null)
@@ -35,6 +37,15 @@ namespace Dispetcher2.Class
         public BindingList<Order> OrderList
         {
             get { return orderblist; }
+        }
+    }
+    public class OperationDictionary
+    {
+        public Dictionary<int, object> Value { get; set; }
+
+        public OperationDictionary()
+        {
+            Value = new Dictionary<int, object>();
         }
     }
 }

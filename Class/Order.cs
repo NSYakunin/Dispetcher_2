@@ -18,6 +18,7 @@ namespace Dispetcher2.Class
         public DateTime StartDate { get; set; }
         public DateTime PlannedDate { get; set; }
         public int Amount { get; set; }
+        public List<Detail> DetailList { get; set; }
 
         public void SetId(object value)
         {

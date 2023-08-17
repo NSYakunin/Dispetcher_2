@@ -149,6 +149,7 @@
     <Compile Include="Class\C_TimeSheetsV1.cs" />
     <Compile Include="Class\C_UpdaterSP.cs" />
     <Compile Include="Class\C_Users.cs" />
+    <Compile Include="Class\Detail.cs" />
     <Compile Include="Class\ErrorItem.cs" />
     <Compile Include="Class\ImportDataWorker.cs" />
     <Compile Include="Class\KitUpdater.cs" />
@@ -452,6 +453,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

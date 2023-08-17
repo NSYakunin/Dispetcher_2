@@ -15,7 +15,7 @@
             <RowDefinition Height="40"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <TextBox Text="{Binding Filter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="5,5,0,0" VerticalAlignment="Center" MinWidth="50" TextChanged="TextBox_TextChanged"/>
+        <TextBox Text="{Binding Filter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="5,5,0,0" VerticalAlignment="Center" MinWidth="100" TextChanged="TextBox_TextChanged"/>
         <ListBox x:Name="orderListBox" HorizontalAlignment="Left" Margin="5" Grid.Row="1" VerticalAlignment="Top"
                  ItemsSource="{Binding OrderList}" SelectedItem="{Binding SelectedOrder}" MinWidth="200">
             <ListBox.ItemTemplate>
@@ -25,7 +25,20 @@
             </ListBox.ItemTemplate>
         </ListBox>
         <Button Content="Запрос" Grid.Column="1" HorizontalAlignment="Left" Margin="5,5,0,0" VerticalAlignment="Center" Width="75" Click="OnRequest"/>
-        <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="5,5,0,0" Grid.Row="1" TextWrapping="Wrap" Text="{Binding Message}" VerticalAlignment="Top"/>
+        <!-- <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="5,5,0,0" Grid.Row="1" TextWrapping="Wrap" Text="{Binding Message}" VerticalAlignment="Top"/> -->
+        <DataGrid x:Name="mainDataGrid" Grid.Column="1" HorizontalAlignment="Left" Margin="5" Grid.Row="1" VerticalAlignment="Top" IsReadOnly="True">
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="ContentTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <TextBlock TextWrapping="Wrap" Text="{Binding}"></TextBlock>
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+        </DataGrid>
 
     </Grid>
 </UserControl>

@@ -334,5 +334,37 @@ namespace Dispetcher2.Class
             }
             return orderList;
         }
+        public List<Detail> GetOrderDetailAndFastener(int orderId)
+        {
+            List<Detail> detList = new List<Detail>();
+            using (SqlConnection cn = new SqlConnection() { ConnectionString = C_Gper.ConnStrDispetcher2 })
+            {
+                using (SqlCommand cmd = new SqlCommand() { Connection = cn })
+                {
+                    cmd.CommandText = "[dbo].[GetOrderDetailAndFastener]";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@OrderId", orderId);
+                    cn.Open();
+                    using (SqlDataReader r = cmd.ExecuteReader())
+                    {
+                        while (r.Read())
+                        {
+                            Detail item = new Detail();
+                            detList.Add(item);
+                            item.SetNameType(r["NameType"]);
+                            item.SetPosition(r["Position"]);
+                            item.SetShcm(r["ShcmDetail"]);
+                            item.SetName(r["NameDetail"]);
+                            item.SetAmount(r["AmountDetails"]);
+                            item.SetAllPositionParent(r["AllPositionParent"]);
+                            item.SetIdOrderDetail(r["PK_IdOrderDetail"]);
+                            item.SetIdDetail(r["FK_IdDetail"]);
+                            item.SetPositionParent(r["PositionParent"]);
+                        }
+                    }
+                }
+            }
+            return detList;
+        }
     }
 }
