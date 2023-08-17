@@ -402,7 +402,8 @@ namespace Dispetcher2
             else
             if (dGV_Tehnology.Rows.Count > 0)//если в технологии есть операции
             {
-                if (dGV_Tehnology.CurrentRow.Cells[0].Value.ToString().Trim() != "Передача детали на СГД" & Convert.ToInt32(dGV_Tehnology.CurrentRow.Cells[2].Value) == 0) MessageBox.Show("Операция не пронормированна.", "Сохранение отменено!!!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                if (dGV_Tehnology.CurrentRow.Cells[0].Value.ToString().Trim() != "Передача детали на СГД" & int.TryParse(dGV_Tehnology.CurrentRow.Cells[2].Value.ToString(), out int num) == false)
+                    MessageBox.Show("Операция не пронормированна.", "Сохранение отменено!!!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 else
                 {
                     DialogResult dR = MessageBox.Show("Закрыть все оставшиеся работы по детали " + dTimeP_Fact.Value.ToShortDateString() + " числом?", "Внимание!!!", MessageBoxButtons.YesNo, MessageBoxIcon.Question);

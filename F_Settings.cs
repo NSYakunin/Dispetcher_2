@@ -423,10 +423,12 @@ namespace Dispetcher2
                             }
                             else//Saving
                             {
-                                if (!C_UpdaterSP.InsertTechnologyDetails(FK_IdDetails, NumOper, FK_IdOperation, Convert.ToInt32(row_teh["Tpd"]), Convert.ToInt32(row_teh["Tsh"])))
+                                int Tpd2 = Convert.ToInt32(row_teh["Tpd"] == DBNull.Value ? 0 : int.TryParse(row_teh["Tpd"].ToString(), out var number) == true ? Convert.ToInt32(row_teh["Tpd"]) : 0);
+                                int Tsh2 = Convert.ToInt32(row_teh["Tsh"] == DBNull.Value ? 0 : int.TryParse(row_teh["Tsh"].ToString(), out var number2) == true ? Convert.ToInt32(row_teh["Tsh"]) : 0);
+                                if (!C_UpdaterSP.InsertTechnologyDetails(FK_IdDetails, NumOper, FK_IdOperation, Tpd2, Tsh2))
                                 {
                                     err = true;
-                                    MessageBox.Show("ID Детали:\"" + FK_IdDetails.ToString() + "\",IdLoodsman: \"" + IdLoodsman +"\", \"" + Shcm + 
+                                    MessageBox.Show("ID Детали:\"" + FK_IdDetails.ToString() + "\",IdLoodsman: \"" + IdLoodsman + "\", \"" + Shcm +
                                         "\", операция:\"" + NameOper + "\" не найдена в справочнике операций ПО \"Диспетчеризация\".", "ОШИБКА сохранения!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
                             }
