@@ -1404,7 +1404,6 @@ namespace Dispetcher2.Class
 
                 cmd.Parameters.Add(new SqlParameter("@FK_IdOrderDetail", SqlDbType.BigInt));
                 cmd.Parameters["@FK_IdOrderDetail"].Value = FK_IdOrderDetail;
-                Console.WriteLine(FK_IdOrderDetail);
                 using (C_Gper.con)
                 {
                     C_Gper.con.Open();
@@ -1482,110 +1481,31 @@ namespace Dispetcher2.Class
 
 
                             // Заполнение массива с итоговым временем "Всего: "
-                            if (g_f_1 >= g1)
-                            {
-                                _OperGroupFactTime[0] += g_f_1;
-                            }
-                            else
-                            {
-                                _OperGroupFactTime[0] += g1;
-                            }
+                            if (g_f_1 >= g1) _OperGroupFactTime[0] += g_f_1;
+                            else _OperGroupFactTime[0] += g1;
 
-                            if (g_f_2 >= g2)
-                            {
-                                _OperGroupFactTime[1] += g_f_2;
-                            }
-                            else
-                            {
-                                _OperGroupFactTime[1] += g2;
-                            }
+                            if (g_f_2 >= g2) _OperGroupFactTime[1] += g_f_2;
+                            else _OperGroupFactTime[1] += g2;
 
+                            if (g_f_3 >= g3) _OperGroupFactTime[2] += g_f_3;
+                            else _OperGroupFactTime[2] += g3;
 
-                            if (g_f_3 >= g3)
-                            {
-                                _OperGroupFactTime[2] += g_f_3;
-                            }
-                            else
-                            {
-                                _OperGroupFactTime[2] += g3;
-                            }
+                            if (g_f_4 >= g4) _OperGroupFactTime[3] += g_f_4;
+                            else _OperGroupFactTime[3] += g4;
 
-                            if (g_f_4 >= g4)
-                            {
-                                _OperGroupFactTime[3] += g_f_4;
-                            }
-                            else
-                            {
-                                _OperGroupFactTime[3] += g4;
-                            }
+                            if (g_f_5 >= g5) _OperGroupFactTime[4] += g_f_5;
+                            else _OperGroupFactTime[4] += g5;
 
-                            if (g_f_5 >= g5)
-                            {
-                                _OperGroupFactTime[4] += g_f_5;
-                            }
-                            else
-                            {
-                                _OperGroupFactTime[4] += g5;
-                            }
+                            if (g_f_6 >= g6) _OperGroupFactTime[5] += g_f_6;
+                            else _OperGroupFactTime[5] += g6;
 
-                            if (g_f_6 >= g6)
-                            {
-                                _OperGroupFactTime[5] += g_f_6;
-                            }
-                            else
-                            {
-                                _OperGroupFactTime[5] += g6;
-                            }
+                            if (g_f_7 >= g7) _OperGroupFactTime[6] += g_f_7;
+                            else _OperGroupFactTime[6] += g7;
 
-                            if (g_f_6 >= g6)
-                            {
-                                _OperGroupFactTime[5] += g_f_6;
-                            }
-                            else
-                            {
-                                _OperGroupFactTime[5] += g6;
-                            }
-
-                            if (g_f_7 >= g7)
-                            {
-                                _OperGroupFactTime[6] += g_f_7;
-                            }
-                            else
-                            {
-                                _OperGroupFactTime[6] += g7;
-                            }
-
-                            if (g_f_8 >= g8)
-                            {
-                                _OperGroupFactTime[7] += g_f_8;
-                            }
-                            else
-                            {
-                                _OperGroupFactTime[7] += g8;
-                            }
+                            if (g_f_8 >= g8) _OperGroupFactTime[7] += g_f_8;
+                            else _OperGroupFactTime[7] += g8;
 
 
-
-                            /*_OperGroupFactTime[0] += g1;
-                            _OperGroupFactTime[1] += g2;
-                            _OperGroupFactTime[2] += g3;
-                            _OperGroupFactTime[3] += g4;
-                            _OperGroupFactTime[4] += g5;
-                            _OperGroupFactTime[5] += g6;
-                            _OperGroupFactTime[6] += g7;
-                            _OperGroupFactTime[7] += g8;
-
-
-                            _OperGroupFactTime[0] += g_f_1;
-                            _OperGroupFactTime[1] += g_f_2;
-                            _OperGroupFactTime[2] += g_f_3;
-                            _OperGroupFactTime[3] += g_f_4;
-                            _OperGroupFactTime[4] += g_f_5;
-                            _OperGroupFactTime[5] += g_f_6;
-                            _OperGroupFactTime[6] += g_f_7;
-                            _OperGroupFactTime[7] += g_f_8;*/
-
-                            // Заполняем просто операции
                             if (g1 > 0)
                             {
                                 ((Excel.Range)exW.Cells[row, 8]).Value2 = IntToTime(g1);

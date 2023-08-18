@@ -16,6 +16,7 @@ namespace Dispetcher2
     {
         KitUpdaterControl kuc = null;
         ImportDataControl idc = null;
+        public int SelectedOrderId { set; get; }
         public F_Settings()
         {
             InitializeComponent();
@@ -49,6 +50,8 @@ namespace Dispetcher2
             dTP_PlannedDate.DataBindings.Clear();
             dTP_PlannedDate.DataBindings.Add("Text", BS_Orders, "PlannedDate", true, DataSourceUpdateMode.OnPropertyChanged);
             numUD_Amount.DataBindings.Add("Text", BS_Orders, "Amount", true, DataSourceUpdateMode.OnPropertyChanged);
+
+            this.DataBindings.Add("SelectedOrderId", BS_Orders, "PK_IdOrder");
         }
 
         private void mBtnM_Sp_Click(object sender, EventArgs e)
@@ -423,10 +426,12 @@ namespace Dispetcher2
                             }
                             else//Saving
                             {
-                                if (!C_UpdaterSP.InsertTechnologyDetails(FK_IdDetails, NumOper, FK_IdOperation, Convert.ToInt32(row_teh["Tpd"]), Convert.ToInt32(row_teh["Tsh"])))
+                                int Tpd2 = Convert.ToInt32(row_teh["Tpd"] == DBNull.Value ? 0 : int.TryParse(row_teh["Tpd"].ToString(), out var number) == true ? Convert.ToInt32(row_teh["Tpd"]) : 0);
+                                int Tsh2 = Convert.ToInt32(row_teh["Tsh"] == DBNull.Value ? 0 : int.TryParse(row_teh["Tsh"].ToString(), out var number2) == true ? Convert.ToInt32(row_teh["Tsh"]) : 0);
+                                if (!C_UpdaterSP.InsertTechnologyDetails(FK_IdDetails, NumOper, FK_IdOperation, Tpd2, Tsh2))
                                 {
                                     err = true;
-                                    MessageBox.Show("ID Детали:\"" + FK_IdDetails.ToString() + "\",IdLoodsman: \"" + IdLoodsman +"\", \"" + Shcm + 
+                                    MessageBox.Show("ID Детали:\"" + FK_IdDetails.ToString() + "\",IdLoodsman: \"" + IdLoodsman + "\", \"" + Shcm +
                                         "\", операция:\"" + NameOper + "\" не найдена в справочнике операций ПО \"Диспетчеризация\".", "ОШИБКА сохранения!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
                             }
@@ -561,22 +566,39 @@ namespace Dispetcher2
 
         private void btn_EditOrder_Click(object sender, EventArgs e)
         {
-            //if (numUD_Amount.Value<1) MessageBox.Show("Кол-во < 1.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            if (dGV_Orders.CurrentRow == null) MessageBox.Show("Не выбран заказ.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            //if (dGV_Orders.CurrentRow == null)
+            //{
+            //    MessageBox.Show("Не выбран заказ.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            //}
+            //else
+            //{
+            //    CurrencyManager cmgrDet = (CurrencyManager)dGV_Orders.BindingContext[dGV_Orders.DataSource, dGV_Orders.DataMember];
+            //    DataRow rowOrder = ((DataRowView)cmgrDet.Current).Row;
+            //    int PK_IdOrder = Convert.ToInt32(rowOrder["PK_IdOrder"]);
+            //    string OrderName = tB_OrderName.Text.Trim();
+            //    string OrderNum1C = tB_OrderNum1C.Text.Trim();
+            //    DateTime StartDate = dTP_StartOrdDate.Value;
+            //    DateTime PlannedDate = dTP_PlannedDate.Value;
+            //    Int16 Amount = Convert.ToInt16(numUD_Amount.Value);
+            //    if (C_Orders.UpdateOrder(PK_IdOrder, OrderName, OrderNum1C, StartDate, PlannedDate, Amount))
+            //        MessageBox.Show("Изменения в заказе успешно сохранены.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //}
+
+            if (dGV_Orders.CurrentRow == null)
+            {
+                MessageBox.Show("Не выбран заказ.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
             else
             {
-                CurrencyManager cmgrDet = (CurrencyManager)dGV_Orders.BindingContext[dGV_Orders.DataSource, dGV_Orders.DataMember];
-                DataRow rowOrder = ((DataRowView)cmgrDet.Current).Row;
-                int PK_IdOrder = Convert.ToInt32(rowOrder["PK_IdOrder"]);
+                int PK_IdOrder = SelectedOrderId;
                 string OrderName = tB_OrderName.Text.Trim();
                 string OrderNum1C = tB_OrderNum1C.Text.Trim();
                 DateTime StartDate = dTP_StartOrdDate.Value;
                 DateTime PlannedDate = dTP_PlannedDate.Value;
                 Int16 Amount = Convert.ToInt16(numUD_Amount.Value);
                 if (C_Orders.UpdateOrder(PK_IdOrder, OrderName, OrderNum1C, StartDate, PlannedDate, Amount))
-                MessageBox.Show("Изменения в заказе успешно сохранены.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Изменения в заказе успешно сохранены.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-
 
 
 

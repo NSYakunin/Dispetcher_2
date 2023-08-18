@@ -59,6 +59,7 @@
             this.toolStripMI_HelpUser = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMI_HelpAdmin = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripHideChildMenu = new System.Windows.Forms.MenuStrip();
+            this.laborToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             this.tS_menu.SuspendLayout();
             this.SuspendLayout();
@@ -101,7 +102,7 @@
             this.tS_menu.Location = new System.Drawing.Point(0, 0);
             this.tS_menu.Name = "tS_menu";
             this.tS_menu.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
-            this.tS_menu.Size = new System.Drawing.Size(1102, 31);
+            this.tS_menu.Size = new System.Drawing.Size(1102, 50);
             this.tS_menu.TabIndex = 2;
             this.tS_menu.Text = "toolStrip1";
             // 
@@ -178,7 +179,8 @@
             this.отчётнарядПоВыполненнымОперациямToolStripMenuItem1,
             this.операцииВыполненныеРабочимПоЗаказамформа17ToolStripMenuItem1,
             this.отчетПоВыполненнымОперациямразрToolStripMenuItem,
-            this.движениеДеталейToolStripMenuItem1});
+            this.движениеДеталейToolStripMenuItem1,
+            this.laborToolStripMenuItem});
             this.tSSB_Reports.Font = new System.Drawing.Font("Segoe UI", 12F);
             this.tSSB_Reports.Image = global::Dispetcher2.Properties.Resources.Report;
             this.tSSB_Reports.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -343,6 +345,13 @@
             this.menuStripHideChildMenu.Text = "menuStripHideChildMenu";
             this.menuStripHideChildMenu.Visible = false;
             // 
+            // laborToolStripMenuItem
+            // 
+            this.laborToolStripMenuItem.Name = "laborToolStripMenuItem";
+            this.laborToolStripMenuItem.Size = new System.Drawing.Size(510, 26);
+            this.laborToolStripMenuItem.Text = "Трудоемкость";
+            this.laborToolStripMenuItem.Click += new System.EventHandler(this.laborToolStripMenuItem_Click);
+            // 
             // F_Index
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -402,6 +411,7 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMI_HelpUser;
         private System.Windows.Forms.ToolStripMenuItem toolStripMI_HelpAdmin;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem laborToolStripMenuItem;
     }
 }
 
