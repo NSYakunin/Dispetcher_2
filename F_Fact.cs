@@ -273,6 +273,7 @@ namespace Dispetcher2
                         if (Convert.ToInt32(dGV_Tehnology.CurrentRow.Cells[2].Value == DBNull.Value ? "0" : dGV_Tehnology.CurrentRow.Cells[2].Value.ToString()) == 0)
                             MessageBox.Show("Операция не пронормированна.", "Сохранение отменено!!!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                     }
+
                     else
                     {
                         CurrencyManager cmgr = (CurrencyManager)dGV_Tehnology.BindingContext[dGV_Tehnology.DataSource, dGV_Tehnology.DataMember];
@@ -437,8 +438,9 @@ namespace Dispetcher2
                                 //int AmountDetails = Convert.ToInt32(nUpD_Tpd.Value);
                                 int AmountDetails = Convert.ToInt32(rowDet["AmountDetails"]);
                                 //***********************cmgr - row*****************************************************************
-                                int Tpd = Convert.ToInt32(DT_Tehnology.Rows[i].ItemArray[2]);//seconds
-                                int Tsh = Convert.ToInt32(DT_Tehnology.Rows[i].ItemArray[3]);//seconds
+
+                                int Tpd = Convert.ToInt32(DT_Tehnology.Rows[i].ItemArray[2] == DBNull.Value ? 0 : int.TryParse(DT_Tehnology.Rows[i].ItemArray[2].ToString(), out var number) == true ? Convert.ToInt32(DT_Tehnology.Rows[i].ItemArray[2]) : 0);
+                                int Tsh = Convert.ToInt32(DT_Tehnology.Rows[i].ItemArray[3] == DBNull.Value ? 0 : int.TryParse(DT_Tehnology.Rows[i].ItemArray[3].ToString(), out var number2) == true ? Convert.ToInt32(DT_Tehnology.Rows[i].ItemArray[3]) : 0);
                                 //Copmare fact detail amount and order detail amount
                                 //AmountDetails -= C_Details.Select_AmountFactDetailsOper(PK_IdOrderDetail, FK_IdOperation, NumOper);
                                 AmountDetails -= C_Details.Select_AmountFactDetailsOper(PK_IdOrderDetail, NumOper);
