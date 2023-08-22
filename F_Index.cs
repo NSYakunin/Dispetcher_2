@@ -170,7 +170,7 @@ namespace Dispetcher2
 
         private void отчётнарядПоВыполненнымОперациямToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            C_Gper.NameReport = 3;
+            C_Gper.NameReport = C_Gper.ReportMode.ОтчетНаряд;
             CheckAndCreateMDI<F_Reports>("F_Reports");
             this.Text = "ПО \"Диспетчер\"" + " - Отчёт-наряд по выполненным операциям";
             //toolStripStatusLabel1.Text = this.MdiChildren.Count().ToString();
@@ -178,7 +178,7 @@ namespace Dispetcher2
 
         private void операцииВыполненныеРабочимПоЗаказамформа17ToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            C_Gper.NameReport = 117;
+            C_Gper.NameReport = C_Gper.ReportMode.ОперацииВыполненныеРабочим;
             CheckAndCreateMDI<F_Reports>("F_Reports");
             this.Text = "ПО \"Диспетчер\"" + " - Операции выполненные рабочим по заказам (форма №17)";
             //toolStripStatusLabel1.Text = this.MdiChildren.Count().ToString();
@@ -186,7 +186,7 @@ namespace Dispetcher2
 
         private void движениеДеталейToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            C_Gper.NameReport = 6;
+            C_Gper.NameReport = C_Gper.ReportMode.ДвижениеДеталей;
             CheckAndCreateMDI<F_Reports>("F_Reports");
             this.Text = "ПО \"Диспетчер\"" + " - Движение деталей";
             //toolStripStatusLabel1.Text = this.MdiChildren.Count().ToString();
@@ -194,7 +194,7 @@ namespace Dispetcher2
 
         private void отчетПоВыполненнымОперациямразрToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            C_Gper.NameReport = 7;
+            C_Gper.NameReport = C_Gper.ReportMode.ОтчетВыполненным;
             CheckAndCreateMDI<F_Reports>("F_Reports");
             this.Text = "ПО \"Диспетчер\"" + " - Отчет по выполненным операциям";
             //toolStripStatusLabel1.Text = this.MdiChildren.Count().ToString();
@@ -209,7 +209,7 @@ namespace Dispetcher2
 
         private void планграфикформа6ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            C_Gper.NameReport = 106;
+            C_Gper.NameReport = C_Gper.ReportMode.ПланГрафик;
             CheckAndCreateMDI<F_ReportsPlan>("F_ReportsPlan");
             this.Text = "ПО \"Диспетчер\"" + " - План-график (форма №6)";
             //toolStripStatusLabel1.Text = this.MdiChildren.Count().ToString();
@@ -284,7 +284,7 @@ namespace Dispetcher2
 
         private void laborToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            C_Gper.NameReport = 66;
+            C_Gper.NameReport = C_Gper.ReportMode.Трудоемкость;
             CheckAndCreateMDI<F_Reports>("F_Reports");
             this.Text = "ПО \"Диспетчер\"" + " — Трудоемкость";
         }

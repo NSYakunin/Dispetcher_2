@@ -5,6 +5,7 @@ using System.Text;
 using System.Data;
 using System.Windows.Forms;
 using System.Data.SqlClient;
+using System.Globalization;
 
 namespace Dispetcher2.Class
 {
@@ -16,6 +17,17 @@ namespace Dispetcher2.Class
         public C_DataBase(string ConnectionString)
         {
             _ConnectionString = ConnectionString;
+        }
+
+        public static int GetInteger(object value)
+        {
+            if (value == null) return 0;
+            if (value is DBNull) return 0;
+            int number;
+            bool f = Int32.TryParse(value.ToString(), System.Globalization.NumberStyles.Any,
+                NumberFormatInfo.InvariantInfo, out number);
+            if (f == false) return 0;
+            return Convert.ToInt32(value);
         }
 
         public void Select_DT(ref DataTable DT,string SQLtext)
@@ -337,15 +349,15 @@ namespace Dispetcher2.Class
         public List<Detail> GetOrderDetailAndFastener(int orderId)
         {
             List<Detail> detList = new List<Detail>();
-            using (SqlConnection cn = new SqlConnection() { ConnectionString = C_Gper.ConnStrDispetcher2 })
+            using (var cn = new SqlConnection() { ConnectionString = C_Gper.ConnStrDispetcher2 })
             {
-                using (SqlCommand cmd = new SqlCommand() { Connection = cn })
+                using (var cmd = new SqlCommand() { Connection = cn })
                 {
                     cmd.CommandText = "[dbo].[GetOrderDetailAndFastener]";
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.AddWithValue("@OrderId", orderId);
                     cn.Open();
-                    using (SqlDataReader r = cmd.ExecuteReader())
+                    using (var r = cmd.ExecuteReader())
                     {
                         while (r.Read())
                         {
@@ -359,12 +371,50 @@ namespace Dispetcher2.Class
                             item.SetAllPositionParent(r["AllPositionParent"]);
                             item.SetIdOrderDetail(r["PK_IdOrderDetail"]);
                             item.SetIdDetail(r["FK_IdDetail"]);
+                            item.SetIdLoodsman(r["IdLoodsman"]);
                             item.SetPositionParent(r["PositionParent"]);
                         }
                     }
                 }
             }
             return detList;
+        }
+
+        public void Call_rep_VEDOMOST_TRUDOZATRAT_NIIPM_UNITED(Detail d)
+        {
+            string s;
+            d.Operations = new List<Operation>();
+            using (var cn = new SqlConnection() { ConnectionString = C_Gper.ConStr_Loodsman })
+            {
+                using (var cmd = new SqlCommand() { Connection = cn, CommandTimeout = 120 })
+                {
+                    cmd.CommandText = "[dbo].[rep_VEDOMOST_TRUDOZATRAT_NIIPM_UNITED]";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@objects", Convert.ToString(d.IdLoodsman));
+                    s = $"Номер заказа=;Часть=1;Количество={d.Amount}";
+                    cmd.Parameters.AddWithValue("@params", s);
+                    cn.Open();
+                    using (var r = cmd.ExecuteReader())
+                    {
+                        while (r.Read())
+                        {
+                            // выбираем только итоговые строки
+                            s = Convert.ToString(r["Обозначение"]).Trim();
+                            if (s.Length > 0) continue;
+                            s = Convert.ToString(r["Наименование"]).Trim();
+                            if (s.Length > 0) continue;
+                            if (GetInteger(r["numpozic"]) > 0) continue;
+                            if (GetInteger(r["vsego"]) > 0) continue;
+
+                            var item = new Operation();
+                            item.SetName(r["marshrut"]);
+                            item.Numcol = GetInteger(r["numcol"]);
+                            item.SetTime(r["Время на одну операцию по деталям"]);
+                            if (item.Time > TimeSpan.Zero) d.Operations.Add(item);
+                        }
+                    }
+                }
+            }
         }
     }
 }

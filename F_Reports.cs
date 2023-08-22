@@ -22,7 +22,9 @@ namespace Dispetcher2
         public F_Reports()
         {
             InitializeComponent();
-            if (C_Gper.NameReport == 3 || C_Gper.NameReport == 6 || C_Gper.NameReport == 7)
+            if (C_Gper.NameReport == C_Gper.ReportMode.ОтчетНаряд 
+                || C_Gper.NameReport == C_Gper.ReportMode.ДвижениеДеталей
+                || C_Gper.NameReport == C_Gper.ReportMode.ОтчетВыполненным)
             {
                 DT_Orders.Columns.Add("PK_IdOrder", typeof(int));
                 DT_Orders.Columns.Add("OrderNum", typeof(string));
@@ -32,7 +34,7 @@ namespace Dispetcher2
 
         private void F_Reports_Load(object sender, EventArgs e)
         {
-            if (C_Gper.NameReport == 3)//Отчёт-наряд по выполненным операциям
+            if (C_Gper.NameReport == C_Gper.ReportMode.ОтчетНаряд)//Отчёт-наряд по выполненным операциям
             {
                 myTabC_Reports.SelectedTab = tPageRep3;
                 C_Departments.Select_Departments(ref Dt_SpDepartment);
@@ -46,7 +48,7 @@ namespace Dispetcher2
                 cB_rep3Workers.ValueMember = "PK_Login";
                 cB_rep3Workers.SelectedIndex = -1;
             }
-            if (C_Gper.NameReport == 6)//Движение деталей
+            if (C_Gper.NameReport == C_Gper.ReportMode.ДвижениеДеталей)//Движение деталей
             {
 
                 myTabC_Reports.SelectedTab = tPageRep6;
@@ -61,7 +63,7 @@ namespace Dispetcher2
                 tB_OrderNumInfo.DataBindings.Add("Text", BS_Orders, "OrderNum", false, DataSourceUpdateMode.OnPropertyChanged);
                 C_Orders.SelectOrdersData(2, ref DT_Orders);//2-opened
             }
-            if (C_Gper.NameReport == 117)//Операции выполненные рабочим по заказам (форма №17)
+            if (C_Gper.NameReport == C_Gper.ReportMode.ОперацииВыполненныеРабочим)//Операции выполненные рабочим по заказам (форма №17)
             {
                 myTabC_Reports.SelectedTab = tPageRep117;
                 C_Users.Select_PkLoginOnlyWorker(ref Dt_SpWorkers);
@@ -74,7 +76,7 @@ namespace Dispetcher2
                 //cB_rep117Workers.SelectedItem = null;
             }
 
-            if (C_Gper.NameReport == 7)//Движение деталей
+            if (C_Gper.NameReport == C_Gper.ReportMode.ДвижениеДеталей)//Движение деталей
             {
                 myTabC_Reports.SelectedTab = tPageRep7;
                 dGV_OrdersRep7.AutoGenerateColumns = false;
@@ -89,7 +91,7 @@ namespace Dispetcher2
                 C_Orders.SelectOrdersData(2, ref DT_Orders);//2-opened
             }
 
-            if (C_Gper.NameReport == 66)
+            if (C_Gper.NameReport == C_Gper.ReportMode.Трудоемкость)
             {
                 var c = new OrderUserControl();
                 LaborElementHost.Child = c;
