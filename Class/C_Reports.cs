@@ -34,8 +34,8 @@ namespace Dispetcher2.Class
             _DT = new DataTable();
             if (PlanSheduleForm6)
             {
-                _OperGroupFactTime = new int[9];
-                _FactTime = new int[9];
+                _OperGroupFactTime = new int[12];
+                _FactTime = new int[12];
             } 
         }
 
@@ -1267,19 +1267,19 @@ namespace Dispetcher2.Class
                     ((Excel.Range)ExcelWorkSheet.Cells[10, 12]).Value2 = "Фрезер.ЧПУ";
                     ((Excel.Range)ExcelWorkSheet.Cells[10, 13]).Value2 = "Расточ";
                     ((Excel.Range)ExcelWorkSheet.Cells[10, 14]).Value2 = "Свароч";
-                    ((Excel.Range)ExcelWorkSheet.Cells[10, 15]).Value2 = "Слесарн";
-                    ((Excel.Range)ExcelWorkSheet.Cells[10, 16]).Value2 = "ОТК";
+                    ((Excel.Range)ExcelWorkSheet.Cells[10, 15]).Value2 = "Слесарн и малярн";
+                    ((Excel.Range)ExcelWorkSheet.Cells[10, 16]).Value2 = "Заточная (технол.)";
                     ((Excel.Range)ExcelWorkSheet.Cells[10, 17]).Value2 = "Склад";
-                    ((Excel.Range)ExcelWorkSheet.Cells[10, 18]).Value2 = "Итого:";
-                    ((Excel.Range)ExcelWorkSheet.Cells[10, 19]).Value2 = "И К:";
+                    ((Excel.Range)ExcelWorkSheet.Cells[10, 18]).Value2 = "ОТК";
+                    ((Excel.Range)ExcelWorkSheet.Cells[10, 19]).Value2 = "Итого:";
                     ExcelWorkSheet.PageSetup.PrintTitleRows = "$10:$10";
                     ((Excel.Range)ExcelWorkSheet.Rows[11]).Select();
                     ExcelApp.ActiveWindow.FreezePanes = true;
                     ((Excel.Range)ExcelWorkSheet.Cells[10, 1]).Select();
-                    ((Excel.Range)ExcelWorkSheet.get_Range("B10", "R10" + 10)).AutoFilter(1);
-                    ((Excel.Range)ExcelWorkSheet.get_Range("B10", "R10" + 10)).HorizontalAlignment = Excel.Constants.xlCenter;
-                    ((Excel.Range)ExcelWorkSheet.get_Range("B10", "R10" + 10)).VerticalAlignment = Excel.Constants.xlCenter;
-                    ((Excel.Range)ExcelWorkSheet.get_Range("B10", "R10" + 10)).WrapText = true;
+                    ((Excel.Range)ExcelWorkSheet.get_Range("B10", "S10" + 10)).AutoFilter(1);
+                    ((Excel.Range)ExcelWorkSheet.get_Range("B10", "S10" + 10)).HorizontalAlignment = Excel.Constants.xlCenter;
+                    ((Excel.Range)ExcelWorkSheet.get_Range("B10", "S10" + 10)).VerticalAlignment = Excel.Constants.xlCenter;
+                    ((Excel.Range)ExcelWorkSheet.get_Range("B10", "S10" + 10)).WrapText = true;
                     //ExcelWorkSheet.PageSetup.PrintTitleRows = "$5:$5";
                     //ExcelWorkSheet.Outline.SummaryRow = Excel.XlSummaryRow.xlSummaryAbove;//группировка строк
                     //************************************
@@ -1292,11 +1292,11 @@ namespace Dispetcher2.Class
 
 
                     loadTreeSubMenu(ref NumRow, 2, 0, ExcelWorkSheet, ref MaxColumn, "Form6");
-                    ((Excel.Range)ExcelWorkSheet.get_Range("B11", "R" + NumRow)).Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+                    ((Excel.Range)ExcelWorkSheet.get_Range("B11", "S" + NumRow)).Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
                     ((Excel.Range)ExcelWorkSheet.get_Range("B" + NumRow + ":F" + NumRow)).Merge();
                     ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 2 ]).Value2 = "Всего:";
-                    ((Excel.Range)ExcelWorkSheet.get_Range("B" + NumRow + ":R" + NumRow)).Font.Bold = 1;
-                    ((Excel.Range)ExcelWorkSheet.get_Range("B" + NumRow + ":R" + NumRow)).HorizontalAlignment = Excel.Constants.xlCenter;
+                    ((Excel.Range)ExcelWorkSheet.get_Range("B" + NumRow + ":S" + NumRow)).Font.Bold = 1;
+                    ((Excel.Range)ExcelWorkSheet.get_Range("B" + NumRow + ":S" + NumRow)).HorizontalAlignment = Excel.Constants.xlCenter;
                     ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 2]).HorizontalAlignment = Excel.Constants.xlLeft;
 
 
@@ -1309,14 +1309,17 @@ namespace Dispetcher2.Class
                     if (_OperGroupFactTime[5] > 0) ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 13]).Value2 = IntToTime(_OperGroupFactTime[5]); // Расточ
                     if (_OperGroupFactTime[6] > 0) ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 14]).Value2 = IntToTime(_OperGroupFactTime[6]); // Свароч
                     if (_OperGroupFactTime[7] > 0) ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 15]).Value2 = IntToTime(_OperGroupFactTime[7]); // Слесарн
-                    if (_OperGroupFactTime[8] > 0) ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 18]).Value2 = IntToTime(_OperGroupFactTime[8]); // Итого
+                    if (_OperGroupFactTime[8] > 0) ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 18]).Value2 = IntToTime(_OperGroupFactTime[8]); // Контроль ОТК
+                    if(_OperGroupFactTime[9] > 0)((Excel.Range)ExcelWorkSheet.Cells[NumRow, 16]).Value2 = IntToTime(_OperGroupFactTime[9]); // Заточная (технол.)
+                    if (_OperGroupFactTime[11] > 0) ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 19]).Value2 = IntToTime(_OperGroupFactTime[11]); // Итого
+
 
                     NumRow += 1;
                     ((Excel.Range)ExcelWorkSheet.get_Range("B11", "R" + NumRow)).Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
                     ((Excel.Range)ExcelWorkSheet.get_Range("B" + NumRow + ":F" + NumRow)).Merge();
                     ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 2]).Value2 = "Всего выполнено (факт):";
-                    ((Excel.Range)ExcelWorkSheet.get_Range("B" + NumRow + ":R" + NumRow)).Font.Bold = 1;
-                    ((Excel.Range)ExcelWorkSheet.get_Range("B" + NumRow + ":R" + NumRow)).HorizontalAlignment = Excel.Constants.xlCenter;
+                    ((Excel.Range)ExcelWorkSheet.get_Range("B" + NumRow + ":S" + NumRow)).Font.Bold = 1;
+                    ((Excel.Range)ExcelWorkSheet.get_Range("B" + NumRow + ":S" + NumRow)).HorizontalAlignment = Excel.Constants.xlCenter;
                     ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 2]).HorizontalAlignment = Excel.Constants.xlLeft;
 
                     if (_OperGroupFactTime[0] > 0) ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 8]).Value2 = IntToTime(_FactTime[0]);
@@ -1328,13 +1331,15 @@ namespace Dispetcher2.Class
                     if (_OperGroupFactTime[6] > 0) ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 14]).Value2 = IntToTime(_FactTime[6]);
                     if (_OperGroupFactTime[7] > 0) ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 15]).Value2 = IntToTime(_FactTime[7]);
                     if (_OperGroupFactTime[8] > 0) ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 18]).Value2 = IntToTime(_FactTime[8]);
+                    if (_OperGroupFactTime[9] > 0) ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 16]).Value2 = IntToTime(_FactTime[9]); // Заточная (технол.)
+                    if (_OperGroupFactTime[11] > 0) ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 19]).Value2 = IntToTime(_FactTime[11]);
 
                     NumRow += 1;
-                    ((Excel.Range)ExcelWorkSheet.get_Range("B11", "R" + NumRow)).Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+                    ((Excel.Range)ExcelWorkSheet.get_Range("B11", "S" + NumRow)).Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
                     ((Excel.Range)ExcelWorkSheet.get_Range("B" + NumRow + ":F" + NumRow)).Merge();
                     ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 2]).Value2 = "Остаток к изготовлению:";
-                    ((Excel.Range)ExcelWorkSheet.get_Range("B" + NumRow + ":R" + NumRow)).Font.Bold = 1;
-                    ((Excel.Range)ExcelWorkSheet.get_Range("B" + NumRow + ":R" + NumRow)).HorizontalAlignment = Excel.Constants.xlCenter;
+                    ((Excel.Range)ExcelWorkSheet.get_Range("B" + NumRow + ":S" + NumRow)).Font.Bold = 1;
+                    ((Excel.Range)ExcelWorkSheet.get_Range("B" + NumRow + ":S" + NumRow)).HorizontalAlignment = Excel.Constants.xlCenter;
                     ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 2]).HorizontalAlignment = Excel.Constants.xlLeft;
 
                     if (_OperGroupFactTime[0] > 0) ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 8]).Value2 = IntToTime(_OperGroupFactTime[0] - _FactTime[0]);
@@ -1345,7 +1350,9 @@ namespace Dispetcher2.Class
                     if (_OperGroupFactTime[5] > 0) ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 13]).Value2 = IntToTime(_OperGroupFactTime[5] - _FactTime[5]);
                     if (_OperGroupFactTime[6] > 0) ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 14]).Value2 = IntToTime(_OperGroupFactTime[6] - _FactTime[6]);
                     if (_OperGroupFactTime[7] > 0) ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 15]).Value2 = IntToTime(_OperGroupFactTime[7] - _FactTime[7]);
-                    if (_OperGroupFactTime[8] > 0) ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 18]).Value2 = IntToTime(_OperGroupFactTime[8] - _FactTime[8]);
+                    if(_OperGroupFactTime[8] > 0)((Excel.Range)ExcelWorkSheet.Cells[NumRow, 18]).Value2 = IntToTime(_OperGroupFactTime[8] - _FactTime[8]);
+                    if (_OperGroupFactTime[9] > 0)((Excel.Range)ExcelWorkSheet.Cells[NumRow, 16]).Value2 = IntToTime(_OperGroupFactTime[9] - _FactTime[9]); // Заточная (технол.)
+                    if (_OperGroupFactTime[11] > 0) ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 19]).Value2 = IntToTime(_OperGroupFactTime[11] - _FactTime[11]);
 
 
                     /*((Excel.Range)ExcelWorkSheet.Cells[NumRow, 9]).NumberFormat = "h:mm:ss";
@@ -1371,7 +1378,7 @@ namespace Dispetcher2.Class
 
         }
 
-        private void Load_Plan_TehDetails(Int64 FK_IdOrderDetail,int AmountDetails, int row, Excel.Worksheet exW)
+        private void Load_Plan_TehDetails(Int64 FK_IdOrderDetail, int AmountDetails, int row, Excel.Worksheet exW)
         {
             try//string[] arrOper = { "Заготов","Токарн","Заточ","Координатн","лифоваль","Свар","ЧПУ","Фрезер","Слесарн","Комплект","Испытания","Малярная","струйная","Разметка","Промывка","Прессование","свар"};
             {
@@ -1383,28 +1390,27 @@ namespace Dispetcher2.Class
 "From OrdersDetails od" + "\n" +
 "left JOIN Sp_TechnologyDetails as spt ON spt.FK_IdDetails = od.FK_IdDetail" + "\n" +
 "left JOIN Sp_Operations as spo ON spo.PK_IdOperation = spt.FK_IdOperation" + "\n" +
-"WHERE od.PK_IdOrderDetail = @FK_IdOrderDetail and FK_IdOperGroup<11" + "\n" +
+"WHERE od.PK_IdOrderDetail = @FK_IdOrderDetail and FK_IdOperGroup<13" + "\n" +
 "GROUP BY spo.FK_IdOperGroup, spt.Tpd, spt.Tsh, spo.OnlyOncePay,spt.NumOper,spo.NameOperation" + "\n" +
 "union" + "\n" +
 "SELECT spo.FK_IdOperGroup, spo111.Tpd, spo111.Tsh , SUM(od.AmountDetails) AS fo_Amount, spo.OnlyOncePay, spo111.NumOperation,spo.NameOperation,'2sp111' as TypeRow" + "\n" +
 "From OrdersDetails od" + "\n" +
 "left JOIN Sp_OperationsType111 AS spo111 ON spo111.FK_IdDetail = od.FK_IdDetail" + "\n" +
 "left JOIN Sp_Operations as spo ON spo.PK_IdOperation = spo111.FK_IdOperation" + "\n" +
-"WHERE od.PK_IdOrderDetail = @FK_IdOrderDetail and FK_IdOperGroup<11" + "\n" +
+"WHERE od.PK_IdOrderDetail = @FK_IdOrderDetail and FK_IdOperGroup<13" + "\n" +
 "GROUP BY spo.FK_IdOperGroup, spo111.Tpd, spo111.Tsh, spo.OnlyOncePay,spo111.NumOperation,spo.NameOperation" + "\n" +
 "union" + "\n" +
 "SELECT spo.FK_IdOperGroup, fo.Tpd, fo.Tsh, SUM(fo.AmountDetails) AS fo_Amount, spo.OnlyOncePay, fo.NumOper,spo.NameOperation,'3fact' as TypeRow" + "\n" +
 "From OrdersDetails od" + "\n" +
 "left JOIN FactOperation AS fo ON fo.FK_IdOrderDetail = od.PK_IdOrderDetail" + "\n" +
 "left JOIN Sp_Operations as spo ON spo.PK_IdOperation = fo.FK_IdOperation" + "\n" +
-"WHERE od.PK_IdOrderDetail = @FK_IdOrderDetail and spo.FK_IdOperGroup<11" + "\n" +
+"WHERE od.PK_IdOrderDetail = @FK_IdOrderDetail and spo.FK_IdOperGroup<13" + "\n" +
 "GROUP BY spo.FK_IdOperGroup, fo.Tpd, fo.Tsh, spo.OnlyOncePay,fo.NumOper,spo.NameOperation" + "\n" +
 "Order by TypeRow, FK_IdOperGroup";
 
 
                 cmd.Parameters.Add(new SqlParameter("@FK_IdOrderDetail", SqlDbType.BigInt));
                 cmd.Parameters["@FK_IdOrderDetail"].Value = FK_IdOrderDetail;
-                Console.WriteLine(FK_IdOrderDetail);
                 using (C_Gper.con)
                 {
                     C_Gper.con.Open();
@@ -1423,8 +1429,8 @@ namespace Dispetcher2.Class
                             int AllFactTime = 0;
                             int OstatokIzgotov = 0; // Остаток к изготовлению
 
-                            int g1 = 0, g2 = 0, g3 = 0, g4 = 0, g5 = 0, g6 = 0, g7 = 0, g8 = 0, g9 = 0;//подсчёт общего времени по группам по данным справочника
-                            int g_f_1 = 0, g_f_2 = 0, g_f_3 = 0, g_f_4 = 0, g_f_5 = 0, g_f_6 = 0, g_f_7 = 0, g_f_8 = 0, g_f_9 = 0, g_f_10 = 0;//подсчёт общего времени по группам по факту
+                            int g1 = 0, g2 = 0, g3 = 0, g4 = 0, g5 = 0, g6 = 0, g7 = 0, g8 = 0, g9 = 0, g12 = 0;//подсчёт общего времени по группам по данным справочника
+                            int g_f_1 = 0, g_f_2 = 0, g_f_3 = 0, g_f_4 = 0, g_f_5 = 0, g_f_6 = 0, g_f_7 = 0, g_f_8 = 0, g_f_9 = 0, g_f_10 = 0, g_f_12 = 0;//подсчёт общего времени по группам по факту
 
                             //int 
                             while (reader.Read())//IntToTime  NormTimeFabrication(bool OnlyOncePay, int Tpd, int Tsh, int Amount)
@@ -1464,7 +1470,7 @@ namespace Dispetcher2.Class
                                         case 7://Свароч
                                             if (TypeRow == "3fact") g_f_7 += OperTime; else g7 += OperTime;
                                             break;
-                                        case 8://Слесарн
+                                        case 8://Слесарн и малярная
                                             if (TypeRow == "3fact") g_f_8 += OperTime; else g8 += OperTime;
                                             break;
                                         case 9://ОТК
@@ -1472,6 +1478,9 @@ namespace Dispetcher2.Class
                                             break;
                                         case 10://Склад
                                             if (TypeRow == "3fact") g_f_10 += Amount; //т.к. Склад может повторятся несколько раз
+                                            break;
+                                        case 12://Заточная (технол.)
+                                            if (TypeRow == "3fact") g_f_12 += OperTime; else g12 += OperTime;
                                             break;
                                         default:
                                             //Console.WriteLine("Default case");
@@ -1482,110 +1491,37 @@ namespace Dispetcher2.Class
 
 
                             // Заполнение массива с итоговым временем "Всего: "
-                            if (g_f_1 >= g1)
-                            {
-                                _OperGroupFactTime[0] += g_f_1;
-                            }
-                            else
-                            {
-                                _OperGroupFactTime[0] += g1;
-                            }
+                            if (g_f_1 >= g1) _OperGroupFactTime[0] += g_f_1;
+                            else _OperGroupFactTime[0] += g1;
 
-                            if (g_f_2 >= g2)
-                            {
-                                _OperGroupFactTime[1] += g_f_2;
-                            }
-                            else
-                            {
-                                _OperGroupFactTime[1] += g2;
-                            }
+                            if (g_f_2 >= g2) _OperGroupFactTime[1] += g_f_2;
+                            else _OperGroupFactTime[1] += g2;
 
+                            if (g_f_3 >= g3) _OperGroupFactTime[2] += g_f_3;
+                            else _OperGroupFactTime[2] += g3;
 
-                            if (g_f_3 >= g3)
-                            {
-                                _OperGroupFactTime[2] += g_f_3;
-                            }
-                            else
-                            {
-                                _OperGroupFactTime[2] += g3;
-                            }
+                            if (g_f_4 >= g4) _OperGroupFactTime[3] += g_f_4;
+                            else _OperGroupFactTime[3] += g4;
 
-                            if (g_f_4 >= g4)
-                            {
-                                _OperGroupFactTime[3] += g_f_4;
-                            }
-                            else
-                            {
-                                _OperGroupFactTime[3] += g4;
-                            }
+                            if (g_f_5 >= g5) _OperGroupFactTime[4] += g_f_5;
+                            else _OperGroupFactTime[4] += g5;
 
-                            if (g_f_5 >= g5)
-                            {
-                                _OperGroupFactTime[4] += g_f_5;
-                            }
-                            else
-                            {
-                                _OperGroupFactTime[4] += g5;
-                            }
+                            if (g_f_6 >= g6) _OperGroupFactTime[5] += g_f_6;
+                            else _OperGroupFactTime[5] += g6;
 
-                            if (g_f_6 >= g6)
-                            {
-                                _OperGroupFactTime[5] += g_f_6;
-                            }
-                            else
-                            {
-                                _OperGroupFactTime[5] += g6;
-                            }
+                            if (g_f_7 >= g7) _OperGroupFactTime[6] += g_f_7;
+                            else _OperGroupFactTime[6] += g7;
 
-                            if (g_f_6 >= g6)
-                            {
-                                _OperGroupFactTime[5] += g_f_6;
-                            }
-                            else
-                            {
-                                _OperGroupFactTime[5] += g6;
-                            }
+                            if (g_f_8 >= g8) _OperGroupFactTime[7] += g_f_8;
+                            else _OperGroupFactTime[7] += g8;
 
-                            if (g_f_7 >= g7)
-                            {
-                                _OperGroupFactTime[6] += g_f_7;
-                            }
-                            else
-                            {
-                                _OperGroupFactTime[6] += g7;
-                            }
+                            if (g_f_9 >= g9) _OperGroupFactTime[8] += g_f_9;
+                            else _OperGroupFactTime[8] += g9;
 
-                            if (g_f_8 >= g8)
-                            {
-                                _OperGroupFactTime[7] += g_f_8;
-                            }
-                            else
-                            {
-                                _OperGroupFactTime[7] += g8;
-                            }
+                            if (g_f_12 >= g12) _OperGroupFactTime[9] += g_f_12;
+                            else _OperGroupFactTime[9] += g12;
 
 
-
-                            /*_OperGroupFactTime[0] += g1;
-                            _OperGroupFactTime[1] += g2;
-                            _OperGroupFactTime[2] += g3;
-                            _OperGroupFactTime[3] += g4;
-                            _OperGroupFactTime[4] += g5;
-                            _OperGroupFactTime[5] += g6;
-                            _OperGroupFactTime[6] += g7;
-                            _OperGroupFactTime[7] += g8;
-
-
-                            _OperGroupFactTime[0] += g_f_1;
-                            _OperGroupFactTime[1] += g_f_2;
-                            _OperGroupFactTime[2] += g_f_3;
-                            _OperGroupFactTime[3] += g_f_4;
-                            _OperGroupFactTime[4] += g_f_5;
-                            _OperGroupFactTime[5] += g_f_6;
-                            _OperGroupFactTime[6] += g_f_7;
-                            _OperGroupFactTime[7] += g_f_8;*/
-
-                            // Заполняем просто операции
                             if (g1 > 0)
                             {
                                 ((Excel.Range)exW.Cells[row, 8]).Value2 = IntToTime(g1);
@@ -1629,15 +1565,23 @@ namespace Dispetcher2.Class
 
                             if (g9 > 0)
                             {
-                                ((Excel.Range)exW.Cells[row, 16]).Value2 = IntToTime(g9);
+                                ((Excel.Range)exW.Cells[row, 18]).Value2 = IntToTime(g9);
                                 AllSptTime += g9;
+                            }
+
+                            if (g12 > 0)
+                            {
+                                ((Excel.Range)exW.Cells[row, 16]).Value2 = IntToTime(g12);
+                                AllSptTime += g12;
                             }
 
                             if (AllSptTime > 0)
                             {
-                                ((Excel.Range)exW.Cells[row, 18]).Value2 = IntToTime(AllSptTime);
+                                ((Excel.Range)exW.Cells[row, 19]).Value2 = IntToTime(AllSptTime);
 
                             }
+
+
 
 
                             // Заполняем фактические оперции
@@ -1713,6 +1657,24 @@ namespace Dispetcher2.Class
                                 _FactTime[7] += g_f_8; // Добавляем фактический Слесарн
                             }
 
+                            if (g_f_9 > 0)
+                            {
+                                ((Excel.Range)exW.Cells[row, 18]).Value2 = IntToTime(g_f_8);
+                                AllFactTime += g_f_9;
+                                AllSptTime -= g9;
+
+                                _FactTime[8] += g_f_9; // Добавляем фактический ОТК
+                            }
+
+                            if (g_f_12 > 0)
+                            {
+                                ((Excel.Range)exW.Cells[row, 16]).Value2 = IntToTime(g_f_12);
+                                AllFactTime += g_f_12;
+                                AllSptTime -= g12;
+
+                                _FactTime[9] += g_f_12; // Добавляем фактический Заточная (технол.)
+                            }
+
 
                             if (g_f_10 > 0)
                             {
@@ -1721,19 +1683,15 @@ namespace Dispetcher2.Class
                             }
                             if (AllFactTime > 0)
                             {
-                                ((Excel.Range)exW.Cells[row, 18]).Value2 = IntToTime(AllFactTime + AllSptTime);
-                                _FactTime[8] += AllFactTime;
+                                ((Excel.Range)exW.Cells[row, 19]).Value2 = IntToTime(AllFactTime + AllSptTime);
+                                _FactTime[11] += AllFactTime;
                             }
 
 
-                            if (AllFactTime >= AllSptTime)
-                            {
-                                _OperGroupFactTime[8] += AllFactTime;
-                            }
-                            else
-                            {
-                                _OperGroupFactTime[8] += AllSptTime;
-                            }
+                            _OperGroupFactTime[11] += AllFactTime;
+
+                            _OperGroupFactTime[11] += AllSptTime;
+
 
 
 
@@ -1752,205 +1710,172 @@ namespace Dispetcher2.Class
                             //Делаем проверку поаперационно и если есть необходимость перекрашиваем в Color.LightPink;
                             if (g_f_1 > 0)
                             {
-                                if (g_f_1 == g1)
+                                if (g_f_1 >= g1)
                                     ((Excel.Range)exW.Cells[row, 8]).Interior.Color = Color.LightGreen;
                                 else
                                     ((Excel.Range)exW.Cells[row, 8]).Interior.Color = Color.LightPink;
                             }
                             if (g_f_2 > 0)
                             {
-                                if (g_f_2 == g2)
+                                if (g_f_2 >= g2)
                                     ((Excel.Range)exW.Cells[row, 9]).Interior.Color = Color.LightGreen;
                                 else
                                     ((Excel.Range)exW.Cells[row, 9]).Interior.Color = Color.LightPink;
                             }
                             if (g_f_3 > 0)
                             {
-                                if (g_f_3 == g3)
+                                if (g_f_3 >= g3)
                                     ((Excel.Range)exW.Cells[row, 10]).Interior.Color = Color.LightGreen;
                                 else
                                     ((Excel.Range)exW.Cells[row, 10]).Interior.Color = Color.LightPink;
                             }
                             if (g_f_4 > 0)
                             {
-                                if (g_f_4 == g4)
+                                if (g_f_4 >= g4)
                                     ((Excel.Range)exW.Cells[row, 11]).Interior.Color = Color.LightGreen;
                                 else
                                     ((Excel.Range)exW.Cells[row, 11]).Interior.Color = Color.LightPink;
                             }
                             if (g_f_5 > 0)
                             {
-                                if (g_f_5 == g5)
+                                if (g_f_5 >= g5)
                                     ((Excel.Range)exW.Cells[row, 12]).Interior.Color = Color.LightGreen;
                                 else
                                     ((Excel.Range)exW.Cells[row, 12]).Interior.Color = Color.LightPink;
                             }
                             if (g_f_6 > 0)
                             {
-                                if (g_f_6 == g6)
+                                if (g_f_6 >= g6)
                                     ((Excel.Range)exW.Cells[row, 13]).Interior.Color = Color.LightGreen;
                                 else
                                     ((Excel.Range)exW.Cells[row, 13]).Interior.Color = Color.LightPink;
                             }
                             if (g_f_7 > 0)
                             {
-                                if (g_f_7 == g7)
+                                if (g_f_7 >= g7)
                                     ((Excel.Range)exW.Cells[row, 14]).Interior.Color = Color.LightGreen;
                                 else
                                     ((Excel.Range)exW.Cells[row, 14]).Interior.Color = Color.LightPink;
                             }
                             if (g_f_8 > 0)
                             {
-                                if (g_f_8 == g8)
+                                if (g_f_8 >= g8)
                                     ((Excel.Range)exW.Cells[row, 15]).Interior.Color = Color.LightGreen;
                                 else
                                     ((Excel.Range)exW.Cells[row, 15]).Interior.Color = Color.LightPink;
                             }
                             if (g_f_9 > 0)
                             {
-                                ((Excel.Range)exW.Cells[row, 16]).Value2 = g_f_9 + "|" + g9;
-                                if (g_f_9 == g9)
+                                ((Excel.Range)exW.Cells[row, 18]).Value2 = g_f_9 + "|" + g9;
+                                if (g_f_9 >= g9)
+                                    ((Excel.Range)exW.Cells[row, 18]).Interior.Color = Color.LightGreen;
+                                else
+                                    ((Excel.Range)exW.Cells[row, 18]).Interior.Color = Color.LightPink;
+                            }
+
+                            if (g_f_12 > 0)
+                            {
+                                if (g_f_12 >= g12)
                                     ((Excel.Range)exW.Cells[row, 16]).Interior.Color = Color.LightGreen;
                                 else
                                     ((Excel.Range)exW.Cells[row, 16]).Interior.Color = Color.LightPink;
 
-                                //((Excel.Range)exW.Cells[row, 7]).Value2 = FK_IdOrderDetail;
-
-
-
-
-
-                                //((Excel.Range)exW.Cells[row, 5]).Value2 = CountFactOper + ";" + (num_column - 9);
-                                //((Excel.Range)exW.Cells[row, 6]).Value2 = IntToTime(PlanTime);
-                                //((Excel.Range)exW.Cells[row, 16]).Value2 = IntToTime(AllFactTime);
                             }
-                            /*}
 
-                            else
+                            if (reader.HasRows == false)   // Если в БД Диспетчера мы не находим ничего, то идем в Лотсман
                             {
-                                string IdLoosmann = cmd.Transaction("SELECT IdLoodsman FROM[Dispetcher2].[dbo].[Sp_Details] WHERE PK_IdDetail = FK_IdOrderDetail");
-                                cmd.CommandText = "Select ra.value + ' ' + att.value AS Oper,Tpd.value AS Tpd,Tsh.asfloat AS Tsh" + "\n" +
-                                                  "FROM [НИИПМ].[dbo].[rvwRelations] r" + "\n" +
-                                                  "INNER JOIN rvwRelations AS r2 ON r2.idparent = r.idparent AND r2.idlinktype = 32" + "\n" +
-                                                  "INNER JOIN rvwRelationAttributes ra ON ra.idrelation  = r2.id and ra.attrtype = 0" + "\n" +
-                                                  "INNER JOIN rvwAttributes AS att ON att.idversion = r2.idChild AND att.idattr = 235" + "\n" +
-                                                  "LEFT JOIN rvwAttributes AS Tpd ON Tpd.idversion = r2.idChild AND Tpd.idattr = 321" + "\n" +
-                                                  "LEFT JOIN rvwAttributes AS Tsh ON Tsh.idversion = r2.idChild AND Tsh.idattr = 195" + "\n" +
-                                                  "where  r.idchild=@IdLoodsman and r.idlinktype=33" + "\n" +
-                                                  "ORDER BY oper";
-                                cmd.Connection = C_Gper.con;
-                                cmd.Parameters.Add(new SqlParameter("@IdLoodsman", SqlDbType.BigInt));
-                                Console.WriteLine(IdLoosmann);
-                                cmd.Parameters["@IdLoodsman"].Value = IdLoosmann;
-
-                                Console.WriteLine(cmd);*/
-
-
-                        }
-
-                        if (reader.HasRows == false)   // Если в БД Диспетчера мы не находим ничего, то идем в Лотсман
-                        {
-                            C_Gper.con.Close();
-                            C_Gper.con.ConnectionString = C_Gper.ConStr_Loodsman;
-                            SqlCommand cmd_2 = new SqlCommand() { CommandTimeout = 60 };
-                            cmd_2.Connection = C_Gper.con;
-                            cmd_2.Parameters.Clear();
-                            cmd_2.CommandText = "Select att.value AS Oper, Tpd.value AS Tpd,Tsh.asfloat AS Tsh" + "\n" +
-                                  "FROM [НИИПМ].[dbo].[rvwRelations] r" + "\n" +
-                                  "INNER JOIN rvwRelations AS r2 ON r2.idparent = r.idparent AND r2.idlinktype = 32" + "\n" +
-                                  "INNER JOIN rvwRelationAttributes ra ON ra.idrelation  = r2.id and ra.attrtype = 0" + "\n" +
-                                  "INNER JOIN rvwAttributes AS att ON att.idversion = r2.idChild AND att.idattr = 235" + "\n" +
-                                  "INNER JOIN rvwAttributes AS Tpd ON Tpd.idversion = r2.idChild AND Tpd.idattr = 321" + "\n" +
-                                  "INNER JOIN rvwAttributes AS Tsh ON Tsh.idversion = r2.idChild AND Tsh.idattr = 195" + "\n" +
-                                  "where  r.idchild = (SELECT IdLoodsman FROM [Dispetcher2].[dbo].[FullView] WHERE PK_IdOrderDetail = @FK_IdOrderDetail) and r.idlinktype=33" + "\n" +
-                                  "ORDER BY oper";
-                            cmd_2.Parameters.Add(new SqlParameter("@FK_IdOrderDetail", SqlDbType.BigInt));
-                            cmd_2.Parameters["@FK_IdOrderDetail"].Value = FK_IdOrderDetail;
-                            using (C_Gper.con)
-                            {
-                                C_Gper.con.Open();
-                                using (SqlDataReader reader2 = cmd_2.ExecuteReader())
+                                C_Gper.con.Close();
+                                C_Gper.con.ConnectionString = C_Gper.ConStr_Loodsman;
+                                SqlCommand cmd_2 = new SqlCommand() { CommandTimeout = 60 };
+                                cmd_2.Connection = C_Gper.con;
+                                cmd_2.Parameters.Clear();
+                                cmd_2.CommandText = "Select att.value AS Oper, Tpd.value AS Tpd,Tsh.asfloat AS Tsh" + "\n" +
+                                      "FROM [НИИПМ].[dbo].[rvwRelations] r" + "\n" +
+                                      "INNER JOIN rvwRelations AS r2 ON r2.idparent = r.idparent AND r2.idlinktype = 32" + "\n" +
+                                      "INNER JOIN rvwRelationAttributes ra ON ra.idrelation  = r2.id and ra.attrtype = 0" + "\n" +
+                                      "INNER JOIN rvwAttributes AS att ON att.idversion = r2.idChild AND att.idattr = 235" + "\n" +
+                                      "INNER JOIN rvwAttributes AS Tpd ON Tpd.idversion = r2.idChild AND Tpd.idattr = 321" + "\n" +
+                                      "INNER JOIN rvwAttributes AS Tsh ON Tsh.idversion = r2.idChild AND Tsh.idattr = 195" + "\n" +
+                                      "where  r.idchild = (SELECT IdLoodsman FROM [Dispetcher2].[dbo].[FullView] WHERE PK_IdOrderDetail = @FK_IdOrderDetail) and r.idlinktype=33" + "\n" +
+                                      "ORDER BY oper";
+                                cmd_2.Parameters.Add(new SqlParameter("@FK_IdOrderDetail", SqlDbType.BigInt));
+                                cmd_2.Parameters["@FK_IdOrderDetail"].Value = FK_IdOrderDetail;
+                                using (C_Gper.con)
                                 {
-
-                                    Int16 IdOperGroup = 0;
-                                    int Tpd = 0, Tsh = 0, Amount = 0;//по факту
-                                    int OperTime = 0;//Общее время 1 операции
-                                    bool OnlyOncePay = true;//Платим только 1 раз, без учета деталей Tpd + Tsh
-                                    string TypeRow = "";
-                                    //int
-                                    int AllSptTime = 0;//Всего времени по справочнику технологий изготовления
-                                    int AllFactTime = 0;
-                                    int OstatokIzgotov = 0; // Остаток к изготовлению
-                                    int slesarn = 0, zagotov = 0, tokar = 0, frezer = 0, shlif = 0, frezer_chu = 0, rastoch = 0, svaroch = 0, otk = 0;
-
-
-                                    while (reader2.Read())
+                                    C_Gper.con.Open();
+                                    using (SqlDataReader reader2 = cmd_2.ExecuteReader())
                                     {
-                                        switch (reader2.GetValue(0))
+                                        int slesarn = 0, zagotov = 0, tokar = 0, frezer = 0, shlif = 0, frezer_chu = 0, rastoch = 0, svaroch = 0, otk = 0;
+
+
+                                        while (reader2.Read())
                                         {
-                                            case "Заготовительная"://Загот
-                                                zagotov += Convert.ToInt32(reader2.GetValue(1)) + Convert.ToInt32(reader2.GetValue(2));
-                                                _OperGroupFactTime[0] += zagotov;
-                                                break;
-                                            case "Токарная (технол.)"://Токар
-                                                tokar += Convert.ToInt32(reader2.GetValue(1)) + Convert.ToInt32(reader2.GetValue(2));
-                                                _OperGroupFactTime[1] += tokar;
-                                                break;
-                                            case "Токарная"://Токар
-                                                tokar += Convert.ToInt32(reader2.GetValue(1)) + Convert.ToInt32(reader2.GetValue(2));
-                                                _OperGroupFactTime[1] += tokar;
-                                                break;
-                                            case "Фрезерная"://Фрезер
-                                                frezer += Convert.ToInt32(reader2.GetValue(1)) + Convert.ToInt32(reader2.GetValue(2));
-                                                _OperGroupFactTime[2] += frezer;
-                                                break;
-                                            case "Шлифовальная":
-                                                shlif += Convert.ToInt32(reader2.GetValue(1)) + Convert.ToInt32(reader2.GetValue(2));
-                                                _OperGroupFactTime[3] += shlif;
-                                                break;
-                                            case "Фрезерная с ЧПУ"://ЧПУ
-                                                frezer_chu += Convert.ToInt32(reader2.GetValue(1)) + Convert.ToInt32(reader2.GetValue(2));
-                                                _OperGroupFactTime[4] += frezer_chu;
-                                                break; ;
-                                            case "Координатно-расточная"://Расточ
-                                                rastoch += Convert.ToInt32(reader2.GetValue(1)) + Convert.ToInt32(reader2.GetValue(2));
-                                                _OperGroupFactTime[5] += rastoch;
-                                                break;
-                                            case "Сварочная"://Свароч
-                                                svaroch += Convert.ToInt32(reader2.GetValue(1)) + Convert.ToInt32(reader2.GetValue(2));
-                                                _OperGroupFactTime[6] += svaroch;
-                                                break;
-                                            case "Слесарная"://Слесарн
-                                                slesarn += Convert.ToInt32(reader2.GetValue(1)) + Convert.ToInt32(reader2.GetValue(2));
-                                                _OperGroupFactTime[7] += slesarn;
-                                                break;
-                                            case "Слесарно-сборочная"://Слесарн
-                                                slesarn += Convert.ToInt32(reader2.GetValue(1)) + Convert.ToInt32(reader2.GetValue(2));
-                                                break;
-                                            case "Контроль ОТК"://ОТК
-                                                otk += Convert.ToInt32(reader2.GetValue(1)) + Convert.ToInt32(reader2.GetValue(2));
-                                                break;
-                                            default:
-                                                //Console.WriteLine("Default case");
-                                                break;
+                                            switch (reader2.GetValue(0))
+                                            {
+                                                case "Заготовительная"://Загот
+                                                    zagotov += Convert.ToInt32(reader2.GetValue(1)) + Convert.ToInt32(reader2.GetValue(2));
+                                                    _OperGroupFactTime[0] += zagotov;
+                                                    break;
+                                                case "Токарная (технол.)"://Токар
+                                                    tokar += Convert.ToInt32(reader2.GetValue(1)) + Convert.ToInt32(reader2.GetValue(2));
+                                                    _OperGroupFactTime[1] += tokar;
+                                                    break;
+                                                case "Токарная"://Токар
+                                                    tokar += Convert.ToInt32(reader2.GetValue(1)) + Convert.ToInt32(reader2.GetValue(2));
+                                                    _OperGroupFactTime[1] += tokar;
+                                                    break;
+                                                case "Фрезерная"://Фрезер
+                                                    frezer += Convert.ToInt32(reader2.GetValue(1)) + Convert.ToInt32(reader2.GetValue(2));
+                                                    _OperGroupFactTime[2] += frezer;
+                                                    break;
+                                                case "Шлифовальная":
+                                                    shlif += Convert.ToInt32(reader2.GetValue(1)) + Convert.ToInt32(reader2.GetValue(2));
+                                                    _OperGroupFactTime[3] += shlif;
+                                                    break;
+                                                case "Фрезерная с ЧПУ"://ЧПУ
+                                                    frezer_chu += Convert.ToInt32(reader2.GetValue(1)) + Convert.ToInt32(reader2.GetValue(2));
+                                                    _OperGroupFactTime[4] += frezer_chu;
+                                                    break; ;
+                                                case "Координатно-расточная"://Расточ
+                                                    rastoch += Convert.ToInt32(reader2.GetValue(1)) + Convert.ToInt32(reader2.GetValue(2));
+                                                    _OperGroupFactTime[5] += rastoch;
+                                                    break;
+                                                case "Сварочная"://Свароч
+                                                    svaroch += Convert.ToInt32(reader2.GetValue(1)) + Convert.ToInt32(reader2.GetValue(2));
+                                                    _OperGroupFactTime[6] += svaroch;
+                                                    break;
+                                                case "Слесарная"://Слесарн
+                                                    slesarn += Convert.ToInt32(reader2.GetValue(1)) + Convert.ToInt32(reader2.GetValue(2));
+                                                    _OperGroupFactTime[7] += slesarn;
+                                                    break;
+                                                case "Слесарно-сборочная"://Слесарн
+                                                    slesarn += Convert.ToInt32(reader2.GetValue(1)) + Convert.ToInt32(reader2.GetValue(2));
+                                                    break;
+                                                case "Контроль ОТК"://ОТК
+                                                    otk += Convert.ToInt32(reader2.GetValue(1)) + Convert.ToInt32(reader2.GetValue(2));
+                                                    break;
+                                                default:
+                                                    //Console.WriteLine("Default case");
+                                                    break;
 
+                                            }
                                         }
+
+                                        // Заполняем пустые столбцы если содержимое больше 0
+                                        // _OperGroupFactTime[8] ячейка "итого" в массиве
+                                        int AllTime = 0;
+                                        AllTime = (slesarn + frezer_chu + frezer + tokar + svaroch + zagotov) * AmountDetails;
+                                        if (slesarn > 0) ((Excel.Range)exW.Cells[row, 15]).Value2 = IntToTime(slesarn * AmountDetails);
+                                        if (frezer_chu > 0) ((Excel.Range)exW.Cells[row, 12]).Value2 = IntToTime(frezer_chu * AmountDetails);
+                                        if (frezer > 0) ((Excel.Range)exW.Cells[row, 10]).Value2 = IntToTime(frezer * AmountDetails);
+                                        if (tokar > 0) ((Excel.Range)exW.Cells[row, 9]).Value2 = IntToTime(tokar * AmountDetails);
+                                        if (svaroch > 0) ((Excel.Range)exW.Cells[row, 14]).Value2 = IntToTime(svaroch * AmountDetails);
+                                        if (zagotov > 0) ((Excel.Range)exW.Cells[row, 8]).Value2 = IntToTime(zagotov * AmountDetails);
+                                        if (AllTime > 0) ((Excel.Range)exW.Cells[row, 18]).Value2 = IntToTime(AllTime);
+
+                                        _OperGroupFactTime[8] += AllTime;
+
                                     }
-
-                                    // Заполняем пустые столбцы если содержимое больше 0
-                                    // _OperGroupFactTime[8] ячейка "итого" в массиве
-                                    int AllTime = 0;
-                                    AllTime = (slesarn + frezer_chu + frezer + tokar + svaroch + zagotov) * AmountDetails;
-                                    if (slesarn > 0) ((Excel.Range)exW.Cells[row, 15]).Value2 = IntToTime(slesarn * AmountDetails);     
-                                    if (frezer_chu > 0) ((Excel.Range)exW.Cells[row, 12]).Value2 = IntToTime(frezer_chu * AmountDetails);
-                                    if (frezer > 0) ((Excel.Range)exW.Cells[row, 10]).Value2 = IntToTime(frezer * AmountDetails);
-                                    if (tokar > 0) ((Excel.Range)exW.Cells[row, 9]).Value2 = IntToTime(tokar * AmountDetails);
-                                    if (svaroch > 0) ((Excel.Range)exW.Cells[row, 14]).Value2 = IntToTime(svaroch * AmountDetails);
-                                    if (zagotov > 0) ((Excel.Range)exW.Cells[row, 8]).Value2 = IntToTime(zagotov * AmountDetails);
-                                    if (AllTime > 0) ((Excel.Range)exW.Cells[row, 18]).Value2 = IntToTime(AllTime);
-
-                                    _OperGroupFactTime[8] += AllTime;
-
                                 }
                             }
                         }
@@ -1961,6 +1886,7 @@ namespace Dispetcher2.Class
             {
                 MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        
         }
 
 
