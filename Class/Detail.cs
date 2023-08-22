@@ -15,8 +15,10 @@ namespace Dispetcher2.Class
         public string AllPositionParent { get; set; }
         public long IdOrderDetail { get; set; }
         public long IdDetail { get; set; }
+        public long IdLoodsman { get; set; }
         public int PositionParent { get; set; }
         public string ShcmAndName { get { return Shcm + "\n" + Name; } }
+        public List<Operation> Operations { get; set; }
         public void SetNameType(object value)
         {
             // Не NULL
@@ -66,6 +68,13 @@ namespace Dispetcher2.Class
         {
             // Не NULL
             IdDetail = Convert.ToInt64(value);
+        }
+        public void SetIdLoodsman(object value)
+        {
+            // NULL
+            // тип данных SQL: BIGINT
+            if (value is DBNull) return;
+            IdLoodsman = Convert.ToInt64(value);
         }
         public void SetPositionParent(object value)
         {

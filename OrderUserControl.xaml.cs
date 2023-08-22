@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+
 using Dispetcher2.Class;
 
 namespace Dispetcher2
@@ -24,12 +25,15 @@ namespace Dispetcher2
         C_DataBase db;
         List<Order> orderList;
         OrderControlModel m = new OrderControlModel();
+        LaborLoader loader = null;
 
         public OrderUserControl()
         {
             try
             {
                 InitializeComponent();
+                LoadingWait.Message = "Загрузка...";
+                LoadingWait.Stop();
                 this.DataContext = m;
                 m.Filter = String.Empty;
                 db = new C_DataBase(C_Gper.ConnStrDispetcher2);
@@ -46,22 +50,42 @@ namespace Dispetcher2
         {
             if (m.SelectedOrder == null)
             {
-                //m.Message = "SelectedOrder: null";
                 MessageBox.Show("Пожалуйста выберите заказ", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            // m.Message = $"Id: {m.SelectedOrder.Id}";
-            var dl = db.GetOrderDetailAndFastener(m.SelectedOrder.Id);
-            if (dl != null)
-            {
-                //m.SelectedOrder.DetailList = dl;
-                var dl2 = from d in dl
-                          where d.PositionParent == 0
-                          select d;
-                m.SelectedOrder.DetailList = new List<Detail>();
-                if (dl2.Any()) m.SelectedOrder.DetailList.AddRange(dl2);
-                ShowOrderDetail(m.SelectedOrder);
-            }
+            BeforeLoad();
+            loader = new LaborLoader(m.SelectedOrder);
+            loader.Finished += Ll_Finished;
+            loader.Start();
+
+        }
+
+        private void Ll_Finished()
+        {
+            Action a = AfterLoad;
+            this.Dispatcher.BeginInvoke(a);
+            loader = null;
+        }
+
+        void BeforeLoad()
+        {
+            filterTextBox.IsEnabled = false;
+            orderListBox.IsEnabled = false;
+            requestButton.IsEnabled = false;
+            mainDataGrid.ItemsSource = null;
+            mainDataGrid.Visibility = Visibility.Collapsed;
+            LoadingWait.Start();
+        }
+        void AfterLoad()
+        {
+            LoadingWait.Stop();
+            
+            filterTextBox.IsEnabled = true;
+            orderListBox.IsEnabled = true;
+            requestButton.IsEnabled = true;
+            mainDataGrid.Visibility = Visibility.Visible;
+
+            ShowOrderDetail(m.SelectedOrder);
         }
 
         void FilterData()
@@ -104,23 +128,54 @@ namespace Dispetcher2
             mainDataGrid.Columns.Add(c);
 
             m.OperationList = new List<OperationDictionary>();
-            OperationDictionary op1 = new OperationDictionary();
-            op1.Value[0] = "Неизвестно";
-            m.OperationList.Add(op1);
 
             for (int i = 0; i < z.DetailList.Count; i++)
             {
                 var d = z.DetailList[i];
+
                 c = new DataGridTextColumn();
                 c.Header = d.ShcmAndName;
                 c.MaxWidth = 200;
                 c.MinWidth = 50;
                 c.Binding = new Binding($"Value[{i+1}]");
                 mainDataGrid.Columns.Add(c);
-                op1.Value[i + 1] = TimeSpan.FromMinutes(i * 10 + 10);
+            }
+
+            List<string> NameList = new List<string>();
+            foreach(var d in z.DetailList)
+            {
+                var e = from x in d.Operations select x.Name;
+                NameList.AddRange(e);
+            }
+
+            var e2 = NameList.Distinct().OrderBy( x => x);
+            NameList = new List<string>();
+            NameList.AddRange(e2);
+
+            foreach(var name in NameList)
+            {
+                OperationDictionary op = new OperationDictionary();
+                op.Value[0] = name;
+                for(int i = 0; i < z.DetailList.Count; i++)
+                {
+                    var d = z.DetailList[i];
+                    var e3 = d.Operations.Where(item => item.Name == name).SingleOrDefault();
+                    if (e3 == null) op.Value[i + 1] = String.Empty;
+                    else op.Value[i + 1] = e3.TimeString;
+                }
+                m.OperationList.Add(op);
             }
 
             mainDataGrid.ItemsSource = m.OperationList;
+        }
+
+        public void Stop()
+        {
+            if (loader != null)
+            {
+                loader.Stop();
+                loader = null;
+            }
         }
     }
 

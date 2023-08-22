@@ -25,7 +25,7 @@ namespace Dispetcher2
 
         private void F_ReportsPlan_Load(object sender, EventArgs e)
         {
-            if (C_Gper.NameReport == 106)//План-график (форма №6)
+            if (C_Gper.NameReport == C_Gper.ReportMode.ПланГрафик)//План-график (форма №6)
             {
                 myTabC_ReportsPlan.SelectedTab = tPageForm106;
                 dGV_Orders.AutoGenerateColumns = false;
