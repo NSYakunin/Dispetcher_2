@@ -1383,34 +1383,17 @@ namespace Dispetcher2.Class
             try//string[] arrOper = { "Заготов","Токарн","Заточ","Координатн","лифоваль","Свар","ЧПУ","Фрезер","Слесарн","Комплект","Испытания","Малярная","струйная","Разметка","Промывка","Прессование","свар"};
             {
                 C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
-                SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//seconds //using System.Data.SqlClient;
+                string sqlExpression = "LoadPlanTehDetails";
+                SqlCommand cmd = new SqlCommand(sqlExpression) { CommandTimeout = 60 };//seconds //using System.Data.SqlClient;
                 cmd.Connection = C_Gper.con;
                 cmd.Parameters.Clear();
-                cmd.CommandText = "SELECT spo.FK_IdOperGroup, spt.Tpd, spt.Tsh, SUM(od.AmountDetails) AS fo_Amount, spo.OnlyOncePay, spt.NumOper,spo.NameOperation,'1sp' as TypeRow" + "\n" +
-"From OrdersDetails od" + "\n" +
-"left JOIN Sp_TechnologyDetails as spt ON spt.FK_IdDetails = od.FK_IdDetail" + "\n" +
-"left JOIN Sp_Operations as spo ON spo.PK_IdOperation = spt.FK_IdOperation" + "\n" +
-"WHERE od.PK_IdOrderDetail = @FK_IdOrderDetail and FK_IdOperGroup<13" + "\n" +
-"GROUP BY spo.FK_IdOperGroup, spt.Tpd, spt.Tsh, spo.OnlyOncePay,spt.NumOper,spo.NameOperation" + "\n" +
-"union" + "\n" +
-"SELECT spo.FK_IdOperGroup, spo111.Tpd, spo111.Tsh , SUM(od.AmountDetails) AS fo_Amount, spo.OnlyOncePay, spo111.NumOperation,spo.NameOperation,'2sp111' as TypeRow" + "\n" +
-"From OrdersDetails od" + "\n" +
-"left JOIN Sp_OperationsType111 AS spo111 ON spo111.FK_IdDetail = od.FK_IdDetail" + "\n" +
-"left JOIN Sp_Operations as spo ON spo.PK_IdOperation = spo111.FK_IdOperation" + "\n" +
-"WHERE od.PK_IdOrderDetail = @FK_IdOrderDetail and FK_IdOperGroup<13" + "\n" +
-"GROUP BY spo.FK_IdOperGroup, spo111.Tpd, spo111.Tsh, spo.OnlyOncePay,spo111.NumOperation,spo.NameOperation" + "\n" +
-"union" + "\n" +
-"SELECT spo.FK_IdOperGroup, fo.Tpd, fo.Tsh, SUM(fo.AmountDetails) AS fo_Amount, spo.OnlyOncePay, fo.NumOper,spo.NameOperation,'3fact' as TypeRow" + "\n" +
-"From OrdersDetails od" + "\n" +
-"left JOIN FactOperation AS fo ON fo.FK_IdOrderDetail = od.PK_IdOrderDetail" + "\n" +
-"left JOIN Sp_Operations as spo ON spo.PK_IdOperation = fo.FK_IdOperation" + "\n" +
-"WHERE od.PK_IdOrderDetail = @FK_IdOrderDetail and spo.FK_IdOperGroup<13" + "\n" +
-"GROUP BY spo.FK_IdOperGroup, fo.Tpd, fo.Tsh, spo.OnlyOncePay,fo.NumOper,spo.NameOperation" + "\n" +
-"Order by TypeRow, FK_IdOperGroup";
-
-
-                cmd.Parameters.Add(new SqlParameter("@FK_IdOrderDetail", SqlDbType.BigInt));
-                cmd.Parameters["@FK_IdOrderDetail"].Value = FK_IdOrderDetail;
+                cmd.CommandType = CommandType.StoredProcedure;
+                SqlParameter nameParam = new SqlParameter
+                {
+                    ParameterName = "@FK_IdOrderDetail",
+                    Value = FK_IdOrderDetail
+                };
+                cmd.Parameters.Add(nameParam);
                 using (C_Gper.con)
                 {
                     C_Gper.con.Open();
