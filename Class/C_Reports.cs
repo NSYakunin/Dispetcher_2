@@ -1401,7 +1401,6 @@ namespace Dispetcher2.Class
                     {
                         if (reader.HasRows)//Color.LightGreen;
                         {
-
                             Int16 IdOperGroup = 0;
                             int Tpd = 0, Tsh = 0, Amount = 0;//по факту
                             int OperTime = 0;//Общее время 1 операции
@@ -1410,10 +1409,11 @@ namespace Dispetcher2.Class
                             //int
                             int AllSptTime = 0;//Всего времени по справочнику технологий изготовления
                             int AllFactTime = 0;
-                            int OstatokIzgotov = 0; // Остаток к изготовлению
+                            int g_f_10 = 0;
 
-                            int g1 = 0, g2 = 0, g3 = 0, g4 = 0, g5 = 0, g6 = 0, g7 = 0, g8 = 0, g9 = 0, g12 = 0;//подсчёт общего времени по группам по данным справочника
-                            int g_f_1 = 0, g_f_2 = 0, g_f_3 = 0, g_f_4 = 0, g_f_5 = 0, g_f_6 = 0, g_f_7 = 0, g_f_8 = 0, g_f_9 = 0, g_f_10 = 0, g_f_12 = 0;//подсчёт общего времени по группам по факту
+                            int[] totalTime = new int[10]; //подсчёт общего времени по группам по данным справочника
+                            int[] totalFactTime = new int[10]; //подсчёт общего времени по группам по факту
+                            int[] numberRow = { 8, 9, 10, 11, 12, 13, 14, 15, 18, 16 };
 
                             //int 
                             while (reader.Read())//IntToTime  NormTimeFabrication(bool OnlyOncePay, int Tpd, int Tsh, int Amount)
@@ -1433,37 +1433,37 @@ namespace Dispetcher2.Class
                                     switch (IdOperGroup)
                                     {
                                         case 1://Загот
-                                            if (TypeRow == "3fact") g_f_1 += OperTime; else g1 += OperTime;
+                                            if (TypeRow == "3fact") totalFactTime[0] += OperTime; else totalTime[0] += OperTime;
                                             break;
                                         case 2://Токар
-                                            if (TypeRow == "3fact") g_f_2 += OperTime; else g2 += OperTime;
+                                            if (TypeRow == "3fact") totalFactTime[1] += OperTime; else totalTime[1] += OperTime;
                                             break;
                                         case 3://Фрезер
-                                            if (TypeRow == "3fact") g_f_3 += OperTime; else g3 += OperTime;
+                                            if (TypeRow == "3fact") totalFactTime[2] += OperTime; else totalTime[2] += OperTime;
                                             break;
                                         case 4://Шлиф
-                                            if (TypeRow == "3fact") g_f_4 += OperTime; else g4 += OperTime;
+                                            if (TypeRow == "3fact") totalFactTime[3] += OperTime; else totalTime[3] += OperTime;
                                             break;
                                         case 5://ЧПУ
-                                            if (TypeRow == "3fact") g_f_5 += OperTime; else g5 += OperTime;
+                                            if (TypeRow == "3fact") totalFactTime[4] += OperTime; else totalTime[4] += OperTime;
                                             break;
                                         case 6://Расточ
-                                            if (TypeRow == "3fact") g_f_6 += OperTime; else g6 += OperTime;
+                                            if (TypeRow == "3fact") totalFactTime[5] += OperTime; else totalTime[5] += OperTime;
                                             break;
                                         case 7://Свароч
-                                            if (TypeRow == "3fact") g_f_7 += OperTime; else g7 += OperTime;
+                                            if (TypeRow == "3fact") totalFactTime[6] += OperTime; else totalTime[6] += OperTime;
                                             break;
                                         case 8://Слесарн и малярная
-                                            if (TypeRow == "3fact") g_f_8 += OperTime; else g8 += OperTime;
+                                            if (TypeRow == "3fact") totalFactTime[7] += OperTime; else totalTime[7] += OperTime;
                                             break;
                                         case 9://ОТК
-                                            if (TypeRow == "3fact") g_f_9 += OperTime; else g9 += OperTime;//т.к. Контроль ОТК может повторятся несколько раз
+                                            if (TypeRow == "3fact") totalFactTime[8] += OperTime; else totalTime[8] += OperTime;//т.к. Контроль ОТК может повторятся несколько раз
                                             break;
                                         case 10://Склад
                                             if (TypeRow == "3fact") g_f_10 += Amount; //т.к. Склад может повторятся несколько раз
                                             break;
                                         case 12://Заточная (технол.)
-                                            if (TypeRow == "3fact") g_f_12 += OperTime; else g12 += OperTime;
+                                            if (TypeRow == "3fact") totalFactTime[9] += OperTime; else totalTime[9] += OperTime;
                                             break;
                                         default:
                                             //Console.WriteLine("Default case");
@@ -1473,296 +1473,52 @@ namespace Dispetcher2.Class
                             }
 
 
-                            // Заполнение массива с итоговым временем "Всего: "
-                            if (g_f_1 >= g1) _OperGroupFactTime[0] += g_f_1;
-                            else _OperGroupFactTime[0] += g1;
-
-                            if (g_f_2 >= g2) _OperGroupFactTime[1] += g_f_2;
-                            else _OperGroupFactTime[1] += g2;
-
-                            if (g_f_3 >= g3) _OperGroupFactTime[2] += g_f_3;
-                            else _OperGroupFactTime[2] += g3;
-
-                            if (g_f_4 >= g4) _OperGroupFactTime[3] += g_f_4;
-                            else _OperGroupFactTime[3] += g4;
-
-                            if (g_f_5 >= g5) _OperGroupFactTime[4] += g_f_5;
-                            else _OperGroupFactTime[4] += g5;
-
-                            if (g_f_6 >= g6) _OperGroupFactTime[5] += g_f_6;
-                            else _OperGroupFactTime[5] += g6;
-
-                            if (g_f_7 >= g7) _OperGroupFactTime[6] += g_f_7;
-                            else _OperGroupFactTime[6] += g7;
-
-                            if (g_f_8 >= g8) _OperGroupFactTime[7] += g_f_8;
-                            else _OperGroupFactTime[7] += g8;
-
-                            if (g_f_9 >= g9) _OperGroupFactTime[8] += g_f_9;
-                            else _OperGroupFactTime[8] += g9;
-
-                            if (g_f_12 >= g12) _OperGroupFactTime[9] += g_f_12;
-                            else _OperGroupFactTime[9] += g12;
-
-
-                            if (g1 > 0)
+                            for (int i = 0; i < 10; i++)
                             {
-                                ((Excel.Range)exW.Cells[row, 8]).Value2 = IntToTime(g1);
-                                AllSptTime += g1;
+                                if (totalFactTime[i] >= totalTime[i]) _OperGroupFactTime[i] += totalFactTime[i];
+                                else _OperGroupFactTime[i] += totalTime[i];
+
+                                if (totalTime[i] > 0)
+                                {
+                                    ((Excel.Range)exW.Cells[row, numberRow[i]]).Value2 = IntToTime(totalTime[i]);
+                                    AllSptTime += totalTime[i];
+                                }
+
+                                if (totalFactTime[i] > 0)
+                                {
+                                    ((Excel.Range)exW.Cells[row, numberRow[i]]).Value2 = IntToTime(totalFactTime[i]);
+                                    AllFactTime += totalFactTime[i];
+                                    AllSptTime -= totalTime[i];
+
+                                    _FactTime[i] += totalFactTime[i]; // Добавляем фактическую заготовку
+                                }
+
+                                if (totalFactTime[i] > 0)
+                                {
+                                    if (totalFactTime[i] >= totalTime[i])
+                                        ((Excel.Range)exW.Cells[row, numberRow[i]]).Interior.Color = Color.LightGreen;
+                                    else
+                                        ((Excel.Range)exW.Cells[row, numberRow[i]]).Interior.Color = Color.LightPink;
+                                }
                             }
-                            if (g2 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 9]).Value2 = IntToTime(g2);
-                                AllSptTime += g2;
-                            }
-                            if (g3 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 10]).Value2 = IntToTime(g3);
-                                AllSptTime += g3;
-                            }
-                            if (g4 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 11]).Value2 = IntToTime(g4);
-                                AllSptTime += g4;
-                            }
-                            if (g5 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 12]).Value2 = IntToTime(g5);
-                                AllSptTime += g5;
-                            }
-                            if (g6 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 13]).Value2 = IntToTime(g6);
-                                AllSptTime += g6;
-                            }
-                            if (g7 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 14]).Value2 = IntToTime(g7);
-                                AllSptTime += g7;
-                            }
-                            if (g8 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 15]).Value2 = IntToTime(g8);
-                                AllSptTime += g8;
-                            }
-
-                            if (g9 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 18]).Value2 = IntToTime(g9);
-                                AllSptTime += g9;
-                            }
-
-                            if (g12 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 16]).Value2 = IntToTime(g12);
-                                AllSptTime += g12;
-                            }
-
-                            if (AllSptTime > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 19]).Value2 = IntToTime(AllSptTime);
-
-                            }
-
-
-
-
-                            // Заполняем фактические оперции
-                            if (g_f_1 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 8]).Value2 = IntToTime(g_f_1);
-                                AllFactTime += g_f_1;
-                                AllSptTime -= g1;
-
-                                _FactTime[0] += g_f_1; // Добавляем фактическую заготовку
-                            }
-
-                            if (g_f_2 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 9]).Value2 = IntToTime(g_f_2);
-                                AllFactTime += g_f_2;
-                                AllSptTime -= g2;
-
-                                _FactTime[1] += g_f_2; // Добавляем фактическую токарку
-                            }
-
-                            if (g_f_3 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 10]).Value2 = IntToTime(g_f_3);
-                                AllFactTime += g_f_3;
-                                AllSptTime -= g3;
-
-                                _FactTime[2] += g_f_3; // Добавляем фактическую фрезерку
-                            }
-
-                            if (g_f_4 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 11]).Value2 = IntToTime(g_f_4);
-                                AllFactTime += g_f_4;
-                                AllSptTime -= g4;
-
-                                _FactTime[3] += g_f_4; // Добавляем фактическую шлифофку
-                            }
-
-                            if (g_f_5 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 12]).Value2 = IntToTime(g_f_5);
-                                AllFactTime += g_f_5;
-                                AllSptTime -= g5;
-
-                                _FactTime[4] += g_f_5; // Добавляем фактический фрезер ЧПУ
-                            }
-
-                            if (g_f_6 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 13]).Value2 = IntToTime(g_f_6);
-                                AllFactTime += g_f_6;
-                                AllSptTime -= g6;
-
-                                _FactTime[5] += g_f_6; // Добавляем фактический Расточ
-                            }
-
-                            if (g_f_7 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 14]).Value2 = IntToTime(g_f_7);
-                                AllFactTime += g_f_7;
-                                AllSptTime -= g7;
-
-                                _FactTime[6] += g_f_7; // Добавляем фактический Сворочн
-                            }
-
-                            if (g_f_8 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 15]).Value2 = IntToTime(g_f_8);
-                                AllFactTime += g_f_8;
-                                AllSptTime -= g8;
-
-                                _FactTime[7] += g_f_8; // Добавляем фактический Слесарн
-                            }
-
-                            if (g_f_9 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 18]).Value2 = IntToTime(g_f_8);
-                                AllFactTime += g_f_9;
-                                AllSptTime -= g9;
-
-                                _FactTime[8] += g_f_9; // Добавляем фактический ОТК
-                            }
-
-                            if (g_f_12 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 16]).Value2 = IntToTime(g_f_12);
-                                AllFactTime += g_f_12;
-                                AllSptTime -= g12;
-
-                                _FactTime[9] += g_f_12; // Добавляем фактический Заточная (технол.)
-                            }
-
-
-                            if (g_f_10 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 17]).Value2 = g_f_10;
-
-                            }
+                  
+                            if (AllSptTime > 0) ((Excel.Range)exW.Cells[row, 19]).Value2 = IntToTime(AllSptTime);
+                            if (g_f_10 > 0) ((Excel.Range)exW.Cells[row, 17]).Value2 = g_f_10;
                             if (AllFactTime > 0)
                             {
                                 ((Excel.Range)exW.Cells[row, 19]).Value2 = IntToTime(AllFactTime + AllSptTime);
                                 _FactTime[11] += AllFactTime;
                             }
-
-
                             _OperGroupFactTime[11] += AllFactTime;
-
                             _OperGroupFactTime[11] += AllSptTime;
-
-
-
-
 
                             //Полностью закрашиваем строку
                             if (g_f_10 > 0)
                             {
                                 ((Excel.Range)exW.Cells[row, 17]).Value2 = g_f_10 + "|" + AmountDetails;
 
-                                if (g_f_10 == AmountDetails)
-                                    //((Excel.Range)exW.Cells[row, 17]).Interior.Color = Color.LightGreen;
-                                    ((Excel.Range)exW.get_Range("A" + row, "R" + row)).Interior.Color = Color.LightGreen;//Полностью закрашиваем строку
-                                else
-                                    ((Excel.Range)exW.Cells[row, 17]).Interior.Color = Color.LightPink;
-                            }
-                            //Делаем проверку поаперационно и если есть необходимость перекрашиваем в Color.LightPink;
-                            if (g_f_1 > 0)
-                            {
-                                if (g_f_1 >= g1)
-                                    ((Excel.Range)exW.Cells[row, 8]).Interior.Color = Color.LightGreen;
-                                else
-                                    ((Excel.Range)exW.Cells[row, 8]).Interior.Color = Color.LightPink;
-                            }
-                            if (g_f_2 > 0)
-                            {
-                                if (g_f_2 >= g2)
-                                    ((Excel.Range)exW.Cells[row, 9]).Interior.Color = Color.LightGreen;
-                                else
-                                    ((Excel.Range)exW.Cells[row, 9]).Interior.Color = Color.LightPink;
-                            }
-                            if (g_f_3 > 0)
-                            {
-                                if (g_f_3 >= g3)
-                                    ((Excel.Range)exW.Cells[row, 10]).Interior.Color = Color.LightGreen;
-                                else
-                                    ((Excel.Range)exW.Cells[row, 10]).Interior.Color = Color.LightPink;
-                            }
-                            if (g_f_4 > 0)
-                            {
-                                if (g_f_4 >= g4)
-                                    ((Excel.Range)exW.Cells[row, 11]).Interior.Color = Color.LightGreen;
-                                else
-                                    ((Excel.Range)exW.Cells[row, 11]).Interior.Color = Color.LightPink;
-                            }
-                            if (g_f_5 > 0)
-                            {
-                                if (g_f_5 >= g5)
-                                    ((Excel.Range)exW.Cells[row, 12]).Interior.Color = Color.LightGreen;
-                                else
-                                    ((Excel.Range)exW.Cells[row, 12]).Interior.Color = Color.LightPink;
-                            }
-                            if (g_f_6 > 0)
-                            {
-                                if (g_f_6 >= g6)
-                                    ((Excel.Range)exW.Cells[row, 13]).Interior.Color = Color.LightGreen;
-                                else
-                                    ((Excel.Range)exW.Cells[row, 13]).Interior.Color = Color.LightPink;
-                            }
-                            if (g_f_7 > 0)
-                            {
-                                if (g_f_7 >= g7)
-                                    ((Excel.Range)exW.Cells[row, 14]).Interior.Color = Color.LightGreen;
-                                else
-                                    ((Excel.Range)exW.Cells[row, 14]).Interior.Color = Color.LightPink;
-                            }
-                            if (g_f_8 > 0)
-                            {
-                                if (g_f_8 >= g8)
-                                    ((Excel.Range)exW.Cells[row, 15]).Interior.Color = Color.LightGreen;
-                                else
-                                    ((Excel.Range)exW.Cells[row, 15]).Interior.Color = Color.LightPink;
-                            }
-                            if (g_f_9 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 18]).Value2 = g_f_9 + "|" + g9;
-                                if (g_f_9 >= g9)
-                                    ((Excel.Range)exW.Cells[row, 18]).Interior.Color = Color.LightGreen;
-                                else
-                                    ((Excel.Range)exW.Cells[row, 18]).Interior.Color = Color.LightPink;
-                            }
-
-                            if (g_f_12 > 0)
-                            {
-                                if (g_f_12 >= g12)
-                                    ((Excel.Range)exW.Cells[row, 16]).Interior.Color = Color.LightGreen;
-                                else
-                                    ((Excel.Range)exW.Cells[row, 16]).Interior.Color = Color.LightPink;
-
+                                if (g_f_10 == AmountDetails) ((Excel.Range)exW.get_Range("A" + row, "R" + row)).Interior.Color = Color.LightGreen;//Полностью закрашиваем строку
+                                else ((Excel.Range)exW.Cells[row, 17]).Interior.Color = Color.LightPink;
                             }
 
                             if (reader.HasRows == false)   // Если в БД Диспетчера мы не находим ничего, то идем в Лотсман
@@ -1789,7 +1545,6 @@ namespace Dispetcher2.Class
                                     using (SqlDataReader reader2 = cmd_2.ExecuteReader())
                                     {
                                         int slesarn = 0, zagotov = 0, tokar = 0, frezer = 0, shlif = 0, frezer_chu = 0, rastoch = 0, svaroch = 0, otk = 0;
-
 
                                         while (reader2.Read())
                                         {
@@ -1840,7 +1595,6 @@ namespace Dispetcher2.Class
                                                 default:
                                                     //Console.WriteLine("Default case");
                                                     break;
-
                                             }
                                         }
 
@@ -1857,7 +1611,6 @@ namespace Dispetcher2.Class
                                         if (AllTime > 0) ((Excel.Range)exW.Cells[row, 18]).Value2 = IntToTime(AllTime);
 
                                         _OperGroupFactTime[8] += AllTime;
-
                                     }
                                 }
                             }
@@ -1869,7 +1622,6 @@ namespace Dispetcher2.Class
             {
                 MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        
         }
 
 
