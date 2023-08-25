@@ -154,39 +154,7 @@ namespace Dispetcher2.Class
                     C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
                     SqlCommand cmd = new SqlCommand() { CommandTimeout = 500 };//using System.Data.SqlClient;
                     #region SQL - запросы
-                    //ТОЖЕ РАБОЧИЙ ВАРИАНТ
-                    /*cmd.CommandText = "Select PK_IdDepartment,Department,FK_LoginWorker,DateStart,RateWorker,AmountWorkers,NumBrigade," + "\n" +
-                                      "OrderNum,Position,NameDetail,ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay " + "\n" +
-                                      "From vwFactWorkers" + "\n" +
-                                      "Where DateFactOper>=@DateStart and DateFactOper<=@DateEnd" + "\n" +
-                                      WhereLogin + WhereIdCeh +
-                                      "union all" + "\n" +
-                                      "Select PK_IdDepartment,Department,FK_LoginWorker,DateStart,RateWorker,AmountWorkers,NumBrigade," + "\n" +
-                                      "OrderNum,Position,NameDetail,ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay " + "\n" +
-                                      "From vwFactBrigades" + "\n" +
-                                      "Where DateFactOper>=@DateStart and DateFactOper<=@DateEnd" + "\n" +
-                                      WhereLogin + WhereIdCeh +
-                                      "Order by PK_IdDepartment,FK_LoginWorker,OrderNum";*/
-                    //ТОЖЕ РАБОЧИЙ ВАРИАНТ (+Val_Time в 1 запросе)
-                    /*cmd.CommandText = "Select PK_IdDepartment,Department,FK_LoginWorker,DateStart,RateWorker,AmountWorkers,NumBrigade," + "\n" +
-                                      "OrderNum,Position,NameDetail,ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay, sum((convert( decimal(4,1), Val_Time))) as Val_Time " + "\n" +
-                                      "From vwFactWorkers" + "\n" +
-                                      "left join TimeSheets TS on  TS.FK_Login = vwFactWorkers.FK_LoginWorker and TS.Val_Time != '' and TS.Val_Time <='8' and TS.PK_Date>=@DateStart and PK_Date<=@DateEnd" + "\n" +
-                                      "Where DateFactOper>=@DateStart and DateFactOper<=@DateEnd" + "\n" +
-                                      WhereLogin + WhereIdCeh +
-                                      "Group by PK_IdDepartment,Department,FK_LoginWorker,DateStart,RateWorker,AmountWorkers,NumBrigade,OrderNum,Position,NameDetail," + "\n" +
-                                      "ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay" + "\n" +
-                                      "union all" + "\n" +
-                                      "Select PK_IdDepartment,Department,FK_LoginWorker,DateStart,RateWorker,AmountWorkers,NumBrigade," + "\n" +
-                                      "OrderNum,Position,NameDetail,ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay, sum((convert( decimal(4,1), Val_Time))) as Val_Time " + "\n" +
-                                      "From vwFactBrigades" + "\n" +
-                                      "left join TimeSheets TS on  TS.FK_Login = vwFactBrigades.FK_LoginWorker and TS.Val_Time != '' and TS.Val_Time <='8' and TS.PK_Date>=@DateStart and PK_Date<=@DateEnd" + "\n" +
-                                      "Where DateFactOper>=@DateStart and DateFactOper<=@DateEnd" + "\n" +
-                                      WhereLogin + WhereIdCeh +
-                                      "Group by PK_IdDepartment,Department,FK_LoginWorker,DateStart,RateWorker,AmountWorkers,NumBrigade,OrderNum,Position,NameDetail," + "\n" +
-                                      "ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay" + "\n" +
-                                      "Order by PK_IdDepartment,FK_LoginWorker,OrderNum";*/
-                    //Вариант где присутствуют все сотрудники табеля
+
                     string Off_Workers = "";
                     //if (WhereLogin == "" & WhereIdCeh == "")
                     if (WhereLogin == "")
