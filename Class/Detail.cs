@@ -13,12 +13,13 @@ namespace Dispetcher2.Class
         public string Name { get; set; }
         public int Amount { get; set; }
         public string AllPositionParent { get; set; }
-        public long IdOrderDetail { get; set; }
+        public long OrderDetailId { get; set; }
         public long IdDetail { get; set; }
         public long IdLoodsman { get; set; }
         public int PositionParent { get; set; }
         public string ShcmAndName { get { return Shcm + "\n" + Name; } }
-        public List<Operation> Operations { get; set; }
+        public List<Operation> PlanOperations { get; set; }
+        public List<Operation> FactOperations { get; set; }
         public void SetNameType(object value)
         {
             // Не NULL
@@ -62,7 +63,7 @@ namespace Dispetcher2.Class
         public void SetIdOrderDetail(object value)
         {
             // Не NULL
-            IdOrderDetail = Convert.ToInt64(value);
+            OrderDetailId = Convert.ToInt64(value);
         }
         public void SetIdDetail(object value)
         {

@@ -29,6 +29,12 @@ namespace Dispetcher2.Class
             if (f == false) return 0;
             return Convert.ToInt32(value);
         }
+        public static string GetString(object value)
+        {
+            if (value == null) return String.Empty;
+            if (value is DBNull) return String.Empty;
+            return Convert.ToString(value);
+        }
 
         public void Select_DT(ref DataTable DT,string SQLtext)
         {
@@ -383,7 +389,7 @@ namespace Dispetcher2.Class
         public void Call_rep_VEDOMOST_TRUDOZATRAT_NIIPM_UNITED(Detail d)
         {
             string s;
-            d.Operations = new List<Operation>();
+            d.PlanOperations = new List<Operation>();
             using (var cn = new SqlConnection() { ConnectionString = C_Gper.ConStr_Loodsman })
             {
                 using (var cmd = new SqlCommand() { Connection = cn, CommandTimeout = 120 })
@@ -409,12 +415,43 @@ namespace Dispetcher2.Class
                             var item = new Operation();
                             item.SetName(r["marshrut"]);
                             item.Numcol = GetInteger(r["numcol"]);
+                            if (item.Numcol == 0) continue;
                             item.SetTime(r["Время на одну операцию по деталям"]);
-                            if (item.Time > TimeSpan.Zero) d.Operations.Add(item);
+                            if (item.Time > TimeSpan.Zero) d.PlanOperations.Add(item);
                         }
                     }
                 }
             }
+        }
+
+        public List<Operation> GetFactOperation(long OrderDetailId)
+        {
+            List<Operation> result = new List<Operation>();
+            using (var cn = new SqlConnection() { ConnectionString = C_Gper.ConnStrDispetcher2 })
+            {
+                using (var cmd = new SqlCommand() { Connection = cn })
+                {
+                    cmd.CommandText = "[dbo].[GetFactOperation]";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@OrderDetailId", OrderDetailId);
+                    cn.Open();
+                    using (var r = cmd.ExecuteReader())
+                    {
+                        while(r.Read())
+                        {
+                            var item = new Operation();
+                            item.GroupId = GetInteger(r["FK_IdOperGroup"]);
+                            item.Tpd = GetInteger(r["Tpd"]);
+                            item.Tsh = GetInteger(r["Tsh"]);
+                            item.Quantity = GetInteger(r["fo_Amount"]);
+                            item.Number = GetString(r["NumOper"]);
+                            item.Name = GetString(r["NameOperation"]);
+                            result.Add(item);
+                        }
+                    }
+                }
+            }
+            return result;
         }
     }
 }

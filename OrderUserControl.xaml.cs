@@ -48,6 +48,7 @@ namespace Dispetcher2
 
         private void OnRequest(object sender, RoutedEventArgs e)
         {
+            if (m.OrderList.Count == 1) m.SelectedOrder = m.OrderList[0];
             if (m.SelectedOrder == null)
             {
                 MessageBox.Show("Пожалуйста выберите заказ", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -106,6 +107,7 @@ namespace Dispetcher2
             {
                 m.OrderList.Clear();
             }
+            
         }
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -129,9 +131,9 @@ namespace Dispetcher2
 
             m.OperationList = new List<OperationDictionary>();
 
-            for (int i = 0; i < z.DetailList.Count; i++)
+            for (int i = 0; i < z.MainDetailList.Count; i++)
             {
-                var d = z.DetailList[i];
+                var d = z.MainDetailList[i];
 
                 c = new DataGridTextColumn();
                 c.Header = d.ShcmAndName;
@@ -142,9 +144,11 @@ namespace Dispetcher2
             }
 
             List<string> NameList = new List<string>();
-            foreach(var d in z.DetailList)
+            foreach(var d in z.MainDetailList)
             {
-                var e = from x in d.Operations select x.Name;
+                var e = from x in d.PlanOperations select x.Name;
+                NameList.AddRange(e);
+                e = from x in d.FactOperations select x.Name;
                 NameList.AddRange(e);
             }
 
@@ -156,17 +160,68 @@ namespace Dispetcher2
             {
                 OperationDictionary op = new OperationDictionary();
                 op.Value[0] = name;
-                for(int i = 0; i < z.DetailList.Count; i++)
+                for(int i = 0; i < z.MainDetailList.Count; i++)
                 {
-                    var d = z.DetailList[i];
-                    var e3 = d.Operations.Where(item => item.Name == name).SingleOrDefault();
-                    if (e3 == null) op.Value[i + 1] = String.Empty;
-                    else op.Value[i + 1] = e3.TimeString;
+                    var d = z.MainDetailList[i];
+                    var e3 = d.PlanOperations.Where(item => item.Name == name).SingleOrDefault();
+
+                    var ef = d.FactOperations.Where(item => item.Name == name).SingleOrDefault();
+
+                    op.Value[i + 1] = MakeReportString(plan: e3, fact: ef);
                 }
                 m.OperationList.Add(op);
             }
 
             mainDataGrid.ItemsSource = m.OperationList;
+        }
+        public string Format(TimeSpan ts)
+        {
+            string s = $"{(int)ts.TotalHours:00}:{ts.Minutes:00}:{ts.Seconds:00}";
+            return s;
+        }
+        string MakeReportString(Operation plan, Operation fact)
+        {
+            StringBuilder sb = new StringBuilder();
+            if (plan != null)
+            {
+                sb.Append("План: " + Format(plan.Time));
+            }
+            if (fact != null)
+            {
+                if (sb.Length > 0) sb.Append(Environment.NewLine);
+                sb.Append("Факт: " + Format(fact.Time));
+            }
+            // остаток
+            TimeSpan rest = TimeSpan.Zero;
+            if (plan != null)
+            {
+                rest = plan.Time;
+                if (fact != null) rest = rest.Subtract(fact.Time);
+                sb.Append(Environment.NewLine);
+                if (rest < TimeSpan.Zero) rest = TimeSpan.Zero;
+                sb.Append("Остаток: " + Format(rest));
+                // Процент
+                if (fact != null)
+                {
+                    if (fact.Time > TimeSpan.Zero)
+                    {
+                        if (fact.Time <= plan.Time)
+                        {
+                            decimal dp = (decimal)plan.Time.TotalSeconds;
+                            decimal df = (decimal)fact.Time.TotalSeconds;
+                            decimal dr = df * (decimal)100.0 / dp;
+                            int ir = Convert.ToInt32(dr);
+                            sb.Append(Environment.NewLine).Append("Процент: " + ir + " %");
+                        }
+                        else
+                        {
+                            sb.Append(Environment.NewLine).Append("Процент: " + "100 %");
+                        }
+                    }
+                }
+            }
+            
+            return sb.ToString();
         }
 
         public void Stop()

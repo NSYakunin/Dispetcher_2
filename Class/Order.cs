@@ -18,6 +18,7 @@ namespace Dispetcher2.Class
         public DateTime StartDate { get; set; }
         public DateTime PlannedDate { get; set; }
         public int Amount { get; set; }
+        public List<Detail> MainDetailList { get; set; }
         public List<Detail> DetailList { get; set; }
 
         public void SetId(object value)
@@ -81,6 +82,30 @@ namespace Dispetcher2.Class
             // Не NULL
             // тип данных SQL: SMALLINT
             Amount = Convert.ToInt32(value);
+        }
+
+        public List<Detail> GetTree(Detail d)
+        {
+            if (DetailList == null) return null;
+            if (DetailList.Any() == false) return null;
+
+            List<Detail> result = new List<Detail>();
+            result.Add(d);
+
+            var e = from item in DetailList
+                    where item.PositionParent == d.Position
+                    select item;
+
+            if (e.Any())
+            {
+                foreach(var x in e)
+                {
+                    var sr = GetTree(x);
+                    if (sr != null) result.AddRange(sr);
+                }
+            }
+
+            return result;
         }
     }
 }
