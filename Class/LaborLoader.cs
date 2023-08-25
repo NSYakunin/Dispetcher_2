@@ -59,28 +59,54 @@ namespace Dispetcher2.Class
         void LoadDetail()
         {
             var dl = db.GetOrderDetailAndFastener(selectedOrder.Id);
+            selectedOrder.DetailList = dl;
             if (dl != null)
             {
                 
                 var dl2 = from d in dl
                           where d.PositionParent == 0
                           select d;
-                selectedOrder.DetailList = new List<Detail>();
+                selectedOrder.MainDetailList = new List<Detail>();
                 
                 foreach(var item in dl2)
                 {
-                    if (item.IdLoodsman > 0) selectedOrder.DetailList.Add(item);
+                    if (item.IdLoodsman > 0) selectedOrder.MainDetailList.Add(item);
                 }
             }
         }
 
         void LoadOperation()
         {
-            foreach(var d in selectedOrder.DetailList)
+            foreach(var d in selectedOrder.MainDetailList)
             {
                 if (cancelFlag) return;
                 db.Call_rep_VEDOMOST_TRUDOZATRAT_NIIPM_UNITED(d);
-                
+
+                if (cancelFlag) return;
+                var dl = selectedOrder.GetTree(d);
+
+                if (dl == null) return;
+                List<Operation> factOperations = new List<Operation>();
+                foreach(var item in dl)
+                {
+                    if (cancelFlag) return;
+                    var a = db.GetFactOperation(item.OrderDetailId);
+                    factOperations.AddRange(a);
+                }
+                if (cancelFlag) return;
+                d.FactOperations = new List<Operation>();
+                var e = factOperations.GroupBy(item => item.Name);
+                foreach(var g in e)
+                {
+                    Operation f = new Operation();
+                    f.Name = g.Key;
+                    f.Time = TimeSpan.Zero;
+                    foreach(var item in g)
+                    {
+                        f.AddFactTime(item);
+                    }
+                    d.FactOperations.Add(f);
+                }
             }
         }
     }

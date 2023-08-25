@@ -15,7 +15,7 @@
             <RowDefinition Height="40"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <TextBox x:Name="filterTextBox" Text="{Binding Filter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="5,5,0,0" VerticalAlignment="Center" MinWidth="100" TextChanged="TextBox_TextChanged"/>
+        <TextBox x:Name="filterTextBox" Text="{Binding Filter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="5,5,0,0" VerticalAlignment="Center" MinWidth="200" TextChanged="TextBox_TextChanged" TextAlignment="Left"/>
         <ListBox x:Name="orderListBox" HorizontalAlignment="Left" Margin="5" Grid.Row="1" VerticalAlignment="Top"
                  ItemsSource="{Binding OrderList}" SelectedItem="{Binding SelectedOrder}" MinWidth="200">
             <ListBox.ItemTemplate>
@@ -39,7 +39,8 @@
                 </Style>
             </DataGrid.ColumnHeaderStyle>
         </DataGrid>
-        <local:WaitControl x:Name="LoadingWait" Grid.Column="1" Height="70" Grid.Row="1" VerticalAlignment="Top" Width="400"/>
+        <local:WaitControl x:Name="LoadingWait" Grid.Column="1" Height="70" Width="400" Grid.Row="1" 
+                           VerticalAlignment="Top" HorizontalAlignment="Left" />
 
     </Grid>
 </UserControl>
