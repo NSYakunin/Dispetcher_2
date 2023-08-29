@@ -214,6 +214,8 @@ namespace Dispetcher2.Class
                     ((Excel.Range)ExcelWorkSheet.Cells[1, 1]).HorizontalAlignment = Excel.Constants.xlCenter;
                     ((Excel.Range)ExcelWorkSheet.Cells[2, 1]).Value2 = "с " + DateStart.ToShortDateString() + " по " + DateEnd.ToShortDateString();
                     ((Excel.Range)ExcelWorkSheet.Cells[2, 1]).HorizontalAlignment = Excel.Constants.xlCenter;
+                    ((Excel.Range)ExcelWorkSheet.get_Range("A1:M1")).Merge();
+                    ((Excel.Range)ExcelWorkSheet.get_Range("A2:M2")).Merge();
                     ExcelWorkSheet.Cells[4, 1] = "№";
                     ExcelWorkSheet.Cells[4, 2] = "ФИО исполнителя";
                     ExcelWorkSheet.Cells[4, 3] = "Заказ";
@@ -311,7 +313,7 @@ namespace Dispetcher2.Class
                         ExcelWorkSheet.Cells[NumRow, 8] = _DT.Rows[i].ItemArray[12].ToString();//Операция
                         if (_DT.Rows[i].ItemArray[13].ToString() != "")//Дата
                             ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 9]).Value2 = Convert.ToDateTime(_DT.Rows[i].ItemArray[13]);//Дата - DateFactOper
-                        else ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 9]).Value2 = "";
+                        else ExcelWorkSheet.Cells[NumRow, 9] = "";
                         if (_DT.Rows[i].ItemArray[7].ToString() != "")//OrderNum = null, т.е. сотрудник ничего не делал и данные по нему есть только из табеля
                         {
                             //Tpd                                   //Tsh
@@ -322,13 +324,13 @@ namespace Dispetcher2.Class
                             FactTime = FactTime / (int)_DT.Rows[i].ItemArray[5];//Кол-во человек в бригаде
                         }
                         else FactTime = 0;
-                        ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 12]).Value2 = IntToTime(FactTime);
+                        ExcelWorkSheet.Cells[NumRow, 12] = IntToTime(FactTime);
                         FactTimeWorker += FactTime;
                         //**************************Подсчёт по дням**************************
                         if (FlagDays & FactTime>0 & _DT.Rows[i].ItemArray[13].ToString() != "")
                         {
                             TimeSpan tsRow = Convert.ToDateTime(_DT.Rows[i].ItemArray[13]) - DateStart;
-                            ((Excel.Range)ExcelWorkSheet.Cells[NumRow, tsRow.Days + 16]).Value2 = IntToTime(FactTime);
+                            ExcelWorkSheet.Cells[NumRow, tsRow.Days + 16] = IntToTime(FactTime);
                             AllWorkerForDay[tsRow.Days] += FactTime;
                             //((Excel.Range)ExcelWorkSheet.Cells[NumRow, tsRow.Days + 16]).Value2 = IntToTime(AllForDay[tsRow.Days]);
                         }
@@ -339,7 +341,7 @@ namespace Dispetcher2.Class
                         {
                             int _PlanHours = 0;
                             decimal TimeSheets = 0;//Время по табелю за 1 деь на 1 рабочего
-                            ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 8]).Value2 = "Всего";
+                            ExcelWorkSheet.Cells[NumRow, 8] = "Всего";
                             //Н/ч за период (факт)
                             if (Convert.ToInt32(_DT.Rows[i].ItemArray[1]) != 1)//if not "ИТР, специалисты, служащий персонал цеха"
                             {
@@ -382,13 +384,13 @@ namespace Dispetcher2.Class
                                         else
                                             _PlanHours = Convert.ToInt32(PlanHours * RateWorker * 1.08);//Добавляем коэффициент 1.08
 
-                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 10]).Value2 = IntToTime(_PlanHours);//н/ч за период (план)
+                                ExcelWorkSheet.Cells[NumRow, 10] = IntToTime(_PlanHours);//н/ч за период (план)
                                 //TimeSheets = TimeSheetsFromOneWorker(FIO,DateStart,DateEnd);
                                 // Тут я пофиксил время до простой и работающей формулы
                                 if (decimal.TryParse(_DT.Rows[i].ItemArray[17].ToString(), out TimeSheets))
                                 {
                                     double time = Convert.ToDouble(TimeSheets) * 3600;
-                                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 11]).Value2 = IntToTime(Convert.ToInt32(time)); //// ТУТ!!!!
+                                    ExcelWorkSheet.Cells[NumRow, 11] = IntToTime(Convert.ToInt32(time)); //// ТУТ!!!!
                                     TimeSheetsSecDepartment += Convert.ToInt32(time);
                                 }
                                 else TimeSheets = 0;
@@ -397,15 +399,15 @@ namespace Dispetcher2.Class
                             else
                             {
                                 ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 10]).NumberFormat = "";
-                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 10]).Value2 = 0;
+                                ExcelWorkSheet.Cells[NumRow, 10] = 0;
                                 _PlanHours = 0;
                                 ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 11]).NumberFormat = "";
-                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 11]).Value2 = 0;
+                                ExcelWorkSheet.Cells[NumRow, 11] = 0;
                                 TimeSheets = 0;
                             }
                             PlanHoursDepartment += (ulong)_PlanHours;
                             //Н/ч за период (факт)
-                            ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 12]).Value2 = IntToTime(FactTimeWorker);
+                            ExcelWorkSheet.Cells[NumRow, 12] = IntToTime(FactTimeWorker);
                             FactTimeDepartment += (ulong)FactTimeWorker;
                             //% выполнения
                             if (_PlanHours > 0 & TimeSheets>0)
@@ -416,8 +418,8 @@ namespace Dispetcher2.Class
                             }
                             else
                             {
-                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 13]).Value2 = 0;
-                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 14]).Value2 = 0;
+                                ExcelWorkSheet.Cells[NumRow, 13] = 0;
+                                ExcelWorkSheet.Cells[NumRow, 14] = 0;
                             }
                             FactTimeWorker = 0;
                             //Подсчёт по дням****************************************************
@@ -432,10 +434,10 @@ namespace Dispetcher2.Class
                                 }
                             }
                             //Подсчёт по дням(END)***********************************************
-                            ((Excel.Range)ExcelWorkSheet.get_Range("A" + (NumRow - 1).ToString(), "A" + (NumRow).ToString())).Merge();
-                            ((Excel.Range)ExcelWorkSheet.get_Range("B" + (NumRow - 1).ToString(), "B" + (NumRow).ToString())).Merge();
-                            ((Excel.Range)ExcelWorkSheet.get_Range((NumRow - 1) + ":" + (NumRow - 1))).Group();
-                            ((Excel.Range)ExcelWorkSheet.get_Range("A" + (NumRow).ToString(), LastRep3Column + (NumRow).ToString())).Font.Bold = 1;
+                            (ExcelWorkSheet.get_Range("A" + (NumRow - 1).ToString(), "A" + (NumRow).ToString())).Merge();
+                            (ExcelWorkSheet.get_Range("B" + (NumRow - 1).ToString(), "B" + (NumRow).ToString())).Merge();
+                            (ExcelWorkSheet.get_Range((NumRow - 1) + ":" + (NumRow - 1))).Group();
+                            (ExcelWorkSheet.get_Range("A" + (NumRow).ToString(), LastRep3Column + (NumRow).ToString())).Font.Bold = 1;
                             NumRow++;
                         }
                         //Всего(END)*********************************************************
@@ -447,11 +449,11 @@ namespace Dispetcher2.Class
                         if (Department != "" & Department != _DT.Rows[i+1].ItemArray[2].ToString())
                             {
                                 if (PlanHoursDepartment == 0) ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 10]).NumberFormat = "";
-                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 2]).Value2 = "Итого по участку";
-                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 8]).Value2 = "Итого по участку";
-                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 10]).Value2 = IntToTime(PlanHoursDepartment);//н/ч за период (план)
-                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 11]).Value2 = IntToTime(TimeSheetsSecDepartment);//Часы по табелю
-                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 12]).Value2 = IntToTime(FactTimeDepartment);//Н/ч за период (факт)
+                                ExcelWorkSheet.Cells[NumRow, 2] = "Итого по участку";
+                                ExcelWorkSheet.Cells[NumRow, 8] = "Итого по участку";
+                                ExcelWorkSheet.Cells[NumRow, 10] = IntToTime(PlanHoursDepartment);//н/ч за период (план)
+                                ExcelWorkSheet.Cells[NumRow, 11] = IntToTime(TimeSheetsSecDepartment);//Часы по табелю
+                                ExcelWorkSheet.Cells[NumRow, 12] = IntToTime(FactTimeDepartment);//Н/ч за период (факт)
                                 //% выполнения
                                 if (PlanHoursDepartment > 0)
                                 {
@@ -461,8 +463,8 @@ namespace Dispetcher2.Class
                             }
                                 else
                                 {
-                                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 13]).Value2 = 0;
-                                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 14]).Value2 = 0;
+                                    ExcelWorkSheet.Cells[NumRow, 13] = 0;
+                                    ExcelWorkSheet.Cells[NumRow, 14] = 0;
                                 }
                                 AllPlanHours += PlanHoursDepartment;//н/ч за период (план)
                                 AllFactTime += FactTimeDepartment;//Н/ч за период (факт)
@@ -479,7 +481,7 @@ namespace Dispetcher2.Class
                                     {
                                         if (AllDepartmentForDay[m] > 0)
                                         {
-                                            ((Excel.Range)ExcelWorkSheet.Cells[NumRow, m + 16]).Value2 = IntToTime(AllDepartmentForDay[m]);//Итого по участку за каждый день
+                                            ExcelWorkSheet.Cells[NumRow, m + 16] = IntToTime(AllDepartmentForDay[m]);//Итого по участку за каждый день
                                             //"Вып. по участку";
                                             SundayOrSaturday = Convert.ToDateTime(((Excel.Range)ExcelWorkSheet.Cells[4, m + 16]).Value2);
                                             if (SundayOrSaturday.DayOfWeek.ToString() != "Saturday" & SundayOrSaturday.DayOfWeek.ToString() != "Sunday")
@@ -493,7 +495,7 @@ namespace Dispetcher2.Class
                                                 //((Excel.Range)ExcelWorkSheet.Cells[NumRow + 1, m + 16]).Value2 = "=(" + adrcell + "/(" + "L" + (NumRow) + "/" + cWorkDays + "))";//где L это - Н/ч за период (факт)
                                                 //((Excel.Range)ExcelWorkSheet.Cells[NumRow + 1, m + 16]).Value2 = "=(" + adrcell + "/(" + (double)AmountWorkers * 8.64 + "))";//где L это - Н/ч за период (факт)
                                                 double Proc = (double)AllDepartmentForDay[m] / ((double)Workers1 * 28800 * 1.08 + (double)Workers05 * 14400 * 1.08);
-                                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow + 1, m + 16]).Value2 = Proc;//где L это - Н/ч за период (факт)
+                                                ExcelWorkSheet.Cells[NumRow + 1, m + 16] = Proc;//где L это - Н/ч за период (факт)
                                             }
                                             //else
                                                 //((Excel.Range)ExcelWorkSheet.Cells[4, m + 14]).Interior.Color = System.Drawing.Color.PaleGreen;
@@ -517,7 +519,7 @@ namespace Dispetcher2.Class
                                 {
                                     //RowsAllDepartment[RowsAllDep] = NumRow;//int[] RowsAllDepartment = new int[10]; ;//Номера строк "Итого по участку" 10 - с запасом взял // пока есть 4 участка
                                     //RowsAllDep++;//int RowsAllDep = 0; //Номер элемента в массиве RowsAllDepartment
-                                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 2]).Value2 = "Вып. по участку";
+                                    ExcelWorkSheet.Cells[NumRow, 2] = "Вып. по участку";
                                     NumRow++;//String for %
                                 }
                                 }
@@ -534,11 +536,11 @@ namespace Dispetcher2.Class
                     //Сетка(END)********************************************
                     //ИТОГО*******************************************************
                     NumRow++;
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 2]).Value2 = "Всего по цеху";
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 8]).Value2 = "Итого";
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 10]).Value2 = IntToTime(AllPlanHours);//н/ч за период (план)
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 11]).Value2 = IntToTime(AllTimeSheetsSec);//Табельное время
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 12]).Value2 = IntToTime(AllFactTime);//Н/ч за период (факт)
+                    ExcelWorkSheet.Cells[NumRow, 2] = "Всего по цеху";
+                    ExcelWorkSheet.Cells[NumRow, 8] = "Итого";
+                    ExcelWorkSheet.Cells[NumRow, 10] = IntToTime(AllPlanHours);//н/ч за период (план)
+                    ExcelWorkSheet.Cells[NumRow, 11] = IntToTime(AllTimeSheetsSec);//Табельное время
+                    ExcelWorkSheet.Cells[NumRow, 12] = IntToTime(AllFactTime);//Н/ч за период (факт)
                     
                     
                     //% выполнения
@@ -549,8 +551,8 @@ namespace Dispetcher2.Class
                     }
                     else
                     {
-                        ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 13]).Value2 = 0;
-                        ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 14]).Value2 = 0;
+                        ExcelWorkSheet.Cells[NumRow, 13] = 0;
+                        ExcelWorkSheet.Cells[NumRow, 14] = 0;
                     }
                     //Подсчёт по дням ИТОГО****************************************************
                     if (FlagDays)
@@ -558,7 +560,7 @@ namespace Dispetcher2.Class
                         {
                             if (AllForDay[m] > 0)
                             {
-                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow, m + 16]).Value2 = IntToTime(AllForDay[m]);
+                                ExcelWorkSheet.Cells[NumRow, m + 16] = IntToTime(AllForDay[m]);
                                 //AllForDay[m] = 0;
                             }
                         }
@@ -590,7 +592,7 @@ namespace Dispetcher2.Class
                     if (FlagDays & IdCeh == -1 & loginWorker == "" & cWorkDays > 0 & (ExcelWorkSheet.Cells[NumRow - 1, 10] as Excel.Range).Value2 != 0)
                     {
                         NumRow++;
-                        ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 2]).Value2 = "Выполнение по цеху";
+                        ExcelWorkSheet.Cells[NumRow, 2] = "Выполнение по цеху";
                         DateTime SundayOrSaturday;
                         for (int m = 0; m < AllForDay.Length; m++)
                         {
@@ -604,7 +606,7 @@ namespace Dispetcher2.Class
                                 //((Excel.Range)ExcelWorkSheet.Cells[NumRow, m + 16]).Value2 = "=(" + adrcell + "/(" + "L" + (NumRow - 1) + "/" + cWorkDays + "))";//где L это - Н/ч за период (факт)
                                 //((Excel.Range)ExcelWorkSheet.Cells[NumRow, m + 16]).Value2 = "=(" + adrcell + "/J" + (NumRow - 1) + ")";//где L это - Н/ч за период (факт)
                                 double Proc = (double)AllForDay[m] / ((double)All_Workers1 * 28800 * 1.08 + (double)All_Workers05 * 14400 * 1.08);
-                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow, m + 16]).Value2 = Proc;//где L это - Н/ч за период (факт)
+                                ExcelWorkSheet.Cells[NumRow, m + 16] = Proc;//где L это - Н/ч за период (факт)
                             }
                             AllForDay[m] = 0;
                         }
@@ -613,13 +615,13 @@ namespace Dispetcher2.Class
                     //Строка для выработки(END)******************************
                     
 
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow + 2, 2]).Value2 = "Сдал:";
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow + 3, 2]).Value2 = "   Оператор ИАЦ _______________________ /Тычинина Е.С./";
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow + 4, 2]).Value2 = "Принял:";
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow + 5, 2]).Value2 = "   Начальник мех. участка   _______________________ /Уткин В.В./";
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow + 7, 2]).Value2 = "   Начальник слес. участка _______________________ /Сотников Ю.И./";
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow + 9, 2]).Value2 = "   Начальник цеха              _______________________ /___________________/";
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow + 11, 2]).Value2 = "   Начальник производства _______________________ /Казьмин А.В./";
+                    ExcelWorkSheet.Cells[NumRow + 2, 2] = "Сдал:";
+                    ExcelWorkSheet.Cells[NumRow + 3, 2] = "   Оператор ИАЦ _______________________ /Тычинина Е.С./";
+                    ExcelWorkSheet.Cells[NumRow + 4, 2] = "Принял:";
+                    ExcelWorkSheet.Cells[NumRow + 5, 2] = "   Начальник мех. участка   _______________________ /Уткин В.В./";
+                    ExcelWorkSheet.Cells[NumRow + 7, 2] = "   Начальник слес. участка _______________________ /Сотников Ю.И./";
+                    ExcelWorkSheet.Cells[NumRow + 9, 2] = "   Начальник цеха              _______________________ /___________________/";
+                    ExcelWorkSheet.Cells[NumRow + 11, 2] = "   Начальник производства _______________________ /Казьмин А.В./";
 
                     
                     MessageBox.Show("Формирование отчета завершено.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
