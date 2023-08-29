@@ -8,7 +8,7 @@ using System.Data;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Drawing;
 using SourceGrid;
-
+using System.Text.RegularExpressions;
 
 namespace Dispetcher2.Class
 {
@@ -139,12 +139,12 @@ namespace Dispetcher2.Class
         /// <param name="IdCeh">цех</param>
         /// <param name="FlagDays">Разбить по дням</param>
         public void rep3(DateTime DateStart, DateTime DateEnd, string loginWorker, int IdCeh, bool FlagDays, int PlanHours,int cWorkDays)
-        { 
+        {
             try
             {
                 _DT.Clear();
                 string WhereLogin = "", WhereIdCeh = "", WhereIdCeh2 = "";
-                if (loginWorker !="") WhereLogin = " and FK_LoginWorker=@FK_LoginWorker" + "\n";
+                if (loginWorker != "") WhereLogin = " and FK_LoginWorker=@FK_LoginWorker" + "\n";
                 if (IdCeh != -1)
                 {
                     WhereIdCeh2 = " and d.PK_IdDepartment=@PK_IdDepartment" + "\n";
@@ -152,43 +152,32 @@ namespace Dispetcher2.Class
                 }
                 using (C_Gper.con)
                 {
+
                     C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
 
-                    string sqlExpression = "rep3WithOffWorkers";
+                    //Если не выбрано ничего, то процедура rep3All, если выбран логин rep3Worker, и наконец если выбран цех rep3Ceh
+                    string sqlExpression = (loginWorker == "" & IdCeh == -1) ? "rep3All" : loginWorker != "" ? "rep3Worker" : "rep3Ceh";
 
                     SqlCommand cmd = new SqlCommand(sqlExpression) { CommandTimeout = 60 };
+
                     cmd.Connection = C_Gper.con;
                     cmd.Parameters.Clear();
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@WhereLogin", WhereLogin);
-                    cmd.Parameters.AddWithValue("@WhereIdCeh", WhereIdCeh);
-                    cmd.Parameters.AddWithValue("@WhereIdCeh2", WhereIdCeh2);
-
                     cmd.Parameters.AddWithValue("@DateStart", DateStart);
                     cmd.Parameters.AddWithValue("@DateEnd", DateEnd);
+                    cmd.Parameters.AddWithValue("@FK_LoginWorker", loginWorker);
+                    cmd.Parameters.AddWithValue("@PK_IdDepartment", IdCeh);
 
-                    if (loginWorker != "") cmd.Parameters.AddWithValue("@FK_LoginWorker", loginWorker);
-                    if (IdCeh != -1) cmd.Parameters.AddWithValue("@PK_IdDepartment", IdCeh);
-
-                    using (C_Gper.con)
-                    {
-                        C_Gper.con.Open();
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-
-                            cmd.Parameters.Add(new SqlParameter("@DateStart", SqlDbType.Date));
-                        cmd.Parameters["@DateStart"].Value = DateStart;
-                        cmd.Parameters.Add(new SqlParameter("@DateEnd", SqlDbType.Date));
-                        cmd.Parameters["@DateEnd"].Value = DateEnd;
-
-                        cmd.Connection = C_Gper.con;
-                        SqlDataAdapter adapter = new SqlDataAdapter();
-                        adapter.SelectCommand = cmd;
-                        adapter.Fill(_DT);
-                        adapter.Dispose();
-                        _DT.Rows.Add();
-                    }
+                    cmd.Connection = C_Gper.con;
+                    SqlDataAdapter adapter = new SqlDataAdapter();
+                    adapter.SelectCommand = cmd;
+                    adapter.Fill(_DT);
+                    adapter.Dispose();
+                    _DT.Rows.Add();
                 }
+
+
                 if (_DT.Rows.Count == 0) MessageBox.Show("Нет данных для формирования отчёта.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 else//Export data to Excel
                 {
