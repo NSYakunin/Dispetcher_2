@@ -214,26 +214,24 @@ namespace Dispetcher2.Class
                     ((Excel.Range)ExcelWorkSheet.Cells[1, 1]).HorizontalAlignment = Excel.Constants.xlCenter;
                     ((Excel.Range)ExcelWorkSheet.Cells[2, 1]).Value2 = "с " + DateStart.ToShortDateString() + " по " + DateEnd.ToShortDateString();
                     ((Excel.Range)ExcelWorkSheet.Cells[2, 1]).HorizontalAlignment = Excel.Constants.xlCenter;
-                    ((Excel.Range)ExcelWorkSheet.get_Range("A1:M1")).Merge();
-                    ((Excel.Range)ExcelWorkSheet.get_Range("A2:M2")).Merge();
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 1]).Value2 = "№";
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 2]).Value2 = "ФИО исполнителя";
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 3]).Value2 = "Заказ";
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 4]).Value2 = "Поз.";
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 5]).Value2 = "Наименование";
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 6]).Value2 = "Обозначение";
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 7]).Value2 = "Кол-во";
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 8]).Value2 = "Операция";
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 9]).Value2 = "Дата";
+                    ExcelWorkSheet.Cells[4, 1] = "№";
+                    ExcelWorkSheet.Cells[4, 2] = "ФИО исполнителя";
+                    ExcelWorkSheet.Cells[4, 3] = "Заказ";
+                    ExcelWorkSheet.Cells[4, 4] = "Поз.";
+                    ExcelWorkSheet.Cells[4, 5] = "Наименование";
+                    ExcelWorkSheet.Cells[4, 6] = "Обозначение";
+                    ExcelWorkSheet.Cells[4, 7] = "Кол-во";
+                    ExcelWorkSheet.Cells[4, 8] = "Операция";
+                    ExcelWorkSheet.Cells[4, 9] = "Дата";
                     ((Excel.Range)ExcelWorkSheet.Columns[9]).NumberFormat = "m/d/yyyy";
                     ((Excel.Range)ExcelWorkSheet.Cells[4, 10]).Value2 = "н/ч за период (план)";
                     ((Excel.Range)ExcelWorkSheet.Columns[10]).NumberFormat = "[h]:mm:ss";
                     ((Excel.Range)ExcelWorkSheet.Columns[10]).HorizontalAlignment = Excel.Constants.xlCenter;
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 11]).Value2 = "Табельное время";
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 12]).Value2 = "Н/ч за период (факт)";
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 13]).Value2 = "% вып. от пл. вр.";
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 14]).Value2 = "% вып. от таб.вр.";
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 15]).Value2 = "Н/ч за день";
+                    ExcelWorkSheet.Cells[4, 11] = "Табельное время";
+                    ExcelWorkSheet.Cells[4, 12] = "Н/ч за период (факт)";
+                    ExcelWorkSheet.Cells[4, 13] = "% вып. от пл. вр.";
+                    ExcelWorkSheet.Cells[4, 14] = "% вып. от таб.вр.";
+                    ExcelWorkSheet.Cells[4, 15] = "Н/ч за день";
                     string LastRep3Column = "";//NameColumn
                     TimeSpan tsAll = DateEnd - DateStart;
                     if (FlagDays) //Достраиваем если нужно таблицу справа
@@ -252,7 +250,7 @@ namespace Dispetcher2.Class
                         LastRep3Column = ((Excel.Range)ExcelWorkSheet.Cells[4, tsAll.Days + 16]).Address;//NameColumn
                         LastRep3Column = LastRep3Column.Remove(0, 1);//NameColumn
                         LastRep3Column = LastRep3Column.Remove(LastRep3Column.IndexOf('$'));//NameColumn
-                        ((Excel.Range)ExcelWorkSheet.get_Range("A4", LastRep3Column + "4")).Font.Bold = 1;
+                        (ExcelWorkSheet.get_Range("A4", LastRep3Column + "4")).Font.Bold = 1;
                         //MessageBox.Show(LastRep3Column);
                     }
                     else
@@ -284,7 +282,7 @@ namespace Dispetcher2.Class
                     {
                         if (Department == "" || Department != _DT.Rows[i].ItemArray[2].ToString())//заголовок
                         {
-                            ((Excel.Range)ExcelWorkSheet.get_Range("A" + NumRow.ToString(), "O" + NumRow.ToString())).Merge();
+                            (ExcelWorkSheet.get_Range("A" + NumRow.ToString(), "O" + NumRow.ToString())).Merge();
                             ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 1]).Font.Bold = 1;
                             ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 1]).Value2 = _DT.Rows[i].ItemArray[2].ToString();//Department
                             NumRow++;
@@ -293,24 +291,24 @@ namespace Dispetcher2.Class
                         
                         if (FIO == _DT.Rows[i].ItemArray[0].ToString())
                         {
-                            ((Excel.Range)ExcelWorkSheet.get_Range("A" + (NumRow - 1).ToString(), "A" + (NumRow).ToString())).Merge();
-                            ((Excel.Range)ExcelWorkSheet.get_Range("B" + (NumRow - 1).ToString(), "B" + (NumRow).ToString())).Merge();
-                            ((Excel.Range)ExcelWorkSheet.get_Range((NumRow - 1) + ":" + (NumRow - 1))).Group();
+                            (ExcelWorkSheet.get_Range("A" + (NumRow - 1).ToString(), "A" + (NumRow).ToString())).Merge();
+                            (ExcelWorkSheet.get_Range("B" + (NumRow - 1).ToString(), "B" + (NumRow).ToString())).Merge();
+                            (ExcelWorkSheet.get_Range((NumRow - 1) + ":" + (NumRow - 1))).Group();
                         }
                         else 
                         {
                             num++;
-                            ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 1]).Value2 = num;//№
-                            ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 2]).Value2 = _DT.Rows[i].ItemArray[0].ToString();//ФИО исполнителя - FK_LoginWorker
+                            ExcelWorkSheet.Cells[NumRow, 1] = num;//№
+                            ExcelWorkSheet.Cells[NumRow, 2] = _DT.Rows[i].ItemArray[0].ToString();//ФИО исполнителя - FK_LoginWorker
                         }
                         FIO = _DT.Rows[i].ItemArray[0].ToString();
                         //*********************************************************
-                        ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 3]).Value2 = _DT.Rows[i].ItemArray[7].ToString();//Заказ
-                        ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 4]).Value2 = _DT.Rows[i].ItemArray[8].ToString();//Позиция
-                        ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 5]).Value2 = _DT.Rows[i].ItemArray[9].ToString();//Наименование
-                        ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 6]).Value2 = _DT.Rows[i].ItemArray[10].ToString();//Обозначение
-                        ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 7]).Value2 = _DT.Rows[i].ItemArray[11].ToString();//Кол - во
-                        ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 8]).Value2 = _DT.Rows[i].ItemArray[12].ToString();//Операция
+                        ExcelWorkSheet.Cells[NumRow, 3] = _DT.Rows[i].ItemArray[7].ToString();//Заказ
+                        ExcelWorkSheet.Cells[NumRow, 4] = _DT.Rows[i].ItemArray[8].ToString();//Позиция
+                        ExcelWorkSheet.Cells[NumRow, 5] = _DT.Rows[i].ItemArray[9].ToString();//Наименование
+                        ExcelWorkSheet.Cells[NumRow, 6] = _DT.Rows[i].ItemArray[10].ToString();//Обозначение
+                        ExcelWorkSheet.Cells[NumRow, 7] = _DT.Rows[i].ItemArray[11].ToString();//Кол - во
+                        ExcelWorkSheet.Cells[NumRow, 8] = _DT.Rows[i].ItemArray[12].ToString();//Операция
                         if (_DT.Rows[i].ItemArray[13].ToString() != "")//Дата
                             ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 9]).Value2 = Convert.ToDateTime(_DT.Rows[i].ItemArray[13]);//Дата - DateFactOper
                         else ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 9]).Value2 = "";
