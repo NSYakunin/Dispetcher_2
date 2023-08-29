@@ -7,6 +7,7 @@ using System.Data.SqlClient;
 using System.Data;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Drawing;
+using SourceGrid;
 
 
 namespace Dispetcher2.Class
@@ -152,66 +153,41 @@ namespace Dispetcher2.Class
                 using (C_Gper.con)
                 {
                     C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
-                    SqlCommand cmd = new SqlCommand() { CommandTimeout = 500 };//using System.Data.SqlClient;
-                    #region SQL - запросы
 
-                    string Off_Workers = "";
-                    //if (WhereLogin == "" & WhereIdCeh == "")
-                    if (WhereLogin == "")
-                        Off_Workers = "Select Distinct(TS1.FK_Login) as FK_LoginWorker," + "\n" +
-                                      "u.FK_IdDepartment as PK_IdDepartment,d.Department,u.DateStart,u.RateWorker,AmountWorkers,NumBrigade," + "\n" +
-                                      "OrderNum,Position,NameDetail,ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay" + "\n" +
-                                      ", sum((convert( decimal(4,1), TS1.Val_TimeFloat))) as Val_Time,u.DateEnd" + "\n" +
-                                      "From TimeSheets TS1" + "\n" +
-                                      "left join vwFactWorkers FW on fw.FK_LoginWorker = TS1.FK_Login and FW.DateFactOper>=@DateStart and FW.DateFactOper<=@DateEnd and FW.AmountDetails = null" + "\n" +
-                                      "inner join Users u on u.PK_Login = TS1.FK_Login and u.ITR = 0 and Fk_IdJob<>28 and Fk_IdJob>5 and u.PK_Login NOT IN ('Бобров С.А.','Воронцов А.А.')" + "\n" +//('Бобров С.А.','Воронцов А.А.')
-                                      "inner join Sp_Department d on d.PK_IdDepartment = u.FK_IdDepartment" + "\n" +
-                                      "Where TS1.PK_Date>=@DateStart and TS1.PK_Date<=@DateEnd  and (u.DateEnd>=@DateStart or u.DateEnd is null)" + "\n" +
-                                      WhereLogin + WhereIdCeh2 +
-                                      "Group by u.FK_IdDepartment,d.Department,TS1.FK_Login,u.DateStart,u.RateWorker,AmountWorkers,NumBrigade,OrderNum,Position,NameDetail," + "\n" +
-                                      "ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay,TS1.FK_Login,u.DateEnd" + "\n" +
-                                      "union all" + "\n";
-                    cmd.CommandText = Off_Workers +
-                                      "Select FK_LoginWorker,PK_IdDepartment,Department,DateStart,RateWorker,AmountWorkers,NumBrigade," + "\n" +
-                                      "OrderNum,Position,NameDetail,ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay, sum((convert( decimal(4,1), Val_TimeFloat))) as Val_Time, DateEnd" + "\n" +
-                                      "From vwFactWorkers" + "\n" +
-                                      "left join TimeSheets TS on  TS.FK_Login = vwFactWorkers.FK_LoginWorker and TS.PK_Date>=@DateStart and PK_Date<=@DateEnd" + "\n" +
-                                      "Where DateFactOper>=@DateStart and DateFactOper<=@DateEnd" + "\n" +
-                                      WhereLogin + WhereIdCeh +
-                                      "Group by PK_IdDepartment,Department,FK_LoginWorker,DateStart,RateWorker,AmountWorkers,NumBrigade,OrderNum,Position,NameDetail," + "\n" +
-                                      "ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay, DateEnd" + "\n" +
-                                      "union all" + "\n" +
-                                      "Select FK_LoginWorker,PK_IdDepartment,Department,DateStart,RateWorker,AmountWorkers,NumBrigade," + "\n" +
-                                      "OrderNum,Position,NameDetail,ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay, sum((convert( decimal(4,1), Val_TimeFloat))) as Val_Time, DateEnd" + "\n" +
-                                      "From vwFactBrigades" + "\n" +
-                                      "left join TimeSheets TS on  TS.FK_Login = vwFactBrigades.FK_LoginWorker and TS.PK_Date>=@DateStart and PK_Date<=@DateEnd" + "\n" +
-                                      "Where DateFactOper>=@DateStart and DateFactOper<=@DateEnd" + "\n" +
-                                      WhereLogin + WhereIdCeh +
-                                      "Group by PK_IdDepartment,Department,FK_LoginWorker,DateStart,RateWorker,AmountWorkers,NumBrigade,OrderNum,Position,NameDetail," + "\n" +
-                                      "ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay, DateEnd" + "\n" +
-                                      "Order by PK_IdDepartment,FK_LoginWorker,OrderNum";
-                    #endregion
-                    //params
-                    cmd.Parameters.Add(new SqlParameter("@DateStart", SqlDbType.Date));
-                    cmd.Parameters["@DateStart"].Value = DateStart;
-                    cmd.Parameters.Add(new SqlParameter("@DateEnd", SqlDbType.Date));
-                    cmd.Parameters["@DateEnd"].Value = DateEnd;
-                    if (loginWorker !="")
-                    {
-                        cmd.Parameters.Add(new SqlParameter("@FK_LoginWorker", SqlDbType.VarChar));
-                        cmd.Parameters["@FK_LoginWorker"].Value = loginWorker;
-                    }
-                    if (IdCeh != -1) 
-                    {
-                        cmd.Parameters.Add(new SqlParameter("@PK_IdDepartment", SqlDbType.Int));
-                        cmd.Parameters["@PK_IdDepartment"].Value = IdCeh;
-                    }
+                    string sqlExpression = "rep3WithOffWorkers";
+
+                    SqlCommand cmd = new SqlCommand(sqlExpression) { CommandTimeout = 60 };
                     cmd.Connection = C_Gper.con;
-                    SqlDataAdapter adapter = new SqlDataAdapter();
-                    adapter.SelectCommand = cmd;
-                    adapter.Fill(_DT);
-                    adapter.Dispose();
-                    _DT.Rows.Add();
+                    cmd.Parameters.Clear();
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@WhereLogin", WhereLogin);
+                    cmd.Parameters.AddWithValue("@WhereIdCeh", WhereIdCeh);
+                    cmd.Parameters.AddWithValue("@WhereIdCeh2", WhereIdCeh2);
+
+                    cmd.Parameters.AddWithValue("@DateStart", DateStart);
+                    cmd.Parameters.AddWithValue("@DateEnd", DateEnd);
+
+                    if (loginWorker != "") cmd.Parameters.AddWithValue("@FK_LoginWorker", loginWorker);
+                    if (IdCeh != -1) cmd.Parameters.AddWithValue("@PK_IdDepartment", IdCeh);
+
+                    using (C_Gper.con)
+                    {
+                        C_Gper.con.Open();
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+
+                            cmd.Parameters.Add(new SqlParameter("@DateStart", SqlDbType.Date));
+                        cmd.Parameters["@DateStart"].Value = DateStart;
+                        cmd.Parameters.Add(new SqlParameter("@DateEnd", SqlDbType.Date));
+                        cmd.Parameters["@DateEnd"].Value = DateEnd;
+
+                        cmd.Connection = C_Gper.con;
+                        SqlDataAdapter adapter = new SqlDataAdapter();
+                        adapter.SelectCommand = cmd;
+                        adapter.Fill(_DT);
+                        adapter.Dispose();
+                        _DT.Rows.Add();
+                    }
                 }
                 if (_DT.Rows.Count == 0) MessageBox.Show("Нет данных для формирования отчёта.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 else//Export data to Excel
