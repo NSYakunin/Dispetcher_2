@@ -143,22 +143,14 @@ namespace Dispetcher2.Class
             try
             {
                 _DT.Clear();
-                string WhereLogin = "", WhereIdCeh = "", WhereIdCeh2 = "";
-                if (loginWorker != "") WhereLogin = " and FK_LoginWorker=@FK_LoginWorker" + "\n";
-                if (IdCeh != -1)
-                {
-                    WhereIdCeh2 = " and d.PK_IdDepartment=@PK_IdDepartment" + "\n";
-                    WhereIdCeh = " and PK_IdDepartment=@PK_IdDepartment" + "\n";
-                }
                 using (C_Gper.con)
                 {
-
                     C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
 
                     //Если не выбрано ничего, то процедура rep3All, если выбран логин rep3Worker, и наконец если выбран цех rep3Ceh
                     string sqlExpression = (loginWorker == "" & IdCeh == -1) ? "rep3All" : loginWorker != "" ? "rep3Worker" : "rep3Ceh";
 
-                    SqlCommand cmd = new SqlCommand(sqlExpression) { CommandTimeout = 60 };
+                    SqlCommand cmd = new SqlCommand(sqlExpression) { CommandTimeout = 120 };
 
                     cmd.Connection = C_Gper.con;
                     cmd.Parameters.Clear();
@@ -169,7 +161,6 @@ namespace Dispetcher2.Class
                     cmd.Parameters.AddWithValue("@FK_LoginWorker", loginWorker);
                     cmd.Parameters.AddWithValue("@PK_IdDepartment", IdCeh);
 
-                    cmd.Connection = C_Gper.con;
                     SqlDataAdapter adapter = new SqlDataAdapter();
                     adapter.SelectCommand = cmd;
                     adapter.Fill(_DT);
@@ -312,7 +303,7 @@ namespace Dispetcher2.Class
                         ExcelWorkSheet.Cells[NumRow, 7] = _DT.Rows[i].ItemArray[11].ToString();//Кол - во
                         ExcelWorkSheet.Cells[NumRow, 8] = _DT.Rows[i].ItemArray[12].ToString();//Операция
                         if (_DT.Rows[i].ItemArray[13].ToString() != "")//Дата
-                            ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 9]).Value2 = Convert.ToDateTime(_DT.Rows[i].ItemArray[13]);//Дата - DateFactOper
+                            ExcelWorkSheet.Cells[NumRow, 9] = Convert.ToDateTime(_DT.Rows[i].ItemArray[13]);//Дата - DateFactOper
                         else ExcelWorkSheet.Cells[NumRow, 9] = "";
                         if (_DT.Rows[i].ItemArray[7].ToString() != "")//OrderNum = null, т.е. сотрудник ничего не делал и данные по нему есть только из табеля
                         {
@@ -679,16 +670,18 @@ namespace Dispetcher2.Class
             {
                 int PlanHours = 0;
                 C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
-                SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//seconds //using System.Data.SqlClient;
+
+                string sqlExpression = "NormHoursPlanFromOneWorker";
+
+                SqlCommand cmd = new SqlCommand(sqlExpression) { CommandTimeout = 60 };
+
                 cmd.Connection = C_Gper.con;
                 cmd.Parameters.Clear();
-                cmd.CommandText = "SELECT SUM(Dsec) as AllSec" + "\n" +
-                        "FROM Sp_ProductionCalendar" + "\n" +
-                        "Where Dsec>0 and PK_Date >= @DateStart and PK_Date < @DateEnd";
-                cmd.Parameters.Add(new SqlParameter("@DateStart", SqlDbType.Date));
-                cmd.Parameters["@DateStart"].Value = DateStart;
-                cmd.Parameters.Add(new SqlParameter("@DateEnd", SqlDbType.Date));
-                cmd.Parameters["@DateEnd"].Value = DateEnd;
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@DateStart", DateStart);
+                cmd.Parameters.AddWithValue("@DateEnd", DateEnd);
+
                 using (C_Gper.con)
                 {
                     C_Gper.con.Open();
