@@ -25,13 +25,13 @@ namespace Dispetcher2.Class
         private static string _NameBase_Dispetcher2 = "Dispetcher2";
         //private static string _NameBase_Dispetcher2 = "Disp2_TEST";
         //public static string ConnStrDispetcher2 = "Data Source=" + _NameServ_Dispetcher2 + ";Initial Catalog=" + _NameBase_Dispetcher2 + ";Integrated Security=true";
-        public static string ConnStrDispetcher2 = "Data Source=" + _NameServ_Dispetcher2 + ";Initial Catalog=" + _NameBase_Dispetcher2 + ";Persist Security Info=False;Trusted_Connection=False;User ID=test;Password=test123456789";
+        //public static string ConnStrDispetcher2 = "Data Source=" + _NameServ_Dispetcher2 + ";Initial Catalog=" + _NameBase_Dispetcher2 + ";Persist Security Info=False;Trusted_Connection=False;User ID=test;Password=test123456789";
         //public static string ConnStrDispetcher2 = "Data Source=" + _NameServ_Dispetcher2 + ";Initial Catalog=" + _NameBase_Dispetcher2 + ";Persist Security Info=False;Trusted_Connection=False;User ID=test;Password=RPSsql12345";
-        //public static string ConnStrDispetcher2 = "Data Source=TESTSRV; Initial Catalog=Dispetcher2; User ID=sa; Password=Ahernar1985;";
+        public static string ConnStrDispetcher2 = "Data Source=TESTSRV; Initial Catalog=Dispetcher2; User ID=sa; Password=Ahernar1985;";
         //***********************************************************************************************************************************************************
-        private static string _NameServ_DispetcherASCON = "ASCON";
-        private static string _NameBase_DispetcherASCON = "Dispetcher";
-        public static string ConnStrDispetcherASCON = "Data Source=" + _NameServ_DispetcherASCON + ";Initial Catalog=" + _NameBase_DispetcherASCON + ";Integrated Security=true";
+        //private static string _NameServ_DispetcherASCON = "ASCON";
+        //private static string _NameBase_DispetcherASCON = "Dispetcher";
+        //public static string ConnStrDispetcherASCON = "Data Source=" + _NameServ_DispetcherASCON + ";Initial Catalog=" + _NameBase_DispetcherASCON + ";Integrated Security=true";
         //***********************************************************************************************************************************************************
         //private static string _NameServ_Loodsman = "loodsman";
         private static string _NameServ_Loodsman = "ASCON";
