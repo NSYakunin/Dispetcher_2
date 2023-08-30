@@ -315,7 +315,7 @@ namespace Dispetcher2.Class
                             FactTime = FactTime / (int)_DT.Rows[i].ItemArray[5];//Кол-во человек в бригаде
                         }
                         else FactTime = 0;
-                        ExcelWorkSheet.Cells[NumRow, 12] = IntToTime(FactTime);
+                        ExcelWorkSheet.Cells[NumRow, 12] = TimeSpan.FromSeconds(FactTime).ToString();
                         FactTimeWorker += FactTime;
                         //**************************Подсчёт по дням**************************
                         if (FlagDays & FactTime>0 & _DT.Rows[i].ItemArray[13].ToString() != "")
@@ -375,7 +375,7 @@ namespace Dispetcher2.Class
                                         else
                                             _PlanHours = Convert.ToInt32(PlanHours * RateWorker * 1.08);//Добавляем коэффициент 1.08
 
-                                ExcelWorkSheet.Cells[NumRow, 10] = IntToTime(_PlanHours);//н/ч за период (план)
+                                ExcelWorkSheet.Cells[NumRow, 10] = TimeSpan.FromSeconds(_PlanHours).ToString();//н/ч за период (план)
                                 //TimeSheets = TimeSheetsFromOneWorker(FIO,DateStart,DateEnd);
                                 // Тут я пофиксил время до простой и работающей формулы
                                 if (decimal.TryParse(_DT.Rows[i].ItemArray[17].ToString(), out TimeSheets))
