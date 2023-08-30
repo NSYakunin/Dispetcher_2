@@ -159,6 +159,8 @@
     <Compile Include="Class\OrderControlModel.cs" />
     <Compile Include="Class\ProgressViewModel.cs" />
     <Compile Include="Class\Receipt.cs" />
+    <Compile Include="Class\WorkDay.cs" />
+    <Compile Include="Class\WorkTimeViewModel.cs" />
     <Compile Include="Class\С_TreeViewOrders.cs" />
     <Compile Include="Controls\MyButtonMenu.cs">
       <SubType>Component</SubType>
@@ -314,6 +316,9 @@
     <Compile Include="WaitControl.xaml.cs">
       <DependentUpon>WaitControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WorkTimeControl.xaml.cs">
+      <DependentUpon>WorkTimeControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WorkWithDatabase.cs" />
     <EmbeddedResource Include="Controls\ucProdCal.resx">
       <DependentUpon>ucProdCal.cs</DependentUpon>
@@ -459,6 +464,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="WaitControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WorkTimeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
