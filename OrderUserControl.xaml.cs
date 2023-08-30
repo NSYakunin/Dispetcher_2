@@ -12,7 +12,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-
 using Dispetcher2.Class;
 
 namespace Dispetcher2
@@ -32,6 +31,9 @@ namespace Dispetcher2
             try
             {
                 InitializeComponent();
+                mainDataGrid.Visibility = Visibility.Collapsed;
+                wtc.Visibility = Visibility.Collapsed;
+
                 LoadingWait.Message = "Загрузка...";
                 LoadingWait.Stop();
                 this.DataContext = m;
@@ -75,6 +77,7 @@ namespace Dispetcher2
             requestButton.IsEnabled = false;
             mainDataGrid.ItemsSource = null;
             mainDataGrid.Visibility = Visibility.Collapsed;
+            wtc.Visibility = Visibility.Collapsed;
             LoadingWait.Start();
         }
         void AfterLoad()
@@ -85,6 +88,7 @@ namespace Dispetcher2
             orderListBox.IsEnabled = true;
             requestButton.IsEnabled = true;
             mainDataGrid.Visibility = Visibility.Visible;
+            wtc.Visibility = Visibility.Visible;
 
             ShowOrderDetail(m.SelectedOrder);
         }
