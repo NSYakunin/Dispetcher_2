@@ -6,7 +6,9 @@ using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Windows.Threading;
 
-namespace Dispetcher2.Class
+using Dispetcher2.Class;
+
+namespace Dispetcher2.Models
 {
     public class ProgressViewModel : INotifyPropertyChanged
     {

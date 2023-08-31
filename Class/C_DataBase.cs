@@ -12,11 +12,11 @@ namespace Dispetcher2.Class
     class C_DataBase
     {
 
-        string _ConnectionString;
+        string connectionString;
 
-        public C_DataBase(string ConnectionString)
+        public C_DataBase(string connectionString)
         {
-            _ConnectionString = ConnectionString;
+            this.connectionString = connectionString;
         }
 
         public static int GetInteger(object value)
@@ -41,16 +41,15 @@ namespace Dispetcher2.Class
             DT.Clear();
             try
             {
-                using (C_Gper.con)
+                using (var con = new SqlConnection())
                 {
-                    C_Gper.con.ConnectionString = _ConnectionString;
+                    con.ConnectionString = connectionString;
                     SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//using System.Data.SqlClient;
                     cmd.CommandText = SQLtext;
-                    cmd.Connection = C_Gper.con;
+                    cmd.Connection = con;
                     SqlDataAdapter adapter = new SqlDataAdapter(cmd);//adapter.SelectCommand = cmd;
                     adapter.Fill(DT);
                     adapter.Dispose();
-                    C_Gper.con.Close();
                 }
             }
             catch (Exception ex)
@@ -70,7 +69,7 @@ namespace Dispetcher2.Class
             DataTable dt = new DataTable();
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = C_Gper.ConnStrDispetcher2;
+                cn.ConnectionString = connectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -95,7 +94,7 @@ namespace Dispetcher2.Class
             DataTable dt = new DataTable();
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = C_Gper.ConStr_Loodsman;
+                cn.ConnectionString = connectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -132,7 +131,7 @@ namespace Dispetcher2.Class
             DataTable dt = new DataTable();
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = C_Gper.ConStr_Loodsman;
+                cn.ConnectionString = connectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -157,7 +156,7 @@ namespace Dispetcher2.Class
             DataTable dt = new DataTable();
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = C_Gper.ConnStrDispetcher2;
+                cn.ConnectionString = connectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -182,7 +181,7 @@ namespace Dispetcher2.Class
         {
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = C_Gper.ConnStrDispetcher2;
+                cn.ConnectionString = connectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -201,7 +200,7 @@ namespace Dispetcher2.Class
         {
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = C_Gper.ConnStrDispetcher2;
+                cn.ConnectionString = connectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -228,7 +227,7 @@ namespace Dispetcher2.Class
         {
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = C_Gper.ConnStrDispetcher2;
+                cn.ConnectionString = connectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -251,7 +250,7 @@ namespace Dispetcher2.Class
         {
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = C_Gper.ConnStrDispetcher2;
+                cn.ConnectionString = connectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -271,7 +270,7 @@ namespace Dispetcher2.Class
         {
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = C_Gper.ConnStrDispetcher2;
+                cn.ConnectionString = connectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -297,7 +296,7 @@ namespace Dispetcher2.Class
             DataTable dt = new DataTable();
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = C_Gper.ConnStrDispetcher2;
+                cn.ConnectionString = connectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -323,7 +322,7 @@ namespace Dispetcher2.Class
             List<Order> orderList = new List<Order>();
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = C_Gper.ConnStrDispetcher2;
+                cn.ConnectionString = connectionString;
                 using (SqlCommand cmd = new SqlCommand() { Connection = cn })
                 {
                     cmd.CommandType = CommandType.Text;
@@ -355,7 +354,7 @@ namespace Dispetcher2.Class
         public List<Detail> GetOrderDetailAndFastener(int orderId)
         {
             List<Detail> detList = new List<Detail>();
-            using (var cn = new SqlConnection() { ConnectionString = C_Gper.ConnStrDispetcher2 })
+            using (var cn = new SqlConnection() { ConnectionString = connectionString })
             {
                 using (var cmd = new SqlCommand() { Connection = cn })
                 {
@@ -390,7 +389,7 @@ namespace Dispetcher2.Class
         {
             string s;
             d.PlanOperations = new List<Operation>();
-            using (var cn = new SqlConnection() { ConnectionString = C_Gper.ConStr_Loodsman })
+            using (var cn = new SqlConnection() { ConnectionString = connectionString })
             {
                 using (var cmd = new SqlCommand() { Connection = cn, CommandTimeout = 120 })
                 {
@@ -427,7 +426,7 @@ namespace Dispetcher2.Class
         public List<Operation> GetFactOperation(long OrderDetailId)
         {
             List<Operation> result = new List<Operation>();
-            using (var cn = new SqlConnection() { ConnectionString = C_Gper.ConnStrDispetcher2 })
+            using (var cn = new SqlConnection() { ConnectionString = connectionString })
             {
                 using (var cmd = new SqlCommand() { Connection = cn })
                 {
@@ -453,5 +452,7 @@ namespace Dispetcher2.Class
             }
             return result;
         }
+
+        
     }
 }

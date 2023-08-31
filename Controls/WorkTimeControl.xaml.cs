@@ -12,16 +12,23 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Dispetcher2
+using Dispetcher2.Class;
+using Dispetcher2.Models;
+
+namespace Dispetcher2.Controls
 {
     /// <summary>
     /// Логика взаимодействия для WorkTimeControl.xaml
     /// </summary>
     public partial class WorkTimeControl : UserControl
     {
-        public WorkTimeControl()
+        WorkTimeViewModel vm;
+        public WorkTimeControl(WorkDayRepository r)
         {
+            if (r == null) throw new ArgumentException("Требуется указать хранилище рабочих дней WorkDayRepository");
+            vm = new WorkTimeViewModel(r);
             InitializeComponent();
+            this.DataContext = vm;
         }
     }
 }

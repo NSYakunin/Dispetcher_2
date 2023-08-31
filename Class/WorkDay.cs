@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+
 namespace Dispetcher2.Class
 {
     /// <summary>
@@ -15,9 +16,9 @@ namespace Dispetcher2.Class
         /// </summary>
         public DateTime Date { get; set; }
         /// <summary>
-        /// Количество рабочих секунд
+        /// Количество рабочего времени
         /// </summary>
-        public int Seconds { get; set; }
+        public TimeSpan Time { get; set; }
     }
     /// <summary>
     /// Хранилище рабочих дней
@@ -25,5 +26,7 @@ namespace Dispetcher2.Class
     public abstract class WorkDayRepository
     {
         public abstract IEnumerable<WorkDay> GetWorkDays();
+        public abstract TimeSpan GetTotalTime();
+        public abstract TimeSpan GetPastTime();
     }
 }

@@ -156,12 +156,15 @@
     <Compile Include="Class\LaborLoader.cs" />
     <Compile Include="Class\Operation.cs" />
     <Compile Include="Class\Order.cs" />
-    <Compile Include="Class\OrderControlModel.cs" />
-    <Compile Include="Class\ProgressViewModel.cs" />
     <Compile Include="Class\Receipt.cs" />
     <Compile Include="Class\WorkDay.cs" />
-    <Compile Include="Class\WorkTimeViewModel.cs" />
     <Compile Include="Class\С_TreeViewOrders.cs" />
+    <Compile Include="Controls\ImportDataControl.xaml.cs">
+      <DependentUpon>ImportDataControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\KitUpdaterControl.xaml.cs">
+      <DependentUpon>KitUpdaterControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\MyButtonMenu.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -176,12 +179,22 @@
     <Compile Include="Controls\MyTabControl.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\OrderUserControl.xaml.cs">
+      <DependentUpon>OrderUserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ucProdCal.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Controls\ucProdCal.Designer.cs">
       <DependentUpon>ucProdCal.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\WaitControl.xaml.cs">
+      <DependentUpon>WaitControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\WorkTimeControl.xaml.cs">
+      <DependentUpon>WorkTimeControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DataAccess\SqlWorkDayRepository.cs" />
     <Compile Include="DialogsForms\dF_Brigade.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -302,23 +315,11 @@
     <Compile Include="F_Workers.Designer.cs">
       <DependentUpon>F_Workers.cs</DependentUpon>
     </Compile>
-    <Compile Include="ImportDataControl.xaml.cs">
-      <DependentUpon>ImportDataControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="KitUpdaterControl.xaml.cs">
-      <DependentUpon>KitUpdaterControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="OrderUserControl.xaml.cs">
-      <DependentUpon>OrderUserControl.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Models\OrderControlModel.cs" />
+    <Compile Include="Models\ProgressViewModel.cs" />
+    <Compile Include="Models\WorkTimeViewModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WaitControl.xaml.cs">
-      <DependentUpon>WaitControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="WorkTimeControl.xaml.cs">
-      <DependentUpon>WorkTimeControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="WorkWithDatabase.cs" />
     <EmbeddedResource Include="Controls\ucProdCal.resx">
       <DependentUpon>ucProdCal.cs</DependentUpon>
@@ -451,25 +452,25 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="ImportDataControl.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Controls\ImportDataControl.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
-    <Page Include="KitUpdaterControl.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Controls\KitUpdaterControl.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
-    <Page Include="OrderUserControl.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Controls\OrderUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
-    <Page Include="WaitControl.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Controls\WaitControl.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
-    <Page Include="WorkTimeControl.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="Controls\WorkTimeControl.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>

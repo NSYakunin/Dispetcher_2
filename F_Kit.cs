@@ -254,8 +254,9 @@ namespace Dispetcher2
         // Новая версия работает быстрее в 10 раз
         void LoadDataOfLoodsman(int PK_IdOrder, string OrderNum)
         {
-            C_DataBase DB = new C_DataBase(C_Gper.ConnStrDispetcher2);
-            DT_Details = DB.GetOrderDetail(PK_IdOrder);
+            C_DataBase dispDB = new C_DataBase(C_Gper.ConnStrDispetcher2);
+            C_DataBase loodDB = new C_DataBase(C_Gper.ConStr_Loodsman);
+            DT_Details = dispDB.GetOrderDetail(PK_IdOrder);
             if (DT_Details.Rows.Count == 0)
             {
                 MessageBox.Show("В заказе отсутствуют позиции с типом \"сборка\".", "Внимание!!!", MessageBoxButtons.OK,
@@ -273,7 +274,7 @@ namespace Dispetcher2
                 AmountDetails = rowDT.ItemArray[3].ToString().Trim();
                 if (long.TryParse(rowDT.ItemArray[1].ToString().Trim(), out IdLoodsman))
                 {
-                    DataTable DT = DB.GetDetailKit(Position, ShcmDetail, AmountDetails, OrderNum,
+                    DataTable DT = loodDB.GetDetailKit(Position, ShcmDetail, AmountDetails, OrderNum,
                         IdLoodsman, standard);
                     DT_Kit.Merge(DT, true);
                 }

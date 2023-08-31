@@ -13,8 +13,10 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using Dispetcher2.Class;
+using Dispetcher2.Models;
+using Dispetcher2.DataAccess;
 
-namespace Dispetcher2
+namespace Dispetcher2.Controls
 {
     /// <summary>
     /// Логика взаимодействия для OrderUserControl.xaml
@@ -25,6 +27,7 @@ namespace Dispetcher2
         List<Order> orderList;
         OrderControlModel m = new OrderControlModel();
         LaborLoader loader = null;
+        WorkTimeControl wtc;
 
         public OrderUserControl()
         {
@@ -32,6 +35,9 @@ namespace Dispetcher2
             {
                 InitializeComponent();
                 mainDataGrid.Visibility = Visibility.Collapsed;
+                SqlWorkDayRepository swdr = new SqlWorkDayRepository(C_Gper.ConnStrDispetcher2, DateTime.Now);
+                wtc = new WorkTimeControl(swdr);
+                workTimePlace.Children.Add(wtc);
                 wtc.Visibility = Visibility.Collapsed;
 
                 LoadingWait.Message = "Загрузка...";
