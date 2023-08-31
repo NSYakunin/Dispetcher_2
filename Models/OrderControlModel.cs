@@ -5,7 +5,9 @@ using System.Text;
 using System.Windows.Forms;
 using System.ComponentModel;
 
-namespace Dispetcher2.Class
+using Dispetcher2.Class;
+
+namespace Dispetcher2.Models
 {
     public class OrderControlModel : INotifyPropertyChanged
     {

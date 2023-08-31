@@ -8,7 +8,9 @@ using System.Drawing;
 using System.Windows.Forms;
 //using System.Net;
 using System.Data.SqlClient;
+
 using Dispetcher2.Class;
+using Dispetcher2.Controls;
 
 namespace Dispetcher2
 {

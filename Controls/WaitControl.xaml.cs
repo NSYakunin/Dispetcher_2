@@ -14,7 +14,7 @@ using System.Windows.Shapes;
 using System.Windows.Media.Animation;
 using System.ComponentModel;
 
-namespace Dispetcher2
+namespace Dispetcher2.Controls
 {
     /// <summary>
     /// Логика взаимодействия для WaitControl.xaml

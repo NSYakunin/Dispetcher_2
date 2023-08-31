@@ -9,7 +9,7 @@ namespace Dispetcher2.Class
     public class LaborLoader
     {
         Order selectedOrder;
-        C_DataBase db;
+        C_DataBase dispDB;
         bool cancelFlag = false;
         public event Action Finished;
         Task mainTask = null;
@@ -17,7 +17,7 @@ namespace Dispetcher2.Class
         public LaborLoader(Order selectedOrder)
         {
             this.selectedOrder = selectedOrder;
-            db = new C_DataBase(C_Gper.ConnStrDispetcher2);
+            dispDB = new C_DataBase(C_Gper.ConnStrDispetcher2);
         }
 
         public void Start()
@@ -58,7 +58,7 @@ namespace Dispetcher2.Class
 
         void LoadDetail()
         {
-            var dl = db.GetOrderDetailAndFastener(selectedOrder.Id);
+            var dl = dispDB.GetOrderDetailAndFastener(selectedOrder.Id);
             selectedOrder.DetailList = dl;
             if (dl != null)
             {
@@ -77,10 +77,11 @@ namespace Dispetcher2.Class
 
         void LoadOperation()
         {
+            C_DataBase loodDB = new C_DataBase(C_Gper.ConStr_Loodsman);
             foreach(var d in selectedOrder.MainDetailList)
             {
                 if (cancelFlag) return;
-                db.Call_rep_VEDOMOST_TRUDOZATRAT_NIIPM_UNITED(d);
+                loodDB.Call_rep_VEDOMOST_TRUDOZATRAT_NIIPM_UNITED(d);
 
                 if (cancelFlag) return;
                 var dl = selectedOrder.GetTree(d);
@@ -90,7 +91,7 @@ namespace Dispetcher2.Class
                 foreach(var item in dl)
                 {
                     if (cancelFlag) return;
-                    var a = db.GetFactOperation(item.OrderDetailId);
+                    var a = dispDB.GetFactOperation(item.OrderDetailId);
                     factOperations.AddRange(a);
                 }
                 if (cancelFlag) return;

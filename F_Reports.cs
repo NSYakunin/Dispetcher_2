@@ -6,7 +6,9 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+
 using Dispetcher2.Class;
+using Dispetcher2.Controls;
 
 namespace Dispetcher2
 {
@@ -17,7 +19,6 @@ namespace Dispetcher2
         DataTable Dt_SpWorkers = new DataTable();
         DataTable DT_Orders = new DataTable();
         BindingSource BS_Orders = new BindingSource();
-
 
         public F_Reports()
         {

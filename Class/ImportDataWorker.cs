@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Data;
 
+using Dispetcher2.Models;
+
 namespace Dispetcher2.Class
 {
     public class ImportDataWorker
     {
-        C_DataBase db = new C_DataBase(C_Gper.ConnStrDispetcher2);
+        C_DataBase dispDB = new C_DataBase(C_Gper.ConnStrDispetcher2);
         C_Excel ce = new C_Excel();
 
         DataTable orderDt = null;
@@ -135,7 +137,7 @@ namespace Dispetcher2.Class
                 int year = rec.DateLimit.Year;
                 string num = rec.NumLimit;
 
-                db.DeleteRelationsKit(year, num);
+                dispDB.DeleteRelationsKit(year, num);
 
                 foreach(DataRow r in rec.ReceiptData.Rows)
                 {
@@ -145,8 +147,8 @@ namespace Dispetcher2.Class
                     string Name1CKit = r.Field<string>("Name1CKit").Trim();
                     double AmountKit = r.Field<double>("AmountKit");
 
-                    db.SetSpKit1C(PK_1С_IdKit, Name1CKit);
-                    db.InsertRelationsKit(year, num, Position, id.Value, IdLoodsman, PK_1С_IdKit, rec.DateLimit, AmountKit);
+                    dispDB.SetSpKit1C(PK_1С_IdKit, Name1CKit);
+                    dispDB.InsertRelationsKit(year, num, Position, id.Value, IdLoodsman, PK_1С_IdKit, rec.DateLimit, AmountKit);
                 }
 
                 string name2 = Path.GetFileName(name);
@@ -168,13 +170,13 @@ namespace Dispetcher2.Class
         //Делаем запрос к базе на наличие OrderNum1С в таблице Orders
         Nullable<int> GetOrderId(string orderNum1C)
         {
-            if (orderDt == null) orderDt = db.GetAllOrders();
+            if (orderDt == null) orderDt = dispDB.GetAllOrders();
 
             var ords = from dr in orderDt.AsEnumerable()
                        where dr.Field<string>("OrderNum1С") == orderNum1C
                        select dr;
 
-            if (ords.Any<DataRow>())
+            if (ords.Any())
                 foreach (var r in ords) return r.Field<int>("PK_IdOrder");
             return null;
         }

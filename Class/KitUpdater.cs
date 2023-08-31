@@ -6,6 +6,8 @@ using System.Data;
 using System.Threading.Tasks;
 using Dispetcher2.Class;
 
+using Dispetcher2.Models;
+
 namespace Dispetcher2.Class
 {
     // Служебный клас, который занимается обновлением таблицы Sp_Kit
@@ -13,7 +15,7 @@ namespace Dispetcher2.Class
     {
         DataTable detailTable;
         DataTable kitTable;
-        C_DataBase db = new C_DataBase(C_Gper.ConnStrDispetcher2);
+        C_DataBase dispDB = new C_DataBase(C_Gper.ConnStrDispetcher2);
 
         ProgressViewModel pvm;
 
@@ -98,7 +100,7 @@ namespace Dispetcher2.Class
 
             if (edr.Any())
             {
-                db.DeleteKit(id);
+                dispDB.DeleteKit(id);
                 foreach (DataRow r in edr)
                 {
                     int idk = r.Field<int>("id");
@@ -107,7 +109,7 @@ namespace Dispetcher2.Class
                     int idtype = r.Field<int>("idtype");
                     int idstate = r.Field<int>("idstate");
 
-                    db.InsertKit(id, idk, name, minquantity, idtype, idstate);
+                    dispDB.InsertKit(id, idk, name, minquantity, idtype, idstate);
                 }
             }
         }
@@ -125,8 +127,11 @@ namespace Dispetcher2.Class
 
         void LoadDataTables()
         {
-            kitTable = db.GetAllKits();
-            detailTable = db.GetDetail();
+            detailTable = dispDB.GetDetail();
+
+            C_DataBase loodDB = new C_DataBase(C_Gper.ConStr_Loodsman);
+            kitTable = loodDB.GetAllKits();
+            
         }
     }
 }

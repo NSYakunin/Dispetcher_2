@@ -4,17 +4,19 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel;
 
-namespace Dispetcher2.Class
+using Dispetcher2.Class;
+
+namespace Dispetcher2.Models
 {
     public class WorkTimeViewModel
     {
         TimeSpan total;
         TimeSpan past;
         
-        public WorkTimeViewModel(TimeSpan total, TimeSpan past)
+        public WorkTimeViewModel(WorkDayRepository r)
         {
-            this.total = total;
-            this.past = past;
+            this.total = r.GetTotalTime();
+            this.past = r.GetPastTime();
         }
         public long TotalDays
         {
@@ -40,6 +42,33 @@ namespace Dispetcher2.Class
             {
                 TimeSpan r = total.Subtract(past);
                 var y = r.TotalDays;
+                return Convert.ToInt64(y);
+            }
+        }
+
+        public long TotalHours
+        {
+            get
+            {
+                var y = total.TotalHours;
+                return Convert.ToInt64(y);
+            }
+        }
+
+        public long PastHours
+        {
+            get
+            {
+                var y = past.TotalHours;
+                return Convert.ToInt64(y);
+            }
+        }
+        public long RestHours
+        {
+            get
+            {
+                TimeSpan r = total.Subtract(past);
+                var y = r.TotalHours;
                 return Convert.ToInt64(y);
             }
         }
