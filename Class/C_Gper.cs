@@ -81,7 +81,17 @@ namespace Dispetcher2.Class
         //***************************************
         public static DataSet Ds = new DataSet();//using System.Data;
         //ActiveReport
-        public static byte NameReport = 0;
+        public enum ReportMode
+        {
+            Неизвестно = 0,
+            ОтчетНаряд = 3,
+            ДвижениеДеталей = 6,
+            ОтчетВыполненным = 7,
+            ПланГрафик = 106,
+            ОперацииВыполненныеРабочим = 117,
+            Трудоемкость = 66,
+        }
+        public static ReportMode NameReport = ReportMode.Неизвестно;
         /* 
          * 3 - Отчёт-наряд по выполненным операциям
          * 6 - Движение деталей

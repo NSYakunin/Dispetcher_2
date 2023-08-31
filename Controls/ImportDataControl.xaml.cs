@@ -13,8 +13,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using Dispetcher2.Class;
+using Dispetcher2.Models;
 
-namespace Dispetcher2
+namespace Dispetcher2.Controls
 {
     /// <summary>
     /// Логика взаимодействия для ImportDataControl.xaml
