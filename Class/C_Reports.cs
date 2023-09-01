@@ -375,7 +375,7 @@ namespace Dispetcher2.Class
                                         else
                                             _PlanHours = Convert.ToInt32(PlanHours * RateWorker * 1.08);//Добавляем коэффициент 1.08
 
-                                ExcelWorkSheet.Cells[NumRow, 10] = TimeSpan.FromSeconds(_PlanHours).ToString();//н/ч за период (план)
+                                ExcelWorkSheet.Cells[NumRow, 10] = TimeSpan.FromSeconds(_PlanHours).ToString().TrimStart('0');//н/ч за период (план)
                                 //TimeSheets = TimeSheetsFromOneWorker(FIO,DateStart,DateEnd);
                                 // Тут я пофиксил время до простой и работающей формулы
                                 if (decimal.TryParse(_DT.Rows[i].ItemArray[17].ToString(), out TimeSheets))
