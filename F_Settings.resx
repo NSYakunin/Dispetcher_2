@@ -138,13 +138,6 @@
   <metadata name="Col_idchild.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <data name="tB_Info_UpdateAllDataDetails.Text" xml:space="preserve">
-    <value>1. Корректировка(Update) данных по сборке или детали в таблице Details
-2. Очистка(Delete) фактических операций из таблицы FactOperation
-3. Очистка(Delete) списка технологических операций(технологии) из таблицы Operations
-4. Внесение(Insert) нового списка тех. операций в таблицу Operations
-5. Внесение(Insert) нового списка фактических операций в таблицу FactOperation</value>
-  </data>
   <metadata name="Col_OrderNum.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
