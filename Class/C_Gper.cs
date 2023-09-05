@@ -5,14 +5,18 @@ using System.Text;
 using System.Data.SqlClient;
 using System.Data;
 using System.Configuration;
+using Microsoft.Office.Interop.Excel;
+using System.Collections.Specialized;
 
 namespace Dispetcher2.Class
 {
     sealed class C_Gper
     {
+        static NameValueCollection appSettings = ConfigurationManager.AppSettings;
+        static string SERVER = appSettings["SelectedIndex"];
 
-        public static string ConnStrDispetcher2 = ConfigurationManager.ConnectionStrings["ConnStrDispetcher2"].ConnectionString;
-        private static string _ConnectionStringLoodsman = ConfigurationManager.ConnectionStrings["_ConnectionStringLoodsman"].ConnectionString;
+        public static string ConnStrDispetcher2 = ConfigurationManager.ConnectionStrings[SERVER == "0"? "ConnStrDispetcher2": "TestConnStrDispetcher2"].ConnectionString;
+        private static string _ConnectionStringLoodsman = ConfigurationManager.ConnectionStrings[SERVER == "0" ? "_ConnectionStringLoodsman": "_TestConnectionStringLoodsman"].ConnectionString;
         public static string ConStr_Loodsman
         {
             get
