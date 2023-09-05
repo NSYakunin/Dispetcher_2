@@ -94,7 +94,7 @@ namespace Dispetcher2
 
             if (C_Gper.NameReport == C_Gper.ReportMode.Трудоемкость)
             {
-                var c = new OrderUserControl();
+                var c = new LaborControl();
                 LaborElementHost.Child = c;
                 myTabC_Reports.SelectedTab = LaborTabPage;
             }
