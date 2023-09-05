@@ -8,6 +8,8 @@ using System.Text;
 using System.Windows.Forms;
 using System.Data.SqlClient;
 using Dispetcher2.Class;
+using System.Collections.Specialized;
+using System.Configuration;
 
 namespace Dispetcher2
 {
@@ -15,6 +17,7 @@ namespace Dispetcher2
     {
         public F_Login()
         {
+
             InitializeComponent();
         }
 
@@ -34,7 +37,7 @@ namespace Dispetcher2
                 {
                     if (tB_ServerMessage.Text.Trim() == "") tB_ServerMessage.Text = Convert.ToDateTime(row.ItemArray[0]).ToShortDateString() + " - " + row.ItemArray[2].ToString();
                     else tB_ServerMessage.Text += Environment.NewLine + Convert.ToDateTime(row.ItemArray[0]).ToShortDateString() + " - " + row.ItemArray[2].ToString();
-                
+
                 }
                 //HideServerMessage(false);
             }
@@ -42,6 +45,13 @@ namespace Dispetcher2
             //Определяем текущего пользователя
             //lbl_User.Text = Environment.UserName + "|" + Environment.MachineName;
             lbl_User.Text = "Логин: " + Environment.UserName;
+
+            string[] devs = { "NSYakunin", "IAPotapov" };
+            if (!devs.Contains(Environment.UserName))  panel1.Visible = false;
+            else panel1.Visible = true;
+
+            NameValueCollection appSettings = ConfigurationManager.AppSettings;
+            this.comboBox1.SelectedIndex = appSettings["SelectedIndex"] == "0" ? 0 : 1;
         }
 
         private void Hide_gB_NewLogin(bool hide)
@@ -170,9 +180,28 @@ namespace Dispetcher2
             }
         }
 
-
-
- 
-
+        private void comboBox1_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            if (comboBox1.SelectedIndex == 1)
+            {
+                NameValueCollection appSettings = ConfigurationManager.AppSettings;
+                comboBox1.SelectedIndex = Convert.ToInt32(appSettings["SelectedIndex"]);
+                var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                config.AppSettings.Settings["SelectedIndex"].Value = "1";
+                config.Save();
+                ConfigurationManager.RefreshSection("appSettings");
+                Close();
+            }
+            else
+            {
+                NameValueCollection appSettings = ConfigurationManager.AppSettings;
+                comboBox1.SelectedIndex = Convert.ToInt32(appSettings["SelectedIndex"]);
+                var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                config.AppSettings.Settings["SelectedIndex"].Value = "0";
+                config.Save();
+                ConfigurationManager.RefreshSection("appSettings");
+                Close();
+            }
+        }
     }
 }
