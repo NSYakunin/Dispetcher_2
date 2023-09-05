@@ -190,7 +190,8 @@ namespace Dispetcher2
                 config.AppSettings.Settings["SelectedIndex"].Value = "1";
                 config.Save();
                 ConfigurationManager.RefreshSection("appSettings");
-                Close();
+                Application.Restart();
+
             }
             else
             {
@@ -200,7 +201,8 @@ namespace Dispetcher2
                 config.AppSettings.Settings["SelectedIndex"].Value = "0";
                 config.Save();
                 ConfigurationManager.RefreshSection("appSettings");
-                Close();
+                Application.Restart();
+
             }
         }
     }
