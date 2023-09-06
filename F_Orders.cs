@@ -404,33 +404,6 @@ namespace Dispetcher2
             }
         }
 
-        #region Import old data Orders in Dispetcher2
-        private bool SelectOrdersFromOldDispetcher()
-        {
-            DT_OrdersOldDispetcher.Clear();
-            try
-            {
-                C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher;
-                SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
-                cmd.CommandText = "SELECT Dogovor,Name,dateSetInSystem, idStatus,CheckR" + "\n" +
-                                  "FROM Zakaz" + "\n" +
-                                  "LEFT JOIN Details ON idDetail = Details.id" + "\n" +
-                                  "where Zakaz.id>246";//c 246 т.к. до - ручками вбил
-                cmd.Connection = C_Gper.con;
-                SqlDataAdapter adapter = new SqlDataAdapter();
-                adapter.SelectCommand = cmd;
-                adapter.Fill(DT_OrdersOldDispetcher);
-                adapter.Dispose();
-                C_Gper.con.Close();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                C_Gper.con.Close();
-                MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
-            }
-        }
 
         private void InsertOldOrders()
         {
@@ -494,7 +467,6 @@ namespace Dispetcher2
         }
 #endregion
 
-        #endregion
 
         //**********************
         #region tPageOrdersDetails
