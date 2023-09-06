@@ -18,71 +18,11 @@ namespace Dispetcher2.Class
         public long IdLoodsman { get; set; }
         public int PositionParent { get; set; }
         public string ShcmAndName { get { return Shcm + "\n" + Name; } }
-        public List<Operation> PlanOperations { get; set; }
-        public List<Operation> FactOperations { get; set; }
-        public void SetNameType(object value)
-        {
-            // Не NULL
-            NameType = Convert.ToString(value);
-        }
-        public void SetPosition(object value)
-        {
-            // NULL
-            // тип данных SQL: INT
-            if (value is DBNull) Position = 0;
-            else Position = Convert.ToInt32(value);
-        }
-        public void SetShcm(object value)
-        {
-            // Не NULL
-            Shcm = Convert.ToString(value);
-        }
-        public void SetName(object value)
-        {
-            // NULL
-            // тип данных SQL: VARCHAR(MAX)
-            if (value is DBNull) Name = String.Empty;
-            else Name = Convert.ToString(value);
-        }
+        public OperationRepository Operations { get; set; }
+    }
 
-        public void SetAmount(object value)
-        {
-            // NULL
-            // тип данных SQL: INT
-            if (value is DBNull) Amount = 0;
-            else Amount = Convert.ToInt32(value);
-        }
-
-        public void SetAllPositionParent(object value)
-        {
-            // NULL
-            // тип данных SQL: VARCHAR(MAX)
-            if (value is DBNull) AllPositionParent = String.Empty;
-            else AllPositionParent = Convert.ToString(value);
-        }
-        public void SetIdOrderDetail(object value)
-        {
-            // Не NULL
-            OrderDetailId = Convert.ToInt64(value);
-        }
-        public void SetIdDetail(object value)
-        {
-            // Не NULL
-            IdDetail = Convert.ToInt64(value);
-        }
-        public void SetIdLoodsman(object value)
-        {
-            // NULL
-            // тип данных SQL: BIGINT
-            if (value is DBNull) return;
-            IdLoodsman = Convert.ToInt64(value);
-        }
-        public void SetPositionParent(object value)
-        {
-            // NULL
-            // тип данных SQL: INT
-            if (value is DBNull) PositionParent = 0;
-            else PositionParent = Convert.ToInt32(value);
-        }
+    public abstract class DetailRepository
+    {
+        public abstract IEnumerable<Detail> GetDetails();
     }
 }

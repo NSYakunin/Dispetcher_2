@@ -135,6 +135,8 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Class\Configuration.cs" />
+    <Compile Include="Class\Converter.cs" />
     <Compile Include="Class\C_Brigade.cs" />
     <Compile Include="Class\C_DataBase.cs" />
     <Compile Include="Class\C_DbWorker.cs" />
@@ -166,6 +168,12 @@
     <Compile Include="Controls\KitUpdaterControl.xaml.cs">
       <DependentUpon>KitUpdaterControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\LaborControl.xaml.cs">
+      <DependentUpon>LaborControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\OperationControl.xaml.cs">
+      <DependentUpon>OperationControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\MyButtonMenu.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -180,8 +188,8 @@
     <Compile Include="Controls\MyTabControl.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\OrderUserControl.xaml.cs">
-      <DependentUpon>OrderUserControl.xaml</DependentUpon>
+    <Compile Include="Controls\OrderControl.xaml.cs">
+      <DependentUpon>OrderControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ucProdCal.cs">
       <SubType>UserControl</SubType>
@@ -195,6 +203,7 @@
     <Compile Include="Controls\WorkTimeControl.xaml.cs">
       <DependentUpon>WorkTimeControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DataAccess\SqlOrderRepository.cs" />
     <Compile Include="DataAccess\SqlWorkDayRepository.cs" />
     <Compile Include="DialogsForms\dF_Brigade.cs">
       <SubType>Form</SubType>
@@ -316,7 +325,7 @@
     <Compile Include="F_Workers.Designer.cs">
       <DependentUpon>F_Workers.cs</DependentUpon>
     </Compile>
-    <Compile Include="Models\OrderControlModel.cs" />
+    <Compile Include="Models\OrderRepositoryViewModel.cs" />
     <Compile Include="Models\ProgressViewModel.cs" />
     <Compile Include="Models\WorkTimeViewModel.cs" />
     <Compile Include="Program.cs" />
@@ -461,9 +470,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Controls\OrderUserControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Include="Controls\LaborControl.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\OperationControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\OrderControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\WaitControl.xaml">
       <Generator>MSBuild:Compile</Generator>

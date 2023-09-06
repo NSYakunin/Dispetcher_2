@@ -1,0 +1,73 @@
+﻿<UserControl x:Class="Dispetcher2.Controls.LaborControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Dispetcher2.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800" FontFamily="Calibri" FontSize="15">
+    <Grid x:Name="mainGrid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+        
+        <ContentControl x:Name="orderListPlace" Grid.Column="0">
+            <Rectangle Stroke="Black" >
+                <Rectangle.Fill>
+                    <LinearGradientBrush EndPoint="0.5,0" StartPoint="0.5,1">
+                        <GradientStop Color="#FF4D9CEC" Offset="0"/>
+                        <GradientStop Color="White" Offset="1"/>
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+        </ContentControl>
+        
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <ContentControl x:Name="loadingPlace" Height="60" Width="400" Grid.Row="1" 
+                            VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5">
+                <Rectangle Stroke="Black">
+                    <Rectangle.Fill>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="#FFB23434" Offset="1"/>
+                            <GradientStop Color="White" Offset="0"/>
+                        </LinearGradientBrush>
+                    </Rectangle.Fill>
+
+                </Rectangle>
+            </ContentControl>
+            <Button x:Name="requestButton" Content="Запрос" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Center" Width="75" Click="OnRequest"/>
+            <ScrollViewer Grid.Row="1" CanContentScroll="False">
+                <StackPanel>
+                    <ContentControl x:Name="workTimePlace" Width="190" Height="80" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5">
+                        <ContentControl.Content>
+                            <Rectangle Stroke="Black">
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                        <GradientStop Color="#FFD8D020" Offset="1"/>
+                                        <GradientStop Color="White" Offset="0"/>
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                        </ContentControl.Content>
+                    </ContentControl>
+                    <ContentControl x:Name="operationPlace" Margin="5">
+                        <Rectangle Stroke="Black" Height="500" >
+                            <Rectangle.Fill>
+                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                    <GradientStop Color="#FF1E5F00" Offset="1"/>
+                                    <GradientStop Color="White" Offset="0"/>
+                                </LinearGradientBrush>
+                            </Rectangle.Fill>
+                        </Rectangle>
+                    </ContentControl>
+                </StackPanel>
+            </ScrollViewer>
+
+        </Grid>
+    </Grid>
+</UserControl>
