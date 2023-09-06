@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Dispetcher2.Class
 {
-    public class LaborLoader
+    /*public class LaborLoader
     {
         Order selectedOrder;
         C_DataBase dispDB;
@@ -110,5 +110,5 @@ namespace Dispetcher2.Class
                 }
             }
         }
-    }
+    }*/
 }

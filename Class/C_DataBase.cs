@@ -5,7 +5,7 @@ using System.Text;
 using System.Data;
 using System.Windows.Forms;
 using System.Data.SqlClient;
-using System.Globalization;
+
 
 namespace Dispetcher2.Class
 {
@@ -19,22 +19,7 @@ namespace Dispetcher2.Class
             this.connectionString = connectionString;
         }
 
-        public static int GetInteger(object value)
-        {
-            if (value == null) return 0;
-            if (value is DBNull) return 0;
-            int number;
-            bool f = Int32.TryParse(value.ToString(), System.Globalization.NumberStyles.Any,
-                NumberFormatInfo.InvariantInfo, out number);
-            if (f == false) return 0;
-            return Convert.ToInt32(value);
-        }
-        public static string GetString(object value)
-        {
-            if (value == null) return String.Empty;
-            if (value is DBNull) return String.Empty;
-            return Convert.ToString(value);
-        }
+        
 
         public void Select_DT(ref DataTable DT,string SQLtext)
         {
@@ -317,40 +302,7 @@ namespace Dispetcher2.Class
             return dt;
         }
 
-        public List<Order> GetOrderByStatus(int status)
-        {
-            List<Order> orderList = new List<Order>();
-            using (SqlConnection cn = new SqlConnection())
-            {
-                cn.ConnectionString = connectionString;
-                using (SqlCommand cmd = new SqlCommand() { Connection = cn })
-                {
-                    cmd.CommandType = CommandType.Text;
-                    cmd.CommandText = "Select * From Orders Where FK_IdStatusOrders = @S";
-                    cmd.Parameters.AddWithValue("@S", status);
-                    cn.Open();
-                    using (SqlDataReader r = cmd.ExecuteReader())
-                    {
-                        while(r.Read())
-                        {
-                            Order item = new Order();
-                            orderList.Add(item);
-                            item.SetId(r["PK_IdOrder"]);
-                            item.SetNumber(r["OrderNum"]);
-                            item.SetName(r["OrderName"]);
-                            item.SetCreateDate(r["DateCreateOrder"]);
-                            item.SetStatus(r["FK_IdStatusOrders"]);
-                            item.SetValidationOrder(r["ValidationOrder"]);
-                            item.SetNum1С(r["OrderNum1С"]);
-                            item.SetStartDate(r["StartDate"]);
-                            item.SetPlannedDate(r["PlannedDate"]);
-                            item.SetAmount(r["Amount"]);
-                        }
-                    }
-                }
-            }
-            return orderList;
-        }
+        
         public List<Detail> GetOrderDetailAndFastener(int orderId)
         {
             List<Detail> detList = new List<Detail>();
@@ -368,90 +320,90 @@ namespace Dispetcher2.Class
                         {
                             Detail item = new Detail();
                             detList.Add(item);
-                            item.SetNameType(r["NameType"]);
-                            item.SetPosition(r["Position"]);
-                            item.SetShcm(r["ShcmDetail"]);
-                            item.SetName(r["NameDetail"]);
-                            item.SetAmount(r["AmountDetails"]);
-                            item.SetAllPositionParent(r["AllPositionParent"]);
-                            item.SetIdOrderDetail(r["PK_IdOrderDetail"]);
-                            item.SetIdDetail(r["FK_IdDetail"]);
-                            item.SetIdLoodsman(r["IdLoodsman"]);
-                            item.SetPositionParent(r["PositionParent"]);
+                            item.NameType = Converter.GetString(r["NameType"]);
+                            item.Position = Converter.GetInt(r["Position"]);
+                            item.Shcm = Converter.GetString(r["ShcmDetail"]);
+                            item.Name = Converter.GetString(r["NameDetail"]);
+                            item.Amount = Converter.GetInt(r["AmountDetails"]);
+                            item.AllPositionParent = Converter.GetString(r["AllPositionParent"]);
+                            item.OrderDetailId = Converter.GetLong(r["PK_IdOrderDetail"]);
+                            item.IdDetail = Converter.GetLong(r["FK_IdDetail"]);
+                            item.IdLoodsman = Converter.GetLong(r["IdLoodsman"]);
+                            item.PositionParent = Converter.GetInt(r["PositionParent"]);
                         }
                     }
                 }
             }
             return detList;
         }
+        
+        //public void Call_rep_VEDOMOST_TRUDOZATRAT_NIIPM_UNITED(Detail d)
+        //{
+        //    string s;
+        //    d.PlanOperations = new List<Operation>();
+        //    using (var cn = new SqlConnection() { ConnectionString = connectionString })
+        //    {
+        //        using (var cmd = new SqlCommand() { Connection = cn, CommandTimeout = 120 })
+        //        {
+        //            cmd.CommandText = "[dbo].[rep_VEDOMOST_TRUDOZATRAT_NIIPM_UNITED]";
+        //            cmd.CommandType = CommandType.StoredProcedure;
+        //            cmd.Parameters.AddWithValue("@objects", Convert.ToString(d.IdLoodsman));
+        //            s = $"Номер заказа=;Часть=1;Количество={d.Amount}";
+        //            cmd.Parameters.AddWithValue("@params", s);
+        //            cn.Open();
+        //            using (var r = cmd.ExecuteReader())
+        //            {
+        //                while (r.Read())
+        //                {
+        //                    // выбираем только итоговые строки
+        //                    s = Convert.ToString(r["Обозначение"]).Trim();
+        //                    if (s.Length > 0) continue;
+        //                    s = Convert.ToString(r["Наименование"]).Trim();
+        //                    if (s.Length > 0) continue;
+        //                    if (GetInt(r["numpozic"]) > 0) continue;
+        //                    if (GetInt(r["vsego"]) > 0) continue;
 
-        public void Call_rep_VEDOMOST_TRUDOZATRAT_NIIPM_UNITED(Detail d)
-        {
-            string s;
-            d.PlanOperations = new List<Operation>();
-            using (var cn = new SqlConnection() { ConnectionString = connectionString })
-            {
-                using (var cmd = new SqlCommand() { Connection = cn, CommandTimeout = 120 })
-                {
-                    cmd.CommandText = "[dbo].[rep_VEDOMOST_TRUDOZATRAT_NIIPM_UNITED]";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@objects", Convert.ToString(d.IdLoodsman));
-                    s = $"Номер заказа=;Часть=1;Количество={d.Amount}";
-                    cmd.Parameters.AddWithValue("@params", s);
-                    cn.Open();
-                    using (var r = cmd.ExecuteReader())
-                    {
-                        while (r.Read())
-                        {
-                            // выбираем только итоговые строки
-                            s = Convert.ToString(r["Обозначение"]).Trim();
-                            if (s.Length > 0) continue;
-                            s = Convert.ToString(r["Наименование"]).Trim();
-                            if (s.Length > 0) continue;
-                            if (GetInteger(r["numpozic"]) > 0) continue;
-                            if (GetInteger(r["vsego"]) > 0) continue;
+        //                    var item = new Operation();
+        //                    item.SetName(r["marshrut"]);
+        //                    item.Numcol = GetInt(r["numcol"]);
+        //                    if (item.Numcol == 0) continue;
+        //                    item.Time = GetTime(r["Время на одну операцию по деталям"]);
+        //                    if (item.Time > TimeSpan.Zero) d.PlanOperations.Add(item);
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
-                            var item = new Operation();
-                            item.SetName(r["marshrut"]);
-                            item.Numcol = GetInteger(r["numcol"]);
-                            if (item.Numcol == 0) continue;
-                            item.SetTime(r["Время на одну операцию по деталям"]);
-                            if (item.Time > TimeSpan.Zero) d.PlanOperations.Add(item);
-                        }
-                    }
-                }
-            }
-        }
-
-        public List<Operation> GetFactOperation(long OrderDetailId)
-        {
-            List<Operation> result = new List<Operation>();
-            using (var cn = new SqlConnection() { ConnectionString = connectionString })
-            {
-                using (var cmd = new SqlCommand() { Connection = cn })
-                {
-                    cmd.CommandText = "[dbo].[GetFactOperation]";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@OrderDetailId", OrderDetailId);
-                    cn.Open();
-                    using (var r = cmd.ExecuteReader())
-                    {
-                        while(r.Read())
-                        {
-                            var item = new Operation();
-                            item.GroupId = GetInteger(r["FK_IdOperGroup"]);
-                            item.Tpd = GetInteger(r["Tpd"]);
-                            item.Tsh = GetInteger(r["Tsh"]);
-                            item.Quantity = GetInteger(r["fo_Amount"]);
-                            item.Number = GetString(r["NumOper"]);
-                            item.Name = GetString(r["NameOperation"]);
-                            result.Add(item);
-                        }
-                    }
-                }
-            }
-            return result;
-        }
+        //public List<Operation> GetFactOperation(long OrderDetailId)
+        //{
+        //    List<Operation> result = new List<Operation>();
+        //    using (var cn = new SqlConnection() { ConnectionString = connectionString })
+        //    {
+        //        using (var cmd = new SqlCommand() { Connection = cn })
+        //        {
+        //            cmd.CommandText = "[dbo].[GetFactOperation]";
+        //            cmd.CommandType = CommandType.StoredProcedure;
+        //            cmd.Parameters.AddWithValue("@OrderDetailId", OrderDetailId);
+        //            cn.Open();
+        //            using (var r = cmd.ExecuteReader())
+        //            {
+        //                while(r.Read())
+        //                {
+        //                    var item = new Operation();
+        //                    item.GroupId = GetInt(r["FK_IdOperGroup"]);
+        //                    item.Tpd = GetInt(r["Tpd"]);
+        //                    item.Tsh = GetInt(r["Tsh"]);
+        //                    item.Quantity = GetInt(r["fo_Amount"]);
+        //                    item.Number = GetString(r["NumOper"]);
+        //                    item.Name = GetString(r["NameOperation"]);
+        //                    result.Add(item);
+        //                }
+        //            }
+        //        }
+        //    }
+        //    return result;
+        //}
 
         
     }

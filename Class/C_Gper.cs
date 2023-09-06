@@ -17,6 +17,7 @@ namespace Dispetcher2.Class
 
         public static string ConnStrDispetcher2 = ConfigurationManager.ConnectionStrings[SERVER == "0"? "ConnStrDispetcher2": "TestConnStrDispetcher2"].ConnectionString;
         private static string _ConnectionStringLoodsman = ConfigurationManager.ConnectionStrings[SERVER == "0" ? "_ConnectionStringLoodsman": "_TestConnectionStringLoodsman"].ConnectionString;
+      
         public static string ConStr_Loodsman
         {
             get
