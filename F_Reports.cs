@@ -9,6 +9,7 @@ using System.Windows.Forms;
 
 using Dispetcher2.Class;
 using Dispetcher2.Controls;
+using Dispetcher2.DataAccess;
 
 namespace Dispetcher2
 {
@@ -94,7 +95,9 @@ namespace Dispetcher2
 
             if (C_Gper.NameReport == C_Gper.ReportMode.Трудоемкость)
             {
-                var c = new LaborControl();
+                var f = new MainOrderFactory(OrderType.SQL);
+                var config = new Configuration();
+                var c = new LaborControl(f, config);
                 LaborElementHost.Child = c;
                 myTabC_Reports.SelectedTab = LaborTabPage;
             }

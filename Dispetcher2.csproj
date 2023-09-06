@@ -134,6 +134,7 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Class\Configuration.cs" />
     <Compile Include="Class\Converter.cs" />
     <Compile Include="Class\C_Brigade.cs" />
     <Compile Include="Class\C_DataBase.cs" />
@@ -165,6 +166,9 @@
     </Compile>
     <Compile Include="Controls\KitUpdaterControl.xaml.cs">
       <DependentUpon>KitUpdaterControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\LaborControl.xaml.cs">
+      <DependentUpon>LaborControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\OperationControl.xaml.cs">
       <DependentUpon>OperationControl.xaml</DependentUpon>
@@ -464,6 +468,10 @@
     <Page Include="Controls\KitUpdaterControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\LaborControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\OperationControl.xaml">
       <SubType>Designer</SubType>

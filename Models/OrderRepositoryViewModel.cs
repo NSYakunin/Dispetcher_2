@@ -10,12 +10,28 @@ using Dispetcher2.Class;
 
 namespace Dispetcher2.Models
 {
+    public class OrderView : IOrder
+    {
+        public int Id { get; set; }
+        public string Number { get; set; }
+        public string Name { get; set; }
+        public string Num1С { get; set; }
+        public static OrderView GetOrderView(IOrder order)
+        {
+            var v = new OrderView();
+            v.Id = order.Id;
+            v.Number = order.Number;
+            v.Name = order.Name;
+            v.Num1С = order.Num1С;
+            return v;
+        }
+    }
     public class OrderRepositoryViewModel : INotifyPropertyChanged
     {
         public string Filter { set; get; }
-        public Order SelectedOrder { set; get; }
+        public OrderView SelectedOrder { set; get; }
 
-        ObservableCollection<Order> orderblist = new ObservableCollection<Order>();
+        ObservableCollection<OrderView> orderlist = new ObservableCollection<OrderView>();
         
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -25,9 +41,9 @@ namespace Dispetcher2.Models
                 PropertyChanged(this, new PropertyChangedEventArgs(prop));
         }
 
-        public ObservableCollection<Order> OrderList
+        public ObservableCollection<OrderView> OrderList
         {
-            get { return orderblist; }
+            get { return orderlist; }
         }
     }
 

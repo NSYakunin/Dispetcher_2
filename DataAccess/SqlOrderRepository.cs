@@ -9,35 +9,50 @@ using Dispetcher2.Class;
 
 namespace Dispetcher2.DataAccess
 {
+    public class SqlOrder : IOrder
+    {
+        public int Id { get; set; }
+        public string Number { get; set; }
+        public string Name { get; set; }
+        public string Num1С { get; set; }
+        public DateTime CreateDate { get; set; }
+        public int Status { get; set; }
+        public bool ValidationOrder { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime PlannedDate { get; set; }
+        public int Amount { get; set; }
+    }
+
     public class SqlOrderRepository : OrderRepository
     {
-        string connectionString = null;
+        IConfig config;
         Nullable<int> status = null;
-        public SqlOrderRepository(string connectionString)
+        public SqlOrderRepository(IConfig config)
         {
-            this.connectionString = connectionString;
+            if (config == null) throw new ArgumentException("Пожалуйста укажите параметр config");
+            this.config = config;
             this.status = null;
         }
-        public SqlOrderRepository(string connectionString, int status)
+        public SqlOrderRepository(IConfig config, int status)
         {
-            this.connectionString = connectionString;
+            this.config = config;
             this.status = status;
         }
 
-        public override IEnumerable<Order> GetOrders()
+        public override IEnumerable<IOrder> GetOrders()
         {
             return GetOrderByStatus();
         }
 
-        List<Order> GetOrderByStatus()
+        List<IOrder> GetOrderByStatus()
         {
-            List<Order> orderList = new List<Order>();
+            List<IOrder> orderList = new List<IOrder>();
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = connectionString;
+                cn.ConnectionString = config.ConnectionString;
                 using (SqlCommand cmd = new SqlCommand() { Connection = cn })
                 {
-                    cmd.CommandType = CommandType.Text;
+                    cmd.CommandType = CommandType.StoredProcedure;
                     cmd.CommandText = "GetOrders";
                     object s = DBNull.Value;
                     if (status.HasValue) s = status.Value;
@@ -47,7 +62,7 @@ namespace Dispetcher2.DataAccess
                     {
                         while (r.Read())
                         {
-                            Order item = new Order();
+                            var item = new SqlOrder();
                             orderList.Add(item);
                             item.Id = Converter.GetInt(r["PK_IdOrder"]);
                             item.Number = Converter.GetString(r["OrderNum"]);
@@ -64,6 +79,25 @@ namespace Dispetcher2.DataAccess
                 }
             }
             return orderList;
+        }
+    }
+
+    public class MainOrderFactory : OrderFactory
+    {
+        // тут конечно надо будет сделать перечисление
+        // 1-ожидание,2-открыт,3-закрыт,4-в работе,5-выполнен
+        private const int status = 2;
+        OrderType type;
+        public MainOrderFactory(OrderType type)
+        {
+            this.type = type;
+        }
+
+        public override OrderRepository GetOrderRepository(IConfig config)
+        {
+            if (type == OrderType.SQL) return new SqlOrderRepository(config, status);
+
+            throw new NotImplementedException("В разработке...");
         }
     }
 }

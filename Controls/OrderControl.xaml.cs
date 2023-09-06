@@ -23,33 +23,44 @@ namespace Dispetcher2.Controls
     public partial class OrderControl : UserControl
     {
         OrderRepository rep;
-        
-        public OrderControl(OrderRepository rep)
+        OrderRepositoryViewModel model;
+        List<OrderView> orderList = new List<OrderView>();
+
+        public OrderControl(OrderRepository rep, OrderRepositoryViewModel model)
         {
             if (rep == null) throw new ArgumentException("Нужно предоставить хранилище заказов");
             this.rep = rep;
+            this.model = model;
+            var a = rep.GetOrders();
+            foreach (var x in a) orderList.Add(OrderView.GetOrderView(x));
             InitializeComponent();
+            model.Filter = String.Empty;
+            this.DataContext = model;
+            FilterData();
         }
 
         void FilterData()
         {
-            string num = m.Filter.Trim();
+            string num = model.Filter.Trim();
 
             var l2 = from x in orderList
                      where x.Number.Contains(num)
                      select x;
 
-            //m.ListBindingSource.DataSource = l2;
             if (l2.Any())
             {
-                m.OrderList.Clear();
-                foreach (var x in l2) m.OrderList.Add(x);
+                model.OrderList.Clear();
+                foreach (var x in l2) model.OrderList.Add(x);
             }
             else
             {
-                m.OrderList.Clear();
+                model.OrderList.Clear();
             }
 
+        }
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            FilterData();
         }
     }
 }

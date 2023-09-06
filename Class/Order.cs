@@ -1,28 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data;
 
 namespace Dispetcher2.Class
-{
-    public class Order
+{   
+    public interface IOrder
     {
-        public int Id { get; set; }
-        public string Number { get; set; }
-        public string Name { get; set; }
-        public DateTime CreateDate { get; set; }
-        public int Status { get; set; }
-        public bool ValidationOrder { get; set; }
-        public string Num1С { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime PlannedDate { get; set; }
-        public int Amount { get; set; }
-        public DetailRepository MainDetails { get; set; }
+        int Id { get; set; }
+        string Number { get; set; }
+        string Name { get; set; }
+        string Num1С { get; set; }
     }
 
     public abstract class OrderRepository
     {
-        public abstract IEnumerable<Order> GetOrders();
+        public abstract IEnumerable<IOrder> GetOrders();
+    }
+
+    public abstract class OrderFactory
+    {
+        public abstract OrderRepository GetOrderRepository(IConfig config);
     }
 }
