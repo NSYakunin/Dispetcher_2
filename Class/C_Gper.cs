@@ -4,42 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Data.SqlClient;
 using System.Data;
+using System.Configuration;
+using Microsoft.Office.Interop.Excel;
+using System.Collections.Specialized;
 
 namespace Dispetcher2.Class
 {
     sealed class C_Gper
     {
+        static NameValueCollection appSettings = ConfigurationManager.AppSettings;
+        static string SERVER = appSettings["SelectedIndex"];
 
-        public static SqlConnection con = new SqlConnection();//using System.Data.SqlClient;
-        //***********************************************************************************************************************************************************
-        //Data Source=Loodsman;Initial Catalog=Dispetcher;Integrated Security=true //oldDispetcher connection string
-
-        //string ConnectionString = "Data Source=" + NameServ + ";Initial Catalog=" + NameBase + ";Persist Security Info=True;User ID=" + LoginUser + ";Password=" + PasUser;
-        //string ConnectionString = "Data Source=" + NameServ + ";Initial Catalog=" + NameBase + ";Integrated Security=true";
-        private static string _NameServ_Dispetcher = "ASCON";
-        private static string _NameBase_Dispetcher = "Dispetcher";
-        public static string ConnStrDispetcher = "Data Source=" + _NameServ_Dispetcher + ";Initial Catalog=" + _NameBase_Dispetcher + ";Integrated Security=true";
-        //***********************************************************************************************************************************************************
-        private static string _NameServ_Dispetcher2 = "ASCON";
-        //private static string _NameServ_Dispetcher2 = "Loodsman";
-        private static string _NameBase_Dispetcher2 = "Dispetcher2";
-        //private static string _NameBase_Dispetcher2 = "Disp2_TEST";
-        //public static string ConnStrDispetcher2 = "Data Source=" + _NameServ_Dispetcher2 + ";Initial Catalog=" + _NameBase_Dispetcher2 + ";Integrated Security=true";
-        public static string ConnStrDispetcher2 = "Data Source=" + _NameServ_Dispetcher2 + ";Initial Catalog=" + _NameBase_Dispetcher2 + ";Persist Security Info=False;Trusted_Connection=False;User ID=test;Password=test123456789";
-        //public static string ConnStrDispetcher2 = "Data Source=" + _NameServ_Dispetcher2 + ";Initial Catalog=" + _NameBase_Dispetcher2 + ";Persist Security Info=False;Trusted_Connection=False;User ID=test;Password=RPSsql12345";
-        //public static string ConnStrDispetcher2 = "Data Source=TESTSRV; Initial Catalog=Dispetcher2; User ID=sa; Password=Ahernar1985;";
-        //***********************************************************************************************************************************************************
-        //private static string _NameServ_DispetcherASCON = "ASCON";
-        //private static string _NameBase_DispetcherASCON = "Dispetcher";
-        //public static string ConnStrDispetcherASCON = "Data Source=" + _NameServ_DispetcherASCON + ";Initial Catalog=" + _NameBase_DispetcherASCON + ";Integrated Security=true";
-        //***********************************************************************************************************************************************************
-        //private static string _NameServ_Loodsman = "loodsman";
-        private static string _NameServ_Loodsman = "ASCON";
-        private static string _NameBase_Loodsman = "НИИПМ";
-        //private static string _ConnectionStringLoodsman = "Data Source=" + _NameServ_Loodsman + ";Initial Catalog=" + _NameBase_Loodsman + ";Persist Security Info=false;User ID=test;Password=RPSsql12345";
-        //private static string _ConnectionStringLoodsman = "Data Source=" + _NameServ_Loodsman + ";Initial Catalog=" + _NameBase_Loodsman + ";Integrated Security=true";
-        private static string _ConnectionStringLoodsman = "Data Source=" + _NameServ_Loodsman + ";Initial Catalog=" + _NameBase_Loodsman + ";Persist Security Info=false;User ID=test;Password=test123456789";
-
+        public static string ConnStrDispetcher2 = ConfigurationManager.ConnectionStrings[SERVER == "0"? "ConnStrDispetcher2": "TestConnStrDispetcher2"].ConnectionString;
+        private static string _ConnectionStringLoodsman = ConfigurationManager.ConnectionStrings[SERVER == "0" ? "_ConnectionStringLoodsman": "_TestConnectionStringLoodsman"].ConnectionString;
         public static string ConStr_Loodsman
         {
             get
@@ -47,6 +24,8 @@ namespace Dispetcher2.Class
                 return _ConnectionStringLoodsman;
             }
         }
+
+        public static SqlConnection con = new SqlConnection();//using System.Data.SqlClient;
         //***********************************************************************************************************************************************************
         public static System.Globalization.NumberStyles style = System.Globalization.NumberStyles.Number | System.Globalization.NumberStyles.AllowCurrencySymbol;
         public static System.Globalization.CultureInfo culture = System.Globalization.CultureInfo.CreateSpecificCulture("en-GB");
