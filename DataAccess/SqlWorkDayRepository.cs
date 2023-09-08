@@ -11,14 +11,14 @@ namespace Dispetcher2.DataAccess
 {
     public class SqlWorkDayRepository : WorkDayRepository
     {
-        string connectionString;
+        IConfig config;
         DateTime point;
         List<WorkDay> dayList;
         TimeSpan total;
         TimeSpan past;
-        public SqlWorkDayRepository(string connectionString, DateTime point)
+        public SqlWorkDayRepository(IConfig config, DateTime point)
         {
-            this.connectionString = connectionString;
+            this.config = config;
             this.point = point;
             Load();
         }
@@ -49,7 +49,7 @@ namespace Dispetcher2.DataAccess
             List<WorkDay> result = new List<WorkDay>();
             using (var cn = new SqlConnection())
             {
-                cn.ConnectionString = connectionString;
+                cn.ConnectionString = config.ConnectionString;
                 using (var cmd = new SqlCommand() { Connection = cn })
                 {
                     cmd.CommandText = "[dbo].[GetProductionCalendar]";

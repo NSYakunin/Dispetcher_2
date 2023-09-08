@@ -29,6 +29,10 @@ namespace Dispetcher2
             DT_Orders.Columns.Add("StartDate", typeof(DateTime));
             DT_Orders.Columns.Add("PlannedDate", typeof(DateTime));
             DT_Orders.Columns.Add("Amount", typeof(Int16));
+
+            AssemblyTest at = new AssemblyTest();
+            var e = at.GetStringList();
+            TestResults.DataSource = e;
         }
 
         private void F_Settings_Load(object sender, EventArgs e)

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Dispetcher2.Controls"
-             mc:Ignorable="d" FontFamily="Calibri" FontSize="18" Height="80" Width="190">
+             mc:Ignorable="d" Height="80" Width="190">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="2*"/>

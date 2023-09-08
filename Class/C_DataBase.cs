@@ -303,7 +303,7 @@ namespace Dispetcher2.Class
         }
 
         
-        public List<Detail> GetOrderDetailAndFastener(int orderId)
+        /*public List<Detail> GetOrderDetailAndFastener(int orderId)
         {
             List<Detail> detList = new List<Detail>();
             using (var cn = new SqlConnection() { ConnectionString = connectionString })
@@ -335,7 +335,7 @@ namespace Dispetcher2.Class
                 }
             }
             return detList;
-        }
+        }*/
         
         //public void Call_rep_VEDOMOST_TRUDOZATRAT_NIIPM_UNITED(Detail d)
         //{
