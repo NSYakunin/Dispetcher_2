@@ -67,16 +67,6 @@
             this.tB_IP = new System.Windows.Forms.TextBox();
             this.tB_HostName = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.tB_Info_UpdateAllDataDetails = new System.Windows.Forms.TextBox();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.tB_ShCM_forUpdAllData = new System.Windows.Forms.TextBox();
-            this.btn_UpdateAllDataDetails = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.tB_posL_NumZakaz = new System.Windows.Forms.TextBox();
-            this.btn_UpdatePosL = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.dGV_Loodsman = new System.Windows.Forms.DataGridView();
@@ -153,9 +143,6 @@
             this.panel5.SuspendLayout();
             this.tabPage_OldDispetcher.SuspendLayout();
             this.groupBox22.SuspendLayout();
-            this.groupBox3.SuspendLayout();
-            this.panel3.SuspendLayout();
-            this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dGV_Loodsman)).BeginInit();
@@ -571,8 +558,6 @@
             this.tabPage_OldDispetcher.BackColor = System.Drawing.SystemColors.InactiveBorder;
             this.tabPage_OldDispetcher.Controls.Add(this.TestResults);
             this.tabPage_OldDispetcher.Controls.Add(this.groupBox22);
-            this.tabPage_OldDispetcher.Controls.Add(this.groupBox3);
-            this.tabPage_OldDispetcher.Controls.Add(this.groupBox2);
             this.tabPage_OldDispetcher.Controls.Add(this.groupBox1);
             this.tabPage_OldDispetcher.Location = new System.Drawing.Point(4, 25);
             this.tabPage_OldDispetcher.Margin = new System.Windows.Forms.Padding(4);
@@ -630,119 +615,6 @@
             this.button3.Text = "Узнать мой IP";
             this.button3.UseVisualStyleBackColor = false;
             this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.tB_Info_UpdateAllDataDetails);
-            this.groupBox3.Controls.Add(this.panel3);
-            this.groupBox3.Dock = System.Windows.Forms.DockStyle.Top;
-            this.groupBox3.Location = new System.Drawing.Point(4, 328);
-            this.groupBox3.Margin = new System.Windows.Forms.Padding(5);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Padding = new System.Windows.Forms.Padding(5);
-            this.groupBox3.Size = new System.Drawing.Size(836, 134);
-            this.groupBox3.TabIndex = 21;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Обновить данные и технологию для детали или сборки ";
-            // 
-            // tB_Info_UpdateAllDataDetails
-            // 
-            this.tB_Info_UpdateAllDataDetails.BackColor = System.Drawing.SystemColors.Info;
-            this.tB_Info_UpdateAllDataDetails.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tB_Info_UpdateAllDataDetails.Location = new System.Drawing.Point(418, 21);
-            this.tB_Info_UpdateAllDataDetails.Multiline = true;
-            this.tB_Info_UpdateAllDataDetails.Name = "tB_Info_UpdateAllDataDetails";
-            this.tB_Info_UpdateAllDataDetails.ReadOnly = true;
-            this.tB_Info_UpdateAllDataDetails.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tB_Info_UpdateAllDataDetails.ShortcutsEnabled = false;
-            this.tB_Info_UpdateAllDataDetails.Size = new System.Drawing.Size(413, 108);
-            this.tB_Info_UpdateAllDataDetails.TabIndex = 1000;
-            this.tB_Info_UpdateAllDataDetails.TabStop = false;
-            this.tB_Info_UpdateAllDataDetails.Text = resources.GetString("tB_Info_UpdateAllDataDetails.Text");
-            // 
-            // panel3
-            // 
-            this.panel3.Controls.Add(this.tB_ShCM_forUpdAllData);
-            this.panel3.Controls.Add(this.btn_UpdateAllDataDetails);
-            this.panel3.Controls.Add(this.label3);
-            this.panel3.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panel3.Location = new System.Drawing.Point(5, 21);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(413, 108);
-            this.panel3.TabIndex = 1001;
-            // 
-            // tB_ShCM_forUpdAllData
-            // 
-            this.tB_ShCM_forUpdAllData.Location = new System.Drawing.Point(15, 21);
-            this.tB_ShCM_forUpdAllData.Margin = new System.Windows.Forms.Padding(4);
-            this.tB_ShCM_forUpdAllData.Name = "tB_ShCM_forUpdAllData";
-            this.tB_ShCM_forUpdAllData.Size = new System.Drawing.Size(257, 23);
-            this.tB_ShCM_forUpdAllData.TabIndex = 9;
-            // 
-            // btn_UpdateAllDataDetails
-            // 
-            this.btn_UpdateAllDataDetails.Enabled = false;
-            this.btn_UpdateAllDataDetails.Location = new System.Drawing.Point(13, 52);
-            this.btn_UpdateAllDataDetails.Margin = new System.Windows.Forms.Padding(4);
-            this.btn_UpdateAllDataDetails.Name = "btn_UpdateAllDataDetails";
-            this.btn_UpdateAllDataDetails.Size = new System.Drawing.Size(259, 48);
-            this.btn_UpdateAllDataDetails.TabIndex = 7;
-            this.btn_UpdateAllDataDetails.Text = "Обновить";
-            this.btn_UpdateAllDataDetails.UseVisualStyleBackColor = false;
-            this.btn_UpdateAllDataDetails.Click += new System.EventHandler(this.btn_UpdateAllDataDetails_Click);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(364, 17);
-            this.label3.TabIndex = 10;
-            this.label3.Text = "ЩЦМ детали или сборки: (Например: ЩЦМ 8.065.528)";
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.label2);
-            this.groupBox2.Controls.Add(this.tB_posL_NumZakaz);
-            this.groupBox2.Controls.Add(this.btn_UpdatePosL);
-            this.groupBox2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.groupBox2.Location = new System.Drawing.Point(4, 194);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(5);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(5);
-            this.groupBox2.Size = new System.Drawing.Size(836, 134);
-            this.groupBox2.TabIndex = 20;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Обновить posL таблицы Relations (только для внутренних заказов)";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(8, 21);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(265, 17);
-            this.label2.TabIndex = 10;
-            this.label2.Text = "Номер заказа: (Например: 205510066)";
-            // 
-            // tB_posL_NumZakaz
-            // 
-            this.tB_posL_NumZakaz.Location = new System.Drawing.Point(20, 44);
-            this.tB_posL_NumZakaz.Margin = new System.Windows.Forms.Padding(4);
-            this.tB_posL_NumZakaz.Name = "tB_posL_NumZakaz";
-            this.tB_posL_NumZakaz.Size = new System.Drawing.Size(257, 23);
-            this.tB_posL_NumZakaz.TabIndex = 9;
-            // 
-            // btn_UpdatePosL
-            // 
-            this.btn_UpdatePosL.Enabled = false;
-            this.btn_UpdatePosL.Location = new System.Drawing.Point(20, 75);
-            this.btn_UpdatePosL.Margin = new System.Windows.Forms.Padding(4);
-            this.btn_UpdatePosL.Name = "btn_UpdatePosL";
-            this.btn_UpdatePosL.Size = new System.Drawing.Size(259, 48);
-            this.btn_UpdatePosL.TabIndex = 7;
-            this.btn_UpdatePosL.Text = "Обновить";
-            this.btn_UpdatePosL.UseVisualStyleBackColor = false;
-            this.btn_UpdatePosL.Click += new System.EventHandler(this.btn_UpdatePosL_Click);
             // 
             // groupBox1
             // 
@@ -1555,12 +1427,6 @@
             this.tabPage_OldDispetcher.ResumeLayout(false);
             this.groupBox22.ResumeLayout(false);
             this.groupBox22.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
-            this.panel3.ResumeLayout(false);
-            this.panel3.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dGV_Loodsman)).EndInit();
@@ -1608,8 +1474,6 @@
         private System.Windows.Forms.Button btn_DetailsData;
         private System.Windows.Forms.TextBox tB_ShCM;
         private System.Windows.Forms.DataGridView dGV_Loodsman;
-        private System.Windows.Forms.Button btn_UpdatePosL;
-        private System.Windows.Forms.TextBox tB_posL_NumZakaz;
         private MyTabControl myTabC_Settings;
         private System.Windows.Forms.TabPage tabPage_OldDispetcher;
         private System.Windows.Forms.TabPage tabPage_TURV;
@@ -1623,14 +1487,6 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox tB_ShCM_forUpdAllData;
-        private System.Windows.Forms.Button btn_UpdateAllDataDetails;
-        private System.Windows.Forms.TextBox tB_Info_UpdateAllDataDetails;
-        private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.TabPage tabPage_Sp;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Button btn_LoadSpDetails;
