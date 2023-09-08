@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Dispetcher2.Class
 {
-    public class Detail
+    public abstract class Detail
     {
         public string NameType { get; set; }
         public int Position { get; set; }
@@ -17,8 +17,7 @@ namespace Dispetcher2.Class
         public long IdDetail { get; set; }
         public long IdLoodsman { get; set; }
         public int PositionParent { get; set; }
-        public string ShcmAndName { get { return Shcm + "\n" + Name; } }
-        public OperationRepository Operations { get; set; }
+        
     }
 
     public abstract class DetailRepository

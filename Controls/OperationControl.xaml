@@ -7,7 +7,14 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <DataGrid x:Name="mainDataGrid" HorizontalAlignment="Left" VerticalAlignment="Top" IsReadOnly="True">
+        <DataGrid x:Name="mainGrid" ItemsSource="{Binding Path=Details}" AutoGenerateColumns="False" IsReadOnly="True">
+            <DataGrid.RowHeaderTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding DataContext.Name, 
+                        RelativeSource={RelativeSource AncestorType=DataGridRow}}">
+                    </TextBlock>
+                </DataTemplate>
+            </DataGrid.RowHeaderTemplate>
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="ContentTemplate">

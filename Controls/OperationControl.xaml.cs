@@ -12,6 +12,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using Dispetcher2.Class;
+using Dispetcher2.Models;
 
 namespace Dispetcher2.Controls
 {
@@ -20,9 +22,42 @@ namespace Dispetcher2.Controls
     /// </summary>
     public partial class OperationControl : UserControl
     {
-        public OperationControl()
+        OperationControlViewModel vm;
+        //DetailRepository detRep;
+        //OperationRepository opRep;
+        //public OperationControl(DetailRepository detRep, OperationRepository opRep)
+        public OperationControl(OperationControlViewModel vm)
         {
+            //if (detRep == null) throw new Exception("Пожалуйста укажите параметр DetailRepository");
+            //if (opRep == null) throw new Exception("Пожалуйста укажите параметр OperationRepository");
+            //this.detRep = detRep;
+            //this.opRep = opRep;
+            this.vm = vm;
             InitializeComponent();
+            SetColumns();
+        }
+
+        void SetColumns()
+        {
+            mainGrid.Columns.Clear();
+            var e = GetNames();
+            foreach (var n in e)
+            {
+                var c = new DataGridTextColumn();
+                c.Header = n;
+                c.Binding = new Binding($"Operations[{n}]");
+                mainGrid.Columns.Add(c);
+            }
+        }
+        IEnumerable<string> GetNames()
+        {
+            List<string> NameList = new List<string>();
+            foreach (var item in vm.Details)
+            {
+                NameList.AddRange(item.Operations.Keys);
+            }
+            var e = NameList.Distinct().OrderBy(x => x);
+            return e;
         }
 
         /*
@@ -86,19 +121,19 @@ namespace Dispetcher2.Controls
         //    mainDataGrid.ItemsSource = m.OperationList;
         //}
 
-        void CreateColumns()
-        {
-            mainDataGrid.AutoGenerateColumns = false;
-            DataGridTextColumn c;
+        //void CreateColumns()
+        //{
+        //    mainDataGrid.AutoGenerateColumns = false;
+        //    DataGridTextColumn c;
 
-            mainDataGrid.Columns.Clear();
+        //    mainDataGrid.Columns.Clear();
 
-            c = new DataGridTextColumn();
-            c.Header = "Деталь или сборка";
-            c.MaxWidth = 200;
-            c.MinWidth = 50;
-            c.Binding = new Binding("Value[0]");
-            mainDataGrid.Columns.Add(c);
-        }
+        //    c = new DataGridTextColumn();
+        //    c.Header = "Деталь или сборка";
+        //    c.MaxWidth = 200;
+        //    c.MinWidth = 50;
+        //    c.Binding = new Binding("Value[0]");
+        //    mainDataGrid.Columns.Add(c);
+        //}
     }
 }

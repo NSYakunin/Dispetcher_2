@@ -9,12 +9,9 @@ using Dispetcher2.Class;
 
 namespace Dispetcher2.DataAccess
 {
-    public class SqlOrder : IOrder
+    public class SqlOrder : Order
     {
-        public int Id { get; set; }
-        public string Number { get; set; }
-        public string Name { get; set; }
-        public string Num1С { get; set; }
+        
         public DateTime CreateDate { get; set; }
         public int Status { get; set; }
         public bool ValidationOrder { get; set; }
@@ -27,6 +24,7 @@ namespace Dispetcher2.DataAccess
     {
         IConfig config;
         Nullable<int> status = null;
+        List<SqlOrder> orders = null;
         public SqlOrderRepository(IConfig config)
         {
             if (config == null) throw new ArgumentException("Пожалуйста укажите параметр config");
@@ -35,18 +33,25 @@ namespace Dispetcher2.DataAccess
         }
         public SqlOrderRepository(IConfig config, int status)
         {
+            if (config == null) throw new ArgumentException("Пожалуйста укажите параметр config");
             this.config = config;
             this.status = status;
         }
 
-        public override IEnumerable<IOrder> GetOrders()
+        public override IEnumerable<Order> GetOrders()
         {
-            return GetOrderByStatus();
+            if (orders == null) Load();
+            return orders;
         }
 
-        List<IOrder> GetOrderByStatus()
+        public override void Load()
         {
-            List<IOrder> orderList = new List<IOrder>();
+            GetOrderByStatus();
+        }
+
+        void GetOrderByStatus()
+        {
+            orders = new List<SqlOrder>();
             using (SqlConnection cn = new SqlConnection())
             {
                 cn.ConnectionString = config.ConnectionString;
@@ -63,7 +68,6 @@ namespace Dispetcher2.DataAccess
                         while (r.Read())
                         {
                             var item = new SqlOrder();
-                            orderList.Add(item);
                             item.Id = Converter.GetInt(r["PK_IdOrder"]);
                             item.Number = Converter.GetString(r["OrderNum"]);
                             item.Name = Converter.GetString(r["OrderName"]);
@@ -74,17 +78,18 @@ namespace Dispetcher2.DataAccess
                             item.StartDate = Converter.GetDateTime(r["StartDate"]);
                             item.PlannedDate = Converter.GetDateTime(r["PlannedDate"]);
                             item.Amount = Converter.GetInt(r["Amount"]);
+                            orders.Add(item);
                         }
                     }
                 }
             }
-            return orderList;
         }
     }
 
     public class MainOrderFactory : OrderFactory
     {
         // тут конечно надо будет сделать перечисление
+        // не сделал сразу, потому что надо искать волшебные числа по всему проекту...
         // 1-ожидание,2-открыт,3-закрыт,4-в работе,5-выполнен
         private const int status = 2;
         OrderType type;
