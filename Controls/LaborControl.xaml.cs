@@ -28,6 +28,8 @@ namespace Dispetcher2.Controls
         IConfig config;
         OrderControlViewModel ovm;
         WaitControl wc;
+        LaborLoader loader = null;
+
         public LaborControl(OrderFactory factory, IConfig config)
         {
             if (factory == null) throw new ArgumentException("Пожалуйста укажите параметр: factory");
@@ -56,25 +58,13 @@ namespace Dispetcher2.Controls
                 MessageBox.Show("Пожалуйста выберите заказ", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            //BeforeLoad();
-            //loader = new LaborLoader(m.SelectedOrder);
-            //loader.Finished += Ll_Finished;
-            //loader.Start();
+            HideAll();
+            loader = new LaborLoader(config, ovm.SelectedOrder);
+            loader.Finished += Ll_Finished;
+            loader.Start();
 
 
-            var tdr = new TestDetailRepository();
-            var tor = new TestOperationRepository();
 
-            var c = new OperationControl(tdr, tor);
-            operationPlace.Content = c;
-            operationPlace.Visibility = Visibility.Visible;
-            
-            var wdr = new SqlWorkDayRepository(config, DateTime.Now);
-            var w = new WorkTimeControl();
-            WorkTimeViewModel vm = new WorkTimeViewModel(wdr);
-            w.DataContext = vm;
-            workTimePlace.Content = w;
-            workTimePlace.Visibility = Visibility.Visible;
         }
 
         void HideAll()
@@ -109,6 +99,48 @@ namespace Dispetcher2.Controls
 
             orderListPlace.Visibility = Visibility.Visible;
             requestButton.Visibility = Visibility.Visible;
+        }
+
+        void ShowOperations()
+        {
+            var tdr = new TestDetailRepository();
+            var tor = new TestOperationRepository();
+
+            //var c = new OperationControl(tdr, tor);
+            //operationPlace.Content = c;
+            //operationPlace.Visibility = Visibility.Visible;
+
+            var wdr = new SqlWorkDayRepository(config, DateTime.Now);
+            var w = new WorkTimeControl();
+            WorkTimeViewModel vm = new WorkTimeViewModel(wdr);
+            w.DataContext = vm;
+            workTimePlace.Content = w;
+            workTimePlace.Visibility = Visibility.Visible;
+
+            operationPlace.Visibility = Visibility.Collapsed;
+            ShowOrderDetail(ovm.SelectedOrder);
+
+        }
+
+        private void Ll_Finished()
+        {
+            Action a = AfterLoad;
+            this.Dispatcher.BeginInvoke(a);
+            loader = null;
+        }
+
+        void AfterLoad()
+        {
+            wc.Stop();
+            loadingPlace.Visibility = Visibility.Collapsed;
+
+            orderListPlace.Visibility = Visibility.Visible;
+            requestButton.Visibility = Visibility.Visible;
+
+
+            ShowOperations();
+
+            
         }
     }
 }

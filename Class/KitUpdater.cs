@@ -31,6 +31,7 @@ namespace Dispetcher2.Class
         {
             this.config = config;
             this.pvm = value;
+            DB = new C_DataBase(config);
         }
 
         public void Start()

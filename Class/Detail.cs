@@ -18,6 +18,8 @@ namespace Dispetcher2.Class
         public long IdLoodsman { get; set; }
         public int PositionParent { get; set; }
         
+        // требуется убрать в следующем обновлении
+        public List<Operation> PlanOperations { get; set; }
     }
 
     public abstract class DetailRepository

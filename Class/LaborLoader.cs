@@ -6,18 +6,19 @@ using System.Threading.Tasks;
 
 namespace Dispetcher2.Class
 {
-    /*public class LaborLoader
+    public class LaborLoader
     {
+        IConfig config;
         Order selectedOrder;
-        C_DataBase dispDB;
+        C_DataBase DB;
         bool cancelFlag = false;
         public event Action Finished;
         Task mainTask = null;
 
-        public LaborLoader(Order selectedOrder)
+        public LaborLoader(IConfig config, Order selectedOrder)
         {
             this.selectedOrder = selectedOrder;
-            dispDB = new C_DataBase(connStrDispetcher2);
+            DB = new C_DataBase(config);
         }
 
         public void Start()
@@ -58,7 +59,7 @@ namespace Dispetcher2.Class
 
         void LoadDetail()
         {
-            var dl = dispDB.GetOrderDetailAndFastener(selectedOrder.Id);
+            var dl = DB.GetOrderDetailAndFastener(selectedOrder.Id);
             selectedOrder.DetailList = dl;
             if (dl != null)
             {
@@ -110,5 +111,5 @@ namespace Dispetcher2.Class
                 }
             }
         }
-    }*/
+    }
 }

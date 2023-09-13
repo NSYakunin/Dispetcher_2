@@ -8,10 +8,7 @@ using System.Drawing;
 using System.Windows.Forms;
 //using System.Net;
 using Microsoft.Office.Interop.Excel;
-using Microsoft.Office.Interop;
-using System.Runtime.InteropServices;
-using Dispetcher2.Class;
-using System.Data;
+
 using System.Data.SqlClient;
 
 namespace Dispetcher2.Class

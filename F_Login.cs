@@ -208,7 +208,7 @@ namespace Dispetcher2
             {
                 ((ComboBox)sender).DataBindings["SelectedItem"].WriteValue();
             }
-            catch (Exception ex)
+            catch
             {
                 // игнорируем исключения в WriteValue
                 vm.SelectedServer = null;

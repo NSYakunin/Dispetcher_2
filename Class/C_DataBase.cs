@@ -6,6 +6,7 @@ using System.Data;
 using System.Windows.Forms;
 using System.Data.SqlClient;
 
+using Dispetcher2.DataAccess;
 
 namespace Dispetcher2.Class
 {
@@ -281,10 +282,10 @@ namespace Dispetcher2.Class
         }
 
         
-        /*public List<Detail> GetOrderDetailAndFastener(int orderId)
+        public List<Detail> GetOrderDetailAndFastener(int orderId)
         {
             List<Detail> detList = new List<Detail>();
-            using (var cn = new SqlConnection() { ConnectionString = connectionString })
+            using (var cn = new SqlConnection() { ConnectionString = config.ConnectionString })
             {
                 using (var cmd = new SqlCommand() { Connection = cn })
                 {
@@ -296,7 +297,7 @@ namespace Dispetcher2.Class
                     {
                         while (r.Read())
                         {
-                            Detail item = new Detail();
+                            Detail item = new SqlDetail();
                             detList.Add(item);
                             item.NameType = Converter.GetString(r["NameType"]);
                             item.Position = Converter.GetInt(r["Position"]);
@@ -313,76 +314,76 @@ namespace Dispetcher2.Class
                 }
             }
             return detList;
-        }*/
-        
-        //public void Call_rep_VEDOMOST_TRUDOZATRAT_NIIPM_UNITED(Detail d)
-        //{
-        //    string s;
-        //    d.PlanOperations = new List<Operation>();
-        //    using (var cn = new SqlConnection() { ConnectionString = connectionString })
-        //    {
-        //        using (var cmd = new SqlCommand() { Connection = cn, CommandTimeout = 120 })
-        //        {
-        //            cmd.CommandText = "[dbo].[rep_VEDOMOST_TRUDOZATRAT_NIIPM_UNITED]";
-        //            cmd.CommandType = CommandType.StoredProcedure;
-        //            cmd.Parameters.AddWithValue("@objects", Convert.ToString(d.IdLoodsman));
-        //            s = $"Номер заказа=;Часть=1;Количество={d.Amount}";
-        //            cmd.Parameters.AddWithValue("@params", s);
-        //            cn.Open();
-        //            using (var r = cmd.ExecuteReader())
-        //            {
-        //                while (r.Read())
-        //                {
-        //                    // выбираем только итоговые строки
-        //                    s = Convert.ToString(r["Обозначение"]).Trim();
-        //                    if (s.Length > 0) continue;
-        //                    s = Convert.ToString(r["Наименование"]).Trim();
-        //                    if (s.Length > 0) continue;
-        //                    if (GetInt(r["numpozic"]) > 0) continue;
-        //                    if (GetInt(r["vsego"]) > 0) continue;
+        }
 
-        //                    var item = new Operation();
-        //                    item.SetName(r["marshrut"]);
-        //                    item.Numcol = GetInt(r["numcol"]);
-        //                    if (item.Numcol == 0) continue;
-        //                    item.Time = GetTime(r["Время на одну операцию по деталям"]);
-        //                    if (item.Time > TimeSpan.Zero) d.PlanOperations.Add(item);
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
+        public void Call_rep_VEDOMOST_TRUDOZATRAT_NIIPM_UNITED(Detail d)
+        {
+            string s;
+            d.PlanOperations = new List<Operation>();
+            using (var cn = new SqlConnection() { ConnectionString = config.ConnectionString })
+            {
+                using (var cmd = new SqlCommand() { Connection = cn, CommandTimeout = 120 })
+                {
+                    cmd.CommandText = "[dbo].[rep_VEDOMOST_TRUDOZATRAT_NIIPM_UNITED]";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@objects", Convert.ToString(d.IdLoodsman));
+                    s = $"Номер заказа=;Часть=1;Количество={d.Amount}";
+                    cmd.Parameters.AddWithValue("@params", s);
+                    cn.Open();
+                    using (var r = cmd.ExecuteReader())
+                    {
+                        while (r.Read())
+                        {
+                            // выбираем только итоговые строки
+                            s = Convert.ToString(r["Обозначение"]).Trim();
+                            if (s.Length > 0) continue;
+                            s = Convert.ToString(r["Наименование"]).Trim();
+                            if (s.Length > 0) continue;
+                            if (Converter.GetInt(r["numpozic"]) > 0) continue;
+                            if (Converter.GetInt(r["vsego"]) > 0) continue;
 
-        //public List<Operation> GetFactOperation(long OrderDetailId)
-        //{
-        //    List<Operation> result = new List<Operation>();
-        //    using (var cn = new SqlConnection() { ConnectionString = connectionString })
-        //    {
-        //        using (var cmd = new SqlCommand() { Connection = cn })
-        //        {
-        //            cmd.CommandText = "[dbo].[GetFactOperation]";
-        //            cmd.CommandType = CommandType.StoredProcedure;
-        //            cmd.Parameters.AddWithValue("@OrderDetailId", OrderDetailId);
-        //            cn.Open();
-        //            using (var r = cmd.ExecuteReader())
-        //            {
-        //                while(r.Read())
-        //                {
-        //                    var item = new Operation();
-        //                    item.GroupId = GetInt(r["FK_IdOperGroup"]);
-        //                    item.Tpd = GetInt(r["Tpd"]);
-        //                    item.Tsh = GetInt(r["Tsh"]);
-        //                    item.Quantity = GetInt(r["fo_Amount"]);
-        //                    item.Number = GetString(r["NumOper"]);
-        //                    item.Name = GetString(r["NameOperation"]);
-        //                    result.Add(item);
-        //                }
-        //            }
-        //        }
-        //    }
-        //    return result;
-        //}
+                            var item = new Operation();
+                            item.Name = Converter.GetString(r["marshrut"]);
+                            item.Numcol = Converter.GetInt(r["numcol"]);
+                            if (item.Numcol == 0) continue;
+                            item.Time = Converter.GetTime(r["Время на одну операцию по деталям"]);
+                            if (item.Time > TimeSpan.Zero) d.PlanOperations.Add(item);
+                        }
+                    }
+                }
+            }
+        }
 
-        
+        public List<Operation> GetFactOperation(long OrderDetailId)
+        {
+            List<Operation> result = new List<Operation>();
+            using (var cn = new SqlConnection() { ConnectionString = config.ConnectionString })
+            {
+                using (var cmd = new SqlCommand() { Connection = cn })
+                {
+                    cmd.CommandText = "[dbo].[GetFactOperation]";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@OrderDetailId", OrderDetailId);
+                    cn.Open();
+                    using (var r = cmd.ExecuteReader())
+                    {
+                        while (r.Read())
+                        {
+                            var item = new Operation();
+                            item.GroupId = Converter.GetInt(r["FK_IdOperGroup"]);
+                            item.Tpd = Converter.GetInt(r["Tpd"]);
+                            item.Tsh = Converter.GetInt(r["Tsh"]);
+                            item.Quantity = Converter.GetInt(r["fo_Amount"]);
+                            item.Number = Converter.GetString(r["NumOper"]);
+                            item.Name = Converter.GetString(r["NameOperation"]);
+                            result.Add(item);
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+
     }
 }

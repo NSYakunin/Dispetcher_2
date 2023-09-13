@@ -204,6 +204,7 @@
     <Compile Include="Controls\WorkTimeControl.xaml.cs">
       <DependentUpon>WorkTimeControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DataAccess\SqlDetailRepository.cs" />
     <Compile Include="DataAccess\SqlOrderRepository.cs" />
     <Compile Include="DataAccess\SqlWorkDayRepository.cs" />
     <Compile Include="DialogsForms\dF_Brigade.cs">
