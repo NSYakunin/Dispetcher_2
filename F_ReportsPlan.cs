@@ -12,8 +12,16 @@ namespace Dispetcher2
 {
     public partial class F_ReportsPlan : Form
     {
-        public F_ReportsPlan()
+        // Конфигурация
+        IConfig config;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_Orders orders;
+
+        public F_ReportsPlan(IConfig config)
         {
+            this.config = config;
+            orders = new C_Orders(config);
+
             InitializeComponent();
             DT_Orders.Columns.Add("PK_IdOrder", typeof(int));
             DT_Orders.Columns.Add("OrderNum", typeof(string));
@@ -25,7 +33,7 @@ namespace Dispetcher2
 
         private void F_ReportsPlan_Load(object sender, EventArgs e)
         {
-            if (C_Gper.NameReport == C_Gper.ReportMode.ПланГрафик)//План-график (форма №6)
+            if (config.SelectedReportMode == ReportMode.ПланГрафик)//План-график (форма №6)
             {
                 myTabC_ReportsPlan.SelectedTab = tPageForm106;
                 dGV_Orders.AutoGenerateColumns = false;
@@ -37,7 +45,7 @@ namespace Dispetcher2
                 //Bindings
                 tB_OrderName.DataBindings.Add("Text", BS_Orders, "OrderName", false, DataSourceUpdateMode.OnPropertyChanged);
                 tB_OrderNumInfo.DataBindings.Add("Text", BS_Orders, "OrderNum", false, DataSourceUpdateMode.OnPropertyChanged);
-                C_Orders.SelectOrdersData(2, ref DT_Orders);//2-opened
+                orders.SelectOrdersData(2, ref DT_Orders);//2-opened
             }
         }
 

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Data.SqlClient;
+
 using System.Data;
 using System.Configuration;
 using Microsoft.Office.Interop.Excel;
@@ -12,21 +12,8 @@ namespace Dispetcher2.Class
 {
     sealed class C_Gper
     {
-        static NameValueCollection appSettings = ConfigurationManager.AppSettings;
-        static string SERVER = appSettings["SelectedIndex"];
+        
 
-        public static string ConnStrDispetcher2 = ConfigurationManager.ConnectionStrings[SERVER == "0"? "ConnStrDispetcher2": "TestConnStrDispetcher2"].ConnectionString;
-        private static string _ConnectionStringLoodsman = ConfigurationManager.ConnectionStrings[SERVER == "0" ? "_ConnectionStringLoodsman": "_TestConnectionStringLoodsman"].ConnectionString;
-      
-        public static string ConStr_Loodsman
-        {
-            get
-            {
-                return _ConnectionStringLoodsman;
-            }
-        }
-
-        public static SqlConnection con = new SqlConnection();//using System.Data.SqlClient;
         //***********************************************************************************************************************************************************
         public static System.Globalization.NumberStyles style = System.Globalization.NumberStyles.Number | System.Globalization.NumberStyles.AllowCurrencySymbol;
         public static System.Globalization.CultureInfo culture = System.Globalization.CultureInfo.CreateSpecificCulture("en-GB");
@@ -60,25 +47,10 @@ namespace Dispetcher2.Class
         public static bool Settings_Set = false;
         //***************************************
         public static DataSet Ds = new DataSet();//using System.Data;
-        //ActiveReport
-        public enum ReportMode
-        {
-            Неизвестно = 0,
-            ОтчетНаряд = 3,
-            ДвижениеДеталей = 6,
-            ОтчетВыполненным = 7,
-            ПланГрафик = 106,
-            ОперацииВыполненныеРабочим = 117,
-            Трудоемкость = 66,
-        }
-        public static ReportMode NameReport = ReportMode.Неизвестно;
-        /* 
-         * 3 - Отчёт-наряд по выполненным операциям
-         * 6 - Движение деталей
-         * 7 - Отчет по выполненным операциям (разр.)
-         * 106 - План-график (форма №6)
-         * 117 - Операции выполненные рабочим по заказам (форма №17)
-         * */
+
+
+
+
 
 
 
@@ -107,12 +79,7 @@ namespace Dispetcher2.Class
             //Ds.Tables["Users"].Columns.Add("isValid");
         }
 
-        public static string GetServerName()
-        {
-            SqlConnectionStringBuilder b = new SqlConnectionStringBuilder(ConnStrDispetcher2);
-            string s = b.DataSource;
-            return s;
-        }
+
 
     }
 }

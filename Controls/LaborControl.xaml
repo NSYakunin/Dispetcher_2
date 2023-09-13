@@ -6,10 +6,10 @@
              xmlns:local="clr-namespace:Dispetcher2.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" FontFamily="Calibri" FontSize="15">
-    <Grid x:Name="mainGrid">
+    <Grid x:Name="mainGrid" ShowGridLines="False">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition MinWidth="200"/>
+            <ColumnDefinition Width="4*"/>
         </Grid.ColumnDefinitions>
         
         <ContentControl x:Name="orderListPlace" Grid.Column="0">
@@ -25,7 +25,7 @@
         
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="50"/>
+                <RowDefinition Height="40"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <ContentControl x:Name="loadingPlace" Height="60" Width="400" Grid.Row="1" 
@@ -40,7 +40,7 @@
 
                 </Rectangle>
             </ContentControl>
-            <Button x:Name="requestButton" Content="Запрос" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Center" Width="75" Click="OnRequest"/>
+            <Button x:Name="requestButton" Content="Запрос" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top" Width="75" Click="OnRequest"/>
             <ScrollViewer Grid.Row="1" CanContentScroll="False">
                 <StackPanel>
                     <ContentControl x:Name="workTimePlace" Width="190" Height="80" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,5,0">

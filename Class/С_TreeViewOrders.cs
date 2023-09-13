@@ -13,6 +13,12 @@ namespace Dispetcher2.Class
 {
     class С_TreeViewOrders
     {
+        IConfig config;
+        
+        public С_TreeViewOrders(IConfig config)
+        {
+            this.config = config;
+        }
 
         //*****************************************************************************
         #region Формируем дерево заказа при загрузке формы заказа
@@ -55,38 +61,41 @@ namespace Dispetcher2.Class
             //DT_TreeViewOrders.Clear();
             try
             {
-                C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
-                SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
-                cmd.Connection = C_Gper.con;
-                cmd.Parameters.Clear();
-                cmd.CommandText = "";
+                using (SqlConnection con = new SqlConnection())
+                {
+                    con.ConnectionString = config.ConnectionString;
+                    SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
+                    cmd.Connection = con;
+                    cmd.Parameters.Clear();
+                    cmd.CommandText = "";
 
-                if (_Plan) cmd.CommandText = "Select PK_IdOrderDetail,ShcmDetail,NameDetail,AmountDetails,Position,PositionParent,FK_IdTypeDetail" + "\n" +
-                                  "From OrdersDetails" + "\n" +
-                                  "left Join Sp_Details on Sp_Details.PK_IdDetail=OrdersDetails.FK_IdDetail" + "\n" +
-                                  "Where FK_IdOrder = @PK_IdOrder and Position >=0" + "\n" +
-                                  "Order by Position";
-                else
-                cmd.CommandText = "Select PK_IdOrderDetail,ShcmDetail,NameDetail,AmountDetails,Position,PositionParent,FK_IdTypeDetail" + "\n" +
-                                  "From OrdersDetails" + "\n" +
-                                  "left Join Sp_Details on Sp_Details.PK_IdDetail=OrdersDetails.FK_IdDetail" + "\n" +
-                                  "Where FK_IdOrder = @PK_IdOrder" + "\n" +
-                                  "union" + "\n" +
-                                  "Select PK_IdFasteners,'К',NameFasteners,AmountFasteners,Position,PositionParent,FK_IdTypeFasteners as FK_IdTypeDetail" + "\n" +
-                                  "From OrdersFasteners" + "\n" +
-                                  "Where FK_IdOrder = @PK_IdOrder" + "\n" +
-                                  "Order by Position";
-                cmd.Parameters.Add(new SqlParameter("@PK_IdOrder", SqlDbType.Int));
-                cmd.Parameters["@PK_IdOrder"].Value = _PK_IdOrder;
-                SqlDataAdapter adapter = new SqlDataAdapter();
-                adapter.SelectCommand = cmd;
-                adapter.Fill(DT_TreeViewOrders);
-                adapter.Dispose();
-                C_Gper.con.Close();
+                    if (_Plan) cmd.CommandText = "Select PK_IdOrderDetail,ShcmDetail,NameDetail,AmountDetails,Position,PositionParent,FK_IdTypeDetail" + "\n" +
+                                      "From OrdersDetails" + "\n" +
+                                      "left Join Sp_Details on Sp_Details.PK_IdDetail=OrdersDetails.FK_IdDetail" + "\n" +
+                                      "Where FK_IdOrder = @PK_IdOrder and Position >=0" + "\n" +
+                                      "Order by Position";
+                    else
+                        cmd.CommandText = "Select PK_IdOrderDetail,ShcmDetail,NameDetail,AmountDetails,Position,PositionParent,FK_IdTypeDetail" + "\n" +
+                                          "From OrdersDetails" + "\n" +
+                                          "left Join Sp_Details on Sp_Details.PK_IdDetail=OrdersDetails.FK_IdDetail" + "\n" +
+                                          "Where FK_IdOrder = @PK_IdOrder" + "\n" +
+                                          "union" + "\n" +
+                                          "Select PK_IdFasteners,'К',NameFasteners,AmountFasteners,Position,PositionParent,FK_IdTypeFasteners as FK_IdTypeDetail" + "\n" +
+                                          "From OrdersFasteners" + "\n" +
+                                          "Where FK_IdOrder = @PK_IdOrder" + "\n" +
+                                          "Order by Position";
+                    cmd.Parameters.Add(new SqlParameter("@PK_IdOrder", SqlDbType.Int));
+                    cmd.Parameters["@PK_IdOrder"].Value = _PK_IdOrder;
+                    SqlDataAdapter adapter = new SqlDataAdapter();
+                    adapter.SelectCommand = cmd;
+                    adapter.Fill(DT_TreeViewOrders);
+                    adapter.Dispose();
+                    con.Close();
+                }
             }
             catch (Exception ex)
             {
-                C_Gper.con.Close();
+                
                 MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

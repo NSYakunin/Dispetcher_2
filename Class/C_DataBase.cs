@@ -12,36 +12,14 @@ namespace Dispetcher2.Class
     class C_DataBase
     {
 
-        string connectionString;
+        IConfig config;
 
-        public C_DataBase(string connectionString)
+        public C_DataBase(IConfig config)
         {
-            this.connectionString = connectionString;
+            this.config = config;
         }
 
-        
 
-        public void Select_DT(ref DataTable DT,string SQLtext)
-        {
-            DT.Clear();
-            try
-            {
-                using (var con = new SqlConnection())
-                {
-                    con.ConnectionString = connectionString;
-                    SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//using System.Data.SqlClient;
-                    cmd.CommandText = SQLtext;
-                    cmd.Connection = con;
-                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);//adapter.SelectCommand = cmd;
-                    adapter.Fill(DT);
-                    adapter.Dispose();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
 
         /// <summary>
         /// Получение списка сборок заказа
@@ -54,7 +32,7 @@ namespace Dispetcher2.Class
             DataTable dt = new DataTable();
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = connectionString;
+                cn.ConnectionString = config.ConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -79,7 +57,7 @@ namespace Dispetcher2.Class
             DataTable dt = new DataTable();
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = connectionString;
+                cn.ConnectionString = config.LoodsmanConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -116,7 +94,7 @@ namespace Dispetcher2.Class
             DataTable dt = new DataTable();
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = connectionString;
+                cn.ConnectionString = config.LoodsmanConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -141,7 +119,7 @@ namespace Dispetcher2.Class
             DataTable dt = new DataTable();
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = connectionString;
+                cn.ConnectionString = config.ConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -166,7 +144,7 @@ namespace Dispetcher2.Class
         {
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = connectionString;
+                cn.ConnectionString = config.ConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -185,7 +163,7 @@ namespace Dispetcher2.Class
         {
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = connectionString;
+                cn.ConnectionString = config.ConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -212,7 +190,7 @@ namespace Dispetcher2.Class
         {
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = connectionString;
+                cn.ConnectionString = config.ConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -235,7 +213,7 @@ namespace Dispetcher2.Class
         {
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = connectionString;
+                cn.ConnectionString = config.ConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -255,7 +233,7 @@ namespace Dispetcher2.Class
         {
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = connectionString;
+                cn.ConnectionString = config.ConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -281,7 +259,7 @@ namespace Dispetcher2.Class
             DataTable dt = new DataTable();
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = connectionString;
+                cn.ConnectionString = config.ConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;

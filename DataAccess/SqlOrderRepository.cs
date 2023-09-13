@@ -46,7 +46,15 @@ namespace Dispetcher2.DataAccess
 
         public override void Load()
         {
-            GetOrderByStatus();
+            try
+            {
+                GetOrderByStatus();
+            }
+            catch(Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("SqlOrderRepository.Load: " + ex.Message);
+            }
+            
         }
 
         void GetOrderByStatus()

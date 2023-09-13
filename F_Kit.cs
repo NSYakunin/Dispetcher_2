@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -20,8 +21,20 @@ namespace Dispetcher2
 {
     public partial class F_Kit : Form
     {
-        public F_Kit()
+        IConfig config;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_DataBase DB;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_Orders orders;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_Reports ExpKit;
+        public F_Kit(IConfig config)
         {
+            this.config = config;
+            DB = new C_DataBase(config);
+            orders = new C_Orders(config);
+            ExpKit = new C_Reports(config);
+
             InitializeComponent();
             DT_Orders.Columns.Add("PK_IdOrder", typeof(int));
             DT_Orders.Columns.Add("OrderNum", typeof(string));
@@ -80,7 +93,7 @@ namespace Dispetcher2
             dGV_Orders.Columns["Col_OrderNum"].DataPropertyName = DT_Orders.Columns["OrderNum"].ToString();
             //Bindings
             //tB_OrderNum.DataBindings.Add("Text", BS_Orders, "OrderName", false, DataSourceUpdateMode.OnPropertyChanged);
-            C_Orders.SelectOrdersData(2, ref DT_Orders);//2-opened
+            orders.SelectOrdersData(2, ref DT_Orders);//2-opened
             //------ВРЕМЕННО------
             dGV_Kit.AutoGenerateColumns = false;
             dGV_Kit.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -164,21 +177,29 @@ namespace Dispetcher2
         {
             if (All_PK_IdOrder != "")
             {
-                string str = "";
-                DataTable DT = new DataTable();
+                string str;
+                
                 if (chB_235Kit.Checked) str = " spK.FK_IdTypeKit in (235,343) "; else str = " spK.FK_IdTypeKit = 343 ";
-                C_DataBase DB = new C_DataBase(C_Gper.ConnStrDispetcher2);
+                
                 string sql = "SELECT ROW_NUMBER() OVER(Order by o.OrderNum,Position) as Row,STR(OD.Position) as Position,spD.IdLoodsman,spD.ShcmDetail,STR(OD.AmountDetails) as AmountDetails,spK.NameProduct,spK.minquantity * OD.AmountDetails as minquantity,o.OrderNum,spK.PK_IdKit as id" + "\n" +
                              "FROM [Dispetcher2].[dbo].[OrdersDetails] OD " + "\n" +
                              "Inner Join Orders o On o.PK_IdOrder =  oD.FK_IdOrder " + "\n" +
                              "Inner Join Sp_Details spD On spD.PK_IdDetail = OD.FK_IdDetail " + "\n" +
                              "Inner Join Sp_Kit spK On spK.IdLoodsmanParent = spD.IdLoodsman " + "\n" +
                              "Where OD.FK_IdOrder in (" + All_PK_IdOrder + ") and spD.FK_IdTypeDetail in (232,346) and " + str;// +"\n" +
-                             //"Order by o.OrderNum, Row, Position";
-                //DB.Select_DT(ref DT, sql);
-                //DT_Kit.Merge(DT, true);
-                DB.Select_DT(ref DT_Kit, sql);
+                                                                                                                               //"Order by o.OrderNum, Row, Position";
+
                 
+                using (var con = new SqlConnection())
+                {
+                    con.ConnectionString = config.ConnectionString;
+                    SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//using System.Data.SqlClient;
+                    cmd.CommandText = sql;
+                    cmd.Connection = con;
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);//adapter.SelectCommand = cmd;
+                    adapter.Fill(DT_Kit);
+                    adapter.Dispose();
+                }
             }
         }
 
@@ -190,7 +211,7 @@ namespace Dispetcher2
                 string str = "";
                 //if (chB_235Kit.Checked) str = " spK.FK_IdTypeKit in (235,343) "; else str = " spK.FK_IdTypeKit = 343 ";
                 if (chB_235Kit.Checked) str = " FK_IdTypeKit in (235,343)"; else str = " FK_IdTypeKit = 343 ";
-                C_DataBase DB = new C_DataBase(C_Gper.ConnStrDispetcher2);
+                
                 /*string sql = "SELECT ROW_NUMBER() OVER(Order by spK.NameProduct) as Row, spK.NameProduct as product,sum(spK.minquantity * OD.AmountDetails) as minquantity" + "\n" +
                              "FROM [Dispetcher2].[dbo].[OrdersDetails] OD " + "\n" +
                              "Inner Join Sp_Details spD On spD.PK_IdDetail = OD.FK_IdDetail " + "\n" +
@@ -202,7 +223,18 @@ namespace Dispetcher2
                              "From vwKit_1C" + "\n" +
                              "Where PK_IdOrder in (" + All_PK_IdOrder + ") and " + str + "\n" +
                              "Group by PK_IdKit,NameProduct, IdLoodsman, FK_1С_IdKit";
-                DB.Select_DT(ref DT_Kit, sql);
+                
+
+                using (var con = new SqlConnection())
+                {
+                    con.ConnectionString = config.ConnectionString;
+                    SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//using System.Data.SqlClient;
+                    cmd.CommandText = sql;
+                    cmd.Connection = con;
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);//adapter.SelectCommand = cmd;
+                    adapter.Fill(DT_Kit);
+                    adapter.Dispose();
+                }
             }
         }
 
@@ -214,7 +246,7 @@ namespace Dispetcher2
         //    {
 
 
-        //        C_DataBase DB = new C_DataBase(C_Gper.ConnStrDispetcher2);
+        //        C_DataBase DB = new C_DataBase(connStrDispetcher2);
         //        string sql = "SELECT OD.Position,spD.IdLoodsman,spD.ShcmDetail,OD.AmountDetails" + "\n" +
         //                     "FROM [Dispetcher2].[dbo].[OrdersDetails] OD" + "\n" +
         //                     "Inner Join Sp_Details spD On spD.PK_IdDetail = OD.FK_IdDetail" + "\n" +
@@ -237,7 +269,7 @@ namespace Dispetcher2
         //            AmountDetails = rowDT.ItemArray[3].ToString().Trim();
         //            if (long.TryParse(rowDT.ItemArray[1].ToString().Trim(), out IdLoodsman))
         //            {
-        //                C_DataBase DB = new C_DataBase(C_Gper.ConStr_Loodsman);
+        //                C_DataBase DB = new C_DataBase(config.LoodsmanConnectionString);
         //                string sql = "Select '" + Position + "' as Position,'" + ShcmDetail + "' as ShcmDetail, '" + AmountDetails + "' as AmountDetails,r.minquantity *" + AmountDetails + " as minquantity,v.idtype,v.product as NameProduct,v.id,'" + OrderNum + "' as OrderNum" + "\n" +
         //                      "from НИИПМ.dbo.rvwRelations r" + "\n" +
         //                      "left join НИИПМ.dbo.rvwVersions v on v.id=r.idchild" + "\n" +
@@ -254,9 +286,8 @@ namespace Dispetcher2
         // Новая версия работает быстрее в 10 раз
         void LoadDataOfLoodsman(int PK_IdOrder, string OrderNum)
         {
-            C_DataBase dispDB = new C_DataBase(C_Gper.ConnStrDispetcher2);
-            C_DataBase loodDB = new C_DataBase(C_Gper.ConStr_Loodsman);
-            DT_Details = dispDB.GetOrderDetail(PK_IdOrder);
+
+            DT_Details = DB.GetOrderDetail(PK_IdOrder);
             if (DT_Details.Rows.Count == 0)
             {
                 MessageBox.Show("В заказе отсутствуют позиции с типом \"сборка\".", "Внимание!!!", MessageBoxButtons.OK,
@@ -274,7 +305,7 @@ namespace Dispetcher2
                 AmountDetails = rowDT.ItemArray[3].ToString().Trim();
                 if (long.TryParse(rowDT.ItemArray[1].ToString().Trim(), out IdLoodsman))
                 {
-                    DataTable DT = loodDB.GetDetailKit(Position, ShcmDetail, AmountDetails, OrderNum,
+                    DataTable DT = DB.GetDetailKit(Position, ShcmDetail, AmountDetails, OrderNum,
                         IdLoodsman, standard);
                     DT_Kit.Merge(DT, true);
                 }
@@ -306,7 +337,7 @@ namespace Dispetcher2
                             ch++;
                         }
                     }
-                    C_Reports ExpKit = new C_Reports();
+                    
                     //dGV_Orders.SelectedRows.Count
                     if (chB_Summary.Checked)
                         ExpKit.ExpKitToExcelSvod(All_OrderNum, DT_Kit, numrows);

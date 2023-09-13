@@ -44,7 +44,7 @@ namespace Dispetcher2
             this.tB_NewLogin = new System.Windows.Forms.TextBox();
             this.mychB_NewLogin = new Dispetcher2.Controls.MyCheckBox();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.serverComboBox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.tLP_Autorization.SuspendLayout();
             this.gB_NewLogin.SuspendLayout();
@@ -223,7 +223,7 @@ namespace Dispetcher2
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.comboBox1);
+            this.panel1.Controls.Add(this.serverComboBox);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(446, 369);
@@ -231,18 +231,16 @@ namespace Dispetcher2
             this.panel1.Size = new System.Drawing.Size(214, 78);
             this.panel1.TabIndex = 1007;
             // 
-            // comboBox1
+            // serverComboBox
             // 
-            this.comboBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
-            "main",
-            "test"});
-            this.comboBox1.Location = new System.Drawing.Point(39, 43);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(142, 32);
-            this.comboBox1.TabIndex = 0;
-            this.comboBox1.SelectionChangeCommitted += new System.EventHandler(this.comboBox1_SelectionChangeCommitted);
+            this.serverComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.serverComboBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.serverComboBox.FormattingEnabled = true;
+            this.serverComboBox.Location = new System.Drawing.Point(3, 43);
+            this.serverComboBox.Name = "serverComboBox";
+            this.serverComboBox.Size = new System.Drawing.Size(208, 32);
+            this.serverComboBox.TabIndex = 0;
+            this.serverComboBox.SelectionChangeCommitted += new System.EventHandler(this.OnSelectionChangeCommitted);
             // 
             // label1
             // 
@@ -290,7 +288,7 @@ namespace Dispetcher2
         private System.Windows.Forms.GroupBox gB_NewLogin;
         private System.Windows.Forms.TextBox tB_NewLogin;
         private Controls.MyCheckBox mychB_NewLogin;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox serverComboBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Panel panel1;
     }

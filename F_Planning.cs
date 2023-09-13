@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -13,14 +14,26 @@ namespace Dispetcher2
 {
     public partial class F_Planning : Form
     {
+        IConfig config;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_Orders orders;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        С_TreeViewOrders C_TV_Orders;
+
         DataTable DT_Orders = new DataTable();
         BindingSource BS_Orders = new BindingSource();
         DataTable DT_TreeView = new DataTable();
         DataTable DT_Gant = new DataTable();
         DataTable DT_Gant_Data = new DataTable();
 
-        public F_Planning()
+        // Нарушение правила разделения ответственности!
+        // Требуется вынести работу с базой данных в шаблон Repository (Хранилище)
+        public F_Planning(IConfig config)
         {
+            this.config = config;
+            orders = new C_Orders(config);
+            C_TV_Orders = new С_TreeViewOrders(config);
+
             InitializeComponent();
             DT_Orders.Columns.Add("PK_IdOrder", typeof(int));
             DT_Orders.Columns.Add("OrderNum", typeof(string));
@@ -48,7 +61,7 @@ namespace Dispetcher2
             mTB_PlannedDate.DataBindings.Add("Text", BS_Orders, "PlannedDate", false, DataSourceUpdateMode.OnPropertyChanged);
             tB_Amount.DataBindings.Add("Text", BS_Orders, "Amount", true, DataSourceUpdateMode.OnPropertyChanged);
 
-            C_Orders.SelectOrdersData(2, ref DT_Orders);//2-opened. LoadOrders
+            orders.SelectOrdersData(2, ref DT_Orders);//2-opened. LoadOrders
             //C_F_Orders Orders = new C_F_Orders();
             //Orders.AddInTreeViewOrders(PK_IdOrder, OrderNum, OrderName, ref treeViewOrdersDetails);
             //if (treeViewOrdersDetails.SelectedNode == null) treeViewOrdersDetails.SelectedNode = treeViewOrdersDetails.TopNode;
@@ -67,7 +80,7 @@ namespace Dispetcher2
                 dGV_Orders.Columns["Col_OrderName"].DataPropertyName = DT_Orders.Columns["OrderName"].ToString();*/
                 string OrderNum = dGV_Orders.SelectedRows[0].Cells[1].Value.ToString();
                 string OrderName = dGV_Orders.SelectedRows[0].Cells[2].Value.ToString();
-                С_TreeViewOrders C_TV_Orders = new С_TreeViewOrders();
+                
                 C_TV_Orders.AddInTreeViewOrders(_PK_IdOrder, OrderNum, OrderName, ref treeViewOrdersDetails,true);
                 tnc = treeViewOrdersDetails.Nodes;
                 //DT_TreeView = C_TV_Orders.Get_DT_TreeView;
@@ -85,14 +98,25 @@ namespace Dispetcher2
             int PK_IdOrder = Convert.ToInt32(dGV_Orders.SelectedRows[0].Cells[0].Value);
             LoadTreeView(PK_IdOrder);
             DT_Gant.Reset();
+            
             string sql = "Select o.StartDate,MIN(DateFactOper) MinDateFact,o.PlannedDate,MAX(DateFactOper) MaxDateFact" + "\n" +
                          "From Orders o" + "\n" +
                          "inner join OrdersDetails od on od.FK_IdOrder = o.PK_IdOrder" + "\n" +
                          "left join FactOperation fo on fo.FK_IdOrderDetail = od.PK_IdOrderDetail" + "\n" +
                          "Where o.PK_IdOrder in (" + PK_IdOrder + ") \n" +
                          "Group by o.StartDate,o.PlannedDate";
-            C_DataBase CDB = new C_DataBase(C_Gper.ConnStrDispetcher2);
-            CDB.Select_DT(ref DT_Gant, sql);
+
+            using (var con = new SqlConnection())
+            {
+                con.ConnectionString = config.ConnectionString;
+                SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//using System.Data.SqlClient;
+                cmd.CommandText = sql;
+                cmd.Connection = con;
+                SqlDataAdapter adapter = new SqlDataAdapter(cmd);//adapter.SelectCommand = cmd;
+                adapter.Fill(DT_Gant);
+                adapter.Dispose();
+            }
+
             if (DT_Gant.Rows.Count > 0)
             {
 
@@ -137,7 +161,19 @@ namespace Dispetcher2
                        "Group by o.OrderNum,od.PK_IdOrderDetail, sd.ShcmDetail,Position,sd.FK_IdTypeDetail" + "\n" +*/
                        "order by o.OrderNum,Position";
                 DT_Gant.Reset();
-                CDB.Select_DT(ref DT_Gant, sql);
+
+                //CDB.Select_DT(ref DT_Gant, sql);
+                using (var con = new SqlConnection())
+                {
+                    con.ConnectionString = config.ConnectionString;
+                    SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//using System.Data.SqlClient;
+                    cmd.CommandText = sql;
+                    cmd.Connection = con;
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);//adapter.SelectCommand = cmd;
+                    adapter.Fill(DT_Gant);
+                    adapter.Dispose();
+                }
+
                 if (DT_Gant.Rows.Count > 0)
                 {
                     int StartRow = 3;
@@ -299,8 +335,19 @@ namespace Dispetcher2
                     }
             if (sql != "")
             {
-                C_DataBase CDB = new C_DataBase(C_Gper.ConnStrDispetcher2);
-                CDB.Select_DT(ref DT_Gant, sql);
+                
+                //CDB.Select_DT(ref DT_Gant, sql);
+                using (var con = new SqlConnection())
+                {
+                    con.ConnectionString = config.ConnectionString;
+                    SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//using System.Data.SqlClient;
+                    cmd.CommandText = sql;
+                    cmd.Connection = con;
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);//adapter.SelectCommand = cmd;
+                    adapter.Fill(DT_Gant);
+                    adapter.Dispose();
+                }
+
                 if (DT_Gant.Rows.Count > 0)
                 {
                     bool top1 = true;

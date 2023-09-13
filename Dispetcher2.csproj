@@ -143,9 +143,7 @@
     <Compile Include="Class\C_DbWorker.cs" />
     <Compile Include="Class\C_Departments.cs" />
     <Compile Include="Class\C_Details.cs" />
-    <Compile Include="Class\C_ExampleDB.cs" />
     <Compile Include="Class\C_Excel.cs" />
-    <Compile Include="Class\C_F_Orders.cs" />
     <Compile Include="Class\C_Gper.cs" />
     <Compile Include="Class\C_Orders.cs" />
     <Compile Include="Class\C_Reports.cs" />
@@ -155,12 +153,14 @@
     <Compile Include="Class\C_Users.cs" />
     <Compile Include="Class\Detail.cs" />
     <Compile Include="Class\ErrorItem.cs" />
+    <Compile Include="Class\FormFactory.cs" />
     <Compile Include="Class\ImportDataWorker.cs" />
     <Compile Include="Class\KitUpdater.cs" />
     <Compile Include="Class\LaborLoader.cs" />
     <Compile Include="Class\Operation.cs" />
     <Compile Include="Class\Order.cs" />
     <Compile Include="Class\Receipt.cs" />
+    <Compile Include="Class\Server.cs" />
     <Compile Include="Class\WorkDay.cs" />
     <Compile Include="Class\С_TreeViewOrders.cs" />
     <Compile Include="Controls\ImportDataControl.xaml.cs">
@@ -326,7 +326,7 @@
     <Compile Include="F_Workers.Designer.cs">
       <DependentUpon>F_Workers.cs</DependentUpon>
     </Compile>
-    <Compile Include="Models\OperationControlViewModel.cs" />
+    <Compile Include="Models\DetailViewRepository.cs" />
     <Compile Include="Models\OrderControlViewModel.cs" />
     <Compile Include="Models\ProgressViewModel.cs" />
     <Compile Include="Models\WorkTimeViewModel.cs" />
