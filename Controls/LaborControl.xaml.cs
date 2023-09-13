@@ -41,13 +41,7 @@ namespace Dispetcher2.Controls
 
 
 
-            /*
-            var wdr = new SqlWorkDayRepository(config, DateTime.Now);
-            var w = new WorkTimeControl();
-            WorkTimeViewModel vm = new WorkTimeViewModel(wdr);
-            w.DataContext = vm;
-            workTimePlace.Content = w;
-            */
+
 
             HideAll();
             var t = new Task(LoadOrders);
@@ -67,30 +61,20 @@ namespace Dispetcher2.Controls
             //loader.Finished += Ll_Finished;
             //loader.Start();
 
-            List<DetailView> dlist = new List<DetailView>();
-            DetailView d = new DetailView();
-            d.Name = "Деталь ЩЦМ 1";
-            d.Operations = new Dictionary<string, string>();
-            d.Operations["Слесарная"] = "01:00:00";
-            d.Operations["Созерцательная"] = "00:10:00";
-            d.Operations["Перекур"] = "00:10:00";
-            dlist.Add(d);
 
-            d = new DetailView();
-            d.Name = "Деталь ЩЦМ 2";
-            d.Operations = new Dictionary<string, string>();
-            d.Operations["Слесарная"] = "01:02:03";
-            d.Operations["Перекур"] = "00:05:00";
-            d.Operations["Дискуссионная"] = "00:05:00";
-            dlist.Add(d);
+            var tdr = new TestDetailRepository();
+            var tor = new TestOperationRepository();
 
-            var vm2 = new OperationControlViewModel();
-            vm2.Details = dlist;
-
-            var c = new OperationControl(vm2);
-            c.DataContext = vm2;
+            var c = new OperationControl(tdr, tor);
             operationPlace.Content = c;
             operationPlace.Visibility = Visibility.Visible;
+            
+            var wdr = new SqlWorkDayRepository(config, DateTime.Now);
+            var w = new WorkTimeControl();
+            WorkTimeViewModel vm = new WorkTimeViewModel(wdr);
+            w.DataContext = vm;
+            workTimePlace.Content = w;
+            workTimePlace.Visibility = Visibility.Visible;
         }
 
         void HideAll()

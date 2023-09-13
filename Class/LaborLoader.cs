@@ -17,7 +17,7 @@ namespace Dispetcher2.Class
         public LaborLoader(Order selectedOrder)
         {
             this.selectedOrder = selectedOrder;
-            dispDB = new C_DataBase(C_Gper.ConnStrDispetcher2);
+            dispDB = new C_DataBase(connStrDispetcher2);
         }
 
         public void Start()
@@ -77,7 +77,7 @@ namespace Dispetcher2.Class
 
         void LoadOperation()
         {
-            C_DataBase loodDB = new C_DataBase(C_Gper.ConStr_Loodsman);
+            C_DataBase loodDB = new C_DataBase(config.LoodsmanConnectionString);
             foreach(var d in selectedOrder.MainDetailList)
             {
                 if (cancelFlag) return;

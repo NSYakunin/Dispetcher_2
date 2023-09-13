@@ -26,8 +26,10 @@ namespace Dispetcher2.Controls
         public event EventHandler FinishEvent;
 
         ProgressViewModel pvm = new ProgressViewModel();
-        public ImportDataControl()
+        IConfig config;
+        public ImportDataControl(IConfig config)
         {
+            this.config = config;
             InitializeComponent();
 
             pvm.SetDispatcher(this.Dispatcher);
@@ -45,7 +47,7 @@ namespace Dispetcher2.Controls
             pvm.Reset();
             if (idw == null)
             {
-                idw = new ImportDataWorker(pvm);
+                idw = new ImportDataWorker(config, pvm);
                 idw.FinishEvent += OnFinishEvent;
             }
 

@@ -12,8 +12,16 @@ namespace Dispetcher2
 {
     public partial class F_Brigade : Form
     {
-        public F_Brigade()
+        IConfig config;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_Users users;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_Brigade brigade;
+        public F_Brigade(IConfig config)
         {
+            this.config = config;
+            users = new C_Users(config);
+            brigade = new C_Brigade(config);
             InitializeComponent();
         }
 
@@ -25,8 +33,8 @@ namespace Dispetcher2
 
         private void F_Brigade_Load(object sender, EventArgs e)
         {
-            C_Users.Select_FullName_PkLogin(ref DT_Workers);//Использовать только тут иначе набор данных в гриде не изменится
-            C_Brigade.SelectAllLoginBrigade(ref DT_Brigades);//Использовать только тут иначе набор данных в гриде не изменится
+            users.Select_FullName_PkLogin(ref DT_Workers);//Использовать только тут иначе набор данных в гриде не изменится
+            brigade.SelectAllLoginBrigade(ref DT_Brigades);//Использовать только тут иначе набор данных в гриде не изменится
             //*************************************************
             dGV_Workers.AutoGenerateColumns = false;
             dGV_Workers.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -105,20 +113,24 @@ namespace Dispetcher2
                 {
                     FullName += dr.Cells["Col_LoginNewBrigade"].Value.ToString() + "; ";
                 }
-                C_Brigade Brigade = new C_Brigade(FullName, Convert.ToInt16(dGV_NewBrigade.Rows.Count));
-                for (int i = 0; i < dGV_NewBrigade.Rows.Count; i++)
-                {
-                    if (!Brigade.AddWorkerInBrigade(dGV_NewBrigade.Rows[i].Cells["Col_LoginNewBrigade"].Value.ToString())) break;
-                    if (i == dGV_NewBrigade.Rows.Count-1)//Если последняя запись прошла успешно
+                Int16 AmountWorkers = Convert.ToInt16(dGV_NewBrigade.Rows.Count);
+
+                int id = brigade.Create(FullName, AmountWorkers);
+                if (id > 0)
+                    for (int i = 0; i < dGV_NewBrigade.Rows.Count; i++)
                     {
-                        DT_Brigades.Rows.Add(Brigade.Get_IDBrigade, Brigade.Get_FullName, 1);
-                        //dGV_AllBrigade.Rows.Add(Brigade.Get_IDBrigade, Brigade.Get_FullName, 1);
-                        //MessageBox.Show("Создание бригады успешно завершено.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        dGV_NewBrigade.Rows.Clear();
-                        dGV_AllBrigade.Rows[dGV_AllBrigade.Rows.Count - 1].Selected=true;
-                        dGV_AllBrigade.FirstDisplayedScrollingRowIndex = dGV_AllBrigade.Rows.Count - 1;
+                        string name = dGV_NewBrigade.Rows[i].Cells["Col_LoginNewBrigade"].Value.ToString();
+                        if (!brigade.AddWorkerInBrigade(id, name)) break;
+                        if (i == dGV_NewBrigade.Rows.Count-1)//Если последняя запись прошла успешно
+                        {
+                            DT_Brigades.Rows.Add(id, FullName, 1);
+                            //dGV_AllBrigade.Rows.Add(Brigade.Get_IDBrigade, Brigade.Get_FullName, 1);
+                            //MessageBox.Show("Создание бригады успешно завершено.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            dGV_NewBrigade.Rows.Clear();
+                            dGV_AllBrigade.Rows[dGV_AllBrigade.Rows.Count - 1].Selected=true;
+                            dGV_AllBrigade.FirstDisplayedScrollingRowIndex = dGV_AllBrigade.Rows.Count - 1;
+                        }
                     }
-                }
 
             }
             
@@ -135,7 +147,7 @@ namespace Dispetcher2
                     int PK_IdBrigade = Convert.ToInt32(row["PK_IdBrigade"]);
                     bool IsValid;
                     if (e.KeyCode == Keys.Delete) IsValid = false; else IsValid = true;
-                    C_Brigade.UpdateIsValidBrigade(PK_IdBrigade, IsValid);//Update IsValid
+                    brigade.UpdateIsValidBrigade(PK_IdBrigade, IsValid);//Update IsValid
                     row.BeginEdit();
                     row["IsValid"] = IsValid;
                     row.EndEdit();
@@ -143,19 +155,6 @@ namespace Dispetcher2
             }
             
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     }
 }

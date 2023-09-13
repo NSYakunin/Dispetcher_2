@@ -12,8 +12,13 @@ namespace Dispetcher2.DialogsForms
 {
     public partial class dF_Brigade : Form
     {
-        public dF_Brigade()
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_Brigade brigade;
+
+        public dF_Brigade(IConfig config)
         {
+            brigade = new C_Brigade(config);
+
             InitializeComponent();
             DT_Brigades.Columns.Add("PK_IdBrigade", typeof(int));
             DT_Brigades.Columns.Add("FullName", typeof(string));
@@ -37,7 +42,7 @@ namespace Dispetcher2.DialogsForms
 
         private void dF_Brigade_Load(object sender, EventArgs e)
         {
-            C_Brigade.Select_ActiveBrigade(ref DT_Brigades);
+            brigade.Select_ActiveBrigade(ref DT_Brigades);
             dGV_Brigade.AutoGenerateColumns = false;
             dGV_Brigade.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dGV_Brigade.RowsDefaultCellStyle.BackColor = SystemColors.Info;
