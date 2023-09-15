@@ -1,36 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using System.Data;
-using System.Configuration;
-using Microsoft.Office.Interop.Excel;
-using System.Collections.Specialized;
-
 namespace Dispetcher2.Class
 {
     sealed class C_Gper
     {
-        
-
-        //***********************************************************************************************************************************************************
-        public static System.Globalization.NumberStyles style = System.Globalization.NumberStyles.Number | System.Globalization.NumberStyles.AllowCurrencySymbol;
-        public static System.Globalization.CultureInfo culture = System.Globalization.CultureInfo.CreateSpecificCulture("en-GB");
-
-        public static string DecimalToHours(decimal time)
-        {
-            string[] temp = time.ToString(C_Gper.culture).Split('.');
-            if (time.ToString().IndexOf(".") > 0) temp = time.ToString().Split('.');
-            return temp[0] + ":" + temp[1] + ":00";
-        }
-
-        public static int DecimalToSec(decimal time)
-        {
-            string[] temp = time.ToString(C_Gper.culture).Split('.');
-            if (time.ToString().IndexOf(".") > 0) temp = time.ToString().Split('.');
-            return (Convert.ToInt32(temp[0]) * 3600) + Convert.ToInt32(temp[1]) * 60;
-        }
         //Настройки пользователя
         public static string ActiveUserLogin = "";
         public static string ActiveUserFullName = "";
@@ -45,41 +16,5 @@ namespace Dispetcher2.Class
         public static bool Reports_Set = false;
         public static bool Users_Set = false;
         public static bool Settings_Set = false;
-        //***************************************
-        public static DataSet Ds = new DataSet();//using System.Data;
-
-
-
-
-
-
-
-
-
-
-        //DataSet.Tables["DataSet_Tables"].Rows[n]["NameColumn"].ToString();
-        //MessageBox.Show("Создание заказа успешно завершено.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        //MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //MessageBox.Show("Не указан пароль.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-        //MessageBox.Show("Заказ с таким номером уже зарегестрирован. Статус заказа не указан.", "Сохранение заказа отменено!!!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-        //DialogResult dR = MessageBox.Show("Продолжить запись данных?", "Внимание!!!", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-        //                        if (dR == DialogResult.Yes)
-        //***************************************
-        //CurrencyManager cmgr = (CurrencyManager)dGV_Orders.BindingContext[dGV_Orders.DataSource, dGV_Orders.DataMember];
-        //DataRow row = ((DataRowView)cmgr.Current).Row;
-        //string NameOper = row["Oper"].ToString();
-        //***************************************
-        public static void AddTablesDs_Sp()
-        {
-            Ds.Tables.Add("Users");
-            //Ds.Tables["Users"].Columns.Add("Login");
-            //Ds.Tables["Users"].Columns.Add("FullName");
-            //Ds.Tables["Users"].Columns.Add("ShortName");
-            //Ds.Tables["Users"].Columns.Add("Password");
-            //Ds.Tables["Users"].Columns.Add("isValid");
-        }
-
-
-
     }
 }

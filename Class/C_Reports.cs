@@ -407,7 +407,7 @@ namespace Dispetcher2.Class
                             {
                                 ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 13]).Value2 = Math.Round(((float)FactTimeWorker / _PlanHours) * 100,2);
                                 if (decimal.TryParse(_DT.Rows[i].ItemArray[17].ToString(), out TimeSheets))
-                                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 14]).Value2 = Math.Round((FactTimeWorker / (float)C_Gper.DecimalToSec(TimeSheets)) * 100, 2);
+                                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 14]).Value2 = Math.Round((FactTimeWorker / (float)Converter.DecimalToSec(TimeSheets)) * 100, 2);
                             }
                             else
                             {

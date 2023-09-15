@@ -385,8 +385,10 @@ namespace Dispetcher2
                                             myGrid_TimeSH[i, cl].View.BackColor = SystemColors.InactiveBorder;
                                             myGrid_TimeSH.Refresh();
                                         }
-                                        if (decimal.TryParse(TSHV1.Val_Time, C_Gper.style, C_Gper.culture, out test))
+                                        //if (decimal.TryParse(TSHV1.Val_Time, C_Gper.style, C_Gper.culture, out test))
+                                        
                                         {
+                                            test = Converter.GetDecimal(TSHV1.Val_Time);
                                             if (test > 0)
                                             {
                                                 Tsn_days++;

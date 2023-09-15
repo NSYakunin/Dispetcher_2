@@ -23,7 +23,7 @@ namespace Dispetcher2.Class
     /// <summary>
     /// Хранилище рабочих дней
     /// </summary>
-    public abstract class WorkDayRepository
+    public abstract class WorkDayRepository : Repository
     {
         public abstract IEnumerable<WorkDay> GetWorkDays();
         public abstract TimeSpan GetTotalTime();

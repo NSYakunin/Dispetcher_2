@@ -28,7 +28,9 @@ namespace Dispetcher2.Controls
         IConfig config;
         OrderControlViewModel ovm;
         WaitControl wc;
-        LaborLoader loader = null;
+        DetailRepository allDetails;
+        OperationRepository allOperations;
+        //LaborLoader loader = null;
 
         public LaborControl(OrderFactory factory, IConfig config)
         {
@@ -59,10 +61,11 @@ namespace Dispetcher2.Controls
                 return;
             }
             HideAll();
-            loader = new LaborLoader(config, ovm.SelectedOrder);
-            loader.Finished += Ll_Finished;
-            loader.Start();
-
+            //loader = new LaborLoader(config, ovm.SelectedOrder);
+            //loader.Finished += Ll_Finished;
+            //loader.Start();
+            Action a = Ll_Finished;
+            this.Dispatcher.BeginInvoke(a);
 
 
         }
@@ -83,7 +86,16 @@ namespace Dispetcher2.Controls
         void LoadOrders()
         {
             orep.Load();
-            System.Threading.Thread.Sleep(1000);
+
+            SqlDetailRepository dr = new SqlDetailRepository(config);
+            this.allDetails = dr;
+            dr.Load();
+
+            SqlOperationRepository ops = new SqlOperationRepository(config);
+            this.allOperations = ops;
+            ops.Load();
+
+            //System.Threading.Thread.Sleep(1000);
             Action a = AfterLoadOrders;
             this.Dispatcher.BeginInvoke(a);
         }
@@ -103,22 +115,27 @@ namespace Dispetcher2.Controls
 
         void ShowOperations()
         {
-            var tdr = new TestDetailRepository();
-            var tor = new TestOperationRepository();
+            //var tdr = new TestDetailRepository();
+            //var tor = new TestOperationRepository();
 
-            //var c = new OperationControl(tdr, tor);
-            //operationPlace.Content = c;
-            //operationPlace.Visibility = Visibility.Visible;
+            DetailViewRepository dvr;
+            dvr = new DetailViewRepository(allDetails, allOperations, ovm.GetSelectedOrders());
+            dvr.Load();
+            var c = new OperationControl(dvr.GetOperationRepository());
+            c.DataContext = dvr;
+            operationPlace.Content = c;
+            operationPlace.Visibility = Visibility.Visible;
 
             var wdr = new SqlWorkDayRepository(config, DateTime.Now);
+            wdr.Load();
             var w = new WorkTimeControl();
             WorkTimeViewModel vm = new WorkTimeViewModel(wdr);
             w.DataContext = vm;
             workTimePlace.Content = w;
             workTimePlace.Visibility = Visibility.Visible;
 
-            operationPlace.Visibility = Visibility.Collapsed;
-            ShowOrderDetail(ovm.SelectedOrder);
+            //operationPlace.Visibility = Visibility.Collapsed;
+            //ShowOrderDetail(ovm.SelectedOrder);
 
         }
 
@@ -126,7 +143,7 @@ namespace Dispetcher2.Controls
         {
             Action a = AfterLoad;
             this.Dispatcher.BeginInvoke(a);
-            loader = null;
+            //loader = null;
         }
 
         void AfterLoad()

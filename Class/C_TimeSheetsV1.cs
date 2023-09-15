@@ -51,15 +51,19 @@ namespace Dispetcher2.Class
                     }
                 }
                 //проверка на соответствие цифре
-                if (_Val_Time == "" && decimal.TryParse(value, C_Gper.style, C_Gper.culture, out _ValCell_d) & _ValCell_d <= 24)
+                if (_Val_Time == "" && Converter.IsDecimal(value))
                 {
-                    _ValCell_d = Math.Round(_ValCell_d, 2, MidpointRounding.AwayFromZero);
-                    _Val_Time = _ValCell_d.ToString(C_Gper.culture);
-                    /*if (_ValCell_d.ToString().IndexOf(".") > 0)
+                    _ValCell_d = Converter.GetDecimal(value);
+                    if (_ValCell_d <= 24)
                     {
-                        string[] temp = _ValCell_d.ToString().Split('.');
-                        if (temp[1].Length == 1) _Val_Time = _ValCell_d.ToString();//temp[0] - число до запятой, temp[1] - число после запятой
-                    }*/
+                        _ValCell_d = Math.Round(_ValCell_d, 2, MidpointRounding.AwayFromZero);
+                        _Val_Time = Converter.GetString(_ValCell_d);
+                        /*if (_ValCell_d.ToString().IndexOf(".") > 0)
+                        {
+                            string[] temp = _ValCell_d.ToString().Split('.');
+                            if (temp[1].Length == 1) _Val_Time = _ValCell_d.ToString();//temp[0] - число до запятой, temp[1] - число после запятой
+                        }*/
+                    }
                 }
             }
         }
@@ -116,8 +120,8 @@ namespace Dispetcher2.Class
                         cmd.Parameters["@PK_Date"].Value = _PK_Date;
                         cmd.Parameters.Add(new SqlParameter("@Val_Time", SqlDbType.VarChar));
                         cmd.Parameters["@Val_Time"].Value = _Val_Time;
-                        decimal VT = 0;
-                        decimal.TryParse(_Val_Time, C_Gper.style, C_Gper.culture, out VT);
+                        decimal VT = Converter.GetDecimal(_Val_Time);
+                        //decimal.TryParse(_Val_Time, C_Gper.style, C_Gper.culture, out VT);
                         cmd.Parameters.Add(new SqlParameter("@Val_TimeFloat", SqlDbType.Float));
                         cmd.Parameters["@Val_TimeFloat"].Value = VT;
                         //***********************************************************

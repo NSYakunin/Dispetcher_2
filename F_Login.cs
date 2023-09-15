@@ -66,7 +66,7 @@ namespace Dispetcher2
 
             NameValueCollection appSettings = ConfigurationManager.AppSettings;
             this.serverComboBox.SelectedIndex = appSettings["SelectedIndex"] == "0" ? 0 : 1;
-            C_Gper.AddTablesDs_Sp();
+            
         }
 
         private void Hide_gB_NewLogin(bool hide)

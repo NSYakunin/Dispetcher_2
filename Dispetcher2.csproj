@@ -156,10 +156,10 @@
     <Compile Include="Class\FormFactory.cs" />
     <Compile Include="Class\ImportDataWorker.cs" />
     <Compile Include="Class\KitUpdater.cs" />
-    <Compile Include="Class\LaborLoader.cs" />
     <Compile Include="Class\Operation.cs" />
     <Compile Include="Class\Order.cs" />
     <Compile Include="Class\Receipt.cs" />
+    <Compile Include="Class\RepositoryFactory.cs" />
     <Compile Include="Class\Server.cs" />
     <Compile Include="Class\WorkDay.cs" />
     <Compile Include="Class\С_TreeViewOrders.cs" />
@@ -205,6 +205,7 @@
       <DependentUpon>WorkTimeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="DataAccess\SqlDetailRepository.cs" />
+    <Compile Include="DataAccess\SqlOperationRepository.cs" />
     <Compile Include="DataAccess\SqlOrderRepository.cs" />
     <Compile Include="DataAccess\SqlWorkDayRepository.cs" />
     <Compile Include="DialogsForms\dF_Brigade.cs">
@@ -333,7 +334,6 @@
     <Compile Include="Models\WorkTimeViewModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WorkWithDatabase.cs" />
     <EmbeddedResource Include="Controls\ucProdCal.resx">
       <DependentUpon>ucProdCal.cs</DependentUpon>
     </EmbeddedResource>

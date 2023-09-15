@@ -99,7 +99,11 @@ namespace Dispetcher2
         void Show(Form MDIChild)
         {
             //Закрытие всех дочерних форм
-            foreach (var form in this.MdiChildren) form.Close();
+            foreach (var form in this.MdiChildren)
+            {
+                form.Close();
+                form.Dispose();
+            }
 
             MDIChild.MdiParent = this;
             MDIChild.FormBorderStyle = FormBorderStyle.None;
