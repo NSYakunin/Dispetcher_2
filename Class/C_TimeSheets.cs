@@ -50,7 +50,8 @@ namespace Dispetcher2.Class
                 if (_Val_Time == "" & double.TryParse(value, out _ValCell_d) & _ValCell_d <= 24)
                 {
                     _ValCell_d = Math.Round(_ValCell_d, 2, MidpointRounding.AwayFromZero);
-                    _Val_Time = _ValCell_d.ToString(C_Gper.culture);
+                    //_Val_Time = _ValCell_d.ToString(C_Gper.culture);
+                    _Val_Time = Converter.GetString(_ValCell_d);
                     /*if (_ValCell_d.ToString().IndexOf(",") > 0)
                     {
                         string[] temp = _ValCell_d.ToString().Split(',');

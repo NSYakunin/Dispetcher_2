@@ -6,16 +6,36 @@ using System.Globalization;
 
 namespace Dispetcher2.Class
 {
+    // Зависимость! Надо реализовать как интерфейс и внедрять через конструктор
     public static class Converter
     {
+
+        public static int DecimalToSec(decimal time)
+        {
+            string[] temp = time.ToString(CultureInfo.InvariantCulture).Split('.');
+            if (time.ToString().IndexOf(".") > 0) temp = time.ToString().Split('.');
+            return (Convert.ToInt32(temp[0]) * 3600) + Convert.ToInt32(temp[1]) * 60;
+        }
+
         public static int GetInt(object value)
         {
             if (value == null) return 0;
             if (value is DBNull) return 0;
             int number;
-            bool f = Int32.TryParse(value.ToString(), System.Globalization.NumberStyles.Any,
+            bool f = Int32.TryParse(value.ToString(), NumberStyles.Any,
                 NumberFormatInfo.InvariantInfo, out number);
             if (f == true) return number;
+            else return 0;
+        }
+        public static decimal GetDecimal(object value)
+        {
+            if (IsDecimal(value))
+            {
+                decimal d;
+                string s = Convert.ToString(value);
+                decimal.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out d);
+                return d;
+            }
             else return 0;
         }
         public static long GetLong(object value)
@@ -23,7 +43,7 @@ namespace Dispetcher2.Class
             if (value == null) return 0;
             if (value is DBNull) return 0;
             long number;
-            bool f = Int64.TryParse(value.ToString(), System.Globalization.NumberStyles.Any,
+            bool f = Int64.TryParse(value.ToString(), NumberStyles.Any,
                 NumberFormatInfo.InvariantInfo, out number);
             if (f == true) return number;
             else return 0;
@@ -32,7 +52,9 @@ namespace Dispetcher2.Class
         {
             if (value == null) return String.Empty;
             if (value is DBNull) return String.Empty;
-            return Convert.ToString(value);
+            
+            string s = Convert.ToString(value, CultureInfo.InvariantCulture);
+            return s;
         }
         public static TimeSpan GetTime(object value)
         {
@@ -69,6 +91,14 @@ namespace Dispetcher2.Class
             int i = Convert.ToInt32(value);
             if (i == 0) return false;
             else return true;
+        }
+        public static bool IsDecimal(object value)
+        {
+            if (value == null) return false;
+            if (value is DBNull) return false;
+            decimal d;
+            string s = Convert.ToString(value);
+            return decimal.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out d);
         }
     }
 }

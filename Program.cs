@@ -90,7 +90,7 @@ namespace Dispetcher2
                     f = new F_Fact(config);
                     return f;
 
-                case "F_Kit":
+                case "Комплектация":
                     f = new F_Kit(config);
                     return f;
 

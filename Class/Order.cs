@@ -11,10 +11,9 @@ namespace Dispetcher2.Class
         public string Num1С { get; set; }
     }
 
-    public abstract class OrderRepository
+    public abstract class OrderRepository : Repository
     {
         public abstract IEnumerable<Order> GetOrders();
-        public abstract void Load();
     }
 
     public abstract class OrderFactory

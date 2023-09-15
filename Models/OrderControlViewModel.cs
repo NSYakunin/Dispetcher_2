@@ -13,7 +13,6 @@ namespace Dispetcher2.Models
 {
     public class OrderView : Order
     {
-
         public static OrderView GetOrderView(Order order)
         {
             var v = new OrderView();
@@ -26,6 +25,27 @@ namespace Dispetcher2.Models
     }
     public class OrderControlViewModel
     {
+        private class OrderControlViewModelRepository : OrderRepository
+        {
+            List<Order> orders;
+
+            public OrderControlViewModelRepository(List<Order> orders)
+            {
+                this.orders = orders;
+            }
+            public override void Load()
+            {
+                
+            }
+            public override IEnumerable<Order> GetOrders()
+            {
+                return orders;
+            }
+            public override System.Collections.IEnumerable GetList()
+            {
+                return orders;
+            }
+        }
         string filterValue;
         public string Filter
         {
@@ -68,6 +88,17 @@ namespace Dispetcher2.Models
             {
                 foreach (var x in l2) OrderList.Add(x);
             }
+        }
+
+        public OrderRepository GetSelectedOrders()
+        {
+            List<Order> a = new List<Order>();
+            if (SelectedOrder != null)
+            {
+                a.Add(SelectedOrder);
+            }
+            var r = new OrderControlViewModelRepository(a);
+            return r;
         }
     }
 

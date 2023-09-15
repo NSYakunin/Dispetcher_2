@@ -20,10 +20,9 @@ namespace Dispetcher2.DataAccess
         {
             this.config = config;
             this.point = point;
-            Load();
+            
         }
-
-        void Load()
+        public override void Load()
         {
             int year = point.Year;
             DateTime begin = new DateTime(year, 1, 1);
@@ -44,7 +43,7 @@ namespace Dispetcher2.DataAccess
             foreach (var wd in e) past = past.Add(wd.Time);
         }
 
-        public List<WorkDay> GetProductionCalendar(DateTime beginDate, DateTime endDate)
+        List<WorkDay> GetProductionCalendar(DateTime beginDate, DateTime endDate)
         {
             List<WorkDay> result = new List<WorkDay>();
             using (var cn = new SqlConnection())
@@ -74,9 +73,14 @@ namespace Dispetcher2.DataAccess
             }
             return result;
         }
-
+        public override System.Collections.IEnumerable GetList()
+        {
+            if (dayList == null) Load();
+            return dayList;
+        }
         public override IEnumerable<WorkDay> GetWorkDays()
         {
+            if (dayList == null) Load();
             return dayList;
         }
 

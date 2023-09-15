@@ -6,6 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 
 using Dispetcher2.Class;
+using System.Collections;
 
 namespace Dispetcher2.DataAccess
 {
@@ -37,7 +38,11 @@ namespace Dispetcher2.DataAccess
             this.config = config;
             this.status = status;
         }
-
+        public override IEnumerable GetList()
+        {
+            if (orders == null) Load();
+            return orders;
+        }
         public override IEnumerable<Order> GetOrders()
         {
             if (orders == null) Load();

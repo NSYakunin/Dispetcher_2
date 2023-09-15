@@ -26,14 +26,27 @@ namespace Dispetcher2
         BindingSource BindingSource_Users = new BindingSource();
         DataTable DT_SP_Department = new DataTable();
 
+        //***************************************
+        DataSet Ds = new DataSet();//using System.Data;
 
         public F_Users(IConfig config)
         {
             this.config = config;
             departments = new C_Departments(config);
             users = new C_Users(config);
+            AddTablesDs_Sp();
+
             InitializeComponent();
             
+        }
+        void AddTablesDs_Sp()
+        {
+            Ds.Tables.Add("Users");
+            //Ds.Tables["Users"].Columns.Add("Login");
+            //Ds.Tables["Users"].Columns.Add("FullName");
+            //Ds.Tables["Users"].Columns.Add("ShortName");
+            //Ds.Tables["Users"].Columns.Add("Password");
+            //Ds.Tables["Users"].Columns.Add("isValid");
         }
 
         private void F_Users_Load(object sender, EventArgs e)
@@ -49,12 +62,12 @@ namespace Dispetcher2
             dGV_Users.AutoGenerateColumns = false;
             dGV_Users.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dGV_Users.RowsDefaultCellStyle.BackColor = SystemColors.Info;
-            BindingSource_Users.DataSource = C_Gper.Ds;
+            BindingSource_Users.DataSource = Ds;
             BindingSource_Users.DataMember = "Users";
             dGV_Users.DataSource = BindingSource_Users;
-            dGV_Users.Columns["Col_FullName"].DataPropertyName = C_Gper.Ds.Tables["Users"].Columns["FullName"].ToString();//1
-            dGV_Users.Columns["Col_Login"].DataPropertyName = C_Gper.Ds.Tables["Users"].Columns["PK_Login"].ToString();//2
-            dGV_Users.Columns["Col_FK_IdDepartment"].DataPropertyName = C_Gper.Ds.Tables["Users"].Columns["FK_IdDepartment"].ToString();//2
+            dGV_Users.Columns["Col_FullName"].DataPropertyName = Ds.Tables["Users"].Columns["FullName"].ToString();//1
+            dGV_Users.Columns["Col_Login"].DataPropertyName = Ds.Tables["Users"].Columns["PK_Login"].ToString();//2
+            dGV_Users.Columns["Col_FK_IdDepartment"].DataPropertyName = Ds.Tables["Users"].Columns["FK_IdDepartment"].ToString();//2
 
             BindAllInterfaceElevents();
             //chB_Orders_Set.DataBindings.Add("CheckState", BindingSource_Users, "F_Orders", true, DataSourceUpdateMode.Never, CheckState.Unchecked);
@@ -223,7 +236,7 @@ namespace Dispetcher2
 
         private void SelectAllUsers()
         {
-            C_Gper.Ds.Tables["Users"].Clear();
+            Ds.Tables["Users"].Clear();
             try
             {
                 using (SqlConnection con = new SqlConnection())
@@ -240,7 +253,7 @@ namespace Dispetcher2
                     cmd.Connection = con;
                     SqlDataAdapter adapter = new SqlDataAdapter();
                     adapter.SelectCommand = cmd;
-                    adapter.Fill(C_Gper.Ds, "Users");
+                    adapter.Fill(Ds, "Users");
                     //adapter.Fill(C_Gper.DT);
                     adapter.Dispose();
                     con.Close();

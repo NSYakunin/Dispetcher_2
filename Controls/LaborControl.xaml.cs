@@ -28,6 +28,10 @@ namespace Dispetcher2.Controls
         IConfig config;
         OrderControlViewModel ovm;
         WaitControl wc;
+        DetailRepository allDetails;
+        OperationRepository allOperations;
+        //LaborLoader loader = null;
+
         public LaborControl(OrderFactory factory, IConfig config)
         {
             if (factory == null) throw new ArgumentException("Пожалуйста укажите параметр: factory");
@@ -56,25 +60,14 @@ namespace Dispetcher2.Controls
                 MessageBox.Show("Пожалуйста выберите заказ", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            //BeforeLoad();
-            //loader = new LaborLoader(m.SelectedOrder);
+            HideAll();
+            //loader = new LaborLoader(config, ovm.SelectedOrder);
             //loader.Finished += Ll_Finished;
             //loader.Start();
+            Action a = Ll_Finished;
+            this.Dispatcher.BeginInvoke(a);
 
 
-            var tdr = new TestDetailRepository();
-            var tor = new TestOperationRepository();
-
-            var c = new OperationControl(tdr, tor);
-            operationPlace.Content = c;
-            operationPlace.Visibility = Visibility.Visible;
-            
-            var wdr = new SqlWorkDayRepository(config, DateTime.Now);
-            var w = new WorkTimeControl();
-            WorkTimeViewModel vm = new WorkTimeViewModel(wdr);
-            w.DataContext = vm;
-            workTimePlace.Content = w;
-            workTimePlace.Visibility = Visibility.Visible;
         }
 
         void HideAll()
@@ -93,7 +86,16 @@ namespace Dispetcher2.Controls
         void LoadOrders()
         {
             orep.Load();
-            System.Threading.Thread.Sleep(1000);
+
+            SqlDetailRepository dr = new SqlDetailRepository(config);
+            this.allDetails = dr;
+            dr.Load();
+
+            SqlOperationRepository ops = new SqlOperationRepository(config);
+            this.allOperations = ops;
+            ops.Load();
+
+            //System.Threading.Thread.Sleep(1000);
             Action a = AfterLoadOrders;
             this.Dispatcher.BeginInvoke(a);
         }
@@ -109,6 +111,53 @@ namespace Dispetcher2.Controls
 
             orderListPlace.Visibility = Visibility.Visible;
             requestButton.Visibility = Visibility.Visible;
+        }
+
+        void ShowOperations()
+        {
+            //var tdr = new TestDetailRepository();
+            //var tor = new TestOperationRepository();
+
+            DetailViewRepository dvr;
+            dvr = new DetailViewRepository(allDetails, allOperations, ovm.GetSelectedOrders());
+            dvr.Load();
+            var c = new OperationControl(dvr.GetOperationRepository());
+            c.DataContext = dvr;
+            operationPlace.Content = c;
+            operationPlace.Visibility = Visibility.Visible;
+
+            var wdr = new SqlWorkDayRepository(config, DateTime.Now);
+            wdr.Load();
+            var w = new WorkTimeControl();
+            WorkTimeViewModel vm = new WorkTimeViewModel(wdr);
+            w.DataContext = vm;
+            workTimePlace.Content = w;
+            workTimePlace.Visibility = Visibility.Visible;
+
+            //operationPlace.Visibility = Visibility.Collapsed;
+            //ShowOrderDetail(ovm.SelectedOrder);
+
+        }
+
+        private void Ll_Finished()
+        {
+            Action a = AfterLoad;
+            this.Dispatcher.BeginInvoke(a);
+            //loader = null;
+        }
+
+        void AfterLoad()
+        {
+            wc.Stop();
+            loadingPlace.Visibility = Visibility.Collapsed;
+
+            orderListPlace.Visibility = Visibility.Visible;
+            requestButton.Visibility = Visibility.Visible;
+
+
+            ShowOperations();
+
+            
         }
     }
 }
