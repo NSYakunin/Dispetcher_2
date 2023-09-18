@@ -15,8 +15,6 @@ namespace Dispetcher2
             toolStripStatusLabel1.Text = factory.Information;
         }
 
-
-
         #region Настройка поведения выпадающих списков пунктов меню
         private void tSSB_Reports_ButtonClick(object sender, EventArgs e)
         {

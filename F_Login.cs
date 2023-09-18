@@ -15,6 +15,9 @@ namespace Dispetcher2
 {
     public partial class F_Login : Form
     {
+        static string ActiveUserLogin = "";
+        static string ActiveUserFullName = "";
+
         // модель представления для списка серверов
         ServerViewModel vm;
         // Конфигурация
@@ -124,15 +127,15 @@ namespace Dispetcher2
                 else
                 {
                     //*****************************************
-                    if (mychB_NewLogin.Checked) C_Gper.ActiveUserLogin = tB_NewLogin.Text.Trim();
+                    if (mychB_NewLogin.Checked) ActiveUserLogin = tB_NewLogin.Text.Trim();
                     else
-                        C_Gper.ActiveUserLogin = Environment.UserName;
+                        ActiveUserLogin = Environment.UserName;
                     //*****************************************
                     string pass;
-                    if (C_Gper.ActiveUserLogin.Length == 0) MessageBox.Show("Введите логин пользователя.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    if (ActiveUserLogin.Length == 0) MessageBox.Show("Введите логин пользователя.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     else
                     {
-                        if (!CheckUserPass(C_Gper.ActiveUserLogin, out pass)) MessageBox.Show("Доступ запрещён.(Логин))", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        if (!CheckUserPass(ActiveUserLogin, out pass)) MessageBox.Show("Доступ запрещён.(Логин))", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         else
                             if (pass != tB_Password.Text.Trim()) MessageBox.Show("Доступ запрещён.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         else
