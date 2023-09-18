@@ -21,10 +21,16 @@ namespace Dispetcher2.Class
         private bool _err = false;//Наличие ошибок при формировании отчёта
         IConfig config;
 
-        public C_Reports(IConfig config)
+        public C_Reports(IConfig config, bool PlanSheduleForm6 = false)// Только для "План-график (форма №6)"
         {
+            if (config == null) throw new ArgumentException("Пожалуйста укажите параметр config");
             this.config = config;
             _DT = new DataTable();
+            if (PlanSheduleForm6)
+            {
+                _OperGroupFactTime = new int[12];
+                _FactTime = new int[12];
+            }
         }
 
         public bool RepErrors
@@ -32,15 +38,7 @@ namespace Dispetcher2.Class
             get { return _err; }
         }
 
-        public C_Reports(bool PlanSheduleForm6)// Только для "План-график (форма №6)"
-        {
-            _DT = new DataTable();
-            if (PlanSheduleForm6)
-            {
-                _OperGroupFactTime = new int[12];
-                _FactTime = new int[12];
-            } 
-        }
+
 
         public int[] GetGroupTimeForm6()
         {

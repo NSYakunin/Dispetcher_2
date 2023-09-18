@@ -116,7 +116,7 @@ namespace Dispetcher2
 
                 case "План-график":
                     config.SelectedReportMode = ReportMode.ПланГрафик;
-                    f = new F_Reports(config);
+                    f = new F_ReportsPlan(config);
                     return f;
 
                 case "Трудоемкость":
