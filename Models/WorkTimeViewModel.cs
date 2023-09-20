@@ -10,13 +10,17 @@ namespace Dispetcher2.Models
 {
     public class WorkTimeViewModel
     {
-        TimeSpan total;
-        TimeSpan past;
+        TimeSpan total = TimeSpan.Zero;
+        TimeSpan past = TimeSpan.Zero;
         
-        public WorkTimeViewModel(WorkDayRepository r)
+        public WorkTimeViewModel()
         {
-            this.total = r.GetTotalTime();
-            this.past = r.GetPastTime();
+            
+        }
+        public void Load(WorkDayRepository rep)
+        {
+            this.total = rep.GetTotalTime();
+            this.past = rep.GetPastTime();
         }
         public long TotalDays
         {

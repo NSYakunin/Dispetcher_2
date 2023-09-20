@@ -12,7 +12,7 @@ namespace Dispetcher2
         {
             this.factory = factory;
             InitializeComponent();
-            toolStripStatusLabel1.Text = factory.Information;
+            
         }
 
         #region Настройка поведения выпадающих списков пунктов меню
@@ -277,6 +277,7 @@ namespace Dispetcher2
 
             var f = factory.GetForm("Лого");
             Show(f);
+            toolStripStatusLabel1.Text = factory.GetInformation();
         }
 
         //Лишнее

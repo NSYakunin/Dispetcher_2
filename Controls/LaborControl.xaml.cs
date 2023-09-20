@@ -27,21 +27,51 @@ namespace Dispetcher2.Controls
         OrderRepository orep;
         IConfig config;
         OrderControlViewModel ovm;
-        WaitControl wc;
+        WorkTimeViewModel wtvm;
+
         DetailRepository allDetails;
         OperationRepository allOperations;
-        //LaborLoader loader = null;
+        OperationViewModel dvr;
+        WorkDayRepository wdr;
 
-        public LaborControl(OrderFactory factory, IConfig config)
+        WaitControl wc;
+        UserControl ordControl;
+        OperationControl oprControl;
+        UserControl wtControl;
+
+        public LaborControl(OrderRepository ordRep, IConfig config)
         {
-            if (factory == null) throw new ArgumentException("Пожалуйста укажите параметр: factory");
-            if (config == null) throw new ArgumentException("Пожалуйста укажите параметр: config");
+            if (ordRep == null) throw new ArgumentException("Пожалуйста укажите параметр: OrderRepository");
+            if (config == null) throw new ArgumentException("Пожалуйста укажите параметр: IConfig");
             InitializeComponent();
 
             this.config = config;
 
-            orep = factory.GetOrderRepository(config);
+            this.orep = ordRep;
 
+            // Эти классы являются зависимостями
+            // Надо выносить наружу, также как OrderRepository
+            // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+            // Хранилища
+            this.allDetails = new SqlDetailRepository(config);
+            this.allOperations = new SqlOperationRepository(config);
+            
+            wdr = new SqlWorkDayRepository(config, DateTime.Now);
+            
+            // Модели представления
+            wtvm = new WorkTimeViewModel();
+            ovm = new OrderControlViewModel(orep);
+            dvr = new OperationViewModel(allDetails, allOperations);
+
+            // Элементы управления
+            wc = new WaitControl();
+            //ordControl = new OrderControl();
+            ordControl = new CheckedOrderControl();
+            //var tdr = new TestDetailRepository();
+            //var tor = new TestOperationRepository();
+            oprControl = new OperationControl();
+            wtControl = new WorkTimeControl();
+            // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 
@@ -54,19 +84,10 @@ namespace Dispetcher2.Controls
 
         private void OnRequest(object sender, RoutedEventArgs e)
         {
-            if (ovm.OrderList.Count == 1) ovm.SelectedOrder = ovm.OrderList[0];
-            if (ovm.SelectedOrder == null)
-            {
-                MessageBox.Show("Пожалуйста выберите заказ", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
+            
             HideAll();
-            //loader = new LaborLoader(config, ovm.SelectedOrder);
-            //loader.Finished += Ll_Finished;
-            //loader.Start();
-            Action a = Ll_Finished;
-            this.Dispatcher.BeginInvoke(a);
-
+            var t = new Task(LoadOperations);
+            t.Start();
 
         }
 
@@ -76,8 +97,7 @@ namespace Dispetcher2.Controls
             requestButton.Visibility = Visibility.Collapsed;
             workTimePlace.Visibility = Visibility.Collapsed;
             operationPlace.Visibility = Visibility.Collapsed;
-
-            wc = new WaitControl();
+            
             wc.Message = "Загрузка...";
             loadingPlace.Content = wc;
             loadingPlace.Visibility = Visibility.Visible;
@@ -86,65 +106,44 @@ namespace Dispetcher2.Controls
         void LoadOrders()
         {
             orep.Load();
-
-            SqlDetailRepository dr = new SqlDetailRepository(config);
-            this.allDetails = dr;
-            dr.Load();
-
-            SqlOperationRepository ops = new SqlOperationRepository(config);
-            this.allOperations = ops;
-            ops.Load();
-
-            //System.Threading.Thread.Sleep(1000);
+            allDetails.Load();
+            allOperations.Load();
             Action a = AfterLoadOrders;
             this.Dispatcher.BeginInvoke(a);
         }
         void AfterLoadOrders()
         {
-            ovm = new OrderControlViewModel(orep);
-            var c = new OrderControl();
-            c.DataContext = ovm;
-            orderListPlace.Content = c;
-
+            ordControl.DataContext = ovm;
+            orderListPlace.Content = ordControl;
+            
             wc.Stop();
-            loadingPlace.Visibility = Visibility.Collapsed;
 
+            loadingPlace.Visibility = Visibility.Collapsed;
             orderListPlace.Visibility = Visibility.Visible;
             requestButton.Visibility = Visibility.Visible;
+
+            ovm.Filter = String.Empty;
         }
 
-        void ShowOperations()
+
+        void LoadOperations()
         {
-            //var tdr = new TestDetailRepository();
-            //var tor = new TestOperationRepository();
-
-            DetailViewRepository dvr;
-            dvr = new DetailViewRepository(allDetails, allOperations, ovm.GetSelectedOrders());
-            dvr.Load();
-            var c = new OperationControl(dvr.GetOperationRepository());
-            c.DataContext = dvr;
-            operationPlace.Content = c;
-            operationPlace.Visibility = Visibility.Visible;
-
-            var wdr = new SqlWorkDayRepository(config, DateTime.Now);
+            var so = ovm.GetSelectedOrders();
+            if (so.GetOrders().Count() < 1)
+            {
+                MessageBox.Show("Пожалуйста выберите заказ", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            
             wdr.Load();
-            var w = new WorkTimeControl();
-            WorkTimeViewModel vm = new WorkTimeViewModel(wdr);
-            w.DataContext = vm;
-            workTimePlace.Content = w;
-            workTimePlace.Visibility = Visibility.Visible;
+            wtvm.Load(wdr);
+            dvr.Update(so);
 
-            //operationPlace.Visibility = Visibility.Collapsed;
-            //ShowOrderDetail(ovm.SelectedOrder);
-
-        }
-
-        private void Ll_Finished()
-        {
             Action a = AfterLoad;
             this.Dispatcher.BeginInvoke(a);
-            //loader = null;
         }
+
+
 
         void AfterLoad()
         {
@@ -158,6 +157,24 @@ namespace Dispetcher2.Controls
             ShowOperations();
 
             
+        }
+
+        void ShowOperations()
+        {
+            oprControl.DataContext = null;
+            oprControl.Update(dvr.GetOperationRepository());
+            oprControl.DataContext = dvr;
+
+            operationPlace.Content = oprControl;
+            operationPlace.Visibility = Visibility.Visible;
+
+            
+            
+
+            wtControl.DataContext = wtvm;
+            workTimePlace.Content = wtControl;
+            workTimePlace.Visibility = Visibility.Visible;
+
         }
     }
 }

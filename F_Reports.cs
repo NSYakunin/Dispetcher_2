@@ -15,28 +15,37 @@ namespace Dispetcher2
 {
     public partial class F_Reports : Form
     {
+        OrderRepository rep;
         IConfig config;
         // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
         C_Departments departments;
         // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
         C_Users users;
         // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        // Надо перенести функциональность в OrderRepository
         C_Orders orders;
         // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
         C_Reports reports;
+
+        // Внешняя зависимость
+        System.Windows.Controls.UserControl labControl;
 
         DataTable Dt_SpDepartment = new DataTable();
         DataTable Dt_SpWorkers = new DataTable();
         DataTable DT_Orders = new DataTable();
         BindingSource BS_Orders = new BindingSource();
 
-        public F_Reports(IConfig config)
+        public F_Reports(IConfig config, OrderRepository rep)
         {
             this.config = config;
+            this.rep = rep;
+
             departments = new C_Departments(config);
             users = new C_Users(config);
             orders = new C_Orders(config);
             reports = new C_Reports(config);
+
+            labControl = new LaborControl(rep, config);
 
             InitializeComponent();
             if (config.SelectedReportMode == ReportMode.ОтчетНаряд 
@@ -110,10 +119,7 @@ namespace Dispetcher2
 
             if (config.SelectedReportMode == ReportMode.Трудоемкость)
             {
-                var f = new MainOrderFactory(OrderType.SQL);
-                var config = new Configuration();
-                var c = new LaborControl(f, config);
-                LaborElementHost.Child = c;
+                LaborElementHost.Child = labControl;
                 myTabC_Reports.SelectedTab = LaborTabPage;
             }
         }

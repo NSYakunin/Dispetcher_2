@@ -98,24 +98,4 @@ namespace Dispetcher2.DataAccess
             }
         }
     }
-
-    public class MainOrderFactory : OrderFactory
-    {
-        // тут конечно надо будет сделать перечисление
-        // не сделал сразу, потому что надо искать волшебные числа по всему проекту...
-        // 1-ожидание,2-открыт,3-закрыт,4-в работе,5-выполнен
-        private const int status = 2;
-        OrderType type;
-        public MainOrderFactory(OrderType type)
-        {
-            this.type = type;
-        }
-
-        public override OrderRepository GetOrderRepository(IConfig config)
-        {
-            if (type == OrderType.SQL) return new SqlOrderRepository(config, status);
-
-            throw new NotImplementedException("В разработке...");
-        }
-    }
 }

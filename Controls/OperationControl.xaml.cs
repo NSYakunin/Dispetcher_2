@@ -22,16 +22,14 @@ namespace Dispetcher2.Controls
     /// </summary>
     public partial class OperationControl : UserControl
     {
-        OperationRepository operations;
-        public OperationControl(OperationRepository operations)
+        public OperationControl()
         {
-            this.operations = operations;
             InitializeComponent();
-            SetColumns();
         }
 
-        void SetColumns()
+        public void Update(OperationRepository operations)
         {
+            mainGrid.Columns.Clear();
             var e = operations.GetOperations();
             foreach (var n in e)
             {
@@ -41,5 +39,6 @@ namespace Dispetcher2.Controls
                 mainGrid.Columns.Add(c);
             }
         }
+        
     }
 }

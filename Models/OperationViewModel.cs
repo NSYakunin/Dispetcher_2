@@ -27,12 +27,12 @@ namespace Dispetcher2.Models
             this.Shcm = d.Shcm;
         }
     }
-    public class DetailViewRepository : DetailRepository
+    public class OperationViewModel
     {
         List<DetailView> details;
         DetailRepository allDetails;
         OperationRepository allOperations;
-        OrderRepository selectedOrders;
+        //OrderRepository selectedOrders;
 
         private class DetailViewRepositoryOperationRepository : OperationRepository
         {
@@ -55,25 +55,25 @@ namespace Dispetcher2.Models
             }
         }
 
-        public DetailViewRepository(DetailRepository allDetails, OperationRepository allOperations, 
-            OrderRepository selectedOrders)
+        public OperationViewModel(DetailRepository allDetails, OperationRepository allOperations)
         {
             this.allDetails = allDetails;
             this.allOperations = allOperations;
-            this.selectedOrders = selectedOrders;
+            this.details = new List<DetailView>();
         }
 
         public IEnumerable<DetailView> Details { get { return details; } }
 
-        public override void Load()
+
+        public void Update(OrderRepository orders)
         {
-            this.details = new List<DetailView>();
+            this.details.Clear();
             // Формируется список уникальных “главных деталей”
             var e = allDetails.GetMainDetails();
             foreach (var d in e)
             {
                 // список заказов, кторорые содержат эту деталь
-                var e2 = selectedOrders.GetOrders().Where(item => item.Id == d.OrderId);
+                var e2 = orders.GetOrders().Where(item => item.Id == d.OrderId);
                 if (e2.Any() == false) continue;
 
                 var dv = new DetailView(d);
@@ -86,22 +86,22 @@ namespace Dispetcher2.Models
                 var e4 = allDetails.GetTree(d);
                 // Для каждой детали древа формируется список операций
                 List<Operation> allTreeOperations = new List<Operation>();
-                foreach(var i in e4)
+                foreach (var i in e4)
                 {
                     var e5 = allOperations.GetOperations().Where(op => op.OrderDetailId == i.OrderDetailId);
                     foreach (var e5i in e5) allTreeOperations.Add(e5i);
                 }
                 // Операции всех деталей в древе группируются по имени
                 var groups = allTreeOperations.GroupBy(o => o.Name);
-                
-                foreach(var g in groups)
+
+                foreach (var g in groups)
                 {
                     // Ключ словаря: имя операции. В итоге выводится в имени столбца DataGrid
                     string name = g.Key;
                     // Перечисление всех элементов группы
                     // В группу входят все операции с одним именем
                     TimeSpan time = TimeSpan.Zero;
-                    foreach(var op in g)
+                    foreach (var op in g)
                     {
                         // плановые операции
                         if (op.TypeRow == "1sp" || op.TypeRow == "2sp111")
@@ -112,18 +112,6 @@ namespace Dispetcher2.Models
                     dv.Operations[name] = Converter.GetString(time);
                 }
             }
-
-
-
-        }
-        public override IEnumerable<Detail> GetDetails()
-        {
-            return details;
-        }
-
-        public override System.Collections.IEnumerable GetList()
-        {
-            return details;
         }
 
         public OperationRepository GetOperationRepository()
@@ -147,15 +135,6 @@ namespace Dispetcher2.Models
             return rep;
         }
 
-        //IEnumerable<string> GetNames()
-        //{
-        //    List<string> NameList = new List<string>();
-        //    foreach (var item in vm.Details)
-        //    {
-        //        NameList.AddRange(item.Operations.Keys);
-        //    }
-        //    var e = NameList.Distinct().OrderBy(x => x);
-        //    return e;
-        //}
+
     }
 }

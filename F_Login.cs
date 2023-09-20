@@ -19,19 +19,23 @@ namespace Dispetcher2
         static string ActiveUserFullName = "";
 
         // модель представления для списка серверов
-        ServerViewModel vm;
+        LoginViewModel vm;
         // Конфигурация
         IConfig config;
-        // Фабрика форм
-        FormFactory factory;
+        // Форма, которая открывается в случае успеха
+        Form successForm;
 
         // Нарушение правила разделения ответственности!
         // Требуется вынести работу с базой данных в шаблон Repository (Хранилище)
-        public F_Login(ServerViewModel vm, IConfig config, FormFactory factory)
+        public F_Login(LoginViewModel vm, IConfig config, Form successForm)
         {
+            if (vm == null) throw new Exception("Пожалуйста укажите параметр vm");
+            if (config == null) throw new Exception("Пожалуйста укажите параметр config");
+            if (successForm == null) throw new Exception("Пожалуйста укажите параметр successForm");
+
             this.vm = vm;
             this.config = config;
-            this.factory = factory;    
+            this.successForm = successForm;
 
             InitializeComponent();
 
@@ -43,6 +47,11 @@ namespace Dispetcher2
         }
 
         private void F_Login_Load(object sender, EventArgs e)
+        {
+            ProcessLoad();
+        }
+
+        void ProcessLoad()
         {
             Hide_gB_NewLogin(true);
             DataTable DT = new DataTable();
@@ -69,7 +78,6 @@ namespace Dispetcher2
 
             NameValueCollection appSettings = ConfigurationManager.AppSettings;
             this.serverComboBox.SelectedIndex = appSettings["SelectedIndex"] == "0" ? 0 : 1;
-            
         }
 
         private void Hide_gB_NewLogin(bool hide)
@@ -140,9 +148,8 @@ namespace Dispetcher2
                             if (pass != tB_Password.Text.Trim()) MessageBox.Show("Доступ запрещён.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         else
                         {
-                            this.Visible = false;
-                            var f = factory.GetForm("Меню");
-                            f.ShowDialog();
+                            this.Hide();
+                            successForm.ShowDialog();
                             this.Close();
                         }
                     }
@@ -216,7 +223,8 @@ namespace Dispetcher2
                 // игнорируем исключения в WriteValue
                 vm.SelectedServer = null;
             }
-
+            Action a = this.ProcessLoad;
+            this.BeginInvoke(a);
         }
 
         void Sp_Note(DataTable DT)
@@ -244,6 +252,11 @@ namespace Dispetcher2
             {
                 MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void F_Login_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            
         }
     }
 }
