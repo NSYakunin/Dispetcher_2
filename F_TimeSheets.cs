@@ -26,13 +26,15 @@ namespace Dispetcher2
         {
             this.config = config;
             TSHV1 = new C_TimeSheetsV1(config);
-
+            
+            
             InitializeComponent();
         }
 
         private void F_TimeSheets_Load(object sender, EventArgs e)
         {
             numUD_year.Value = DateTime.Now.Year;
+            cB_Month.SelectedIndex = DateTime.Now.Month - 1;
             /*myGrid_TimeSH.Redim(30, 22);
             CreateHeader();
             AddDataToMyGrid();*/
@@ -45,7 +47,8 @@ namespace Dispetcher2
             myGrid_TimeSH.Redim(_DT_Workers.Rows.Count * 2 + 2, 23);
             myGrid_TimeSH.FixedRows = 2;
             myGrid_TimeSH.FixedColumns = 3;
-            myGrid_TimeSH.Selection.EnableMultiSelection = false;
+            myGrid_TimeSH.Selection.EnableMultiSelection = true;
+            
             //SourceGrid.Cells.Views.Cell captionModel = new SourceGrid.Cells.Views.Cell();
             //captionModel.BackColor = myGrid_TimeSH.BackColor;
             /*myGrid_TimeSH.Rows[0].AutoSizeMode = SourceGrid.AutoSizeMode.None;
@@ -272,10 +275,13 @@ namespace Dispetcher2
         {
             ContextMenu menu = new ContextMenu();
             private MyGrid _MyGrid;
+            
+
 
             public PopupMenu(MyGrid Grid)
             {
                 _MyGrid = Grid;
+                
                 menu.MenuItems.Add("Б", new EventHandler(MenuB_Click));
                 menu.MenuItems.Add("В", new EventHandler(MenuV_Click));
                 menu.MenuItems.Add("Г", new EventHandler(MenuG_Click));
@@ -296,43 +302,167 @@ namespace Dispetcher2
 
             private void MenuB_Click(object sender, EventArgs e)
             {
+                
                 if (_MyGrid.Selection.ActivePosition.ToString() != "-1;-1")
-                    _MyGrid[_MyGrid.Selection.ActivePosition].Value = "Б";
+                {
+                    try
+                    {
+                        string pos = _MyGrid.Selection.GetSelectionRegion().ToString().Replace(" to ", ";").Replace("RangeRegion | ", "");
+                        string[] pos2 = pos.Split(';');
+                        int count = Convert.ToInt32(pos2[3]) - Convert.ToInt32(pos2[1]);
+                        int counter = count == 0 ? 1 : count + 1;
+
+                        for (int i = counter, j = Convert.ToInt32(pos2[1]); i > 0; i--, j++)
+                        {
+                            _MyGrid[Convert.ToInt32(pos2[0]), j].Value = "Б";
+                            if (pos2[0] != pos2[2]) _MyGrid[Convert.ToInt32(pos2[2]), j].Value = "Б";
+                        }
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Выберите дни корректно и на одной строке", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
             }
             private void MenuV_Click(object sender, EventArgs e)
             {
-                if (_MyGrid.Selection.ActivePosition.ToString() != "-1;-1")
-                    _MyGrid[_MyGrid.Selection.ActivePosition].Value = "В";
+                try
+                {
+                    string pos = _MyGrid.Selection.GetSelectionRegion().ToString().Replace(" to ", ";").Replace("RangeRegion | ", "");
+                    string[] pos2 = pos.Split(';');
+                    int count = Convert.ToInt32(pos2[3]) - Convert.ToInt32(pos2[1]);
+                    int counter = count == 0 ? 1 : count + 1;
+
+                    for (int i = counter, j = Convert.ToInt32(pos2[1]); i > 0; i--, j++)
+                    {
+                        _MyGrid[Convert.ToInt32(pos2[0]), j].Value = "В";
+                        if (pos2[0] != pos2[2]) _MyGrid[Convert.ToInt32(pos2[2]), j].Value = "В";
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("Выберите дни для изменения строго на одной строке", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
             private void MenuG_Click(object sender, EventArgs e)
             {
-                if (_MyGrid.Selection.ActivePosition.ToString() != "-1;-1")
-                    _MyGrid[_MyGrid.Selection.ActivePosition].Value = "Г";
+                try
+                {
+                    string pos = _MyGrid.Selection.GetSelectionRegion().ToString().Replace(" to ", ";").Replace("RangeRegion | ", "");
+                    string[] pos2 = pos.Split(';');
+                    int count = Convert.ToInt32(pos2[3]) - Convert.ToInt32(pos2[1]);
+                    int counter = count == 0 ? 1 : count + 1;
+
+                    for (int i = counter, j = Convert.ToInt32(pos2[1]); i > 0; i--, j++)
+                    {
+                        _MyGrid[Convert.ToInt32(pos2[0]), j].Value = "Г";
+                        if (pos2[0] != pos2[2]) _MyGrid[Convert.ToInt32(pos2[2]), j].Value = "Г";
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("Выберите дни для изменения строго на одной строке", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
             private void MenuDO_Click(object sender, EventArgs e)
             {
-                if (_MyGrid.Selection.ActivePosition.ToString() != "-1;-1")
-                    _MyGrid[_MyGrid.Selection.ActivePosition].Value = "ДО";
+                try
+                {
+                    string pos = _MyGrid.Selection.GetSelectionRegion().ToString().Replace(" to ", ";").Replace("RangeRegion | ", "");
+                    string[] pos2 = pos.Split(';');
+                    int count = Convert.ToInt32(pos2[3]) - Convert.ToInt32(pos2[1]);
+                    int counter = count == 0 ? 1 : count + 1;
+
+                    for (int i = counter, j = Convert.ToInt32(pos2[1]); i > 0; i--, j++)
+                    {
+                        _MyGrid[Convert.ToInt32(pos2[0]), j].Value = "ДО";
+                        if (pos2[0] != pos2[2]) _MyGrid[Convert.ToInt32(pos2[2]), j].Value = "ДО";
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("Выберите дни для изменения строго на одной строке", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
             private void MenuOZH_Click(object sender, EventArgs e)
             {
-                if (_MyGrid.Selection.ActivePosition.ToString() != "-1;-1")
-                    _MyGrid[_MyGrid.Selection.ActivePosition].Value = "ОЖ";
+                try
+                {
+                    string pos = _MyGrid.Selection.GetSelectionRegion().ToString().Replace(" to ", ";").Replace("RangeRegion | ", "");
+                    string[] pos2 = pos.Split(';');
+                    int count = Convert.ToInt32(pos2[3]) - Convert.ToInt32(pos2[1]);
+                    int counter = count == 0 ? 1 : count + 1;
+
+                    for (int i = counter, j = Convert.ToInt32(pos2[1]); i > 0; i--, j++)
+                    {
+                        _MyGrid[Convert.ToInt32(pos2[0]), j].Value = "ОЖ";
+                        if (pos2[0] != pos2[2]) _MyGrid[Convert.ToInt32(pos2[2]), j].Value = "ОЖ";
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("Выберите дни для изменения строго на одной строке", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
             private void MenuOT_Click(object sender, EventArgs e)
             {
-                if (_MyGrid.Selection.ActivePosition.ToString() != "-1;-1")
-                    _MyGrid[_MyGrid.Selection.ActivePosition].Value = "ОТ";
+                try
+                {
+                    string pos = _MyGrid.Selection.GetSelectionRegion().ToString().Replace(" to ", ";").Replace("RangeRegion | ", "");
+                    string[] pos2 = pos.Split(';');
+                    int count = Convert.ToInt32(pos2[3]) - Convert.ToInt32(pos2[1]);
+                    int counter = count == 0 ? 1 : count + 1;
+
+                    for (int i = counter, j = Convert.ToInt32(pos2[1]); i > 0; i--, j++)
+                    {
+                        _MyGrid[Convert.ToInt32(pos2[0]), j].Value = "ОТ";
+                        if (pos2[0] != pos2[2]) _MyGrid[Convert.ToInt32(pos2[2]), j].Value = "ОТ";
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("Выберите дни для изменения строго на одной строке", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
             private void MenuPR_Click(object sender, EventArgs e)
             {
-                if (_MyGrid.Selection.ActivePosition.ToString() != "-1;-1")
-                    _MyGrid[_MyGrid.Selection.ActivePosition].Value = "ПР";
+                try
+                {
+                    string pos = _MyGrid.Selection.GetSelectionRegion().ToString().Replace(" to ", ";").Replace("RangeRegion | ", "");
+                    string[] pos2 = pos.Split(';');
+                    int count = Convert.ToInt32(pos2[3]) - Convert.ToInt32(pos2[1]);
+                    int counter = count == 0 ? 1 : count + 1;
+
+                    for (int i = counter, j = Convert.ToInt32(pos2[1]); i > 0; i--, j++)
+                    {
+                        _MyGrid[Convert.ToInt32(pos2[0]), j].Value = "ПР";
+                        if (pos2[0] != pos2[2]) _MyGrid[Convert.ToInt32(pos2[2]), j].Value = "ПР";
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("Выберите дни для изменения строго на одной строке", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
             private void MenuR_Click(object sender, EventArgs e)
             {
-                if (_MyGrid.Selection.ActivePosition.ToString() != "-1;-1")
-                    _MyGrid[_MyGrid.Selection.ActivePosition].Value = "Р";
+                try
+                {
+                string pos = _MyGrid.Selection.GetSelectionRegion().ToString().Replace(" to ", ";").Replace("RangeRegion | ", "");
+                string[] pos2 = pos.Split(';');
+                int count = Convert.ToInt32(pos2[3]) - Convert.ToInt32(pos2[1]);
+                int counter = count == 0 ? 1 : count + 1;
+
+                for (int i = counter, j = Convert.ToInt32(pos2[1]); i > 0; i--, j++)
+                    {
+                    _MyGrid[Convert.ToInt32(pos2[0]), j].Value = "Р";
+                    if (pos2[0] != pos2[2]) _MyGrid[Convert.ToInt32(pos2[2]), j].Value = "Р";
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("Выберите дни для изменения строго на одной строке", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
 
         }
@@ -700,7 +830,7 @@ namespace Dispetcher2
                 //((Excel.Range)ExcelWorkSheet.Rows[8]).Select();
                 ((Excel.Range)ExcelWorkSheet.Cells[8, 1]).Select();
                 ExcelApp.ActiveWindow.FreezePanes = true;
-                //ExcelWorkSheet.PageSetup.PrintTitleRows = "$10:$10";
+                //ExcelWorkSheet.PageSetup.PrintTitleRows = "10:10";
                 //ExcelWorkSheet.Outline.SummaryRow = Excel.XlSummaryRow.xlSummaryAbove;//группировка строк
                 //************************************
                 #endregion Настройка шапки
