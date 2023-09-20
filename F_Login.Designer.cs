@@ -42,10 +42,10 @@ namespace Dispetcher2
             this.lbl_Welcome = new System.Windows.Forms.Label();
             this.gB_NewLogin = new System.Windows.Forms.GroupBox();
             this.tB_NewLogin = new System.Windows.Forms.TextBox();
-            this.mychB_NewLogin = new Dispetcher2.Controls.MyCheckBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.serverComboBox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.mychB_NewLogin = new Dispetcher2.Controls.MyCheckBox();
             this.tLP_Autorization.SuspendLayout();
             this.gB_NewLogin.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -205,22 +205,6 @@ namespace Dispetcher2
             this.tB_NewLogin.TabIndex = 1;
             this.tB_NewLogin.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tB_NewLogin_KeyDown);
             // 
-            // mychB_NewLogin
-            // 
-            this.mychB_NewLogin.Appearance = System.Windows.Forms.Appearance.Button;
-            this.mychB_NewLogin.AutoSize = true;
-            this.mychB_NewLogin.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mychB_NewLogin.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
-            this.mychB_NewLogin.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.mychB_NewLogin.Location = new System.Drawing.Point(446, 477);
-            this.mychB_NewLogin.Name = "mychB_NewLogin";
-            this.mychB_NewLogin.Size = new System.Drawing.Size(214, 25);
-            this.mychB_NewLogin.TabIndex = 1005;
-            this.mychB_NewLogin.Text = "Сменить пользователя";
-            this.mychB_NewLogin.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.mychB_NewLogin.UseVisualStyleBackColor = true;
-            this.mychB_NewLogin.CheckedChanged += new System.EventHandler(this.mychB_NewLogin_CheckedChanged);
-            // 
             // panel1
             // 
             this.panel1.Controls.Add(this.serverComboBox);
@@ -251,6 +235,22 @@ namespace Dispetcher2
             this.label1.Size = new System.Drawing.Size(146, 20);
             this.label1.TabIndex = 0;
             this.label1.Text = "Выберите сервер:";
+            // 
+            // mychB_NewLogin
+            // 
+            this.mychB_NewLogin.Appearance = System.Windows.Forms.Appearance.Button;
+            this.mychB_NewLogin.AutoSize = true;
+            this.mychB_NewLogin.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mychB_NewLogin.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
+            this.mychB_NewLogin.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.mychB_NewLogin.Location = new System.Drawing.Point(446, 477);
+            this.mychB_NewLogin.Name = "mychB_NewLogin";
+            this.mychB_NewLogin.Size = new System.Drawing.Size(214, 25);
+            this.mychB_NewLogin.TabIndex = 1005;
+            this.mychB_NewLogin.Text = "Сменить пользователя";
+            this.mychB_NewLogin.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.mychB_NewLogin.UseVisualStyleBackColor = true;
+            this.mychB_NewLogin.CheckedChanged += new System.EventHandler(this.mychB_NewLogin_CheckedChanged);
             // 
             // F_Login
             // 
