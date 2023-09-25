@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <DataGrid x:Name="mainGrid" ItemsSource="{Binding Path=Details}" AutoGenerateColumns="False" IsReadOnly="True">
+    <DataGrid x:Name="mainGrid" ItemsSource="{Binding Path=Rows}" AutoGenerateColumns="False" IsReadOnly="True">
         <DataGrid.ColumnHeaderStyle>
             <Style TargetType="DataGridColumnHeader">
                 <Setter Property="ContentTemplate">

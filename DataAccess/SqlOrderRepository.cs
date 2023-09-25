@@ -26,18 +26,17 @@ namespace Dispetcher2.DataAccess
         IConfig config;
         Nullable<int> status = null;
         List<SqlOrder> orders = null;
-        public SqlOrderRepository(IConfig config)
+        IConverter converter;
+
+        public SqlOrderRepository(IConfig config, IConverter converter, Nullable<int> status = null)
         {
             if (config == null) throw new ArgumentException("Пожалуйста укажите параметр config");
+            if (converter == null) throw new ArgumentException("Пожалуйста укажите параметр converter");
             this.config = config;
-            this.status = null;
-        }
-        public SqlOrderRepository(IConfig config, int status)
-        {
-            if (config == null) throw new ArgumentException("Пожалуйста укажите параметр config");
-            this.config = config;
+            this.converter = converter;
             this.status = status;
         }
+
         public override IEnumerable GetList()
         {
             if (orders == null) Load();
@@ -81,16 +80,33 @@ namespace Dispetcher2.DataAccess
                         while (r.Read())
                         {
                             var item = new SqlOrder();
-                            item.Id = Converter.GetInt(r["PK_IdOrder"]);
-                            item.Number = Converter.GetString(r["OrderNum"]);
-                            item.Name = Converter.GetString(r["OrderName"]);
-                            item.CreateDate = Converter.GetDateTime(r["DateCreateOrder"]);
-                            item.Status = Converter.GetInt(r["FK_IdStatusOrders"]);
-                            item.ValidationOrder = Converter.GetBool(r["ValidationOrder"]);
-                            item.Num1С = Converter.GetString(r["OrderNum1С"]);
-                            item.StartDate = Converter.GetDateTime(r["StartDate"]);
-                            item.PlannedDate = Converter.GetDateTime(r["PlannedDate"]);
-                            item.Amount = Converter.GetInt(r["Amount"]);
+                            
+                            if (converter.CheckConvert<int>(r["PK_IdOrder"])) 
+                                item.Id = converter.Convert<int>(r["PK_IdOrder"]);
+
+                            if (converter.CheckConvert<string>(r["OrderNum"]))
+                                item.Number = converter.Convert<string>(r["OrderNum"]);
+
+                            if (converter.CheckConvert<string>(r["OrderName"]))
+                                item.Name = converter.Convert<string>(r["OrderName"]);
+
+                            if (converter.CheckConvert<DateTime>(r["DateCreateOrder"]))
+                                item.CreateDate = converter.Convert<DateTime>(r["DateCreateOrder"]);
+
+                            if (converter.CheckConvert<int>(r["FK_IdStatusOrders"]))
+                                item.Status = converter.Convert<int>(r["FK_IdStatusOrders"]);
+
+                            if (converter.CheckConvert<bool>(r["ValidationOrder"]))
+                                item.ValidationOrder = converter.Convert<bool>(r["ValidationOrder"]);
+
+                            if (converter.CheckConvert<string>(r["OrderNum1С"]))
+                                item.Num1С = converter.Convert<string>(r["OrderNum1С"]);
+
+                            if (converter.CheckConvert<DateTime>(r["PlannedDate"]))
+                                item.PlannedDate = converter.Convert<DateTime>(r["PlannedDate"]);
+                            
+                            if (converter.CheckConvert<int>(r["Amount"]))
+                                item.Amount = converter.Convert<int>(r["Amount"]);
                             orders.Add(item);
                         }
                     }

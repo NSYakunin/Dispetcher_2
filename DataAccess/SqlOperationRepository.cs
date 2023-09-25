@@ -6,6 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 using Dispetcher2.Class;
 using System.Collections;
+using System.Globalization;
 
 namespace Dispetcher2.DataAccess
 {
@@ -29,10 +30,15 @@ namespace Dispetcher2.DataAccess
     public class SqlOperationRepository : OperationRepository
     {
         IConfig config;
+        IConverter converter;
         List<SqlOperation> operations;
-        public SqlOperationRepository(IConfig config)
+
+        public SqlOperationRepository(IConfig config, IConverter converter)
         {
+            if (config == null) throw new ArgumentException("Пожалуйста укажите параметр config");
+            if (converter == null) throw new ArgumentException("Пожалуйста укажите параметр converter");
             this.config = config;
+            this.converter = converter;
         }
         public override IEnumerable GetList()
         {
@@ -65,16 +71,33 @@ namespace Dispetcher2.DataAccess
                         while (r.Read())
                         {
                             SqlOperation item = new SqlOperation();
-                            
-                            item.OrderDetailId = Converter.GetLong(r["PK_IdOrderDetail"]);
-                            item.GroupId = Converter.GetInt(r["FK_IdOperGroup"]);
-                            item.Tpd = Converter.GetInt(r["Tpd"]);
-                            item.Tsh = Converter.GetInt(r["Tsh"]);
-                            item.Quantity = Converter.GetInt(r["fo_Amount"]);
+
                             // Пропускаем OnlyOncePay, не имеет значения в отчете трудозатрат
-                            item.Number = Converter.GetString(r["NumOper"]);
-                            item.Name = Converter.GetString(r["NameOperation"]);
-                            item.TypeRow = Converter.GetString(r["TypeRow"]);
+
+                            if (converter.CheckConvert<long>(r["PK_IdOrderDetail"]))
+                                item.OrderDetailId = converter.Convert<long>(r["PK_IdOrderDetail"]);
+
+                            if (converter.CheckConvert<int>(r["FK_IdOperGroup"]))
+                                item.GroupId = converter.Convert<int>(r["FK_IdOperGroup"]);
+
+                            if (converter.CheckConvert<int>(r["Tpd"]))
+                                item.Tpd = converter.Convert<int>(r["Tpd"]);
+
+                            if (converter.CheckConvert<int>(r["Tsh"]))
+                                item.Tsh = converter.Convert<int>(r["Tsh"]);
+
+                            if (converter.CheckConvert<int>(r["fo_Amount"]))
+                                item.Quantity = converter.Convert<int>(r["fo_Amount"]);
+
+                            if (converter.CheckConvert<string>(r["NumOper"]))
+                                item.Number = converter.Convert<string>(r["NumOper"]);
+
+                            if (converter.CheckConvert<string>(r["NameOperation"]))
+                                item.Name = converter.Convert<string>(r["NameOperation"]);
+
+                            if (converter.CheckConvert<string>(r["TypeRow"]))
+                                item.TypeRow = converter.Convert<string>(r["TypeRow"]);
+                            
                             if (item.Tpd > 0 || item.Tsh > 0)
                             {
                                 item.CalculateTime();

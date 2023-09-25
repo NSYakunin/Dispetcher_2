@@ -24,28 +24,31 @@ namespace Dispetcher2.Controls
     /// </summary>
     public partial class LaborControl : UserControl
     {
-        OrderRepository orep;
         IConfig config;
-        OrderControlViewModel ovm;
-        WorkTimeViewModel wtvm;
-
+        IConverter converter;
+        OrderRepository orep;
         DetailRepository allDetails;
         OperationRepository allOperations;
-        OperationViewModel dvr;
         WorkDayRepository wdr;
+
+        OrderControlViewModel ordvm;
+        WorkTimeViewModel wtvm;
+        OperationViewModel oprvm;
 
         WaitControl wc;
         UserControl ordControl;
         OperationControl oprControl;
         UserControl wtControl;
 
-        public LaborControl(OrderRepository ordRep, IConfig config)
+        public LaborControl(OrderRepository ordRep, IConfig config, IConverter converter)
         {
             if (ordRep == null) throw new ArgumentException("Пожалуйста укажите параметр: OrderRepository");
             if (config == null) throw new ArgumentException("Пожалуйста укажите параметр: IConfig");
+            if (converter == null) throw new ArgumentException("Пожалуйста укажите параметр converter");
             InitializeComponent();
 
             this.config = config;
+            this.converter = converter;
 
             this.orep = ordRep;
 
@@ -53,15 +56,17 @@ namespace Dispetcher2.Controls
             // Надо выносить наружу, также как OrderRepository
             // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
             // Хранилища
-            this.allDetails = new SqlDetailRepository(config);
-            this.allOperations = new SqlOperationRepository(config);
+            this.allDetails = new SqlDetailRepository(config, converter);
+            this.allOperations = new SqlOperationRepository(config, converter);
+
+            var gr = new SqlOperationGroupRepository(config, converter);
             
             wdr = new SqlWorkDayRepository(config, DateTime.Now);
             
             // Модели представления
             wtvm = new WorkTimeViewModel();
-            ovm = new OrderControlViewModel(orep);
-            dvr = new OperationViewModel(allDetails, allOperations);
+            ordvm = new OrderControlViewModel(orep);
+            oprvm = new OperationViewModel(allDetails, allOperations, gr);
 
             // Элементы управления
             wc = new WaitControl();
@@ -73,10 +78,6 @@ namespace Dispetcher2.Controls
             wtControl = new WorkTimeControl();
             // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-
-
-
-
             HideAll();
             var t = new Task(LoadOrders);
             t.Start();
@@ -84,19 +85,18 @@ namespace Dispetcher2.Controls
 
         private void OnRequest(object sender, RoutedEventArgs e)
         {
-            
             HideAll();
             var t = new Task(LoadOperations);
             t.Start();
-
         }
 
         void HideAll()
         {
             orderListPlace.Visibility = Visibility.Collapsed;
-            requestButton.Visibility = Visibility.Collapsed;
+            
             workTimePlace.Visibility = Visibility.Collapsed;
             operationPlace.Visibility = Visibility.Collapsed;
+            commandGrid.Visibility = Visibility.Collapsed;
             
             wc.Message = "Загрузка...";
             loadingPlace.Content = wc;
@@ -113,22 +113,25 @@ namespace Dispetcher2.Controls
         }
         void AfterLoadOrders()
         {
-            ordControl.DataContext = ovm;
+            ordControl.DataContext = ordvm;
             orderListPlace.Content = ordControl;
             
             wc.Stop();
 
             loadingPlace.Visibility = Visibility.Collapsed;
             orderListPlace.Visibility = Visibility.Visible;
-            requestButton.Visibility = Visibility.Visible;
+            commandGrid.Visibility = Visibility.Visible;
 
-            ovm.Filter = String.Empty;
+            ordvm.Filter = String.Empty;
+            oprvm.ShowDetailFlag = true;
+            oprvm.ShowOperationFlag = true;
+            this.DataContext = oprvm;
+            
         }
-
 
         void LoadOperations()
         {
-            var so = ovm.GetSelectedOrders();
+            var so = ordvm.GetSelectedOrders();
             if (so.GetOrders().Count() < 1)
             {
                 MessageBox.Show("Пожалуйста выберите заказ", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -137,13 +140,11 @@ namespace Dispetcher2.Controls
             
             wdr.Load();
             wtvm.Load(wdr);
-            dvr.Update(so);
+            oprvm.Update(so);
 
             Action a = AfterLoad;
             this.Dispatcher.BeginInvoke(a);
         }
-
-
 
         void AfterLoad()
         {
@@ -151,30 +152,23 @@ namespace Dispetcher2.Controls
             loadingPlace.Visibility = Visibility.Collapsed;
 
             orderListPlace.Visibility = Visibility.Visible;
-            requestButton.Visibility = Visibility.Visible;
-
+            commandGrid.Visibility = Visibility.Visible;
 
             ShowOperations();
-
-            
         }
 
         void ShowOperations()
         {
             oprControl.DataContext = null;
-            oprControl.Update(dvr.GetOperationRepository());
-            oprControl.DataContext = dvr;
+            oprControl.Update(oprvm.GetOperationRepository());
+            oprControl.DataContext = oprvm;
 
             operationPlace.Content = oprControl;
             operationPlace.Visibility = Visibility.Visible;
 
-            
-            
-
             wtControl.DataContext = wtvm;
             workTimePlace.Content = wtControl;
             workTimePlace.Visibility = Visibility.Visible;
-
         }
     }
 }

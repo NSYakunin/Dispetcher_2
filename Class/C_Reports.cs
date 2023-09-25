@@ -9,6 +9,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 using System.Drawing;
 using SourceGrid;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace Dispetcher2.Class
 {
@@ -25,21 +26,13 @@ namespace Dispetcher2.Class
         {
             this.config = config;
             _DT = new DataTable();
+            _OperGroupFactTime = new int[12];
+            _FactTime = new int[12];
         }
 
         public bool RepErrors
         {
             get { return _err; }
-        }
-
-        public C_Reports(bool PlanSheduleForm6)// Только для "План-график (форма №6)"
-        {
-            _DT = new DataTable();
-            if (PlanSheduleForm6)
-            {
-                _OperGroupFactTime = new int[12];
-                _FactTime = new int[12];
-            } 
         }
 
         public int[] GetGroupTimeForm6()
@@ -52,6 +45,12 @@ namespace Dispetcher2.Class
             return _FactTime;
         }
 
+        float DecimalToSec(decimal time)
+        {
+            string[] temp = time.ToString(CultureInfo.InvariantCulture).Split('.');
+            if (time.ToString().IndexOf(".") > 0) temp = time.ToString().Split('.');
+            return (Convert.ToInt32(temp[0]) * 3600) + Convert.ToInt32(temp[1]) * 60;
+        }
 
         // Только для "План-график (форма №6)"
         private int NormTimeFabrication(bool OnlyOncePay, int Tpd, int Tsh, int Amount)
@@ -407,7 +406,7 @@ namespace Dispetcher2.Class
                             {
                                 ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 13]).Value2 = Math.Round(((float)FactTimeWorker / _PlanHours) * 100,2);
                                 if (decimal.TryParse(_DT.Rows[i].ItemArray[17].ToString(), out TimeSheets))
-                                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 14]).Value2 = Math.Round((FactTimeWorker / (float)Converter.DecimalToSec(TimeSheets)) * 100, 2);
+                                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 14]).Value2 = Math.Round((FactTimeWorker / DecimalToSec(TimeSheets)) * 100, 2);
                             }
                             else
                             {

@@ -102,22 +102,21 @@ namespace Dispetcher2.Models
 
         public OrderRepository GetSelectedOrders()
         {
-            if (OrderList.Count == 1)
-            {
-                OrderView v = OrderList[0];
-                if (v.Checked == false) v.Checked = true;
-            }
-            /*
             var a = new List<Order>();
+            /*
             if (SelectedOrder != null)
             {
                 a.Add(SelectedOrder);
             }
-            
             */
-            var a = new List<Order>();
             var e = allOrders.Where(o => o.Checked == true);
             if (e.Any()) a.AddRange(e);
+            if (OrderList.Count == 1 && a.Count < 1)
+            {
+                OrderView v = OrderList[0];
+                a.Add(v);
+            }
+            
             var r = new OrderControlViewModelRepository(a);
             return r;
         }

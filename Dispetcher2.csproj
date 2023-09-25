@@ -209,6 +209,7 @@
       <DependentUpon>WorkTimeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="DataAccess\SqlDetailRepository.cs" />
+    <Compile Include="DataAccess\SqlOperationGroupRepository.cs" />
     <Compile Include="DataAccess\SqlOperationRepository.cs" />
     <Compile Include="DataAccess\SqlOrderRepository.cs" />
     <Compile Include="DataAccess\SqlWorkDayRepository.cs" />

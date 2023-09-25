@@ -16,11 +16,14 @@ namespace Dispetcher2
         IConfig config;
         // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
         C_Orders orders;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_Reports RepForm6;
 
         public F_ReportsPlan(IConfig config)
         {
             this.config = config;
             orders = new C_Orders(config);
+            RepForm6 = new C_Reports(config);
 
             InitializeComponent();
             DT_Orders.Columns.Add("PK_IdOrder", typeof(int));
@@ -59,7 +62,7 @@ namespace Dispetcher2
             CurrencyManager cmgr = (CurrencyManager)this.dGV_Orders.BindingContext[this.dGV_Orders.DataSource, dGV_Orders.DataMember];
             DataRow row = ((DataRowView)cmgr.Current).Row;
             int PK_IdOrder = Convert.ToInt32(row["PK_IdOrder"]);
-            C_Reports RepForm6 = new C_Reports(true);
+            
 
             //PK_IdOrder = 138;//только для разработки  (тест)
             //tB_OrderNumInfo.Text = "20544304";//только для разработки (тест)

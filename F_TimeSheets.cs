@@ -10,6 +10,7 @@ using System.Data.SqlClient;
 using Dispetcher2.Class;
 using Dispetcher2.Controls.MyGrid;
 using Excel = Microsoft.Office.Interop.Excel;
+using System.Globalization;
 
 namespace Dispetcher2
 {
@@ -18,14 +19,22 @@ namespace Dispetcher2
         // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
         C_TimeSheetsV1 TSHV1;
         IConfig config;
+        IConverter converter;
+        
 
         DataTable _DT_Workers = new DataTable();
         DataTable DT_Holidays = new DataTable();
 
-        public F_TimeSheets(IConfig config)
+        public F_TimeSheets(IConfig config, IConverter converter)
         {
+            if (config == null) throw new ArgumentException("Пожалуйста укажите параметр config");
+            if (converter == null) throw new ArgumentException("Пожалуйста укажите параметр converter");
             this.config = config;
-            TSHV1 = new C_TimeSheetsV1(config);
+            this.converter = converter;
+            // Эта культура записывает числа через точку: 4.5 = черыре с половиной
+            converter.ContextCulture = CultureInfo.InvariantCulture;
+
+            TSHV1 = new C_TimeSheetsV1(config, converter);
 
             InitializeComponent();
         }
@@ -386,9 +395,9 @@ namespace Dispetcher2
                                             myGrid_TimeSH.Refresh();
                                         }
                                         //if (decimal.TryParse(TSHV1.Val_Time, C_Gper.style, C_Gper.culture, out test))
-                                        
+                                        if (converter.CheckConvert<decimal>(TSHV1.Val_Time))
                                         {
-                                            test = Converter.GetDecimal(TSHV1.Val_Time);
+                                            test = converter.Convert<decimal>(TSHV1.Val_Time);
                                             if (test > 0)
                                             {
                                                 Tsn_days++;

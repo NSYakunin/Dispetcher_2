@@ -6,12 +6,14 @@ using System.Windows.Forms;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.Globalization;
 
 namespace Dispetcher2.Class
 {
     sealed class C_TimeSheetsV1
     {
         IConfig config;
+        IConverter converter;
 
         private string _LoginUs = "";
         private string _Val_Time = "";
@@ -20,11 +22,14 @@ namespace Dispetcher2.Class
         decimal _ValCell_d;
         bool _Err = false;
 
-        public C_TimeSheetsV1(IConfig config)
+        public C_TimeSheetsV1(IConfig config, IConverter converter)
         {
+            if (config == null) throw new ArgumentException("Пожалуйста укажите параметр config");
+            if (converter == null) throw new ArgumentException("Пожалуйста укажите параметр converter");
             this.config = config;
-
-
+            this.converter = converter;
+            // Эта культура записывает числа через точку: 4.5 = черыре с половиной
+            converter.ContextCulture = CultureInfo.InvariantCulture;
         }
 
         public string LoginUs 
@@ -51,13 +56,13 @@ namespace Dispetcher2.Class
                     }
                 }
                 //проверка на соответствие цифре
-                if (_Val_Time == "" && Converter.IsDecimal(value))
+                if (_Val_Time == "" && converter.CheckConvert<decimal>(value))
                 {
-                    _ValCell_d = Converter.GetDecimal(value);
+                    _ValCell_d = converter.Convert<decimal>(value);
                     if (_ValCell_d <= 24)
                     {
                         _ValCell_d = Math.Round(_ValCell_d, 2, MidpointRounding.AwayFromZero);
-                        _Val_Time = Converter.GetString(_ValCell_d);
+                        _Val_Time = converter.Convert<string>(_ValCell_d);
                         /*if (_ValCell_d.ToString().IndexOf(".") > 0)
                         {
                             string[] temp = _ValCell_d.ToString().Split('.');
@@ -120,7 +125,10 @@ namespace Dispetcher2.Class
                         cmd.Parameters["@PK_Date"].Value = _PK_Date;
                         cmd.Parameters.Add(new SqlParameter("@Val_Time", SqlDbType.VarChar));
                         cmd.Parameters["@Val_Time"].Value = _Val_Time;
-                        decimal VT = Converter.GetDecimal(_Val_Time);
+                        //decimal VT = Converter.GetDecimal(_Val_Time);
+                        decimal VT = 0;
+                        if (converter.CheckConvert<decimal>(_Val_Time))
+                            VT = converter.Convert<decimal>(_Val_Time);
                         //decimal.TryParse(_Val_Time, C_Gper.style, C_Gper.culture, out VT);
                         cmd.Parameters.Add(new SqlParameter("@Val_TimeFloat", SqlDbType.Float));
                         cmd.Parameters["@Val_TimeFloat"].Value = VT;

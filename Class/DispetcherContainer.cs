@@ -21,8 +21,9 @@ namespace Dispetcher2.Class
             vm = new LoginViewModel();
             vm.ServerChangeAction = OnServerChange;
 
+            var converter = new Dispetcher2.Class.Converter();
             config = new Class.Configuration();
-            factory = new DispetcherFormFactory(config);
+            factory = new DispetcherFormFactory(config, converter);
         }
 
         public Form ResolveStartForm()
@@ -48,12 +49,14 @@ namespace Dispetcher2.Class
         private class DispetcherFormFactory : FormFactory
         {
             IConfig config;
+            IConverter converter;
             SqlOrderRepository orders;
-            public DispetcherFormFactory(IConfig config)
+            public DispetcherFormFactory(IConfig config, IConverter converter)
             {
                 this.config = config;
+                this.converter = converter;
                 // <param name="_IdStatusOrders">1-ожидание,2-открыт,3-закрыт,4-в работе,5-выполнен</param>
-                orders = new SqlOrderRepository(config, 2);
+                orders = new SqlOrderRepository(config, converter, 2);
             }
             public override string GetInformation()
             {
@@ -83,7 +86,7 @@ namespace Dispetcher2.Class
                         return f;
 
                     case "Табель учёта рабочего времени":
-                        f = new F_TimeSheets(config);
+                        f = new F_TimeSheets(config, converter);
                         return f;
 
                     case "Пользователи":
@@ -91,7 +94,7 @@ namespace Dispetcher2.Class
                         return f;
 
                     case "Настройки администратора":
-                        f = new F_Settings(config);
+                        f = new F_Settings(config, converter);
                         return f;
 
                     case "Заказы":
@@ -108,32 +111,32 @@ namespace Dispetcher2.Class
 
                     case "Отчёт-наряд по выполненным операциям":
                         config.SelectedReportMode = ReportMode.ОтчетНаряд;
-                        f = new F_Reports(config, orders);
+                        f = new F_Reports(config, orders, converter);
                         return f;
 
                     case "Операции выполненные рабочим по заказам":
                         config.SelectedReportMode = ReportMode.ОперацииВыполненныеРабочим;
-                        f = new F_Reports(config, orders);
+                        f = new F_Reports(config, orders, converter);
                         return f;
 
                     case "Движение деталей":
                         config.SelectedReportMode = ReportMode.ДвижениеДеталей;
-                        f = new F_Reports(config, orders);
+                        f = new F_Reports(config, orders, converter);
                         return f;
 
                     case "Отчет по выполненным операциям":
                         config.SelectedReportMode = ReportMode.ОтчетВыполненным;
-                        f = new F_Reports(config, orders);
+                        f = new F_Reports(config, orders, converter);
                         return f;
 
                     case "План-график":
                         config.SelectedReportMode = ReportMode.ПланГрафик;
-                        f = new F_Reports(config, orders);
+                        f = new F_ReportsPlan(config);
                         return f;
 
                     case "Трудоемкость":
                         config.SelectedReportMode = ReportMode.Трудоемкость;
-                        f = new F_Reports(config, orders);
+                        f = new F_Reports(config, orders, converter);
                         return f;
 
                     case "ПРОИЗВОДСТВО-ПЛАН":
