@@ -22,7 +22,7 @@ namespace Dispetcher2.Class
         private bool _err = false;//Наличие ошибок при формировании отчёта
         IConfig config;
 
-        public C_Reports(IConfig config, bool PlanSheduleForm6 = false)// Только для "План-график (форма №6)"
+        public C_Reports(IConfig config)
         {
             if (config == null) throw new ArgumentException("Пожалуйста укажите параметр config");
             this.config = config;
@@ -506,7 +506,7 @@ namespace Dispetcher2.Class
                                 NumRow++;
                                 //Строка для выработки******************************
                                 //if (FlagDays && IdCeh == -1 && loginWorker == "" && cWorkDays > 0 && (ExcelWorkSheet.Cells[NumRow - 1, 10] as Excel.Range).Value2 != 0)
-                                if (FlagDays && IdCeh == -1 && loginWorker == "" && cWorkDays > 0) ;
+                                if (FlagDays && IdCeh == -1 && loginWorker == "" && cWorkDays > 0)
                                 {
                                     string x = Convert.ToString((ExcelWorkSheet.Cells[NumRow - 1, 10] as Excel.Range).Value2);
                                 if (x != null)

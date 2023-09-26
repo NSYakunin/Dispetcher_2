@@ -16,7 +16,6 @@ namespace Dispetcher2
     public partial class F_Login : Form
     {
         static string ActiveUserLogin = "";
-        static string ActiveUserFullName = "";
 
         // модель представления для списка серверов
         LoginViewModel vm;

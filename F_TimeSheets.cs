@@ -311,61 +311,15 @@ namespace Dispetcher2
 
             private void MenuB_Click(object sender, EventArgs e)
             {
-                
+
                 if (_MyGrid.Selection.ActivePosition.ToString() != "-1;-1")
                 {
                     try
                     {
-
-                        Note = false;//В начале каждой строки т.к. пишем только при First15days = true;
-                        if (myGrid_TimeSH[i, 22] != null)
-                            if (myGrid_TimeSH[i, 22].Value != null)
-                                TSHV1.LoginUs = myGrid_TimeSH[i, 22].Value.ToString();
-                        if (TSHV1.LoginUs != "ИТР, специалисты и служащий персонал производства 50" &&
-                            TSHV1.LoginUs != "Цех по изготовлению СТО")
-                            for (int cl = 3; cl < 19; cl++)
-                            {
-                                if (myGrid_TimeSH[i, cl] != null)
-                                {
-                                    if (First15days) st_date = (cl - 2).ToString();
-                                    else st_date = (cl + 14).ToString();
-                                    st_date += "." + (cB_Month.SelectedIndex + 1).ToString() + "." + numUD_year.Value.ToString();
-                                    DateTime.TryParse(st_date, out dt_date);
-                                    TSHV1.PK_Date = dt_date;
-                                    if (myGrid_TimeSH[i, cl].Value != null)
-                                        TSHV1.Val_Time = myGrid_TimeSH[i, cl].Value.ToString();
-                                    else TSHV1.Val_Time = "";
-                                    myGrid_TimeSH[i, cl].Value = TSHV1.Val_Time;
-                                    if (Check)
-                                    {
-                                        if (!TSHV1.CheckData())
-                                        {
-                                            myGrid_TimeSH[i, cl].View.BackColor = System.Drawing.Color.LightPink;
-                                            myGrid_TimeSH.Refresh();
-                                        }
-                                        else
-                                            if (TSHV1.CheckData() & myGrid_TimeSH[i, cl].View.BackColor == System.Drawing.Color.LightPink)
-                                        {
-                                            myGrid_TimeSH[i, cl].View.BackColor = SystemColors.InactiveBorder;
-                                            myGrid_TimeSH.Refresh();
-                                        }
-                                        //if (decimal.TryParse(TSHV1.Val_Time, C_Gper.style, C_Gper.culture, out test))
-                                        if (converter.CheckConvert<decimal>(TSHV1.Val_Time))
-                                        {
-                                            test = converter.Convert<decimal>(TSHV1.Val_Time);
-                                            if (test > 0)
-                                            {
-                                                Tsn_days++;
-                                                Tsn_hours += test;
-                                            }
-                                        }
-                                    }
-
                         string pos = _MyGrid.Selection.GetSelectionRegion().ToString().Replace(" to ", ";").Replace("RangeRegion | ", "");
                         string[] pos2 = pos.Split(';');
                         int count = Convert.ToInt32(pos2[3]) - Convert.ToInt32(pos2[1]);
                         int counter = count == 0 ? 1 : count + 1;
-
 
                         for (int i = counter, j = Convert.ToInt32(pos2[1]); i > 0; i--, j++)
                         {
@@ -571,9 +525,10 @@ namespace Dispetcher2
                                             myGrid_TimeSH.Refresh();
                                         }
                                         //if (decimal.TryParse(TSHV1.Val_Time, C_Gper.style, C_Gper.culture, out test))
-                                        
+                                        if (converter.CheckConvert<decimal>(TSHV1.Val_Time))
                                         {
-                                            test = Converter.GetDecimal(TSHV1.Val_Time);
+                                            //test = Converter.GetDecimal(TSHV1.Val_Time);
+                                            test = converter.Convert<decimal>(TSHV1.Val_Time);
                                             if (test > 0)
                                             {
                                                 Tsn_days++;
