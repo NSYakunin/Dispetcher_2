@@ -1,4 +1,6 @@
-﻿namespace Dispetcher2
+﻿using System;
+
+namespace Dispetcher2
 {
     partial class F_TimeSheets
     {
@@ -29,6 +31,7 @@
         private void InitializeComponent()
         {
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.myGrid_TimeSH = new Dispetcher2.Controls.MyGrid.MyGrid();
             this.panel1 = new System.Windows.Forms.Panel();
             this.chB_Fired = new System.Windows.Forms.CheckBox();
             this.btn_PrintTURV = new System.Windows.Forms.Button();
@@ -39,7 +42,6 @@
             this.numUD_year = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.myGrid_TimeSH = new Dispetcher2.Controls.MyGrid.MyGrid();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -67,6 +69,20 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(995, 632);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
+            // myGrid_TimeSH
+            // 
+            this.myGrid_TimeSH.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.myGrid_TimeSH.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.myGrid_TimeSH.EnableSort = true;
+            this.myGrid_TimeSH.Location = new System.Drawing.Point(12, 74);
+            this.myGrid_TimeSH.Name = "myGrid_TimeSH";
+            this.myGrid_TimeSH.OptimizeMode = SourceGrid.CellOptimizeMode.ForRows;
+            this.myGrid_TimeSH.SelectionMode = SourceGrid.GridSelectionMode.Cell;
+            this.myGrid_TimeSH.Size = new System.Drawing.Size(969, 548);
+            this.myGrid_TimeSH.TabIndex = 22;
+            this.myGrid_TimeSH.TabStop = true;
+            this.myGrid_TimeSH.ToolTipText = "";
+            // 
             // panel1
             // 
             this.panel1.Controls.Add(this.chB_Fired);
@@ -87,7 +103,7 @@
             this.chB_Fired.AutoSize = true;
             this.chB_Fired.Location = new System.Drawing.Point(821, 21);
             this.chB_Fired.Name = "chB_Fired";
-            this.chB_Fired.Size = new System.Drawing.Size(101, 20);
+            this.chB_Fired.Size = new System.Drawing.Size(100, 20);
             this.chB_Fired.TabIndex = 25;
             this.chB_Fired.Text = "Уволенные";
             this.chB_Fired.UseVisualStyleBackColor = true;
@@ -190,7 +206,7 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(3, 25);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(265, 16);
+            this.label3.Size = new System.Drawing.Size(264, 16);
             this.label3.TabIndex = 2;
             this.label3.Text = "ТАБЕЛЬ УЧЕТА РАБОЧЕГО ВРЕМЕНИ";
             // 
@@ -199,23 +215,9 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(3, 5);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(173, 16);
+            this.label2.Size = new System.Drawing.Size(172, 16);
             this.label2.TabIndex = 1;
             this.label2.Text = "Подразделение: пр-во 50";
-            // 
-            // myGrid_TimeSH
-            // 
-            this.myGrid_TimeSH.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.myGrid_TimeSH.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.myGrid_TimeSH.EnableSort = true;
-            this.myGrid_TimeSH.Location = new System.Drawing.Point(12, 74);
-            this.myGrid_TimeSH.Name = "myGrid_TimeSH";
-            this.myGrid_TimeSH.OptimizeMode = SourceGrid.CellOptimizeMode.ForRows;
-            this.myGrid_TimeSH.SelectionMode = SourceGrid.GridSelectionMode.Cell;
-            this.myGrid_TimeSH.Size = new System.Drawing.Size(969, 548);
-            this.myGrid_TimeSH.TabIndex = 22;
-            this.myGrid_TimeSH.TabStop = true;
-            this.myGrid_TimeSH.ToolTipText = "";
             // 
             // F_TimeSheets
             // 

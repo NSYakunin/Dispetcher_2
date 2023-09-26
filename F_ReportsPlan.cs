@@ -21,8 +21,10 @@ namespace Dispetcher2
 
         public F_ReportsPlan(IConfig config)
         {
+            if (config == null) throw new ArgumentException("Пожалуйста укажите параметр config");
             this.config = config;
             orders = new C_Orders(config);
+
             RepForm6 = new C_Reports(config);
 
             InitializeComponent();

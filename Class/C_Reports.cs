@@ -22,10 +22,12 @@ namespace Dispetcher2.Class
         private bool _err = false;//Наличие ошибок при формировании отчёта
         IConfig config;
 
-        public C_Reports(IConfig config)
+        public C_Reports(IConfig config, bool PlanSheduleForm6 = false)// Только для "План-график (форма №6)"
         {
+            if (config == null) throw new ArgumentException("Пожалуйста укажите параметр config");
             this.config = config;
             _DT = new DataTable();
+
             _OperGroupFactTime = new int[12];
             _FactTime = new int[12];
         }
