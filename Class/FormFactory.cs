@@ -9,6 +9,6 @@ namespace Dispetcher2.Class
     public abstract class FormFactory
     {
         public abstract Form GetForm(string purpose);
-        public string Information { get; set; }
+        public abstract string GetInformation();
     }
 }

@@ -152,6 +152,7 @@
     <Compile Include="Class\C_UpdaterSP.cs" />
     <Compile Include="Class\C_Users.cs" />
     <Compile Include="Class\Detail.cs" />
+    <Compile Include="Class\DispetcherContainer.cs" />
     <Compile Include="Class\ErrorItem.cs" />
     <Compile Include="Class\FormFactory.cs" />
     <Compile Include="Class\ImportDataWorker.cs" />
@@ -163,6 +164,9 @@
     <Compile Include="Class\Server.cs" />
     <Compile Include="Class\WorkDay.cs" />
     <Compile Include="Class\С_TreeViewOrders.cs" />
+    <Compile Include="Controls\CheckedOrderControl.xaml.cs">
+      <DependentUpon>CheckedOrderControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ImportDataControl.xaml.cs">
       <DependentUpon>ImportDataControl.xaml</DependentUpon>
     </Compile>
@@ -205,6 +209,7 @@
       <DependentUpon>WorkTimeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="DataAccess\SqlDetailRepository.cs" />
+    <Compile Include="DataAccess\SqlOperationGroupRepository.cs" />
     <Compile Include="DataAccess\SqlOperationRepository.cs" />
     <Compile Include="DataAccess\SqlOrderRepository.cs" />
     <Compile Include="DataAccess\SqlWorkDayRepository.cs" />
@@ -328,7 +333,7 @@
     <Compile Include="F_Workers.Designer.cs">
       <DependentUpon>F_Workers.cs</DependentUpon>
     </Compile>
-    <Compile Include="Models\DetailViewRepository.cs" />
+    <Compile Include="Models\OperationViewModel.cs" />
     <Compile Include="Models\OrderControlViewModel.cs" />
     <Compile Include="Models\ProgressViewModel.cs" />
     <Compile Include="Models\WorkTimeViewModel.cs" />
@@ -465,6 +470,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\CheckedOrderControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\ImportDataControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

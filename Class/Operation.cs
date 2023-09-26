@@ -26,7 +26,6 @@ namespace Dispetcher2.Class
         public string Number { get; set; }
         public string TypeRow { get; set; }
     }
-
     public abstract class OperationRepository : Repository
     {
         public abstract IEnumerable<Operation> GetOperations();
@@ -74,5 +73,15 @@ namespace Dispetcher2.Class
             x.TypeRow = "1sp";
             operations.Add(x);
         }
+    }
+
+    public class OperationGroup
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+    public abstract class OperationGroupRepository : Repository
+    {
+        public abstract IEnumerable<OperationGroup> GetGroups();
     }
 }

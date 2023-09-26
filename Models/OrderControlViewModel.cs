@@ -13,6 +13,7 @@ namespace Dispetcher2.Models
 {
     public class OrderView : Order
     {
+        public bool Checked { get; set; }
         public static OrderView GetOrderView(Order order)
         {
             var v = new OrderView();
@@ -60,14 +61,13 @@ namespace Dispetcher2.Models
 
         ObservableCollection<OrderView> orderlist = new ObservableCollection<OrderView>();
 
-        List<OrderView> allOrders = new List<OrderView>();
+        OrderRepository rep;
+        List<OrderView> allOrders;
 
         public OrderControlViewModel(OrderRepository rep)
         {
             if (rep == null) throw new ArgumentException("Нужно предоставить хранилище заказов");
-            var a = rep.GetOrders();
-            foreach (var x in a) allOrders.Add(OrderView.GetOrderView(x));
-            Filter = String.Empty;
+            this.rep = rep;
         }
 
         public ObservableCollection<OrderView> OrderList
@@ -77,13 +77,23 @@ namespace Dispetcher2.Models
 
         void FilterData()
         {
+            OrderList.Clear();
+            if (Filter == null) return;
+
+            if (allOrders == null)
+            {
+                var a = rep.GetOrders();
+                allOrders = new List<OrderView>();
+                foreach (var x in a) allOrders.Add(OrderView.GetOrderView(x));
+            }
+
             string num = Filter.Trim();
 
             var l2 = from x in allOrders
                      where x.Number.Contains(num)
                      select x;
 
-            OrderList.Clear();
+            
             if (l2.Any())
             {
                 foreach (var x in l2) OrderList.Add(x);
@@ -92,11 +102,21 @@ namespace Dispetcher2.Models
 
         public OrderRepository GetSelectedOrders()
         {
-            List<Order> a = new List<Order>();
+            var a = new List<Order>();
+            /*
             if (SelectedOrder != null)
             {
                 a.Add(SelectedOrder);
             }
+            */
+            var e = allOrders.Where(o => o.Checked == true);
+            if (e.Any()) a.AddRange(e);
+            if (OrderList.Count == 1 && a.Count < 1)
+            {
+                OrderView v = OrderList[0];
+                a.Add(v);
+            }
+            
             var r = new OrderControlViewModelRepository(a);
             return r;
         }

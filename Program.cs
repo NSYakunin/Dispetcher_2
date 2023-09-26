@@ -2,77 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using System.Configuration;
-
 using Dispetcher2.Class;
 
 namespace Dispetcher2
 {
     static class Program
     {
-        static ServerViewModel vm;
-        static Dispetcher2.Class.Configuration config;
         /// <summary>
         /// Главная точка входа для приложения.
         /// </summary>
         [STAThread]
         static void Main()
         {
-            config = new Class.Configuration();
-            FormFactory factory = new DispetcherFormFactory(config);
-            vm = new ServerViewModel();
-            vm.ServerChangeHandler = OnServerChange;
+            var d = new DispetcherContainer();
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new F_Login(vm, config, factory));
+            Application.Run(d.ResolveStartForm());
         }
 
-        static void OnServerChange()
-        {
-            var ss = vm.SelectedServer;
-            string s = "0";
-            if (ss != null) if (ss.Type == ServerType.Testing) s = "1";
-            var appSettings = ConfigurationManager.AppSettings;
-            var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            config.AppSettings.Settings["SelectedIndex"].Value = s;
-            config.Save();
-            ConfigurationManager.RefreshSection("appSettings");
-            Application.Restart();
-        }
-    }
 
-    class DispetcherFormFactory : FormFactory
-    {
-        IConfig config;
-        public DispetcherFormFactory(IConfig config)
-        {
-            this.config = config;
-            this.Information = config.Information;
-        }
-
-        public override Form GetForm(string purpose)
-        {
-            Form f;
-            switch (purpose)
-            {
-                case "Меню":
-                    f = new F_Index(this);
-                    return f;
-                case "Рабочие":
-                    f = new F_Workers(config);
-                    return f;
-
-                case "Бригады":
-                    f = new F_Brigade(config);
-                    return f;
-
-                case "Производственный календарь":
-                    f = new F_ProductionCalendar(config);
-                    return f;
-
-                case "Табель учёта рабочего времени":
-                    f = new F_TimeSheets(config);
-                    return f;
 
                 case "Пользователи":
                     f = new F_Users(config);
@@ -133,5 +82,8 @@ namespace Dispetcher2
                     return f;
             }
         }
+
     }
+
+    
 }

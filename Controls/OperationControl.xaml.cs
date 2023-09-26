@@ -22,24 +22,23 @@ namespace Dispetcher2.Controls
     /// </summary>
     public partial class OperationControl : UserControl
     {
-        OperationRepository operations;
-        public OperationControl(OperationRepository operations)
+        public OperationControl()
         {
-            this.operations = operations;
             InitializeComponent();
-            SetColumns();
         }
 
-        void SetColumns()
+        public void Update(Repository operations)
         {
-            var e = operations.GetOperations();
-            foreach (var n in e)
+            mainGrid.Columns.Clear();
+            //var e = operations.GetOperations();
+            foreach (var n in operations.GetList())
             {
                 var c = new DataGridTextColumn();
-                c.Header = n.Name;
-                c.Binding = new Binding($"Operations[{n.Name}]");
+                c.Header = n;
+                c.Binding = new Binding($"Operations[{n}]");
                 mainGrid.Columns.Add(c);
             }
         }
+        
     }
 }

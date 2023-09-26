@@ -12,10 +12,8 @@ namespace Dispetcher2
         {
             this.factory = factory;
             InitializeComponent();
-            toolStripStatusLabel1.Text = factory.Information;
+            
         }
-
-
 
         #region Настройка поведения выпадающих списков пунктов меню
         private void tSSB_Reports_ButtonClick(object sender, EventArgs e)
@@ -279,6 +277,7 @@ namespace Dispetcher2
 
             var f = factory.GetForm("Лого");
             Show(f);
+            toolStripStatusLabel1.Text = factory.GetInformation();
         }
 
         //Лишнее

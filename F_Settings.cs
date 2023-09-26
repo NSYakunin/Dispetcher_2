@@ -32,12 +32,14 @@ namespace Dispetcher2
         // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
         C_Details Detail;
         public int SelectedOrderId { set; get; }
-        public F_Settings(IConfig config)
+        public F_Settings(IConfig config, IConverter converter)
         {
+            if (config == null) throw new ArgumentException("Пожалуйста укажите параметр: IConfig");
+            if (converter == null) throw new ArgumentException("Пожалуйста укажите параметр converter");
             this.config = config;
             orders = new C_Orders(config);
             updater = new C_UpdaterSP(config);
-            TSHV1 = new C_TimeSheetsV1(config);
+            TSHV1 = new C_TimeSheetsV1(config, converter);
             Detail = new C_Details(config);
 
             InitializeComponent();

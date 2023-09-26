@@ -1,10 +1,9 @@
 namespace Dispetcher2.Class
 {
-    sealed class C_Gper
+    public static class C_Gper
     {
         //Настройки пользователя
-        public static string ActiveUserLogin = "";
-        public static string ActiveUserFullName = "";
+
         //SettingsUser
         public static bool Orders_Set = false;
         public static bool F_Orders_View = false;
