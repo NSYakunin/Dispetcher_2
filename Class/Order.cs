@@ -15,9 +15,4 @@ namespace Dispetcher2.Class
     {
         public abstract IEnumerable<Order> GetOrders();
     }
-
-    public abstract class OrderFactory
-    {
-        public abstract OrderRepository GetOrderRepository(IConfig config);
-    }
 }

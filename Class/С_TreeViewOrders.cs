@@ -130,6 +130,13 @@ namespace Dispetcher2.Class
                 {
                     int Position = 0;
                     if (!int.TryParse(dRow["Position"].ToString(), out Position)) Position = 0;
+                    /*
+                        Обратите внимание! Возможно ошибка в имени переменной
+                        Из списка всех деталей DT_TreeViewOrders
+                            извлекаются такие, у которых 
+                                свойство Position равно своству PositionParent текущего dRow.
+                        Следовательно они не childs (дети), а parents (родители)
+                    */
                     childs = DT_TreeViewOrders.Select("Position='" + dRow["PositionParent"].ToString() + "'");
                     if (dRow["PositionParent"].ToString() == "0" || childs.Length == 0)
                     {

@@ -40,7 +40,24 @@
 
                 </Rectangle>
             </ContentControl>
-            <Button x:Name="requestButton" Content="Запрос" HorizontalAlignment="Left" Margin="5" VerticalAlignment="Top" Width="75" Click="OnRequest"/>
+            <StackPanel Orientation="Horizontal">
+                
+                
+                
+            </StackPanel>
+            <Grid x:Name="commandGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="requestButton" Content="Запрос" HorizontalAlignment="Left"
+                        Margin="5" VerticalAlignment="Center" Width="75" Click="OnRequest"/>
+                <CheckBox Grid.Column="1" Content="Подробно по деталям" IsChecked="{Binding Path=ShowDetailFlag}" 
+                          VerticalAlignment="Center"/>
+                <CheckBox Grid.Column="2" Content="Подробно по операциям" IsChecked="{Binding Path=ShowOperationFlag}" 
+                          VerticalAlignment="Center" />
+            </Grid>
             <ScrollViewer Grid.Row="1" CanContentScroll="False">
                 <StackPanel>
                     <ContentControl x:Name="workTimePlace" Width="190" Height="80" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,5,0">

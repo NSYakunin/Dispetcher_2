@@ -9,6 +9,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 using System.Drawing;
 using SourceGrid;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace Dispetcher2.Class
 {
@@ -21,24 +22,20 @@ namespace Dispetcher2.Class
         private bool _err = false;//Наличие ошибок при формировании отчёта
         IConfig config;
 
-        public C_Reports(IConfig config, bool PlanSheduleForm6 = false)// Только для "План-график (форма №6)"
+        public C_Reports(IConfig config)
         {
             if (config == null) throw new ArgumentException("Пожалуйста укажите параметр config");
             this.config = config;
             _DT = new DataTable();
-            if (PlanSheduleForm6)
-            {
-                _OperGroupFactTime = new int[12];
-                _FactTime = new int[12];
-            }
+
+            _OperGroupFactTime = new int[12];
+            _FactTime = new int[12];
         }
 
         public bool RepErrors
         {
             get { return _err; }
         }
-
-
 
         public int[] GetGroupTimeForm6()
         {
@@ -50,6 +47,12 @@ namespace Dispetcher2.Class
             return _FactTime;
         }
 
+        float DecimalToSec(decimal time)
+        {
+            string[] temp = time.ToString(CultureInfo.InvariantCulture).Split('.');
+            if (time.ToString().IndexOf(".") > 0) temp = time.ToString().Split('.');
+            return (Convert.ToInt32(temp[0]) * 3600) + Convert.ToInt32(temp[1]) * 60;
+        }
 
         // Только для "План-график (форма №6)"
         private int NormTimeFabrication(bool OnlyOncePay, int Tpd, int Tsh, int Amount)
@@ -405,7 +408,7 @@ namespace Dispetcher2.Class
                             {
                                 ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 13]).Value2 = Math.Round(((float)FactTimeWorker / _PlanHours) * 100,2);
                                 if (decimal.TryParse(_DT.Rows[i].ItemArray[17].ToString(), out TimeSheets))
-                                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 14]).Value2 = Math.Round((FactTimeWorker / (float)Converter.DecimalToSec(TimeSheets)) * 100, 2);
+                                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 14]).Value2 = Math.Round((FactTimeWorker / DecimalToSec(TimeSheets)) * 100, 2);
                             }
                             else
                             {
@@ -503,7 +506,7 @@ namespace Dispetcher2.Class
                                 NumRow++;
                                 //Строка для выработки******************************
                                 //if (FlagDays && IdCeh == -1 && loginWorker == "" && cWorkDays > 0 && (ExcelWorkSheet.Cells[NumRow - 1, 10] as Excel.Range).Value2 != 0)
-                                if (FlagDays && IdCeh == -1 && loginWorker == "" && cWorkDays > 0) ;
+                                if (FlagDays && IdCeh == -1 && loginWorker == "" && cWorkDays > 0)
                                 {
                                     string x = Convert.ToString((ExcelWorkSheet.Cells[NumRow - 1, 10] as Excel.Range).Value2);
                                 if (x != null)

@@ -24,7 +24,8 @@ namespace Dispetcher2
             if (config == null) throw new ArgumentException("Пожалуйста укажите параметр config");
             this.config = config;
             orders = new C_Orders(config);
-            RepForm6 = new C_Reports(config, true);
+
+            RepForm6 = new C_Reports(config);
 
             InitializeComponent();
             DT_Orders.Columns.Add("PK_IdOrder", typeof(int));

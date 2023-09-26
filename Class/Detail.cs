@@ -31,39 +31,21 @@ namespace Dispetcher2.Class
 
             List<Detail> result = new List<Detail>();
             result.Add(d);
-            if (d.Position != d.PositionParent)
+
+            var e = from item in DetailList
+                    where item.PositionParent == d.Position && item.OrderId == d.OrderId && d.Position != 0
+                    select item;
+
+            foreach (var x in e)
             {
-
-                var e = from item in DetailList
-                        where item.PositionParent == d.Position && item.OrderId == d.OrderId
-                        select item;
-
-                if (e.Any())
-                {
-                    foreach (var x in e)
-                    {
-                        var sr = GetTree(x);
-                        if (sr != null) result.AddRange(sr);
-                    }
-                }
+                var sr = GetTree(x);
+                result.AddRange(sr);
             }
 
             return result;
         }
 
-        public IEnumerable<Detail> GetMainDetails()
-        {
-            var DetailList = GetDetails();
-            List<Detail> result = new List<Detail>();
-            foreach (var x in DetailList)
-            {
-                string s = Convert.ToString(x.PositionParent).Trim();
-                int p = 0;
-                Int32.TryParse(s, out p);
-                if (p == 0) result.Add(x);
-            }
-            return result;
-        }
+
     }
 
     public class TestDetailRepository : DetailRepository

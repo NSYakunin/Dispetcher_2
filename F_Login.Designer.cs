@@ -264,6 +264,7 @@ namespace Dispetcher2
             this.Name = "F_Login";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "ПО \"Диспетчер\"";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.F_Login_FormClosing);
             this.Load += new System.EventHandler(this.F_Login_Load);
             this.tLP_Autorization.ResumeLayout(false);
             this.tLP_Autorization.PerformLayout();

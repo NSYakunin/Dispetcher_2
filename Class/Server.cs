@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 
 namespace Dispetcher2.Class
 {
@@ -16,10 +17,10 @@ namespace Dispetcher2.Class
         public string Name { get; set; }
         public ServerType Type { get; set; }
     }
-    public class ServerViewModel
+    public class LoginViewModel
     {
         public BindingSource ServerList { get; set; }
-        public Action ServerChangeHandler { get; set; }
+        public Action ServerChangeAction { get; set; }
         Server ss;
         public Server SelectedServer
         {
@@ -27,10 +28,10 @@ namespace Dispetcher2.Class
             set
             {
                 ss = value;
-                if (ServerChangeHandler != null) ServerChangeHandler();
+                if (ServerChangeAction != null) ServerChangeAction();
             }
         }
-        public ServerViewModel()
+        public LoginViewModel()
         {
             ServerList = new BindingSource();
 
