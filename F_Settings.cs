@@ -34,7 +34,7 @@ namespace Dispetcher2
         public int SelectedOrderId { set; get; }
         public F_Settings(IConfig config, IConverter converter)
         {
-            if (config == null) throw new ArgumentException("Пожалуйста укажите параметр: IConfig");
+            if (config == null) throw new ArgumentException("Пожалуйста укажите параметр: config");
             if (converter == null) throw new ArgumentException("Пожалуйста укажите параметр converter");
             this.config = config;
             orders = new C_Orders(config);

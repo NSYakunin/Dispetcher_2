@@ -153,9 +153,11 @@
     <Compile Include="Class\C_Users.cs" />
     <Compile Include="Class\Detail.cs" />
     <Compile Include="Class\DispetcherContainer.cs" />
+    <Compile Include="Class\Employee.cs" />
     <Compile Include="Class\ErrorItem.cs" />
     <Compile Include="Class\FormFactory.cs" />
     <Compile Include="Class\ImportDataWorker.cs" />
+    <Compile Include="Class\Job.cs" />
     <Compile Include="Class\KitUpdater.cs" />
     <Compile Include="Class\Operation.cs" />
     <Compile Include="Class\Order.cs" />
@@ -169,6 +171,15 @@
     </Compile>
     <Compile Include="Controls\ImportDataControl.xaml.cs">
       <DependentUpon>ImportDataControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\JobControl.xaml.cs">
+      <DependentUpon>JobControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\JobForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\JobForm.Designer.cs">
+      <DependentUpon>JobForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\KitUpdaterControl.xaml.cs">
       <DependentUpon>KitUpdaterControl.xaml</DependentUpon>
@@ -209,6 +220,7 @@
       <DependentUpon>WorkTimeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="DataAccess\SqlDetailRepository.cs" />
+    <Compile Include="DataAccess\SqlJobRepository.cs" />
     <Compile Include="DataAccess\SqlOperationGroupRepository.cs" />
     <Compile Include="DataAccess\SqlOperationRepository.cs" />
     <Compile Include="DataAccess\SqlOrderRepository.cs" />
@@ -333,12 +345,16 @@
     <Compile Include="F_Workers.Designer.cs">
       <DependentUpon>F_Workers.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\JobViewModel.cs" />
     <Compile Include="Models\OperationViewModel.cs" />
     <Compile Include="Models\OrderControlViewModel.cs" />
     <Compile Include="Models\ProgressViewModel.cs" />
     <Compile Include="Models\WorkTimeViewModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Controls\JobForm.resx">
+      <DependentUpon>JobForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\ucProdCal.resx">
       <DependentUpon>ucProdCal.cs</DependentUpon>
     </EmbeddedResource>
@@ -477,6 +493,10 @@
     <Page Include="Controls\ImportDataControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\JobControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\KitUpdaterControl.xaml">
       <Generator>MSBuild:Compile</Generator>

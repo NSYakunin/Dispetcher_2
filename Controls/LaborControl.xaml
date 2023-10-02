@@ -28,18 +28,7 @@
                 <RowDefinition Height="40"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <ContentControl x:Name="loadingPlace" Height="60" Width="400" Grid.Row="1" 
-                            VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5">
-                <Rectangle Stroke="Black">
-                    <Rectangle.Fill>
-                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                            <GradientStop Color="#FFB23434" Offset="1"/>
-                            <GradientStop Color="White" Offset="0"/>
-                        </LinearGradientBrush>
-                    </Rectangle.Fill>
 
-                </Rectangle>
-            </ContentControl>
             <StackPanel Orientation="Horizontal">
                 
                 
@@ -60,9 +49,9 @@
             </Grid>
             <ScrollViewer Grid.Row="1" CanContentScroll="False">
                 <StackPanel>
-                    <ContentControl x:Name="workTimePlace" Width="190" Height="80" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5,5,5,0">
+                    <ContentControl x:Name="workTimePlace" Margin="5,5,5,0">
                         
-                            <Rectangle Stroke="Black">
+                            <Rectangle Stroke="Black" Height="60">
                                 <Rectangle.Fill>
                                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                         <GradientStop Color="#FFD8D020" Offset="1"/>
@@ -84,7 +73,18 @@
                     </ContentControl>
                 </StackPanel>
             </ScrollViewer>
+            <ContentControl x:Name="loadingPlace" Height="50" Width="300" Grid.Row="1" 
+                            VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5">
+                <Rectangle Stroke="Black">
+                    <Rectangle.Fill>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="#FFB23434" Offset="1"/>
+                            <GradientStop Color="White" Offset="0"/>
+                        </LinearGradientBrush>
+                    </Rectangle.Fill>
 
+                </Rectangle>
+            </ContentControl>
         </Grid>
     </Grid>
 </UserControl>
