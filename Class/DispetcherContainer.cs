@@ -7,6 +7,8 @@ using System.Windows.Forms;
 using System.Threading.Tasks;
 
 using Dispetcher2.DataAccess;
+using Dispetcher2.Controls;
+using Dispetcher2.Models;
 
 namespace Dispetcher2.Class
 {
@@ -141,6 +143,13 @@ namespace Dispetcher2.Class
 
                     case "ПРОИЗВОДСТВО-ПЛАН":
                         f = new F_Planning(config);
+                        return f;
+                    
+                    case "Специальности":
+                        var jr = new SqlJobRepository(config, converter);
+                        var gr = new SqlOperationGroupRepository(config, converter);
+                        var vm = new JobViewModel(jr, gr);
+                        f = new JobForm(vm);
                         return f;
 
                     default:

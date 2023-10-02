@@ -7,55 +7,36 @@ using Dispetcher2.Class;
 
 namespace Dispetcher2.Models
 {
-    public class ReportRow
+    public class OperationReportRow
     {
         public string Name { get; set; }
         public Dictionary<string, string> Operations { get; set; }
         
-        public ReportRow()
+        public OperationReportRow()
         {
             Operations = new Dictionary<string, string>();
         }
     }
     public class OperationViewModel
     {
-        List<ReportRow> rows;
+        List<OperationReportRow> rows;
 
         DetailRepository allDetails;
         OperationRepository allOperations;
         OperationGroupRepository opgroups;
 
-
-
         public bool ShowDetailFlag { get; set; }
         public bool ShowOperationFlag { get; set; }
-
-        private class DetailViewRepositoryStringRepository : Repository
-        {
-            IEnumerable<string> operations;
-            public DetailViewRepositoryStringRepository(IEnumerable<string> operations)
-            {
-                this.operations = operations;
-            }
-            public override void Load()
-            {
-                
-            }
-            public override System.Collections.IEnumerable GetList()
-            {
-                return operations;
-            }
-        }
 
         public OperationViewModel(DetailRepository allDetails, OperationRepository allOperations, OperationGroupRepository opgroups)
         {
             this.allDetails = allDetails;
             this.allOperations = allOperations;
             this.opgroups = opgroups;
-            this.rows = new List<ReportRow>();
+            this.rows = new List<OperationReportRow>();
         }
 
-        public IEnumerable<ReportRow> Rows { get { return rows; } }
+        public IEnumerable<OperationReportRow> Rows { get { return rows; } }
 
         /*
 
@@ -125,7 +106,7 @@ namespace Dispetcher2.Models
             // Если нет операций, то не выводим деталь?
             //if (allTreeOperations.Count == 0) return;
 
-            var dv = new ReportRow() { Name = d.Name };
+            var dv = new OperationReportRow() { Name = d.Name };
             this.rows.Add(dv);
             
 
@@ -148,13 +129,13 @@ namespace Dispetcher2.Models
                 foreach (var e5i in e5) itemOperations.Add(e5i);
             }
 
-            var dv = new ReportRow() { Name = item.Number };
+            var dv = new OperationReportRow() { Name = item.Number };
             this.rows.Add(dv);
 
             ProcessRow(dv, itemOperations);
         }
 
-        void ProcessRow(ReportRow dv, List<Operation> dvOperations)
+        void ProcessRow(OperationReportRow dv, List<Operation> dvOperations)
         {
             if (ShowOperationFlag == true)
             {
@@ -273,19 +254,16 @@ namespace Dispetcher2.Models
 
         public Repository GetOperationRepository()
         {
-            List<string> NameList = new List<string>();
+            HashSet<string> NameList = new HashSet<string>();
             foreach (var item in rows)
             {
-                NameList.AddRange(item.Operations.Keys);
+                //NameList.AddRange(item.Operations.Keys);
+                foreach (var k in item.Operations.Keys) NameList.Add(k);
             }
-            //var e = NameList.Distinct().OrderBy(x => x);
-            var e = NameList.Distinct();
+            //var e = NameList.Distinct();
 
-
-            var rep = new DetailViewRepositoryStringRepository(e);
+            var rep = new StringRepository(NameList);
             return rep;
         }
-
-
     }
 }

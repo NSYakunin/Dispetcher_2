@@ -27,6 +27,7 @@ namespace Dispetcher2.DataAccess
         void LoadGroups()
         {
             groups = new List<OperationGroup>();
+            groups.Add(new OperationGroup() { Id = 0, Name = "(нет)" });
             using (var cn = new SqlConnection(connectionString: config.ConnectionString))
             {
                 using (var cmd = new SqlCommand() { Connection = cn })

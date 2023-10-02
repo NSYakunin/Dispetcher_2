@@ -38,7 +38,8 @@ namespace Dispetcher2.Controls
         WaitControl wc;
         UserControl ordControl;
         OperationControl oprControl;
-        UserControl wtControl;
+        //UserControl wtControl;
+        OperationControl wtControl;
 
         public LaborControl(OrderRepository ordRep, IConfig config, IConverter converter)
         {
@@ -61,10 +62,10 @@ namespace Dispetcher2.Controls
 
             var gr = new SqlOperationGroupRepository(config, converter);
             
-            wdr = new SqlWorkDayRepository(config, DateTime.Now);
+            wdr = new SqlWorkDayRepository(config, converter, DateTime.Now);
             
             // Модели представления
-            wtvm = new WorkTimeViewModel();
+            wtvm = new WorkTimeViewModel(wdr, gr);
             ordvm = new OrderControlViewModel(orep);
             oprvm = new OperationViewModel(allDetails, allOperations, gr);
 
@@ -75,7 +76,9 @@ namespace Dispetcher2.Controls
             //var tdr = new TestDetailRepository();
             //var tor = new TestOperationRepository();
             oprControl = new OperationControl();
-            wtControl = new WorkTimeControl();
+
+            //wtControl = new WorkTimeControl();
+            wtControl = new OperationControl();
             // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
             HideAll();
@@ -139,7 +142,7 @@ namespace Dispetcher2.Controls
             }
             
             wdr.Load();
-            wtvm.Load(wdr);
+            wtvm.Load();
             oprvm.Update(so);
 
             Action a = AfterLoad;
@@ -166,7 +169,10 @@ namespace Dispetcher2.Controls
             operationPlace.Content = oprControl;
             operationPlace.Visibility = Visibility.Visible;
 
+            wtControl.DataContext = null;
+            wtControl.Update(wtvm.GetOperationRepository());
             wtControl.DataContext = wtvm;
+
             workTimePlace.Content = wtControl;
             workTimePlace.Visibility = Visibility.Visible;
         }

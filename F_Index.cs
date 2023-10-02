@@ -288,8 +288,15 @@ namespace Dispetcher2
 
         private void laborToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.Text = "ПО \"Диспетчер\"" + " — Трудоемкость";
+            this.Text = "ПО \"Диспетчер\" — Трудоемкость";
             var f = factory.GetForm("Трудоемкость");
+            Show(f);
+        }
+
+        private void jobToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Text = "ПО \"Диспетчер\" — Специальности";
+            var f = factory.GetForm("Специальности");
             Show(f);
         }
     }

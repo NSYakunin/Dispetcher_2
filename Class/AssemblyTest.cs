@@ -5,15 +5,11 @@ using System.Text;
 
 namespace Dispetcher2.Class
 {
-    public abstract class StringRepository
-    {
-        public abstract IEnumerable<String> GetStringList();
-    }
-    class AssemblyTest : StringRepository
+    
+    class AssemblyTest : Repository
     {
         List<string> strings;
-
-        void Load()
+        public override void Load()
         {
             Type t = typeof(AssemblyTest);
             var sql = "data";
@@ -26,7 +22,7 @@ namespace Dispetcher2.Class
             strings = new List<string>();
             if (e.Any()) strings.AddRange(e);
         }
-        public override IEnumerable<String> GetStringList()
+        public override System.Collections.IEnumerable GetList()
         {
             if (strings == null) Load();
             return strings;

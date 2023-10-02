@@ -1,0 +1,39 @@
+﻿<UserControl x:Class="Dispetcher2.Controls.JobControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Dispetcher2.Controls"
+             xmlns:model="clr-namespace:Dispetcher2.Models"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="400" FontFamily="Arial" FontSize="16">
+
+    <DataGrid ItemsSource="{Binding Path=Jobs}" AutoGenerateColumns="False" 
+              SelectedItem="{Binding Path=SelectedItem, Mode=TwoWay}">
+        <DataGrid.Columns>
+            <DataGridTextColumn Binding="{Binding Path=OperationName}" Header="Операция" Width="400"/>
+        </DataGrid.Columns>
+        <DataGrid.RowHeaderTemplate>
+            <DataTemplate>
+                <TextBlock Text="{Binding DataContext.Name, 
+                                RelativeSource={RelativeSource AncestorType=DataGridRow}}" 
+                           TextWrapping="Wrap" MaxWidth="300" />
+            </DataTemplate>
+        </DataGrid.RowHeaderTemplate>
+        <DataGrid.ContextMenu>
+            <ContextMenu ItemsSource="{Binding Path=Groups}">
+                <ContextMenu.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Path=Name}" FontFamily="Arial" FontSize="16" />
+                    </DataTemplate>
+                </ContextMenu.ItemTemplate>
+                <ContextMenu.ItemContainerStyle>
+                    <Style TargetType="MenuItem">
+                        <Setter Property="Command" Value="{Binding Path=MenuCommand}"/>
+                        <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}}"/>
+                    </Style>
+                </ContextMenu.ItemContainerStyle>
+            </ContextMenu>
+        </DataGrid.ContextMenu>
+    </DataGrid>
+</UserControl>

@@ -19,6 +19,17 @@ namespace Dispetcher2.Class
         /// Количество рабочего времени
         /// </summary>
         public TimeSpan Time { get; set; }
+        public string Login { get; set; }
+        public string LastName { get; set; }
+        public string Name { get; set; }
+        public string SecondName { get; set; }
+        // может быть было бы лучше включить объект Job?
+        public string JobName { get; set; }
+        public int OperationGroupId { get; set; }
+        public string TabNum { get; set; }
+        public bool ITR { get; set; }
+        public string TimeString { get; set; }
+
     }
     /// <summary>
     /// Хранилище рабочих дней

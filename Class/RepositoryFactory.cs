@@ -1,4 +1,5 @@
-﻿
+﻿using System.Collections.Generic;
+
 namespace Dispetcher2.Class
 {
     public abstract class Repository
@@ -9,5 +10,21 @@ namespace Dispetcher2.Class
     public abstract class RepositoryFactory
     {
         public abstract Repository GetRepository(object context, string name);
+    }
+    public class StringRepository : Repository
+    {
+        IEnumerable<string> strings;
+        public StringRepository(IEnumerable<string> strings)
+        {
+            this.strings = strings;
+        }
+        public override void Load()
+        {
+
+        }
+        public override System.Collections.IEnumerable GetList()
+        {
+            return strings;
+        }
     }
 }

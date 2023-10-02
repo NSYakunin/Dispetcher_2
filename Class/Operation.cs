@@ -77,8 +77,24 @@ namespace Dispetcher2.Class
 
     public class OperationGroup
     {
+        string n = String.Empty;
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string Name
+        {
+            get
+            {
+                if (Id > 0) return n;
+                else return String.Empty;
+            }
+            set
+            {
+                n = value;
+            }
+        }
+        public override string ToString()
+        {
+            return $"Id:{Id}, Name:{Name}";
+        }
     }
     public abstract class OperationGroupRepository : Repository
     {
