@@ -15,18 +15,48 @@ namespace Dispetcher2
 {
     public partial class F_Reports : Form
     {
-        
+        OrderRepository ordRep;
+        IConfig config;
+        IConverter converter;
+
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_Departments departments;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_Users users;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        // Надо перенести функциональность в OrderRepository
+        C_Orders orders;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_Reports reports;
+
+        // Внешняя зависимость
+        System.Windows.Controls.UserControl labControl;
+
         DataTable Dt_SpDepartment = new DataTable();
         DataTable Dt_SpWorkers = new DataTable();
         DataTable DT_Orders = new DataTable();
         BindingSource BS_Orders = new BindingSource();
 
-        public F_Reports()
+        public F_Reports(IConfig config, OrderRepository ordRep, IConverter converter)
         {
+            if (ordRep == null) throw new ArgumentException("Пожалуйста укажите параметр: OrderRepository");
+            if (config == null) throw new ArgumentException("Пожалуйста укажите параметр: IConfig");
+            if (converter == null) throw new ArgumentException("Пожалуйста укажите параметр converter");
+            this.config = config;
+            this.converter = converter;
+            this.ordRep = ordRep;
+
+            departments = new C_Departments(config);
+            users = new C_Users(config);
+            orders = new C_Orders(config);
+            reports = new C_Reports(config);
+
+            labControl = new LaborControl(ordRep, config, converter);
+
             InitializeComponent();
-            if (C_Gper.NameReport == C_Gper.ReportMode.ОтчетНаряд 
-                || C_Gper.NameReport == C_Gper.ReportMode.ДвижениеДеталей
-                || C_Gper.NameReport == C_Gper.ReportMode.ОтчетВыполненным)
+            if (config.SelectedReportMode == ReportMode.ОтчетНаряд 
+                || config.SelectedReportMode == ReportMode.ДвижениеДеталей
+                || config.SelectedReportMode == ReportMode.ОтчетВыполненным)
             {
                 DT_Orders.Columns.Add("PK_IdOrder", typeof(int));
                 DT_Orders.Columns.Add("OrderNum", typeof(string));
@@ -36,21 +66,21 @@ namespace Dispetcher2
 
         private void F_Reports_Load(object sender, EventArgs e)
         {
-            if (C_Gper.NameReport == C_Gper.ReportMode.ОтчетНаряд)//Отчёт-наряд по выполненным операциям
+            if (config.SelectedReportMode == ReportMode.ОтчетНаряд)//Отчёт-наряд по выполненным операциям
             {
                 myTabC_Reports.SelectedTab = tPageRep3;
-                C_Departments.Select_Departments(ref Dt_SpDepartment);
+                departments.Select_Departments(ref Dt_SpDepartment);
                 cB_rep3Department.DataSource = Dt_SpDepartment;
                 cB_rep3Department.DisplayMember = "Department";
                 cB_rep3Department.ValueMember = "PK_IdDepartment";
                 cB_rep3Department.SelectedIndex = -1;
-                C_Users.Select_PkLoginOnlyWorker(ref Dt_SpWorkers);
+                users.Select_PkLoginOnlyWorker(ref Dt_SpWorkers);
                 cB_rep3Workers.DataSource = Dt_SpWorkers;
                 cB_rep3Workers.DisplayMember = "PK_Login";
                 cB_rep3Workers.ValueMember = "PK_Login";
                 cB_rep3Workers.SelectedIndex = -1;
             }
-            if (C_Gper.NameReport == C_Gper.ReportMode.ДвижениеДеталей)//Движение деталей
+            if (config.SelectedReportMode == ReportMode.ДвижениеДеталей)//Движение деталей
             {
 
                 myTabC_Reports.SelectedTab = tPageRep6;
@@ -63,12 +93,12 @@ namespace Dispetcher2
                 //Bindings
                 tB_OrderName.DataBindings.Add("Text", BS_Orders, "OrderName", false, DataSourceUpdateMode.OnPropertyChanged);
                 tB_OrderNumInfo.DataBindings.Add("Text", BS_Orders, "OrderNum", false, DataSourceUpdateMode.OnPropertyChanged);
-                C_Orders.SelectOrdersData(2, ref DT_Orders);//2-opened
+                orders.SelectOrdersData(2, ref DT_Orders);//2-opened
             }
-            if (C_Gper.NameReport == C_Gper.ReportMode.ОперацииВыполненныеРабочим)//Операции выполненные рабочим по заказам (форма №17)
+            if (config.SelectedReportMode == ReportMode.ОперацииВыполненныеРабочим)//Операции выполненные рабочим по заказам (форма №17)
             {
                 myTabC_Reports.SelectedTab = tPageRep117;
-                C_Users.Select_PkLoginOnlyWorker(ref Dt_SpWorkers);
+                users.Select_PkLoginOnlyWorker(ref Dt_SpWorkers);
                 BS_Orders.DataSource = Dt_SpWorkers;
                 cB_rep117Workers.DataSource = BS_Orders;
                 cB_rep117Workers.DisplayMember = "PK_Login";
@@ -78,7 +108,7 @@ namespace Dispetcher2
                 //cB_rep117Workers.SelectedItem = null;
             }
 
-            if (C_Gper.NameReport == C_Gper.ReportMode.ДвижениеДеталей)//Движение деталей
+            if (config.SelectedReportMode == ReportMode.ДвижениеДеталей)//Движение деталей
             {
                 myTabC_Reports.SelectedTab = tPageRep7;
                 dGV_OrdersRep7.AutoGenerateColumns = false;
@@ -90,15 +120,12 @@ namespace Dispetcher2
                 //Bindings
                 tB_OrderNameRep7.DataBindings.Add("Text", BS_Orders, "OrderName", false, DataSourceUpdateMode.OnPropertyChanged);
                 tB_OrderNumInfoRep7.DataBindings.Add("Text", BS_Orders, "OrderNum", false, DataSourceUpdateMode.OnPropertyChanged);
-                C_Orders.SelectOrdersData(2, ref DT_Orders);//2-opened
+                orders.SelectOrdersData(2, ref DT_Orders);//2-opened
             }
 
-            if (C_Gper.NameReport == C_Gper.ReportMode.Трудоемкость)
+            if (config.SelectedReportMode == ReportMode.Трудоемкость)
             {
-                var f = new MainOrderFactory(OrderType.SQL);
-                var config = new Configuration();
-                var c = new LaborControl(f, config);
-                LaborElementHost.Child = c;
+                LaborElementHost.Child = labControl;
                 myTabC_Reports.SelectedTab = LaborTabPage;
             }
         }
@@ -145,12 +172,12 @@ namespace Dispetcher2
             if (cB_rep3Workers.SelectedIndex != -1) loginWorker = cB_rep3Workers.SelectedValue.ToString(); else loginWorker = "";
             if (cB_rep3Department.SelectedIndex != -1) IdCeh = Convert.ToInt32(cB_rep3Department.SelectedValue); else IdCeh = -1;
             if (chB_rep3Days.Checked) flagDays = true; else flagDays = false;
-            C_Reports Report3 = new C_Reports();
-            int PlanHours = Report3.NormHoursPlan(dTP_rep3Start.Value.Date, dTP_rep3End.Value.Date, ref cWorkDays);
+            
+            int PlanHours = reports.NormHoursPlan(dTP_rep3Start.Value.Date, dTP_rep3End.Value.Date, ref cWorkDays);
             if (PlanHours == 0)
                 MessageBox.Show("Не указаны данные производственного календаря.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             else
-                Report3.rep3(dTP_rep3Start.Value.Date, dTP_rep3End.Value.Date, loginWorker, IdCeh, flagDays, PlanHours, cWorkDays);
+                reports.rep3(dTP_rep3Start.Value.Date, dTP_rep3End.Value.Date, loginWorker, IdCeh, flagDays, PlanHours, cWorkDays);
         }
         #endregion
 
@@ -166,10 +193,10 @@ namespace Dispetcher2
             CurrencyManager cmgr = (CurrencyManager)this.dGV_Orders.BindingContext[this.dGV_Orders.DataSource, dGV_Orders.DataMember];
             DataRow row = ((DataRowView)cmgr.Current).Row;
             int PK_IdOrder = Convert.ToInt32(row["PK_IdOrder"]);
-            C_Reports Report6 = new C_Reports();
+            
             //PK_IdOrder = 102;
             //tB_OrderNumInfo.Text = "20554801";
-            Report6.rep6(PK_IdOrder,tB_OrderNumInfo.Text.Trim(), tB_OrderName.Text.Trim());
+            reports.rep6(PK_IdOrder,tB_OrderNumInfo.Text.Trim(), tB_OrderName.Text.Trim());
         }
         #endregion
 
@@ -194,12 +221,12 @@ namespace Dispetcher2
                 MessageBox.Show("Не выбран исполнитель.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             else
             {
-                C_Reports Rep117 = new C_Reports();
-                int PlanHours = Rep117.NormHoursPlan(dTP_rep117Start.Value.Date, dTP_rep117End.Value.Date, ref cWorkDays);
+                
+                int PlanHours = reports.NormHoursPlan(dTP_rep117Start.Value.Date, dTP_rep117End.Value.Date, ref cWorkDays);
                 if (PlanHours == 0)
                     MessageBox.Show("Не указаны данные производственного календаря.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 else
-                    Rep117.Form17(dTP_rep117Start.Value.Date, dTP_rep117End.Value.Date, loginWorker, tB_rep117Department.Text.Trim(), PlanHours);
+                    reports.Form17(dTP_rep117Start.Value.Date, dTP_rep117End.Value.Date, loginWorker, tB_rep117Department.Text.Trim(), PlanHours);
             }
         }
 
@@ -247,12 +274,12 @@ namespace Dispetcher2
             /*CurrencyManager cmgr = (CurrencyManager)this.dGV_Orders.BindingContext[this.dGV_Orders.DataSource, dGV_Orders.DataMember];
             DataRow row = ((DataRowView)cmgr.Current).Row;
             int PK_IdOrder = Convert.ToInt32(row["PK_IdOrder"]);*/
-            C_Reports Report7 = new C_Reports();
+            
             //PK_IdOrder = 138;
             //tB_OrderNumInfo.Text = "20554801";
             //Report7.Rep7(PK_IdOrder, tB_OrderNumInfo.Text.Trim(), tB_OrderName.Text.Trim());
-            Report7.Rep7(dTP_rep7Start.Value.Date, dTP_rep7End.Value.Date, chB_rep7AllTime.Checked, chB_rep7AllOrders.Checked, tB_OrderNumInfoRep7.Text.Trim(), tB_OrderNameRep7.Text.Trim());
-            if (!Report7.RepErrors) MessageBox.Show("Отчёт сформирован.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            reports.Rep7(dTP_rep7Start.Value.Date, dTP_rep7End.Value.Date, chB_rep7AllTime.Checked, chB_rep7AllOrders.Checked, tB_OrderNumInfoRep7.Text.Trim(), tB_OrderNameRep7.Text.Trim());
+            if (!reports.RepErrors) MessageBox.Show("Отчёт сформирован.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void dTP_rep7Start_ValueChanged(object sender, EventArgs e)

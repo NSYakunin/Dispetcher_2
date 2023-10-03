@@ -12,8 +12,14 @@ namespace Dispetcher2.DialogsForms
 {
     public partial class dF_Workers : Form
     {
-        public dF_Workers()
+        IConfig config;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_Users users;
+
+        public dF_Workers(IConfig config)
         {
+            this.config = config;
+            users = new C_Users(config);
             InitializeComponent();
             DT_Workers.Columns.Add("FullName", typeof(string));
             DT_Workers.Columns.Add("PK_Login", typeof(string));
@@ -31,7 +37,7 @@ namespace Dispetcher2.DialogsForms
 
         private void dF_Workers_Load(object sender, EventArgs e)
         {
-            C_Users.Select_FullName_PkLogin(ref DT_Workers);
+            users.Select_FullName_PkLogin(ref DT_Workers);
             dGV_Workers.AutoGenerateColumns = false;
             dGV_Workers.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dGV_Workers.RowsDefaultCellStyle.BackColor = SystemColors.Info;

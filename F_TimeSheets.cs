@@ -1,32 +1,45 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using System.Data.SqlClient;
+
 using Dispetcher2.Class;
 using Dispetcher2.Controls.MyGrid;
 using Excel = Microsoft.Office.Interop.Excel;
+using System.Globalization;
 
 namespace Dispetcher2
 {
     public partial class F_TimeSheets : Form
     {
-        C_DataBase DB = new C_DataBase(C_Gper.ConnStrDispetcher2);
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_TimeSheetsV1 TSHV1;
+        IConfig config;
+        IConverter converter;
+        
+
         DataTable _DT_Workers = new DataTable();
         DataTable DT_Holidays = new DataTable();
 
-        public F_TimeSheets()
+        public F_TimeSheets(IConfig config, IConverter converter)
         {
+            if (config == null) throw new ArgumentException("Пожалуйста укажите параметр config");
+            if (converter == null) throw new ArgumentException("Пожалуйста укажите параметр converter");
+            this.config = config;
+
+            this.converter = converter;
+            // Эта культура записывает числа через точку: 4.5 = черыре с половиной
+            converter.ContextCulture = CultureInfo.InvariantCulture;
+
+            TSHV1 = new C_TimeSheetsV1(config, converter);
+        
             InitializeComponent();
         }
 
         private void F_TimeSheets_Load(object sender, EventArgs e)
         {
             numUD_year.Value = DateTime.Now.Year;
+            cB_Month.SelectedIndex = DateTime.Now.Month - 1;
             /*myGrid_TimeSH.Redim(30, 22);
             CreateHeader();
             AddDataToMyGrid();*/
@@ -39,7 +52,8 @@ namespace Dispetcher2
             myGrid_TimeSH.Redim(_DT_Workers.Rows.Count * 2 + 2, 23);
             myGrid_TimeSH.FixedRows = 2;
             myGrid_TimeSH.FixedColumns = 3;
-            myGrid_TimeSH.Selection.EnableMultiSelection = false;
+            myGrid_TimeSH.Selection.EnableMultiSelection = true;
+            
             //SourceGrid.Cells.Views.Cell captionModel = new SourceGrid.Cells.Views.Cell();
             //captionModel.BackColor = myGrid_TimeSH.BackColor;
             /*myGrid_TimeSH.Rows[0].AutoSizeMode = SourceGrid.AutoSizeMode.None;
@@ -266,10 +280,13 @@ namespace Dispetcher2
         {
             ContextMenu menu = new ContextMenu();
             private MyGrid _MyGrid;
+            
+
 
             public PopupMenu(MyGrid Grid)
             {
                 _MyGrid = Grid;
+                
                 menu.MenuItems.Add("Б", new EventHandler(MenuB_Click));
                 menu.MenuItems.Add("В", new EventHandler(MenuV_Click));
                 menu.MenuItems.Add("Г", new EventHandler(MenuG_Click));
@@ -290,49 +307,173 @@ namespace Dispetcher2
 
             private void MenuB_Click(object sender, EventArgs e)
             {
+
                 if (_MyGrid.Selection.ActivePosition.ToString() != "-1;-1")
-                    _MyGrid[_MyGrid.Selection.ActivePosition].Value = "Б";
+                {
+                    try
+                    {
+                        string pos = _MyGrid.Selection.GetSelectionRegion().ToString().Replace(" to ", ";").Replace("RangeRegion | ", "");
+                        string[] pos2 = pos.Split(';');
+                        int count = Convert.ToInt32(pos2[3]) - Convert.ToInt32(pos2[1]);
+                        int counter = count == 0 ? 1 : count + 1;
+
+                        for (int i = counter, j = Convert.ToInt32(pos2[1]); i > 0; i--, j++)
+                        {
+                            _MyGrid[Convert.ToInt32(pos2[0]), j].Value = "Б";
+                            if (pos2[0] != pos2[2]) _MyGrid[Convert.ToInt32(pos2[2]), j].Value = "Б";
+                        }
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Выберите дни корректно и на одной строке", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
             }
             private void MenuV_Click(object sender, EventArgs e)
             {
-                if (_MyGrid.Selection.ActivePosition.ToString() != "-1;-1")
-                    _MyGrid[_MyGrid.Selection.ActivePosition].Value = "В";
+                try
+                {
+                    string pos = _MyGrid.Selection.GetSelectionRegion().ToString().Replace(" to ", ";").Replace("RangeRegion | ", "");
+                    string[] pos2 = pos.Split(';');
+                    int count = Convert.ToInt32(pos2[3]) - Convert.ToInt32(pos2[1]);
+                    int counter = count == 0 ? 1 : count + 1;
+
+                    for (int i = counter, j = Convert.ToInt32(pos2[1]); i > 0; i--, j++)
+                    {
+                        _MyGrid[Convert.ToInt32(pos2[0]), j].Value = "В";
+                        if (pos2[0] != pos2[2]) _MyGrid[Convert.ToInt32(pos2[2]), j].Value = "В";
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("Выберите дни для изменения строго на одной строке", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
             private void MenuG_Click(object sender, EventArgs e)
             {
-                if (_MyGrid.Selection.ActivePosition.ToString() != "-1;-1")
-                    _MyGrid[_MyGrid.Selection.ActivePosition].Value = "Г";
+                try
+                {
+                    string pos = _MyGrid.Selection.GetSelectionRegion().ToString().Replace(" to ", ";").Replace("RangeRegion | ", "");
+                    string[] pos2 = pos.Split(';');
+                    int count = Convert.ToInt32(pos2[3]) - Convert.ToInt32(pos2[1]);
+                    int counter = count == 0 ? 1 : count + 1;
+
+                    for (int i = counter, j = Convert.ToInt32(pos2[1]); i > 0; i--, j++)
+                    {
+                        _MyGrid[Convert.ToInt32(pos2[0]), j].Value = "Г";
+                        if (pos2[0] != pos2[2]) _MyGrid[Convert.ToInt32(pos2[2]), j].Value = "Г";
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("Выберите дни для изменения строго на одной строке", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
             private void MenuDO_Click(object sender, EventArgs e)
             {
-                if (_MyGrid.Selection.ActivePosition.ToString() != "-1;-1")
-                    _MyGrid[_MyGrid.Selection.ActivePosition].Value = "ДО";
+                try
+                {
+                    string pos = _MyGrid.Selection.GetSelectionRegion().ToString().Replace(" to ", ";").Replace("RangeRegion | ", "");
+                    string[] pos2 = pos.Split(';');
+                    int count = Convert.ToInt32(pos2[3]) - Convert.ToInt32(pos2[1]);
+                    int counter = count == 0 ? 1 : count + 1;
+
+                    for (int i = counter, j = Convert.ToInt32(pos2[1]); i > 0; i--, j++)
+                    {
+                        _MyGrid[Convert.ToInt32(pos2[0]), j].Value = "ДО";
+                        if (pos2[0] != pos2[2]) _MyGrid[Convert.ToInt32(pos2[2]), j].Value = "ДО";
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("Выберите дни для изменения строго на одной строке", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
             private void MenuOZH_Click(object sender, EventArgs e)
             {
-                if (_MyGrid.Selection.ActivePosition.ToString() != "-1;-1")
-                    _MyGrid[_MyGrid.Selection.ActivePosition].Value = "ОЖ";
+                try
+                {
+                    string pos = _MyGrid.Selection.GetSelectionRegion().ToString().Replace(" to ", ";").Replace("RangeRegion | ", "");
+                    string[] pos2 = pos.Split(';');
+                    int count = Convert.ToInt32(pos2[3]) - Convert.ToInt32(pos2[1]);
+                    int counter = count == 0 ? 1 : count + 1;
+
+                    for (int i = counter, j = Convert.ToInt32(pos2[1]); i > 0; i--, j++)
+                    {
+                        _MyGrid[Convert.ToInt32(pos2[0]), j].Value = "ОЖ";
+                        if (pos2[0] != pos2[2]) _MyGrid[Convert.ToInt32(pos2[2]), j].Value = "ОЖ";
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("Выберите дни для изменения строго на одной строке", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
             private void MenuOT_Click(object sender, EventArgs e)
             {
-                if (_MyGrid.Selection.ActivePosition.ToString() != "-1;-1")
-                    _MyGrid[_MyGrid.Selection.ActivePosition].Value = "ОТ";
+                try
+                {
+                    string pos = _MyGrid.Selection.GetSelectionRegion().ToString().Replace(" to ", ";").Replace("RangeRegion | ", "");
+                    string[] pos2 = pos.Split(';');
+                    int count = Convert.ToInt32(pos2[3]) - Convert.ToInt32(pos2[1]);
+                    int counter = count == 0 ? 1 : count + 1;
+
+                    for (int i = counter, j = Convert.ToInt32(pos2[1]); i > 0; i--, j++)
+                    {
+                        _MyGrid[Convert.ToInt32(pos2[0]), j].Value = "ОТ";
+                        if (pos2[0] != pos2[2]) _MyGrid[Convert.ToInt32(pos2[2]), j].Value = "ОТ";
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("Выберите дни для изменения строго на одной строке", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
             private void MenuPR_Click(object sender, EventArgs e)
             {
-                if (_MyGrid.Selection.ActivePosition.ToString() != "-1;-1")
-                    _MyGrid[_MyGrid.Selection.ActivePosition].Value = "ПР";
+                try
+                {
+                    string pos = _MyGrid.Selection.GetSelectionRegion().ToString().Replace(" to ", ";").Replace("RangeRegion | ", "");
+                    string[] pos2 = pos.Split(';');
+                    int count = Convert.ToInt32(pos2[3]) - Convert.ToInt32(pos2[1]);
+                    int counter = count == 0 ? 1 : count + 1;
+
+                    for (int i = counter, j = Convert.ToInt32(pos2[1]); i > 0; i--, j++)
+                    {
+                        _MyGrid[Convert.ToInt32(pos2[0]), j].Value = "ПР";
+                        if (pos2[0] != pos2[2]) _MyGrid[Convert.ToInt32(pos2[2]), j].Value = "ПР";
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("Выберите дни для изменения строго на одной строке", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
             private void MenuR_Click(object sender, EventArgs e)
             {
-                if (_MyGrid.Selection.ActivePosition.ToString() != "-1;-1")
-                    _MyGrid[_MyGrid.Selection.ActivePosition].Value = "Р";
+                try
+                {
+                string pos = _MyGrid.Selection.GetSelectionRegion().ToString().Replace(" to ", ";").Replace("RangeRegion | ", "");
+                string[] pos2 = pos.Split(';');
+                int count = Convert.ToInt32(pos2[3]) - Convert.ToInt32(pos2[1]);
+                int counter = count == 0 ? 1 : count + 1;
+
+                for (int i = counter, j = Convert.ToInt32(pos2[1]); i > 0; i--, j++)
+                    {
+                    _MyGrid[Convert.ToInt32(pos2[0]), j].Value = "Р";
+                    if (pos2[0] != pos2[2]) _MyGrid[Convert.ToInt32(pos2[2]), j].Value = "Р";
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("Выберите дни для изменения строго на одной строке", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
 
         }
         #endregion
 
-        private void CeckOrInsert(bool Check, ref C_TimeSheetsV1 TSHV1)
+        private void CheckOrInsert(bool Check, int month, int year)
         {
             try
             {
@@ -379,8 +520,11 @@ namespace Dispetcher2
                                             myGrid_TimeSH[i, cl].View.BackColor = SystemColors.InactiveBorder;
                                             myGrid_TimeSH.Refresh();
                                         }
-                                        if (decimal.TryParse(TSHV1.Val_Time, C_Gper.style, C_Gper.culture, out test))
+                                        //if (decimal.TryParse(TSHV1.Val_Time, C_Gper.style, C_Gper.culture, out test))
+                                        if (converter.CheckConvert<decimal>(TSHV1.Val_Time))
                                         {
+                                            //test = Converter.GetDecimal(TSHV1.Val_Time);
+                                            test = converter.Convert<decimal>(TSHV1.Val_Time);
                                             if (test > 0)
                                             {
                                                 Tsn_days++;
@@ -399,8 +543,8 @@ namespace Dispetcher2
                                             if (myGrid_TimeSH[i, 21].Value != null) NoteText = myGrid_TimeSH[i, 21].Value.ToString().Trim();
                                             if (myGrid_TimeSH[i, 19].Value != null) Tsn_days = Convert.ToByte(myGrid_TimeSH[i, 19].Value);
                                             if (myGrid_TimeSH[i + 1, 19].Value != null) Tsn_hours = Convert.ToDecimal(myGrid_TimeSH[i + 1, 19].Value);
-                                            TSHV1.Delete_NoteData();//Удаляем примечание для каждой конкретной записи
-                                            if (NoteText != "" || Tsn_hours >= 0 || Tsn_days >= 0) TSHV1.Insert_NoteData(NoteText, (byte)Tsn_days, (decimal)Tsn_hours);
+                                            TSHV1.Delete_NoteData(month, year);//Удаляем примечание для каждой конкретной записи
+                                            if (NoteText != "" || Tsn_hours >= 0 || Tsn_days >= 0) TSHV1.Insert_NoteData(month, year, NoteText, (byte)Tsn_days, (decimal)Tsn_hours);
                                         }
                                     }
                                 }
@@ -431,14 +575,16 @@ namespace Dispetcher2
             else
             {
                 //Версия 1
-                C_TimeSheetsV1 TSHV1 = new C_TimeSheetsV1(cB_Month.SelectedIndex + 1, (int)numUD_year.Value);
-                CeckOrInsert(true, ref TSHV1);
+                //C_TimeSheetsV1 TSHV1 = new C_TimeSheetsV1(cB_Month.SelectedIndex + 1, (int)numUD_year.Value);
+                int month = cB_Month.SelectedIndex + 1;
+                int year = (int)numUD_year.Value;
+                CheckOrInsert(true, month, year);
                 if (TSHV1.Err) MessageBox.Show("Перед сохранением исправьте ошибки ввода данных.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 else
                 {
-                    TSHV1.DeleteData(chB_Fired.Checked);
-                    TSHV1.Delete_NoteDataBefore(chB_Fired.Checked);//НЕ ТРОГАТЬ!!! Это необходимо для очистки таблицы TimeSheetsNote в случае возникновения ошибок при записи в таблицу TimeSheets
-                    CeckOrInsert(false, ref TSHV1);// - сюда входит ITSH.Delete_NoteData();
+                    TSHV1.DeleteData(month, year, chB_Fired.Checked);
+                    TSHV1.Delete_NoteDataBefore(month, year, chB_Fired.Checked);//НЕ ТРОГАТЬ!!! Это необходимо для очистки таблицы TimeSheetsNote в случае возникновения ошибок при записи в таблицу TimeSheets
+                    CheckOrInsert(false, month, year);// - сюда входит ITSH.Delete_NoteData();
 
                     if (!TSHV1.Err) MessageBox.Show("Сохранено.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
@@ -479,51 +625,27 @@ namespace Dispetcher2
                 if (cB_Month.SelectedIndex > -1) //MessageBox.Show("Не указан месяц.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 //else
                 {
-                    int _MONTH = cB_Month.SelectedIndex + 1;
-                    string sql = "SELECT Day(PK_Date) as cDay, Dsec FROM Sp_ProductionCalendar" + "\n" +
-                        "Where Year(PK_Date)=" + (int)numUD_year.Value + " and MONTH(PK_Date)=" + _MONTH + "\n" +
-                        "order by PK_Date";
+                    int month = cB_Month.SelectedIndex + 1;
+                    int year = (int)numUD_year.Value;
+                    bool fired = chB_Fired.Checked;
 
-                    DB.Select_DT(ref DT_Holidays, sql);
+                    TSHV1.Sp_ProductionCalendar(month, year, DT_Holidays);
+                    
                     if (DT_Holidays.Rows.Count == 0) MessageBox.Show("Не заполнен производственный календарь.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     else
                     {
                         myGrid_TimeSH.Rows.Clear();
-                        //myGrid_TimeSH.Dispose();
+                        
                         //Если уже был сформирован табель то в него попадают только те рабочие которые значатся в табеле
                         //вне зависимости от того уволены они уже или нет
                         //Если табеля нет, то список рабочих формируется исходя из списка работающих на день формирования табеля
-                        string where;
-                        if (!chB_Fired.Checked) where = $" and (u.DateEnd is null or (Year(u.DateEnd) >= {(int)numUD_year.Value} and MONTH(u.DateEnd) > {(_MONTH - 1)}))" +
-                            $"and u.DateStart < '{(int)numUD_year.Value}-{_MONTH + 1}-17'";
 
-                        else where = " and MONTH(u.DateEnd)=" + _MONTH + " and Year(u.DateEnd)=" + (int)numUD_year.Value + "and MONTH(u.DateStart) >" + (_MONTH - 1) + "))";
-                        sql = "Select Distinct(PK_Login) as PK_Login,(LastName+' '+Name+' '+ SecondName) as FullName,NameJob,TabNum,ITR" + "\n" +
-                              "From TimeSheets as ts" + "\n" +
-                               "Inner join Users as u On u.PK_Login = ts.FK_Login" + "\n" +
-                               "LEFT join Sp_job as j On j.Pk_IdJob = u.FK_IdJob" + "\n" +
-                               "Where TabNum is not Null" + where + "\n" +
-                               "Order by ITR desc,FullName";
-                        Console.WriteLine(sql);
+                        TSHV1.TimeSheetsWorkers(fired, month, year, _DT_Workers);
 
-                        /*sql = "Select Distinct(PK_Login) as PK_Login,(LastName+' '+Name+' '+ SecondName) as FullName,NameJob,TabNum,ITR" + "\n" +
-                          "From TimeSheets as ts" + "\n" +
-                           "Inner join Users as u On u.PK_Login = ts.FK_Login" + "\n" +
-                           "LEFT join Sp_job as j On j.Pk_IdJob = u.FK_IdJob" + "\n" +
-                           "Where Year(PK_Date)=" + (int)numUD_year.Value + " and MONTH(PK_Date)=" + _MONTH + where + "\n" +
-                           "Order by ITR desc,FullName";*/
-                        DB.Select_DT(ref _DT_Workers, sql);
                         if (_DT_Workers.Rows.Count == 0)//Если нет табеля
                         {
-                            if (!chB_Fired.Checked) where = " and u.DateEnd is null";
-                            else where = " and MONTH(u.DateEnd)=" + _MONTH + " and Year(u.DateEnd)=" + (int)numUD_year.Value;
-                            //Загружаем рабочих
-                            sql = "Select PK_Login,(LastName+' '+Name+' '+ SecondName) as FullName,NameJob,TabNum,ITR" + "\n" +
-                                "From Users as u" + "\n" +
-                                "LEFT join Sp_job as j On j.Pk_IdJob = u.FK_IdJob" + "\n" +
-                                "Where OnlyUser = 0 and ShowTimeSheets = 1" + where + "\n" +
-                                "Order by ITR desc,FullName";
-                            DB.Select_DT(ref _DT_Workers, sql);
+                            TSHV1.Users_Sp_job(fired, month, year, _DT_Workers);
+                            
                         }
                         if (_DT_Workers.Rows.Count > 0)
                         {
@@ -531,7 +653,7 @@ namespace Dispetcher2
                             CreateGrid();
                             _DT_Workers.Clear(); _DT_Workers.Dispose();
                             DT_Holidays.Clear(); DT_Holidays.Dispose();
-                            //Неперь заполняем грид своими данными
+                            //Теперь заполняем грид своими данными
                             bool First15days = true;
                             DataTable DTtsh = new DataTable();
                             DataTable DT_note = new DataTable();
@@ -550,16 +672,11 @@ namespace Dispetcher2
                                         {
                                             if (First15days)
                                             {
-                                                where = "DAY(PK_Date) < 17";
-                                                sql = "SELECT Note,Tsn_days,Tsn_hours FROM TimeSheetsNote Where FK_Login = '" + Login + "' and Tsn_month = " + _MONTH + " and Tsn_year = " + (int)numUD_year.Value;
-                                                DB.Select_DT(ref DT_note, sql);//Получаем примечание, дни и часы
+                                                //Получаем примечание, дни и часы
+                                                TSHV1.TimeSheetsNote(Login, month, year, DT_note);
                                             }
-                                            else where = "DAY(PK_Date) > 16";
-                                            sql = "SELECT FK_Login,PK_Date,Val_Time FROM TimeSheets" + "\n" +
-                                            "Where FK_Login = '" + Login + "' and Year(PK_Date)=" + (int)numUD_year.Value + " and MONTH(PK_Date)=" + _MONTH + " and " + where + "\n" +
-                                            //"Where FK_Login = '" + Login + "' and Year(PK_Date)=" + (int)numUD_year.Value + " and MONTH(PK_Date)=" + _MONTH  + "\n" +
-                                            "Order by PK_Date";
-                                            DB.Select_DT(ref DTtsh, sql);
+
+                                            TSHV1.TimeSheets(First15days, Login, month, year, DTtsh);
                                         }
                                     }
                                 if (DTtsh.Rows.Count > 0)
@@ -611,10 +728,10 @@ namespace Dispetcher2
             else
             {
 
-                int _MONTH = cB_Month.SelectedIndex + 1;
-                string sql = "SELECT Dsec FROM Sp_ProductionCalendar" + "\n" +
-                    "Where Year(PK_Date)=" + (int)numUD_year.Value + " and MONTH(PK_Date)=" + _MONTH; ;
-                DB.Select_DT(ref DT_Holidays, sql);
+                int month = cB_Month.SelectedIndex + 1;
+                int year = (int)numUD_year.Value;
+                TSHV1.Sp_ProductionCalendar(month, year, DT_Holidays);
+                
                 if (DT_Holidays.Rows.Count == 0) MessageBox.Show("Не заполнен производственный календарь.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 else
                 {
@@ -719,7 +836,7 @@ namespace Dispetcher2
                 //((Excel.Range)ExcelWorkSheet.Rows[8]).Select();
                 ((Excel.Range)ExcelWorkSheet.Cells[8, 1]).Select();
                 ExcelApp.ActiveWindow.FreezePanes = true;
-                //ExcelWorkSheet.PageSetup.PrintTitleRows = "$10:$10";
+                //ExcelWorkSheet.PageSetup.PrintTitleRows = "10:10";
                 //ExcelWorkSheet.Outline.SummaryRow = Excel.XlSummaryRow.xlSummaryAbove;//группировка строк
                 //************************************
                 #endregion Настройка шапки

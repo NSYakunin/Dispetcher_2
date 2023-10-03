@@ -22,12 +22,14 @@ namespace Dispetcher2.Controls
     /// </summary>
     public partial class KitUpdaterControl : UserControl
     {
+        IConfig config;
         public event EventHandler FinishEvent;
         KitUpdater ku = null;
         ProgressViewModel pvm = new ProgressViewModel();
 
-        public KitUpdaterControl()
+        public KitUpdaterControl(IConfig config)
         {
+            this.config = config;
             InitializeComponent();
             pvm.SetDispatcher(this.Dispatcher);
             this.DataContext = pvm;
@@ -39,7 +41,7 @@ namespace Dispetcher2.Controls
             pvm.Reset();
             if (ku == null)
             {
-                ku = new KitUpdater(pvm);
+                ku = new KitUpdater(config, pvm);
                 ku.FinishEvent += OnFinishEvent;
             }
             

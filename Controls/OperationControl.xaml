@@ -6,19 +6,25 @@
              xmlns:local="clr-namespace:Dispetcher2.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <DataGrid x:Name="mainDataGrid" HorizontalAlignment="Left" VerticalAlignment="Top" IsReadOnly="True">
-            <DataGrid.ColumnHeaderStyle>
-                <Style TargetType="DataGridColumnHeader">
-                    <Setter Property="ContentTemplate">
-                        <Setter.Value>
-                            <DataTemplate>
-                                <TextBlock TextWrapping="Wrap" Text="{Binding}"></TextBlock>
-                            </DataTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </DataGrid.ColumnHeaderStyle>
-        </DataGrid>
-    </Grid>
+
+    <DataGrid x:Name="mainGrid" ItemsSource="{Binding Path=Rows}" AutoGenerateColumns="False" IsReadOnly="True">
+        <DataGrid.ColumnHeaderStyle>
+            <Style TargetType="DataGridColumnHeader">
+                <Setter Property="ContentTemplate">
+                    <Setter.Value>
+                        <DataTemplate>
+                            <TextBlock MaxWidth="200" TextWrapping="Wrap" Text="{Binding}"></TextBlock>
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </DataGrid.ColumnHeaderStyle>
+        <DataGrid.RowHeaderTemplate>
+            <DataTemplate>
+                <TextBlock Text="{Binding DataContext.Name, 
+                                RelativeSource={RelativeSource AncestorType=DataGridRow}}" 
+                           TextWrapping="Wrap" MaxWidth="200" />
+            </DataTemplate>
+        </DataGrid.RowHeaderTemplate>
+    </DataGrid>
 </UserControl>

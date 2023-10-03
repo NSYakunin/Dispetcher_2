@@ -5,16 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Dispetcher2.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="400" Width="220">
+             d:DesignHeight="400" d:DesignWidth="200">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <!--<TextBox Text="1234" Margin="5" />-->
         <TextBox Grid.Row="0" x:Name="filterTextBox" Margin="5"
-                 Text="{Binding Path=Filter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                 TextChanged="TextBox_TextChanged" />
+                 Text="{Binding Path=Filter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         <ListBox Grid.Row="1" x:Name="orderListBox" Margin="5"
                  ItemsSource="{Binding OrderList}" SelectedItem="{Binding Path=SelectedOrder}">
             <ListBox.ItemTemplate>

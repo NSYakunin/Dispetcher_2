@@ -6,24 +6,31 @@ using System.Windows.Forms;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.Globalization;
 
 namespace Dispetcher2.Class
 {
     [Obsolete("В ПО используется C_TimeSheetsV1.cs, эта версия сделана как альтернатива для проведения тестов")]
     sealed class C_TimeSheets
     {
-
+        IConfig config;
+        IConverter converter;
         int _St_Month;
         int _St_Year;
         bool _Err = false;
         private string _Val_Time = "";//Значение ячейки
         private string[] _ValCell = { "Б", "В", "Г", "ДО", "ОЖ", "ОТ", "ПР", "Р" };
-        
 
-        public C_TimeSheets(int St_Month, int St_Year)
+        public C_TimeSheets(IConfig config, IConverter converter, int St_Month, int St_Year)
         {
+            if (config == null) throw new ArgumentException("Пожалуйста укажите параметр config");
+            if (converter == null) throw new ArgumentException("Пожалуйста укажите параметр converter");
             _St_Month = St_Month;
             _St_Year = St_Year;
+            this.config = config;
+            this.converter = converter;
+            // Эта культура записывает числа через точку: 4.5 = черыре с половиной
+            converter.ContextCulture = CultureInfo.InvariantCulture;
         }
 
         public bool Err
@@ -46,17 +53,25 @@ namespace Dispetcher2.Class
                     }
                 }
                 //проверка на соответствие цифре
-                if (_Val_Time == "" & double.TryParse(value, out _ValCell_d) & _ValCell_d <= 24)
+                //if (_Val_Time == "" & double.TryParse(value, out _ValCell_d) & _ValCell_d <= 24)
+                if (_Val_Time == "" & converter.CheckConvert<double>(value))
                 {
-                    _ValCell_d = Math.Round(_ValCell_d, 2, MidpointRounding.AwayFromZero);
-                    _Val_Time = _ValCell_d.ToString(C_Gper.culture);
-                    /*if (_ValCell_d.ToString().IndexOf(",") > 0)
+                    _ValCell_d = converter.Convert<double>(value);
+                    if (_ValCell_d <= 24)
                     {
-                        string[] temp = _ValCell_d.ToString().Split(',');
-                        if (temp[1].Length < 2) _Val_Time = _ValCell_d.ToString();
+                        _ValCell_d = Math.Round(_ValCell_d, 2, MidpointRounding.AwayFromZero);
+                        //_Val_Time = _ValCell_d.ToString(C_Gper.culture);
+
+                        _Val_Time = converter.Convert<string>(_ValCell_d);
+
+                        /*if (_ValCell_d.ToString().IndexOf(",") > 0)
+                        {
+                            string[] temp = _ValCell_d.ToString().Split(',');
+                            if (temp[1].Length < 2) _Val_Time = _ValCell_d.ToString();
+                        }
+                        else
+                            _Val_Time = _ValCell_d.ToString();*/
                     }
-                    else
-                        _Val_Time = _ValCell_d.ToString();*/
                 }
             }
         }
@@ -119,21 +134,21 @@ namespace Dispetcher2.Class
         {
             try
             {
-                using (C_Gper.con)
+                using (var con = new SqlConnection())
                 {
-                    C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
+                    con.ConnectionString = config.ConnectionString;
                     SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
                     cmd.CommandText = "delete from TimeSheets2 Where Ts_month=@MONTH and Ts_year=@Year";
-                    cmd.Connection = C_Gper.con;
+                    cmd.Connection = con;
                     //Parameters**************************************************
                     cmd.Parameters.Add(new SqlParameter("@MONTH", SqlDbType.TinyInt));
                     cmd.Parameters["@MONTH"].Value = _St_Month;
                     cmd.Parameters.Add(new SqlParameter("@Year", SqlDbType.Int));
                     cmd.Parameters["@Year"].Value = _St_Year;
                     //***********************************************************
-                    C_Gper.con.Open();
+                    con.Open();
                     cmd.ExecuteNonQuery();
-                    C_Gper.con.Close();
+                    con.Close();
                 }
             }
             catch (Exception ex)
@@ -200,13 +215,13 @@ namespace Dispetcher2.Class
             {
                 if (!_Err)
                 {
-                    using (C_Gper.con)
+                    using (var con = new SqlConnection())
                     {
-                        C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
+                        con.ConnectionString = config.ConnectionString;
                         SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
                         cmd.CommandText = "insert into TimeSheets2 (FK_Login,Ts_month,Ts_year,Val_Time,Val_Time2,Note) " + "\n" +
                                       "values (@FK_Login,@Ts_month,@Ts_year,@Val_Time,@Val_Time2,@Note)";
-                        cmd.Connection = C_Gper.con;
+                        cmd.Connection = con;
                         //Parameters**************************************************
                         cmd.Parameters.Add(new SqlParameter("@FK_Login", SqlDbType.VarChar));
                         cmd.Parameters["@FK_Login"].Value = LoginUs;
@@ -221,9 +236,9 @@ namespace Dispetcher2.Class
                         cmd.Parameters.Add(new SqlParameter("@Note", SqlDbType.VarChar));
                         cmd.Parameters["@Note"].Value = "none";
                         //***********************************************************
-                        C_Gper.con.Open();
+                        con.Open();
                         cmd.ExecuteNonQuery();
-                        C_Gper.con.Close();
+                        con.Close();
                     }
                 }
             }

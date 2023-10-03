@@ -567,13 +567,13 @@
             // 
             // groupBox22
             // 
-            this.groupBox22.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox22.Controls.Add(this.tB_IP);
             this.groupBox22.Controls.Add(this.tB_HostName);
             this.groupBox22.Controls.Add(this.button3);
-            this.groupBox22.Location = new System.Drawing.Point(524, 516);
+            this.groupBox22.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox22.Location = new System.Drawing.Point(4, 194);
             this.groupBox22.Name = "groupBox22";
-            this.groupBox22.Size = new System.Drawing.Size(313, 79);
+            this.groupBox22.Size = new System.Drawing.Size(836, 568);
             this.groupBox22.TabIndex = 22;
             this.groupBox22.TabStop = false;
             // 
