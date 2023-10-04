@@ -10,14 +10,15 @@ using System.Windows.Forms;
 using Dispetcher2.Class;
 using Dispetcher2.Controls;
 using Dispetcher2.DataAccess;
+using Dispetcher2.Models;
 
 namespace Dispetcher2
 {
     public partial class F_Reports : Form
     {
-        OrderRepository ordRep;
+
         IConfig config;
-        IConverter converter;
+        
 
         // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
         C_Departments departments;
@@ -32,26 +33,31 @@ namespace Dispetcher2
         // Внешняя зависимость
         System.Windows.Controls.UserControl labControl;
 
+
+
         DataTable Dt_SpDepartment = new DataTable();
         DataTable Dt_SpWorkers = new DataTable();
         DataTable DT_Orders = new DataTable();
         BindingSource BS_Orders = new BindingSource();
 
-        public F_Reports(IConfig config, OrderRepository ordRep, IConverter converter)
+        public F_Reports(IConfig config, IConverter converter, LaborViewModel viewModel)
         {
-            if (ordRep == null) throw new ArgumentException("Пожалуйста укажите параметр: OrderRepository");
             if (config == null) throw new ArgumentException("Пожалуйста укажите параметр: IConfig");
             if (converter == null) throw new ArgumentException("Пожалуйста укажите параметр converter");
+            if (viewModel == null) throw new ArgumentException("Пожалуйста укажите параметр: LaborViewModel");
+            
             this.config = config;
-            this.converter = converter;
-            this.ordRep = ordRep;
 
             departments = new C_Departments(config);
             users = new C_Users(config);
             orders = new C_Orders(config);
             reports = new C_Reports(config);
 
-            labControl = new LaborControl(ordRep, config, converter);
+            // Внешняя зависимость
+            labControl = new LaborControl();
+            viewModel.Dispatcher = labControl.Dispatcher;
+            labControl.DataContext = viewModel;
+            
 
             InitializeComponent();
             if (config.SelectedReportMode == ReportMode.ОтчетНаряд 
@@ -61,6 +67,13 @@ namespace Dispetcher2
                 DT_Orders.Columns.Add("PK_IdOrder", typeof(int));
                 DT_Orders.Columns.Add("OrderNum", typeof(string));
                 DT_Orders.Columns.Add("OrderName", typeof(string));
+            }
+
+            if (config.SelectedReportMode == ReportMode.Трудоемкость)
+            {
+                LaborElementHost.Child = labControl;
+                myTabC_Reports.SelectedTab = LaborTabPage;
+                viewModel.Start();
             }
         }
 
@@ -123,11 +136,7 @@ namespace Dispetcher2
                 orders.SelectOrdersData(2, ref DT_Orders);//2-opened
             }
 
-            if (config.SelectedReportMode == ReportMode.Трудоемкость)
-            {
-                LaborElementHost.Child = labControl;
-                myTabC_Reports.SelectedTab = LaborTabPage;
-            }
+            
         }
 
         #region rep3 C_Gper.NameReport == 3 Отчёт-наряд по выполненным операциям

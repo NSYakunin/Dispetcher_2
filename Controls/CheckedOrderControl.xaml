@@ -14,7 +14,7 @@
         <TextBox Grid.Row="0" x:Name="filterTextBox" Margin="5"
                  Text="{Binding Path=Filter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         <ListBox Grid.Row="1" x:Name="orderListBox" Margin="5"
-                 ItemsSource="{Binding OrderList}" SelectedItem="{Binding Path=SelectedOrder}">
+                 ItemsSource="{Binding OrderList}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <!--<TextBlock Text="{Binding Path=Number}" />-->
