@@ -108,7 +108,7 @@ namespace Dispetcher2
                 //cB_rep117Workers.SelectedItem = null;
             }
 
-            if (config.SelectedReportMode == ReportMode.ДвижениеДеталей)//Движение деталей
+            if (config.SelectedReportMode == ReportMode.ОтчетВыполненным)//Движение деталей
             {
                 myTabC_Reports.SelectedTab = tPageRep7;
                 dGV_OrdersRep7.AutoGenerateColumns = false;
