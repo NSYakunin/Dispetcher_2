@@ -52,13 +52,23 @@ namespace Dispetcher2.Class
         {
             IConfig config;
             IConverter converter;
-            SqlOrderRepository orders;
+            
+
+            LaborViewModel labvm;
             public DispetcherFormFactory(IConfig config, IConverter converter)
             {
                 this.config = config;
                 this.converter = converter;
+                
                 // <param name="_IdStatusOrders">1-ожидание,2-открыт,3-закрыт,4-в работе,5-выполнен</param>
-                orders = new SqlOrderRepository(config, converter, 2);
+                var orders = new SqlOrderRepository(config, converter, 2);
+                var details = new SqlDetailRepository(config, converter);
+                var operations = new SqlOperationRepository(config, converter);
+                var groups = new SqlOperationGroupRepository(config, converter);
+
+                var ocvm = new OrderControlViewModel(orders);
+                
+                labvm = new LaborViewModel(orders, ocvm, details, operations, groups);
             }
             public override string GetInformation()
             {
@@ -113,22 +123,22 @@ namespace Dispetcher2.Class
 
                     case "Отчёт-наряд по выполненным операциям":
                         config.SelectedReportMode = ReportMode.ОтчетНаряд;
-                        f = new F_Reports(config, orders, converter);
+                        f = new F_Reports(config, converter, labvm);
                         return f;
 
                     case "Операции выполненные рабочим по заказам":
                         config.SelectedReportMode = ReportMode.ОперацииВыполненныеРабочим;
-                        f = new F_Reports(config, orders, converter);
+                        f = new F_Reports(config, converter, labvm);
                         return f;
 
                     case "Движение деталей":
                         config.SelectedReportMode = ReportMode.ДвижениеДеталей;
-                        f = new F_Reports(config, orders, converter);
+                        f = new F_Reports(config, converter, labvm);
                         return f;
 
                     case "Отчет по выполненным операциям":
                         config.SelectedReportMode = ReportMode.ОтчетВыполненным;
-                        f = new F_Reports(config, orders, converter);
+                        f = new F_Reports(config, converter, labvm);
                         return f;
 
                     case "План-график":
@@ -138,7 +148,7 @@ namespace Dispetcher2.Class
 
                     case "Трудоемкость":
                         config.SelectedReportMode = ReportMode.Трудоемкость;
-                        f = new F_Reports(config, orders, converter);
+                        f = new F_Reports(config, converter, labvm);
                         return f;
 
                     case "ПРОИЗВОДСТВО-ПЛАН":

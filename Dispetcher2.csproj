@@ -138,7 +138,6 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class\AssemblyTest.cs" />
     <Compile Include="Class\Configuration.cs" />
     <Compile Include="Class\Converter.cs" />
     <Compile Include="Class\C_Brigade.cs" />
@@ -349,6 +348,7 @@
       <DependentUpon>F_Workers.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\JobViewModel.cs" />
+    <Compile Include="Models\LaborViewModel.cs" />
     <Compile Include="Models\OperationViewModel.cs" />
     <Compile Include="Models\OrderControlViewModel.cs" />
     <Compile Include="Models\ProgressViewModel.cs" />
