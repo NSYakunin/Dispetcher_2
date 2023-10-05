@@ -7,31 +7,23 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 using Dispetcher2.Class;
-using Dispetcher2.Models;
 
 namespace Dispetcher2.Controls
 {
-    /// <summary>
-    /// Логика взаимодействия для LaborControl.xaml
-    /// </summary>
-    public partial class OperationControl : UserControl
+
+    public partial class OperationControl : UserControl, IColumnUpdate
     {
         public OperationControl()
         {
             InitializeComponent();
         }
 
-        public void Update(Repository operations)
+        public void Update(IEnumerable<string> names)
         {
             mainGrid.Columns.Clear();
-            //var e = operations.GetOperations();
-            foreach (var n in operations.GetList())
+            foreach (var n in names)
             {
                 var c = new DataGridTextColumn();
                 c.Header = n;
@@ -39,6 +31,5 @@ namespace Dispetcher2.Controls
                 mainGrid.Columns.Add(c);
             }
         }
-        
     }
 }

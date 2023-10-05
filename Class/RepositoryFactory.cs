@@ -27,4 +27,8 @@ namespace Dispetcher2.Class
             return strings;
         }
     }
+    public interface IColumnUpdate
+    {
+        void Update(IEnumerable<string> names);
+    }
 }

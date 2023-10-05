@@ -55,7 +55,7 @@ namespace Dispetcher2
 
             // Внешняя зависимость
             labControl = new LaborControl();
-            viewModel.Dispatcher = labControl.Dispatcher;
+            //viewModel.Dispatcher = labControl.Dispatcher;
             labControl.DataContext = viewModel;
             
 
