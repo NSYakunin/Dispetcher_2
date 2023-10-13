@@ -29,6 +29,6 @@ namespace Dispetcher2.Class
     }
     public interface IColumnUpdate
     {
-        void Update(IEnumerable<string> names);
+        void Update(StringRepository names);
     }
 }

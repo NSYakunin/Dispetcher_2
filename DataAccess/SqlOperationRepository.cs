@@ -64,6 +64,7 @@ namespace Dispetcher2.DataAccess
                 {
                     cmd.CommandText = "SELECT * FROM [dbo].[AllOperationView]";
                     cmd.CommandType = CommandType.Text;
+                    cmd.CommandTimeout = 100;
 
                     cn.Open();
                     using (var r = cmd.ExecuteReader())
@@ -97,7 +98,10 @@ namespace Dispetcher2.DataAccess
 
                             if (converter.CheckConvert<string>(r["TypeRow"]))
                                 item.TypeRow = converter.Convert<string>(r["TypeRow"]);
-                            
+
+                            if (converter.CheckConvert<string>(r["Login"]))
+                                item.Login = converter.Convert<string>(r["Login"]);
+
                             if (item.Tpd > 0 || item.Tsh > 0)
                             {
                                 item.CalculateTime();

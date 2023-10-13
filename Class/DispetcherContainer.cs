@@ -54,30 +54,42 @@ namespace Dispetcher2.Class
             IConverter converter;
             
 
-            LaborViewModel labvm;
+            //LaborViewModel labvm;
             public DispetcherFormFactory(IConfig config, IConverter converter)
             {
                 this.config = config;
                 this.converter = converter;
                 
                 // <param name="_IdStatusOrders">1-ожидание,2-открыт,3-закрыт,4-в работе,5-выполнен</param>
-                var orders = new SqlOrderRepository(config, converter, 2);
-                var details = new SqlDetailRepository(config, converter);
-                var operations = new SqlOperationRepository(config, converter);
-                var groups = new SqlOperationGroupRepository(config, converter);
 
-                var ocvm = new OrderControlViewModel(orders);
-                
-                labvm = new LaborViewModel(orders, ocvm, details, operations, groups);
             }
             public override string GetInformation()
             {
                 return config.Information;
             }
 
+            Form GetReportForm()
+            {
+                Form rf;
+
+                var orders = new SqlOrderRepository(config, converter, 2);
+                var details = new SqlDetailRepository(config, converter);
+                var operations = new SqlOperationRepository(config, converter);
+                var groups = new SqlOperationGroupRepository(config, converter);
+                var workDays = new SqlWorkDayRepository(config, converter, DateTime.Now);
+
+                var ocvm = new OrderControlViewModel(orders);
+                var rep = new LaborReport(details, operations, groups, workDays, ocvm as OrderRepository);
+                var labvm = new LaborViewModel(orders, ocvm, rep);
+
+                rf = new F_Reports(config, converter, labvm);
+
+                return rf;
+            }
             public override Form GetForm(string purpose)
             {
                 Form f;
+                
                 switch (purpose)
                 {
                     
@@ -123,32 +135,27 @@ namespace Dispetcher2.Class
 
                     case "Отчёт-наряд по выполненным операциям":
                         config.SelectedReportMode = ReportMode.ОтчетНаряд;
-                        f = new F_Reports(config, converter, labvm);
-                        return f;
+                        return GetReportForm();
 
                     case "Операции выполненные рабочим по заказам":
                         config.SelectedReportMode = ReportMode.ОперацииВыполненныеРабочим;
-                        f = new F_Reports(config, converter, labvm);
-                        return f;
+                        return GetReportForm();
 
                     case "Движение деталей":
                         config.SelectedReportMode = ReportMode.ДвижениеДеталей;
-                        f = new F_Reports(config, converter, labvm);
-                        return f;
+                        return GetReportForm();
 
                     case "Отчет по выполненным операциям":
                         config.SelectedReportMode = ReportMode.ОтчетВыполненным;
-                        f = new F_Reports(config, converter, labvm);
-                        return f;
+                        return GetReportForm();
+                                            
+                    case "Трудоемкость":
+                        config.SelectedReportMode = ReportMode.Трудоемкость;
+                        return GetReportForm();
 
                     case "План-график":
                         config.SelectedReportMode = ReportMode.ПланГрафик;
                         f = new F_ReportsPlan(config);
-                        return f;
-
-                    case "Трудоемкость":
-                        config.SelectedReportMode = ReportMode.Трудоемкость;
-                        f = new F_Reports(config, converter, labvm);
                         return f;
 
                     case "ПРОИЗВОДСТВО-ПЛАН":

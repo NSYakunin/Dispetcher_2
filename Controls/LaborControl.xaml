@@ -13,29 +13,27 @@
         </Grid.ColumnDefinitions>
 
         <local:CheckedOrderControl Grid.Column="0" Visibility="{Binding Path=DataVisibility}" />
-        
+
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <StackPanel Orientation="Horizontal">
-                
-                
-                
-            </StackPanel>
             <Grid x:Name="commandGrid" Visibility="{Binding Path=CommandVisibility}">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="requestButton" Content="Запрос" HorizontalAlignment="Left"
+                <Button Content="Запрос" HorizontalAlignment="Left" Grid.Column="0"
                         Margin="5" VerticalAlignment="Center" Width="75" Command="{Binding Path=RequestCommand}"/>
-                <CheckBox Grid.Column="1" Content="Подробно по деталям" IsChecked="{Binding Path=ShowDetailFlag}" 
+                <Button Content="Excel" HorizontalAlignment="Left" Grid.Column="1"
+                        Margin="5" VerticalAlignment="Center" Width="75" Command="{Binding Path=ExcelCommand}"/>
+                <CheckBox Grid.Column="2" Content="Подробно по деталям" IsChecked="{Binding Path=ShowDetailFlag}" 
                           VerticalAlignment="Center"/>
-                <CheckBox Grid.Column="2" Content="Подробно по операциям" IsChecked="{Binding Path=ShowOperationFlag}" 
+                <CheckBox Grid.Column="3" Content="Подробно по операциям" IsChecked="{Binding Path=ShowOperationFlag}" 
                           VerticalAlignment="Center" />
             </Grid>
             <local:OperationControl x:Name="opc" Grid.Row="1" Visibility="{Binding Path=OperationVisibility}" />

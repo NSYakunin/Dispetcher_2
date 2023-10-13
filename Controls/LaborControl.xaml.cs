@@ -10,7 +10,7 @@ namespace Dispetcher2.Controls
             InitializeComponent();
         }
 
-        public void Update(IEnumerable<string> names)
+        public void Update(StringRepository names)
         {
             opc.Update(names);
         }

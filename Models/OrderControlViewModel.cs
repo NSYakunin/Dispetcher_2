@@ -24,29 +24,8 @@ namespace Dispetcher2.Models
             return v;
         }
     }
-    public class OrderControlViewModel
+    public class OrderControlViewModel : OrderRepository
     {
-        private class OrderControlViewModelRepository : OrderRepository
-        {
-            List<Order> orders;
-
-            public OrderControlViewModelRepository(List<Order> orders)
-            {
-                this.orders = orders;
-            }
-            public override void Load()
-            {
-                
-            }
-            public override IEnumerable<Order> GetOrders()
-            {
-                return orders;
-            }
-            public override System.Collections.IEnumerable GetList()
-            {
-                return orders;
-            }
-        }
         string filterValue;
         public string Filter
         {
@@ -99,16 +78,11 @@ namespace Dispetcher2.Models
                 foreach (var x in l2) OrderList.Add(x);
             }
         }
-
-        public OrderRepository GetSelectedOrders()
+        // Реализация OrderRepository
+        public override void Load() { }
+        public override IEnumerable<Order> GetOrders()
         {
             var a = new List<Order>();
-            /*
-            if (SelectedOrder != null)
-            {
-                a.Add(SelectedOrder);
-            }
-            */
             var e = allOrders.Where(o => o.Checked == true);
             if (e.Any()) a.AddRange(e);
             if (OrderList.Count == 1 && a.Count < 1)
@@ -116,9 +90,11 @@ namespace Dispetcher2.Models
                 OrderView v = OrderList[0];
                 a.Add(v);
             }
-            
-            var r = new OrderControlViewModelRepository(a);
-            return r;
+            return a;
+        }
+        public override System.Collections.IEnumerable GetList()
+        {
+            return GetOrders();
         }
     }
 

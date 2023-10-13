@@ -20,10 +20,10 @@ namespace Dispetcher2.Controls
             InitializeComponent();
         }
 
-        public void Update(IEnumerable<string> names)
+        public void Update(StringRepository names)
         {
             mainGrid.Columns.Clear();
-            foreach (var n in names)
+            foreach (var n in names.GetList())
             {
                 var c = new DataGridTextColumn();
                 c.Header = n;

@@ -13,31 +13,17 @@ using Dispetcher2.Class;
 
 namespace Dispetcher2.Models
 {
-    public class LaborReportRow
-    {
-        // имя строки
-        public string Name { get; set; }
-        // ключ словаря: имя операции
-        // значение словаря: текст в ячейке
-        public Dictionary<string, string> Operations { get; set; }
 
-        public LaborReportRow()
-        {
-            Operations = new Dictionary<string, string>();
-        }
-    }
     public class LaborViewModel : INotifyPropertyChanged
     {
         OrderRepository orders;
-        DetailRepository details;
-        OperationRepository operations;
-        OperationGroupRepository groups;
-        WorkDayRepository workDays;
+        LaborReport report;
 
         OrderControlViewModel ocvm;
         Visibility dvValue;
         ICommand requestCommandValue;
-        //public Dispatcher Dispatcher { get; set; }
+        ICommand excelCommandValue;
+
         string waitMessageValue;
         public Visibility DataVisibility
         {
@@ -100,41 +86,38 @@ namespace Dispetcher2.Models
         public bool ShowDetailFlag { get; set; }
         public bool ShowOperationFlag { get; set; }
         public ICommand RequestCommand { get { return requestCommandValue; } }
+        public ICommand ExcelCommand { get { return excelCommandValue; } }
+
         
-        List<LaborReportRow> rows;
-        public IEnumerable<LaborReportRow> Rows { get { return rows; } }
+        public ObservableCollection<LaborReportRow> RowsView { get; set; }
+        public IColumnUpdate ColumnContainer { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        // Нужно переделать конструктор, использовав шаблон Фасад
-        public LaborViewModel(OrderRepository orders, OrderControlViewModel ocvm,
-            DetailRepository details, OperationRepository operations, 
-            OperationGroupRepository groups, WorkDayRepository workDays)
+        public LaborViewModel(OrderRepository orders, OrderControlViewModel ocvm, LaborReport report)
         {
             if (orders == null) throw new ArgumentException("Пожалуйста укажите параметр: OrderRepository");
             if (ocvm == null) throw new ArgumentException("Пожалуйста укажите параметр: OrderControlViewModel");
-            
-            if (details == null) throw new ArgumentException("Пожалуйста укажите параметр: DetailRepository");
-            if (operations == null) throw new ArgumentException("Пожалуйста укажите параметр: OperationRepository");
-            if (groups == null) throw new ArgumentException("Пожалуйста укажите параметр: OperationGroupRepository");
-            if (workDays == null) throw new ArgumentException("Пожалуйста укажите параметр: WorkDayRepository");
+            if (report == null) throw new ArgumentException("Пожалуйста укажите параметр: LaborReport");
+
             this.orders = orders;
             this.ocvm = ocvm;
-            this.details = details;
-            this.operations = operations;
-            this.groups = groups;
-            this.workDays = workDays;
+            this.report = report;
 
             var c = new LaborCommand();
             c.ExecuteAction = this.ProcessRequestCommand;
             requestCommandValue = c;
 
+            c = new LaborCommand();
+            c.ExecuteAction = this.ProcessExcelCommand;
+            excelCommandValue = c;
+
             WaitVisibility = Visibility.Visible;
             DataVisibility = Visibility.Collapsed;
             CommandVisibility = Visibility.Collapsed;
             OperationVisibility = Visibility.Collapsed;
-
-            rows = new List<LaborReportRow>();
+            
+            RowsView = new ObservableCollection<LaborReportRow>();
         }
         public void OnPropertyChanged(string prop)
         {
@@ -145,8 +128,6 @@ namespace Dispetcher2.Models
         {
             Before();
 
-            //var t = new Task(Load);
-            //t.Start();
             Action a = this.Load;
             await Task.Run(a);
 
@@ -160,10 +141,7 @@ namespace Dispetcher2.Models
         void Load()
         {
             orders.Load();
-            details.Load();
-            operations.Load();
-            groups.Load();
-            workDays.Load();
+            report.Load();
         }
         void After()
         {
@@ -174,65 +152,57 @@ namespace Dispetcher2.Models
         }
         private void ProcessRequestCommand()
         {
-            // Список выбранных заказов
-            var selectedOrders = ocvm.GetSelectedOrders();
-            if (selectedOrders.GetOrders().Any() == false)
+            try
             {
-                MessageBox.Show("Пожалуйста выберите один или несколько заказов.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
+                // Список выбранных заказов
+                var selectedOrders = ocvm.GetOrders();
+                if (selectedOrders.Any() == false)
+                {
+                    MessageBox.Show("Пожалуйста выберите один или несколько заказов.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                WaitVisibility = Visibility.Visible;
+                DataVisibility = Visibility.Collapsed;
+                CommandVisibility = Visibility.Collapsed;
+                OperationVisibility = Visibility.Collapsed;
+
+                LoadOperationsAsync();
             }
-            this.rows.Clear();
-            if (ShowOperationFlag == false)
+            catch(Exception ex)
             {
-                ProcessEmployeeTime();
+                System.Diagnostics.Debug.WriteLine(ex);
             }
         }
-
-        private void ProcessEmployeeTime()
+        async Task LoadOperationsAsync()
         {
-            // словарь операций по коду
-            var opDic = new Dictionary<int, OperationGroup>();
-            foreach (var item in groups.GetGroups()) opDic[item.Id] = item;
+            report.ShowDetailFlag = this.ShowDetailFlag;
+            report.ShowOperationFlag = this.ShowOperationFlag;
 
-            // Группировать данные в словарь списков по коду группы операции
-            // Группировать данные в словарь операция-сотрудники
-            var wdgroups = workDays.GetWorkDays().GroupBy(item => item.OperationGroupId);
-            // Ключ: код операции, значение: список рабочих дней
-            var wdDic = new Dictionary<int, List<WorkDay>>();
-            // Ключ: код операции, значение: уникальный список сотрудников
-            var empDic = new Dictionary<int, HashSet<Employee>>();
+            Action a = report.Calculate;
+            await Task.Run(a);
 
-            foreach (var g in wdgroups)
-            {
-                int id = g.Key;
-                if (id == 0) continue;
-
-                wdDic[id] = new List<WorkDay>();
-                empDic[id] = new HashSet<Employee>();
-                foreach (var item in g)
-                {
-                    wdDic[id].Add(item);
-                    Employee e = new Employee();
-                    e.ITR = item.ITR;
-                    e.LastName = item.LastName;
-                    e.Login = item.Login;
-                    e.Name = item.Name;
-                    e.SecondName = item.SecondName;
-                    e.TabNum = item.TabNum;
-                    if (empDic[id].Contains(e) == false) empDic[id].Add(e);
-                }
-            }
-
-            var dv = new LaborReportRow() { Name = "Кол-во работников, чел" };
-            foreach (var item in opDic)
-            {
-                OperationGroup op = item.Value;
-                if (empDic.ContainsKey(op.Id))
-                {
-                    dv.Operations[op.Name] = empDic[op.Id].Count().ToString();
-                }
-            }
+            AfterLoadOperations();
         }
+
+        void AfterLoadOperations()
+        {
+            var names = report.GetOperationRepository();
+            if (ColumnContainer != null) ColumnContainer.Update(names);
+            
+            DataVisibility = Visibility.Visible;
+            WaitVisibility = Visibility.Collapsed;
+            CommandVisibility = Visibility.Visible;
+            OperationVisibility = Visibility.Visible;
+
+            RowsView.Clear();
+            foreach (var r in report.GetRows()) RowsView.Add(r);
+        }
+        void ProcessExcelCommand()
+        {
+
+        }
+        
     }
     public class LaborCommand : ICommand
     {

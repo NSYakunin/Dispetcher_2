@@ -53,11 +53,11 @@ namespace Dispetcher2
             orders = new C_Orders(config);
             reports = new C_Reports(config);
 
-            // Внешняя зависимость
+            // Внешняя зависимость!
             labControl = new LaborControl();
             //viewModel.Dispatcher = labControl.Dispatcher;
             labControl.DataContext = viewModel;
-            
+            viewModel.ColumnContainer = labControl as IColumnUpdate;
 
             InitializeComponent();
             if (config.SelectedReportMode == ReportMode.ОтчетНаряд 

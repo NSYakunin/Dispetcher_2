@@ -15,7 +15,7 @@
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>\\Ascon\Dispetcher\UpdatesDisp2\Application Files\</PublishUrl>
+    <PublishUrl>\\filesrv\Производство\Программисты\DispPublic\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Unc</InstallFrom>
     <UpdateEnabled>true</UpdateEnabled>
@@ -25,11 +25,11 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>false</MapFileExtensions>
-    <InstallUrl>\\Ascon\Dispetcher\UpdatesDisp2\</InstallUrl>
     <UpdateUrl>\\Ascon\Dispetcher\UpdatesDisp2\Application Files\</UpdateUrl>
+    <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>12</ApplicationRevision>
+    <ApplicationRevision>13</ApplicationRevision>
     <ApplicationVersion>2.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -162,6 +162,7 @@
     <Compile Include="Class\ImportDataWorker.cs" />
     <Compile Include="Class\Job.cs" />
     <Compile Include="Class\KitUpdater.cs" />
+    <Compile Include="Class\LaborReport.cs" />
     <Compile Include="Class\Operation.cs" />
     <Compile Include="Class\Order.cs" />
     <Compile Include="Class\Receipt.cs" />
