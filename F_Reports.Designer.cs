@@ -91,6 +91,7 @@
             this.tB_OrderNameRep7 = new System.Windows.Forms.TextBox();
             this.LaborTabPage = new System.Windows.Forms.TabPage();
             this.LaborElementHost = new System.Windows.Forms.Integration.ElementHost();
+            this.tabPageGalvan = new System.Windows.Forms.TabPage();
             this.myTabC_Reports.SuspendLayout();
             this.tPageRep3.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -122,6 +123,7 @@
             this.myTabC_Reports.Controls.Add(this.tPageRep117);
             this.myTabC_Reports.Controls.Add(this.tPageRep7);
             this.myTabC_Reports.Controls.Add(this.LaborTabPage);
+            this.myTabC_Reports.Controls.Add(this.tabPageGalvan);
             this.myTabC_Reports.Dock = System.Windows.Forms.DockStyle.Fill;
             this.myTabC_Reports.Location = new System.Drawing.Point(0, 0);
             this.myTabC_Reports.Name = "myTabC_Reports";
@@ -837,6 +839,16 @@
             this.LaborElementHost.Text = "LaborElementHost";
             this.LaborElementHost.Child = null;
             // 
+            // tabPageGalvan
+            // 
+            this.tabPageGalvan.Location = new System.Drawing.Point(4, 25);
+            this.tabPageGalvan.Name = "tabPageGalvan";
+            this.tabPageGalvan.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageGalvan.Size = new System.Drawing.Size(987, 603);
+            this.tabPageGalvan.TabIndex = 5;
+            this.tabPageGalvan.Text = "tabPageGalvan";
+            this.tabPageGalvan.UseVisualStyleBackColor = true;
+            // 
             // F_Reports
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -950,5 +962,6 @@
         private System.Windows.Forms.CheckBox chB_rep7AllOrders;
         private System.Windows.Forms.TabPage LaborTabPage;
         private System.Windows.Forms.Integration.ElementHost LaborElementHost;
+        private System.Windows.Forms.TabPage tabPageGalvan;
     }
 }
