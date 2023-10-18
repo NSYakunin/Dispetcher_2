@@ -288,12 +288,5 @@ namespace Dispetcher2
             CheckAndCreateMDI<F_Reports>("F_Reports");
             this.Text = "ПО \"Диспетчер\"" + " — Трудоемкость";
         }
-
-        private void актПриёмапередачиГальваническоеПокрытиеToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            C_Gper.NameReport = C_Gper.ReportMode.Гальваника;
-            CheckAndCreateMDI<F_Reports>("F_Reports");
-            this.Text = "ПО \"Диспетчер\"" + " - Акт приёма - передачи. Гальваническое покрытие";
-        }
     }
 }

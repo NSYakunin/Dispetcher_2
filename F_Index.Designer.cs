@@ -47,7 +47,6 @@
             this.операцииВыполненныеРабочимПоЗаказамформа17ToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.отчетПоВыполненнымОперациямразрToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.движениеДеталейToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.laborToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tSSB_Users = new System.Windows.Forms.ToolStripSplitButton();
             this.рабочиеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.бригадыToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -60,7 +59,7 @@
             this.toolStripMI_HelpUser = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMI_HelpAdmin = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripHideChildMenu = new System.Windows.Forms.MenuStrip();
-            this.актПриёмапередачиГальваническоеПокрытиеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.laborToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             this.tS_menu.SuspendLayout();
             this.SuspendLayout();
@@ -181,8 +180,7 @@
             this.операцииВыполненныеРабочимПоЗаказамформа17ToolStripMenuItem1,
             this.отчетПоВыполненнымОперациямразрToolStripMenuItem,
             this.движениеДеталейToolStripMenuItem1,
-            this.laborToolStripMenuItem,
-            this.актПриёмапередачиГальваническоеПокрытиеToolStripMenuItem});
+            this.laborToolStripMenuItem});
             this.tSSB_Reports.Font = new System.Drawing.Font("Segoe UI", 12F);
             this.tSSB_Reports.Image = global::Dispetcher2.Properties.Resources.Report;
             this.tSSB_Reports.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -240,13 +238,6 @@
             this.движениеДеталейToolStripMenuItem1.Size = new System.Drawing.Size(510, 26);
             this.движениеДеталейToolStripMenuItem1.Text = "Движение деталей";
             this.движениеДеталейToolStripMenuItem1.Click += new System.EventHandler(this.движениеДеталейToolStripMenuItem1_Click);
-            // 
-            // laborToolStripMenuItem
-            // 
-            this.laborToolStripMenuItem.Name = "laborToolStripMenuItem";
-            this.laborToolStripMenuItem.Size = new System.Drawing.Size(510, 26);
-            this.laborToolStripMenuItem.Text = "Трудоемкость";
-            this.laborToolStripMenuItem.Click += new System.EventHandler(this.laborToolStripMenuItem_Click);
             // 
             // tSSB_Users
             // 
@@ -354,12 +345,12 @@
             this.menuStripHideChildMenu.Text = "menuStripHideChildMenu";
             this.menuStripHideChildMenu.Visible = false;
             // 
-            // актПриёмапередачиГальваническоеПокрытиеToolStripMenuItem
+            // laborToolStripMenuItem
             // 
-            this.актПриёмапередачиГальваническоеПокрытиеToolStripMenuItem.Name = "актПриёмапередачиГальваническоеПокрытиеToolStripMenuItem";
-            this.актПриёмапередачиГальваническоеПокрытиеToolStripMenuItem.Size = new System.Drawing.Size(510, 26);
-            this.актПриёмапередачиГальваническоеПокрытиеToolStripMenuItem.Text = "Акт приёма-передачи. Гальваническое покрытие";
-            this.актПриёмапередачиГальваническоеПокрытиеToolStripMenuItem.Click += new System.EventHandler(this.актПриёмапередачиГальваническоеПокрытиеToolStripMenuItem_Click);
+            this.laborToolStripMenuItem.Name = "laborToolStripMenuItem";
+            this.laborToolStripMenuItem.Size = new System.Drawing.Size(510, 26);
+            this.laborToolStripMenuItem.Text = "Трудоемкость";
+            this.laborToolStripMenuItem.Click += new System.EventHandler(this.laborToolStripMenuItem_Click);
             // 
             // F_Index
             // 
@@ -421,7 +412,6 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMI_HelpAdmin;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem laborToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem актПриёмапередачиГальваническоеПокрытиеToolStripMenuItem;
     }
 }
 
