@@ -13,9 +13,12 @@ namespace Dispetcher2.Class
     // Служебный клас, который занимается обновлением таблицы Sp_Kit
     class KitUpdater
     {
+        IConfig config;
         DataTable detailTable;
         DataTable kitTable;
-        C_DataBase dispDB = new C_DataBase(C_Gper.ConnStrDispetcher2);
+
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_DataBase DB;
 
         ProgressViewModel pvm;
 
@@ -24,9 +27,11 @@ namespace Dispetcher2.Class
         
         public event EventHandler FinishEvent;
 
-        public KitUpdater(ProgressViewModel value)
+        public KitUpdater(IConfig config, ProgressViewModel value)
         {
+            this.config = config;
             this.pvm = value;
+            DB = new C_DataBase(config);
         }
 
         public void Start()
@@ -100,7 +105,7 @@ namespace Dispetcher2.Class
 
             if (edr.Any())
             {
-                dispDB.DeleteKit(id);
+                DB.DeleteKit(id);
                 foreach (DataRow r in edr)
                 {
                     int idk = r.Field<int>("id");
@@ -109,7 +114,7 @@ namespace Dispetcher2.Class
                     int idtype = r.Field<int>("idtype");
                     int idstate = r.Field<int>("idstate");
 
-                    dispDB.InsertKit(id, idk, name, minquantity, idtype, idstate);
+                    DB.InsertKit(id, idk, name, minquantity, idtype, idstate);
                 }
             }
         }
@@ -127,11 +132,8 @@ namespace Dispetcher2.Class
 
         void LoadDataTables()
         {
-            detailTable = dispDB.GetDetail();
-
-            C_DataBase loodDB = new C_DataBase(C_Gper.ConStr_Loodsman);
-            kitTable = loodDB.GetAllKits();
-            
+            detailTable = DB.GetDetail();
+            kitTable = DB.GetAllKits();
         }
     }
 }

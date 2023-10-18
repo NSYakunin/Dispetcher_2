@@ -8,17 +8,22 @@ using System.Drawing;
 using System.Windows.Forms;
 //using System.Net;
 using Microsoft.Office.Interop.Excel;
-using Microsoft.Office.Interop;
-using System.Runtime.InteropServices;
-using Dispetcher2.Class;
-using System.Data;
+
 using System.Data.SqlClient;
 
 namespace Dispetcher2.Class
 {
     class C_Excel
     {
+        IConfig config;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_Orders orders;
 
+        public C_Excel(IConfig config)
+        {
+            this.config = config;
+            orders = new C_Orders(config);
+        }
 
 #region Загрузка данных из расцеховки
         public void ReadExcelRas(string _WayFile,int _PK_IdOrder, ref System.Data.DataTable _DT_Excel, out string _ErrorsDataPos)
@@ -177,7 +182,7 @@ namespace Dispetcher2.Class
                             else//Сборки/Детали
                             {
                                 //Если есть в справочнике деталей
-                                if (C_Orders.Check_ShcmDetail(Shcm, out _PK_IdDetail))//(ExcelRange.Cells[NumRows, 5] as Range).Interior.Color = Color.LightGreen;
+                                if (orders.Check_ShcmDetail(Shcm, out _PK_IdDetail))//(ExcelRange.Cells[NumRows, 5] as Range).Interior.Color = Color.LightGreen;
                                 {    //Если загружалась ранее (по позиции и ЩЦМ)
                                     if (Check_DetailOrFastenersInOrder(_PK_IdOrder, pos))
                                     {
@@ -225,47 +230,52 @@ namespace Dispetcher2.Class
             try
             {
 
-                C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
-                SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
-                cmd.Connection = C_Gper.con;
                 
-                cmd.Parameters.Add(new SqlParameter("@Position", SqlDbType.Int));
-                cmd.Parameters.Add(new SqlParameter("@PositionParent", SqlDbType.Int));
-                cmd.Parameters.Add(new SqlParameter("@AllPositionParent", SqlDbType.VarChar));
-                cmd.Parameters.Add(new SqlParameter("@FK_IdOrder", SqlDbType.Int));
-                cmd.Parameters.Add(new SqlParameter("@FK_IdDetail", SqlDbType.BigInt));
-                cmd.Parameters.Add(new SqlParameter("@Amount", SqlDbType.Int));
-                cmd.Parameters.Add(new SqlParameter("@AmountFasteners", SqlDbType.Float));
-                cmd.Parameters.Add(new SqlParameter("@NameFasteners", SqlDbType.VarChar));
-                cmd.Parameters.Add(new SqlParameter("@MeasureUnit", SqlDbType.VarChar));
                 foreach (DataRow row in _DT.Rows)
                 {
-                    if (row.ItemArray[4].ToString() == "0")//Крепёж
-                        cmd.CommandText = "insert into OrdersFasteners (Position,PositionParent,AllPositionParent,FK_IdOrder,NameFasteners,AmountFasteners,MeasureUnit) " + "\n" +
-                                  "values (@Position,@PositionParent,@AllPositionParent,@FK_IdOrder,@NameFasteners,@AmountFasteners,@MeasureUnit)";
-                    else//Сборки/Детали
-                        cmd.CommandText = "insert into OrdersDetails (Position,PositionParent,AllPositionParent,FK_IdOrder,FK_IdDetail,AmountDetails) " + "\n" +
-                                  "values (@Position,@PositionParent,@AllPositionParent,@FK_IdOrder,@FK_IdDetail,@Amount)";
-                    //Parameters**************************************************
-                    cmd.Parameters["@Position"].Value = row.ItemArray[0];
-                    cmd.Parameters["@PositionParent"].Value = row.ItemArray[1];
-                    cmd.Parameters["@AllPositionParent"].Value = row.ItemArray[2];
-                    cmd.Parameters["@FK_IdOrder"].Value = row.ItemArray[3];
-                    cmd.Parameters["@FK_IdDetail"].Value = row.ItemArray[4];
-                    cmd.Parameters["@Amount"].Value = row.ItemArray[5];
-                    cmd.Parameters["@AmountFasteners"].Value = row.ItemArray[6];
-                    cmd.Parameters["@NameFasteners"].Value = row.ItemArray[7];
-                    cmd.Parameters["@MeasureUnit"].Value = row.ItemArray[8];
-                    //***********************************************************
-                    C_Gper.con.Open();
-                    cmd.ExecuteNonQuery();
-                    C_Gper.con.Close();
+                    using (var con = new SqlConnection())
+                    {
+                        con.ConnectionString = config.ConnectionString;
+                        SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
+                        cmd.Connection = con;
+
+                        cmd.Parameters.Add(new SqlParameter("@Position", SqlDbType.Int));
+                        cmd.Parameters.Add(new SqlParameter("@PositionParent", SqlDbType.Int));
+                        cmd.Parameters.Add(new SqlParameter("@AllPositionParent", SqlDbType.VarChar));
+                        cmd.Parameters.Add(new SqlParameter("@FK_IdOrder", SqlDbType.Int));
+                        cmd.Parameters.Add(new SqlParameter("@FK_IdDetail", SqlDbType.BigInt));
+                        cmd.Parameters.Add(new SqlParameter("@Amount", SqlDbType.Int));
+                        cmd.Parameters.Add(new SqlParameter("@AmountFasteners", SqlDbType.Float));
+                        cmd.Parameters.Add(new SqlParameter("@NameFasteners", SqlDbType.VarChar));
+                        cmd.Parameters.Add(new SqlParameter("@MeasureUnit", SqlDbType.VarChar));
+
+                        if (row.ItemArray[4].ToString() == "0")//Крепёж
+                            cmd.CommandText = "insert into OrdersFasteners (Position,PositionParent,AllPositionParent,FK_IdOrder,NameFasteners,AmountFasteners,MeasureUnit) " + "\n" +
+                                      "values (@Position,@PositionParent,@AllPositionParent,@FK_IdOrder,@NameFasteners,@AmountFasteners,@MeasureUnit)";
+                        else//Сборки/Детали
+                            cmd.CommandText = "insert into OrdersDetails (Position,PositionParent,AllPositionParent,FK_IdOrder,FK_IdDetail,AmountDetails) " + "\n" +
+                                      "values (@Position,@PositionParent,@AllPositionParent,@FK_IdOrder,@FK_IdDetail,@Amount)";
+                        //Parameters**************************************************
+                        cmd.Parameters["@Position"].Value = row.ItemArray[0];
+                        cmd.Parameters["@PositionParent"].Value = row.ItemArray[1];
+                        cmd.Parameters["@AllPositionParent"].Value = row.ItemArray[2];
+                        cmd.Parameters["@FK_IdOrder"].Value = row.ItemArray[3];
+                        cmd.Parameters["@FK_IdDetail"].Value = row.ItemArray[4];
+                        cmd.Parameters["@Amount"].Value = row.ItemArray[5];
+                        cmd.Parameters["@AmountFasteners"].Value = row.ItemArray[6];
+                        cmd.Parameters["@NameFasteners"].Value = row.ItemArray[7];
+                        cmd.Parameters["@MeasureUnit"].Value = row.ItemArray[8];
+                        //***********************************************************
+                        con.Open();
+                        cmd.ExecuteNonQuery();
+                        con.Close();
+                    }
                 }
                 return true;
             }
             catch (Exception ex)
             {
-                C_Gper.con.Close();
+                
                 MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
@@ -275,32 +285,35 @@ namespace Dispetcher2.Class
         {
             try
             {
-                C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
-                SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//seconds //using System.Data.SqlClient;
-                cmd.Connection = C_Gper.con;
-                cmd.Parameters.Clear();
-                cmd.CommandText = "Select Top(1) Position From OrdersDetails" + "\n" +
-                                  "Where FK_IdOrder=@FK_IdOrder and Position=@Position" + "\n" +
-                                  "union all" + "\n" +
-                                  "Select Top(1) Position From OrdersFasteners" + "\n" +
-                                  "Where FK_IdOrder=@FK_IdOrder and Position=@Position";
-                cmd.Parameters.Add(new SqlParameter("@FK_IdOrder", SqlDbType.Int));
-                cmd.Parameters["@FK_IdOrder"].Value = _FK_IdOrder;
-                cmd.Parameters.Add(new SqlParameter("@Position", SqlDbType.Int));
-                cmd.Parameters["@Position"].Value = _Position;
-                using (C_Gper.con)
+
+                
+                using (var con = new SqlConnection())
                 {
-                    C_Gper.con.Open();
+                    con.ConnectionString = config.ConnectionString;
+                    SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//seconds //using System.Data.SqlClient;
+                    cmd.Connection = con;
+                    cmd.Parameters.Clear();
+                    cmd.CommandText = "Select Top(1) Position From OrdersDetails" + "\n" +
+                                      "Where FK_IdOrder=@FK_IdOrder and Position=@Position" + "\n" +
+                                      "union all" + "\n" +
+                                      "Select Top(1) Position From OrdersFasteners" + "\n" +
+                                      "Where FK_IdOrder=@FK_IdOrder and Position=@Position";
+                    cmd.Parameters.Add(new SqlParameter("@FK_IdOrder", SqlDbType.Int));
+                    cmd.Parameters["@FK_IdOrder"].Value = _FK_IdOrder;
+                    cmd.Parameters.Add(new SqlParameter("@Position", SqlDbType.Int));
+                    cmd.Parameters["@Position"].Value = _Position;
+
+                    con.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         if (reader.HasRows)
                         {/*while (reader.Read()){if (reader.IsDBNull(0) == false) ffff = reader.GetInt32(0);}*/
-                            reader.Dispose(); reader.Close(); C_Gper.con.Close();
+                            reader.Dispose(); reader.Close(); con.Close();
                             return true;
                         }
                         else
                         {
-                            reader.Dispose(); reader.Close(); C_Gper.con.Close();
+                            reader.Dispose(); reader.Close(); con.Close();
                             return false;
                         }
                     }

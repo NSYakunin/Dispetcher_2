@@ -11,24 +11,27 @@ namespace Dispetcher2.DataAccess
 {
     public class SqlWorkDayRepository : WorkDayRepository
     {
-        string connectionString;
+        IConfig config;
+        IConverter converter;
         DateTime point;
         List<WorkDay> dayList;
         TimeSpan total;
         TimeSpan past;
-        public SqlWorkDayRepository(string connectionString, DateTime point)
+        public SqlWorkDayRepository(IConfig config, IConverter converter, DateTime point)
         {
-            this.connectionString = connectionString;
+            if (config == null) throw new ArgumentException("Пожалуйста укажите параметр: config");
+            if (converter == null) throw new ArgumentException("Пожалуйста укажите параметр converter");
+            this.config = config;
+            this.converter = converter;
             this.point = point;
-            Load();
+            
         }
-
-        void Load()
+        public override void Load()
         {
             int year = point.Year;
             DateTime begin = new DateTime(year, 1, 1);
             DateTime end = new DateTime(year + 1, 1, 1);
-            
+
             dayList = GetProductionCalendar(begin, end);
 
             // Нужно вычислить:
@@ -42,14 +45,15 @@ namespace Dispetcher2.DataAccess
                     select wd;
             past = TimeSpan.Zero;
             foreach (var wd in e) past = past.Add(wd.Time);
+
+            dayList = GetTimeSheet(year);
         }
 
-        public List<WorkDay> GetProductionCalendar(DateTime beginDate, DateTime endDate)
+        List<WorkDay> GetProductionCalendar(DateTime beginDate, DateTime endDate)
         {
             List<WorkDay> result = new List<WorkDay>();
-            using (var cn = new SqlConnection())
+            using (var cn = new SqlConnection() { ConnectionString = config.ConnectionString })
             {
-                cn.ConnectionString = connectionString;
                 using (var cmd = new SqlCommand() { Connection = cn })
                 {
                     cmd.CommandText = "[dbo].[GetProductionCalendar]";
@@ -62,10 +66,15 @@ namespace Dispetcher2.DataAccess
                         while(r.Read())
                         {
                             WorkDay d = new WorkDay();
-                            d.Date = Convert.ToDateTime(r["PK_Date"]);
-                            var s = r["Dsec"];
-                            if (s is DBNull) d.Time = TimeSpan.Zero;
-                            else d.Time = TimeSpan.FromSeconds(Convert.ToDouble(s));
+                            if (converter.CheckConvert<DateTime>(r["PK_Date"]))
+                                d.Date = converter.Convert<DateTime>(r["PK_Date"]);
+
+                            if (converter.CheckConvert<double>(r["Dsec"]))
+                            {
+                                double x = converter.Convert<double>(r["Dsec"]);
+                                d.Time = TimeSpan.FromSeconds(x);
+                            }
+                            
                             result.Add(d);
                         }
                         
@@ -74,9 +83,74 @@ namespace Dispetcher2.DataAccess
             }
             return result;
         }
+        List<WorkDay> GetTimeSheet(int year)
+        {
+            List<WorkDay> result = new List<WorkDay>();
+            using (var cn = new SqlConnection() { ConnectionString = config.ConnectionString })
+            {
+                using (var cmd = new SqlCommand() { Connection = cn })
+                {
+                    cmd.CommandText = "[dbo].[GetTimeSheet]";
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Year", year);
+                    cn.Open();
+                    using (var r = cmd.ExecuteReader())
+                    {
+                        while (r.Read())
+                        {
+                            WorkDay d = new WorkDay();
 
+                            if (converter.CheckConvert<string>(r["PK_Login"]))
+                                d.Login = converter.Convert<string>(r["PK_Login"]);
+
+                            if (converter.CheckConvert<string>(r["LastName"]))
+                                d.LastName = converter.Convert<string>(r["LastName"]);
+
+                            if (converter.CheckConvert<string>(r["Name"]))
+                                d.Name = converter.Convert<string>(r["Name"]);
+
+                            if (converter.CheckConvert<string>(r["SecondName"]))
+                                d.SecondName = converter.Convert<string>(r["SecondName"]);
+
+                            if (converter.CheckConvert<string>(r["NameJob"]))
+                                d.JobName = converter.Convert<string>(r["NameJob"]);
+
+                            if (converter.CheckConvert<int>(r["OperationGroupId"]))
+                                d.OperationGroupId = converter.Convert<int>(r["OperationGroupId"]);
+
+                            if (converter.CheckConvert<string>(r["TabNum"]))
+                                d.TabNum = converter.Convert<string>(r["TabNum"]);
+
+                            if (converter.CheckConvert<bool>(r["ITR"]))
+                                d.ITR = converter.Convert<bool>(r["ITR"]);
+
+                            if (converter.CheckConvert<DateTime>(r["PK_Date"]))
+                                d.Date = converter.Convert<DateTime>(r["PK_Date"]);
+
+                            if (converter.CheckConvert<string>(r["Val_Time"]))
+                                d.TimeString = converter.Convert<string>(r["Val_Time"]);
+
+                            if (converter.CheckConvert<double>(r["Val_TimeFloat"]))
+                            {
+                                var t = converter.Convert<double>(r["Val_TimeFloat"]);
+                                d.Time = TimeSpan.FromHours(t);
+                            }
+
+                            result.Add(d);
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+        public override System.Collections.IEnumerable GetList()
+        {
+            if (dayList == null) Load();
+            return dayList;
+        }
         public override IEnumerable<WorkDay> GetWorkDays()
         {
+            if (dayList == null) Load();
             return dayList;
         }
 

@@ -16,11 +16,32 @@ namespace Dispetcher2
 {
     public partial class F_Settings : Form
     {
+        IConfig config;
+        // Внешняя зависимость!
         KitUpdaterControl kuc = null;
+        // Внешняя зависимость!
         ImportDataControl idc = null;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_Orders orders;
+
+        DataTable Dt_Sp = new DataTable();
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_UpdaterSP updater;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_TimeSheetsV1 TSHV1;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_Details Detail;
         public int SelectedOrderId { set; get; }
-        public F_Settings()
+        public F_Settings(IConfig config, IConverter converter)
         {
+            if (config == null) throw new ArgumentException("Пожалуйста укажите параметр: config");
+            if (converter == null) throw new ArgumentException("Пожалуйста укажите параметр converter");
+            this.config = config;
+            orders = new C_Orders(config);
+            updater = new C_UpdaterSP(config);
+            TSHV1 = new C_TimeSheetsV1(config, converter);
+            Detail = new C_Details(config);
+
             InitializeComponent();
             DT_Orders.Columns.Add("PK_IdOrder", typeof(int));
             DT_Orders.Columns.Add("OrderNum", typeof(string));
@@ -29,6 +50,8 @@ namespace Dispetcher2
             DT_Orders.Columns.Add("StartDate", typeof(DateTime));
             DT_Orders.Columns.Add("PlannedDate", typeof(DateTime));
             DT_Orders.Columns.Add("Amount", typeof(Int16));
+
+            
         }
 
         private void F_Settings_Load(object sender, EventArgs e)
@@ -82,13 +105,13 @@ namespace Dispetcher2
             else
                 if (tB_SHCMFolder.Text.Trim() == "") MessageBox.Show("Не указан ЩЦМ.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 else
-                    if (C_Orders.Check_IdLoodsman(IdLoodsman)) MessageBox.Show("Папка с таким Id Loodsman уже зарегистрирована.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    if (orders.Check_IdLoodsman(IdLoodsman)) MessageBox.Show("Папка с таким Id Loodsman уже зарегистрирована.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 else
-                if (C_Orders.Check_ShcmDetail(tB_SHCMFolder.Text.Trim())) MessageBox.Show("Папка с таким ЩЦМ уже зарегистрирована.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                if (orders.Check_ShcmDetail(tB_SHCMFolder.Text.Trim())) MessageBox.Show("Папка с таким ЩЦМ уже зарегистрирована.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 else
                     if (tB_NameFolder.Text.Trim() == "") MessageBox.Show("Не указано наименование папки.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     else
-                        if (C_UpdaterSP.InsertFolderInSp_Details(IdLoodsman,tB_SHCMFolder.Text.Trim(), tB_NameFolder.Text.Trim()))
+                        if (updater.InsertFolderInSp_Details(IdLoodsman,tB_SHCMFolder.Text.Trim(), tB_NameFolder.Text.Trim()))
                         {
                             MessageBox.Show("Запись прошла успешно.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             tB_SHCMFolder.Text = ""; tB_NameFolder.Text = ""; tB_IdLdsman.Text = "";
@@ -108,34 +131,36 @@ namespace Dispetcher2
             if (tB_ShCM.Text.Trim().Length == 0) MessageBox.Show("Заполните поле \"ЩЦМ детали\"", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             else
             {
-                C_Gper.con.ConnectionString = C_Gper.ConStr_Loodsman;
-                SqlCommand cmd = new SqlCommand();
-                cmd.CommandTimeout = 100;
-                /*cmd.CommandText = "select v.Product, a.value, v.dateofCreate,v.id,v.idtype from rvwVersions v " +
-                                  "inner join rvwAttributes a on a.idversion=v.id " +
-                                  "where a.idattr=235 and v.idtype in (232,233) and v.product like '" + tB_ShCM.Text.Trim() + "' and  v.idstate in (36,40)";
-                //"where a.idattr=235 and v.idtype in (232,233,278) and v.product like '" + tB_ShCM.Text.Trim() + "' and v.idstate=40 order by idstate desc"; //235 - Название ЩЦМ idstate(статус)=36-Проектирование,40-Утвержден*/
+                using (SqlConnection con = new SqlConnection())
+                {
+                    con.ConnectionString = config.LoodsmanConnectionString;
+                    SqlCommand cmd = new SqlCommand();
+                    cmd.CommandTimeout = 100;
+                    /*cmd.CommandText = "select v.Product, a.value, v.dateofCreate,v.id,v.idtype from rvwVersions v " +
+                                      "inner join rvwAttributes a on a.idversion=v.id " +
+                                      "where a.idattr=235 and v.idtype in (232,233) and v.product like '" + tB_ShCM.Text.Trim() + "' and  v.idstate in (36,40)";
+                    //"where a.idattr=235 and v.idtype in (232,233,278) and v.product like '" + tB_ShCM.Text.Trim() + "' and v.idstate=40 order by idstate desc"; //235 - Название ЩЦМ idstate(статус)=36-Проектирование,40-Утвержден*/
 
-                cmd.CommandText = "select v.Product, a.value, v.dateofCreate,v.id,v.idtype from rvwVersions v " +
-                  "inner join rvwAttributes a on a.idversion=v.id " +
-                  //"where a.idattr=235 and v.idtype in (232,233) and v.product like '" + tB_ShCM.Text.Trim() + "' and  v.idstate in (36,40)";
-                  "where v.product like '" + tB_ShCM.Text.Trim() + "'"; //235 - Название ЩЦМ idstate(статус)=36-Проектирование,40-Утвержден
+                    cmd.CommandText = "select v.Product, a.value, v.dateofCreate,v.id,v.idtype from rvwVersions v " +
+                      "inner join rvwAttributes a on a.idversion=v.id " +
+                      //"where a.idattr=235 and v.idtype in (232,233) and v.product like '" + tB_ShCM.Text.Trim() + "' and  v.idstate in (36,40)";
+                      "where v.product like '" + tB_ShCM.Text.Trim() + "'"; //235 - Название ЩЦМ idstate(статус)=36-Проектирование,40-Утвержден
 
-                cmd.Connection = C_Gper.con;
-                SqlDataAdapter adapter = new SqlDataAdapter();
-                adapter.SelectCommand = cmd;
-                DataSet dataSet = new DataSet();
-                adapter.Fill(dataSet, "DetailInfo");
-                adapter.Dispose();
-                C_Gper.con.Close();
-                dGV_Loodsman.DataSource = dataSet.Tables["DetailInfo"];
+                    cmd.Connection = con;
+                    SqlDataAdapter adapter = new SqlDataAdapter();
+                    adapter.SelectCommand = cmd;
+                    DataSet dataSet = new DataSet();
+                    adapter.Fill(dataSet, "DetailInfo");
+                    adapter.Dispose();
+                    con.Close();
+                    dGV_Loodsman.DataSource = dataSet.Tables["DetailInfo"];
+                }
             }
         }
         #endregion
 
         #region UpdatesSp_Details (Auto load data from Loodsman in Dispetcher2)
-        DataTable Dt_Sp = new DataTable();
-        C_UpdaterSP updater = new C_UpdaterSP();
+
 
         private void tB_IdLoodsman_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -168,7 +193,7 @@ namespace Dispetcher2
         private void btn_TehnologyUpdate_Click(object sender, EventArgs e)
         {
             //1.производим поиск деталей в работе
-            C_UpdaterSP.SelectDetailsInWork(ref DT_Details);
+            updater.SelectDetailsInWork(ref DT_Details);
             if (DT_Details.Rows.Count > 0)
             {
                 bool err = false;
@@ -181,8 +206,9 @@ namespace Dispetcher2
                 string Shcm = "";
                 foreach (DataRow row in DT_Details.Rows)
                 {
-                    C_Details Detail = new C_Details(Convert.ToInt64(row["IdLoodsman"]));
-                    Detail.GetTehnologyFromLoodsman(ref DT_Tehnology);
+                    //C_Details Detail = new C_Details(Convert.ToInt64(row["IdLoodsman"]));
+                    var id = Convert.ToInt64(row["IdLoodsman"]);
+                    Detail.GetTehnologyFromLoodsman(ref DT_Tehnology, id);
                     FK_IdDetails = Convert.ToInt64(row["PK_IdDetail"]);
                     IdLoodsman = Convert.ToInt64(row["IdLoodsman"]);
                     Shcm = row["ShcmDetail"].ToString();
@@ -190,14 +216,14 @@ namespace Dispetcher2
                     if (DT_Tehnology.Rows.Count > 0)
                     {
                         //Удаляем технологию для конкретной детали из справочника Sp_TechnologyDetails
-                        C_UpdaterSP.DeleteTechnologyDetails(FK_IdDetails);
+                        updater.DeleteTechnologyDetails(FK_IdDetails);
                         //Производим запись каждой операции в справочник Sp_TechnologyDetails
                         foreach (DataRow row_teh in DT_Tehnology.Rows)
                         {
                             NameOper = row_teh["Oper"].ToString();
                             NumOper = NameOper.Remove(3);
                             NameOper = NameOper.Remove(0, NameOper.IndexOf(' ', 2) + 1);
-                            FK_IdOperation = C_Details.Find_FK_IdOperationInSp_Operations(NameOper);
+                            FK_IdOperation = Detail.Find_FK_IdOperationInSp_Operations(NameOper);
                             if (FK_IdOperation == 0)
                             {
                                 err = true;
@@ -207,7 +233,7 @@ namespace Dispetcher2
                             {
                                 int Tpd2 = Convert.ToInt32(row_teh["Tpd"] == DBNull.Value ? 0 : int.TryParse(row_teh["Tpd"].ToString(), out var number) == true ? Convert.ToInt32(row_teh["Tpd"]) : 0);
                                 int Tsh2 = Convert.ToInt32(row_teh["Tsh"] == DBNull.Value ? 0 : int.TryParse(row_teh["Tsh"].ToString(), out var number2) == true ? Convert.ToInt32(row_teh["Tsh"]) : 0);
-                                if (!C_UpdaterSP.InsertTechnologyDetails(FK_IdDetails, NumOper, FK_IdOperation, Tpd2, Tsh2))
+                                if (!updater.InsertTechnologyDetails(FK_IdDetails, NumOper, FK_IdOperation, Tpd2, Tsh2))
                                 {
                                     err = true;
                                     MessageBox.Show("ID Детали:\"" + FK_IdDetails.ToString() + "\",IdLoodsman: \"" + IdLoodsman + "\", \"" + Shcm +
@@ -235,10 +261,22 @@ namespace Dispetcher2
             numUD_year3.Value = DateTime.Now.Year;
             //******************
             _Dt_Worker.Clear();
-            C_DataBase DB = new C_DataBase(C_Gper.ConnStrDispetcher2);
+            
             string sql = "Select PK_Login From Users Where OnlyUser = 0" + "\n" +
                 "Order by PK_Login";
-            DB.Select_DT(ref _Dt_Worker, sql);
+            
+
+            using (var con = new SqlConnection())
+            {
+                con.ConnectionString = config.ConnectionString;
+                SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//using System.Data.SqlClient;
+                cmd.CommandText = sql;
+                cmd.Connection = con;
+                SqlDataAdapter adapter = new SqlDataAdapter(cmd);//adapter.SelectCommand = cmd;
+                adapter.Fill(_Dt_Worker);
+                adapter.Dispose();
+            }
+
             //****************
             cB_WorkersTURV.DataSource = _Dt_Worker;
             cB_WorkersTURV.DisplayMember = "PK_Login";
@@ -259,8 +297,9 @@ namespace Dispetcher2
             else
             {
                 DateTime DateT = Convert.ToDateTime("01." + NumMonth + "." + NumYear);
-
-                C_TimeSheetsV1 TSHV1 = new C_TimeSheetsV1(NumMonth, NumYear) { LoginUs = cB_WorkersTURV.SelectedValue.ToString(), Val_Time = "8" };
+                
+                TSHV1.LoginUs = cB_WorkersTURV.SelectedValue.ToString();
+                TSHV1.Val_Time = "8";
                 DateTime DateLast;
                 if (NumMonth == 12) DateLast = Convert.ToDateTime("31.12." + NumYear);
                 else DateLast = Convert.ToDateTime("01." + (NumMonth + 1) + "." + NumYear);
@@ -285,13 +324,10 @@ namespace Dispetcher2
             if (NumMonth == 0) MessageBox.Show("Не указан месяц.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             else
             {
-                //DateTime DateT = Convert.ToDateTime("01." + NumMonth + "." + NumYear);
-                //DateTime DateT2 = Convert.ToDateTime("01." + (NumMonth +1) + "." + NumYear);
-
-                C_TimeSheetsV1 TSHV = new C_TimeSheetsV1(NumMonth, NumYear) { LoginUs = cB_WorkersTURV2.SelectedValue.ToString() };
-                TSHV.Delete_NoteData();//Удаляем примечание для выбранного сотрудника
-                TSHV.DeleteDataLogin();//Удаляем примечание для выбранного сотрудника
-                if (!TSHV.Err) MessageBox.Show("Данные сотрудника успешно удалены.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                TSHV1.LoginUs = cB_WorkersTURV2.SelectedValue.ToString();
+                TSHV1.Delete_NoteData(NumMonth, NumYear);//Удаляем примечание для выбранного сотрудника
+                TSHV1.DeleteDataLogin(NumMonth, NumYear);//Удаляем примечание для выбранного сотрудника
+                if (!TSHV1.Err) MessageBox.Show("Данные сотрудника успешно удалены.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
         //************************
@@ -301,9 +337,10 @@ namespace Dispetcher2
             else
             {
                 //Версия 1
-                C_TimeSheetsV1 TSHV1 = new C_TimeSheetsV1(cB_MonthTURV.SelectedIndex + 1, (int)numUD_year.Value);
-                TSHV1.DeleteData(chB_Fired.Checked);//Удаляем данные табеля
-                TSHV1.Delete_NoteDataBefore(chB_Fired.Checked);//Удаляем примечания. НЕ ТРОГАТЬ!!! Это необходимо для очистки таблицы TimeSheetsNote в случае возникновения ошибок при записи в таблицу TimeSheets
+                int month = cB_MonthTURV.SelectedIndex + 1;
+                int year = (int)numUD_year.Value;
+                TSHV1.DeleteData(month, year, chB_Fired.Checked);//Удаляем данные табеля
+                TSHV1.Delete_NoteDataBefore(month, year, chB_Fired.Checked);//Удаляем примечания. НЕ ТРОГАТЬ!!! Это необходимо для очистки таблицы TimeSheetsNote в случае возникновения ошибок при записи в таблицу TimeSheets
                 if (!TSHV1.Err) MessageBox.Show("Данные удалены.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
@@ -314,8 +351,9 @@ namespace Dispetcher2
             else
             {
                 //Версия 1
-                C_TimeSheetsV1 TSHV1 = new C_TimeSheetsV1(cB_MonthTURV.SelectedIndex + 1, (int)numUD_year.Value);
-                TSHV1.Delete_NoteDataBefore(chB_Fired.Checked);//Удаляем примечания. НЕ ТРОГАТЬ!!! Это необходимо для очистки таблицы TimeSheetsNote в случае возникновения ошибок при записи в таблицу TimeSheets
+                int month = cB_MonthTURV.SelectedIndex + 1;
+                int year = (int)numUD_year.Value;
+                TSHV1.Delete_NoteDataBefore(month, year, chB_Fired.Checked);//Удаляем примечания. НЕ ТРОГАТЬ!!! Это необходимо для очистки таблицы TimeSheetsNote в случае возникновения ошибок при записи в таблицу TimeSheets
                 if (!TSHV1.Err) MessageBox.Show("Данные удалены.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
@@ -335,7 +373,7 @@ namespace Dispetcher2
 
         private void tabPage_TURV_Enter(object sender, EventArgs e)
         {
-            C_Orders.SelectOrdersData(2, ref DT_Orders);//2-opened. LoadOrders
+            orders.SelectOrdersData(2, ref DT_Orders);//2-opened. LoadOrders
         }
 
         private void tB_OrderNum_TextChanged(object sender, EventArgs e)
@@ -375,53 +413,10 @@ namespace Dispetcher2
                 DateTime StartDate = dTP_StartOrdDate.Value;
                 DateTime PlannedDate = dTP_PlannedDate.Value;
                 Int16 Amount = Convert.ToInt16(numUD_Amount.Value);
-                if (C_Orders.UpdateOrder(PK_IdOrder, OrderName, OrderNum1C, StartDate, PlannedDate, Amount))
+                if (orders.UpdateOrder(PK_IdOrder, OrderName, OrderNum1C, StartDate, PlannedDate, Amount))
                     MessageBox.Show("Изменения в заказе успешно сохранены.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-
-
-
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         #endregion
 
@@ -430,24 +425,26 @@ namespace Dispetcher2
             if (tB_ShCM2.Text.Trim().Length == 0) MessageBox.Show("Заполните поле \"ЩЦМ детали\"", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             else
             {
-                C_Gper.con.ConnectionString = C_Gper.ConStr_Loodsman;
-                SqlCommand cmd = new SqlCommand();
-                cmd.CommandTimeout = 100;
-                cmd.CommandText = "select v.Product, a.value, v.dateofCreate,v.id,v.idtype from rvwVersions v " +
-                                  "inner join rvwAttributes a on a.idversion=v.id " +
-                                  "where a.idattr=235 and v.idtype in (232,233) and v.product like '%" + tB_ShCM2.Text.Trim().Replace("ЩЦМ", "").Replace("щцм", "") + "%' and  v.idstate in (36,40,30)";
-                //"where a.idattr=235 and v.idtype in (232,233,278) and v.product like '" + tB_ShCM.Text.Trim() + "' and v.idstate=40 order by idstate desc"; //235 - Название ЩЦМ idstate(статус)=36-Проектирование,40-Утвержден
+                using (SqlConnection con = new SqlConnection())
+                {
+                    con.ConnectionString = config.LoodsmanConnectionString;
+                    SqlCommand cmd = new SqlCommand();
+                    cmd.CommandTimeout = 100;
+                    cmd.CommandText = "select v.Product, a.value, v.dateofCreate,v.id,v.idtype from rvwVersions v " +
+                                      "inner join rvwAttributes a on a.idversion=v.id " +
+                                      "where a.idattr=235 and v.idtype in (232,233) and v.product like '%" + tB_ShCM2.Text.Trim().Replace("ЩЦМ", "").Replace("щцм", "") + "%' and  v.idstate in (36,40,30)";
+                    //"where a.idattr=235 and v.idtype in (232,233,278) and v.product like '" + tB_ShCM.Text.Trim() + "' and v.idstate=40 order by idstate desc"; //235 - Название ЩЦМ idstate(статус)=36-Проектирование,40-Утвержден
 
 
-                cmd.Connection = C_Gper.con;
-                SqlDataAdapter adapter = new SqlDataAdapter();
-                adapter.SelectCommand = cmd;
-                DataSet dataSet = new DataSet();
-                adapter.Fill(dataSet, "DetailInfo");
-                adapter.Dispose();
-                C_Gper.con.Close();
-                dataGridView1.DataSource = dataSet.Tables["DetailInfo"];
-
+                    cmd.Connection = con;
+                    SqlDataAdapter adapter = new SqlDataAdapter();
+                    adapter.SelectCommand = cmd;
+                    DataSet dataSet = new DataSet();
+                    adapter.Fill(dataSet, "DetailInfo");
+                    adapter.Dispose();
+                    
+                    dataGridView1.DataSource = dataSet.Tables["DetailInfo"];
+                }
 
             }
         }
@@ -485,7 +482,7 @@ namespace Dispetcher2
             ImportData1CButton.Enabled = false;
             if (kuc == null)
             {
-                kuc = new KitUpdaterControl();
+                kuc = new KitUpdaterControl(config);
                 kuc.FinishEvent += OnFinishEvent;
                 KitElementHost.Child = kuc;
             }
@@ -522,7 +519,7 @@ namespace Dispetcher2
             ImportData1CButton.Enabled = false;
             if (idc == null)
             {
-                idc = new ImportDataControl();
+                idc = new ImportDataControl(config);
                 idc.FinishEvent += OnFinishEvent;
                 KitElementHost.Child = idc;
             }

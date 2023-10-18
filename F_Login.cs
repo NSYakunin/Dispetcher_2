@@ -15,21 +15,46 @@ namespace Dispetcher2
 {
     public partial class F_Login : Form
     {
-        public F_Login()
+        static string ActiveUserLogin = "";
+
+        // модель представления для списка серверов
+        LoginViewModel vm;
+        // Конфигурация
+        IConfig config;
+        // Форма, которая открывается в случае успеха
+        Form successForm;
+
+        // Нарушение правила разделения ответственности!
+        // Требуется вынести работу с базой данных в шаблон Repository (Хранилище)
+        public F_Login(LoginViewModel vm, IConfig config, Form successForm)
         {
+            if (vm == null) throw new Exception("Пожалуйста укажите параметр vm");
+            if (config == null) throw new Exception("Пожалуйста укажите параметр config");
+            if (successForm == null) throw new Exception("Пожалуйста укажите параметр successForm");
+
+            this.vm = vm;
+            this.config = config;
+            this.successForm = successForm;
 
             InitializeComponent();
+
+            // привязка списка серверов к модели представления
+            serverComboBox.DataSource = vm.ServerList;
+            serverComboBox.DisplayMember = "Name";
+            // OnPropertyChanged не работает, все равно привязка не обновляется до потери фокуса
+            serverComboBox.DataBindings.Add("SelectedItem", vm, "SelectedServer", false, DataSourceUpdateMode.OnPropertyChanged);
         }
 
         private void F_Login_Load(object sender, EventArgs e)
         {
+            ProcessLoad();
+        }
+
+        void ProcessLoad()
+        {
             Hide_gB_NewLogin(true);
             DataTable DT = new DataTable();
-            C_DataBase DB = new C_DataBase(C_Gper.ConnStrDispetcher2);
-            string sql = "SELECT StartDate, EndDate, Note FROM Sp_Note" + "\n" +
-                         "Where '" + DateTime.Now.ToShortDateString() + "' >= StartDate and '" + DateTime.Now.ToShortDateString() + "' <= EndDate \n" +
-                         "order by StartDate desc";
-            DB.Select_DT(ref DT, sql);
+            Sp_Note(DT);
             if (DT.Rows.Count == 0) HideServerMessage(true);
             else
             {
@@ -41,17 +66,17 @@ namespace Dispetcher2
                 }
                 //HideServerMessage(false);
             }
-            C_Gper.AddTablesDs_Sp();
+
             //Определяем текущего пользователя
             //lbl_User.Text = Environment.UserName + "|" + Environment.MachineName;
             lbl_User.Text = "Логин: " + Environment.UserName;
 
             string[] devs = { "NSYakunin", "IAPotapov" };
-            if (!devs.Contains(Environment.UserName))  panel1.Visible = false;
+            if (!devs.Contains(Environment.UserName)) panel1.Visible = false;
             else panel1.Visible = true;
 
             NameValueCollection appSettings = ConfigurationManager.AppSettings;
-            this.comboBox1.SelectedIndex = appSettings["SelectedIndex"] == "0" ? 0 : 1;
+            this.serverComboBox.SelectedIndex = appSettings["SelectedIndex"] == "0" ? 0 : 1;
         }
 
         private void Hide_gB_NewLogin(bool hide)
@@ -109,23 +134,24 @@ namespace Dispetcher2
                 else
                 {
                     //*****************************************
-                    if (mychB_NewLogin.Checked) C_Gper.ActiveUserLogin = tB_NewLogin.Text.Trim();
+                    if (mychB_NewLogin.Checked) ActiveUserLogin = tB_NewLogin.Text.Trim();
                     else
-                        C_Gper.ActiveUserLogin = Environment.UserName;
+                        ActiveUserLogin = Environment.UserName;
                     //*****************************************
                     string pass;
-                    if (C_Gper.ActiveUserLogin.Length == 0) MessageBox.Show("Введите логин пользователя.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    if (ActiveUserLogin.Length == 0) MessageBox.Show("Введите логин пользователя.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     else
-                        if (!CheckUserPass(C_Gper.ActiveUserLogin, out pass)) MessageBox.Show("Доступ запрещён.(Логин))", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    {
+                        if (!CheckUserPass(ActiveUserLogin, out pass)) MessageBox.Show("Доступ запрещён.(Логин))", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         else
                             if (pass != tB_Password.Text.Trim()) MessageBox.Show("Доступ запрещён.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                            else
-                            {
-                                F_Index Form_Index = new F_Index();
-                                this.Visible = false;
-                                Form_Index.ShowDialog();
-                                this.Close();
-                            }
+                        else
+                        {
+                            this.Hide();
+                            successForm.ShowDialog();
+                            this.Close();
+                        }
+                    }
                 }
             }
         }
@@ -135,75 +161,101 @@ namespace Dispetcher2
             pass = "";
             try
             {
-                C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
-                SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
-                SqlDataReader reader;
-                cmd.Parameters.Clear();
-                cmd.CommandText = "SELECT Pass,F_Orders,F_Orders_View,F_Fact,F_Fact_View,F_Kit,F_Technology,F_Planning,F_Reports,F_Users,F_Settings" + "\n" +
-                "FROM UsersAccess" + "\n" +
-                "Where FK_Login=@FK_Login";
-                cmd.Parameters.Add(new SqlParameter("@FK_Login", SqlDbType.VarChar));
-                cmd.Parameters["@FK_Login"].Value = LoginUser;
-                cmd.Connection = C_Gper.con;
-                C_Gper.con.Open();
-                reader = cmd.ExecuteReader();
-                if (reader.HasRows)
+                using (var con = new SqlConnection())
                 {
-                    while (reader.Read())
+                    con.ConnectionString = config.ConnectionString;
+                    SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
+                    SqlDataReader reader;
+                    cmd.Parameters.Clear();
+                    cmd.CommandText = "SELECT Pass,F_Orders,F_Orders_View,F_Fact,F_Fact_View,F_Kit,F_Technology,F_Planning,F_Reports,F_Users,F_Settings" + "\n" +
+                    "FROM UsersAccess" + "\n" +
+                    "Where FK_Login=@FK_Login";
+                    cmd.Parameters.Add(new SqlParameter("@FK_Login", SqlDbType.VarChar));
+                    cmd.Parameters["@FK_Login"].Value = LoginUser;
+                    cmd.Connection = con;
+                    con.Open();
+                    reader = cmd.ExecuteReader();
+                    if (reader.HasRows)
                     {
-                        if (!reader.IsDBNull(0)) pass = reader.GetString(0);
-                        C_Gper.Orders_Set = reader.GetBoolean(1);
-                        C_Gper.F_Orders_View = reader.GetBoolean(2);
-                        C_Gper.Fact_Set = reader.GetBoolean(3);
-                        C_Gper.F_Fact_View = reader.GetBoolean(4);
-                        C_Gper.Kit_Set = reader.GetBoolean(5);
-                        C_Gper.Technology_Set = reader.GetBoolean(6);
-                        C_Gper.Planning_Set = reader.GetBoolean(7);
-                        C_Gper.Reports_Set = reader.GetBoolean(8);
-                        C_Gper.Users_Set = reader.GetBoolean(9);
-                        C_Gper.Settings_Set = reader.GetBoolean(10);
+                        while (reader.Read())
+                        {
+                            if (!reader.IsDBNull(0)) pass = reader.GetString(0);
+                            C_Gper.Orders_Set = reader.GetBoolean(1);
+                            C_Gper.F_Orders_View = reader.GetBoolean(2);
+                            C_Gper.Fact_Set = reader.GetBoolean(3);
+                            C_Gper.F_Fact_View = reader.GetBoolean(4);
+                            C_Gper.Kit_Set = reader.GetBoolean(5);
+                            C_Gper.Technology_Set = reader.GetBoolean(6);
+                            C_Gper.Planning_Set = reader.GetBoolean(7);
+                            C_Gper.Reports_Set = reader.GetBoolean(8);
+                            C_Gper.Users_Set = reader.GetBoolean(9);
+                            C_Gper.Settings_Set = reader.GetBoolean(10);
+                        }
+                        reader.Dispose(); reader.Close();
+                        return true;
                     }
-                    reader.Dispose(); reader.Close(); C_Gper.con.Close();
-                    return true;
+                    else
+                    {
+                        reader.Dispose(); reader.Close();
+                        return false;
+                    }
                 }
-                else
-                {
-                    reader.Dispose(); reader.Close(); C_Gper.con.Close();
-                    return false;
-                }
+                
             }
             catch (Exception ex)
             {
-                C_Gper.con.Close();
                 MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
         }
 
-        private void comboBox1_SelectionChangeCommitted(object sender, EventArgs e)
+        private void OnSelectionChangeCommitted(object sender, EventArgs e)
         {
-            if (comboBox1.SelectedIndex == 1)
+            // этот костыль приходится писать, чтобы принудительно обновить привязку
+            // иначе в Windows Forms обновление привязки не произойдет до потери фокуса
+            try
             {
-                NameValueCollection appSettings = ConfigurationManager.AppSettings;
-                comboBox1.SelectedIndex = Convert.ToInt32(appSettings["SelectedIndex"]);
-                var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-                config.AppSettings.Settings["SelectedIndex"].Value = "1";
-                config.Save();
-                ConfigurationManager.RefreshSection("appSettings");
-                Application.Restart();
-
+                ((ComboBox)sender).DataBindings["SelectedItem"].WriteValue();
             }
-            else
+            catch
             {
-                NameValueCollection appSettings = ConfigurationManager.AppSettings;
-                comboBox1.SelectedIndex = Convert.ToInt32(appSettings["SelectedIndex"]);
-                var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-                config.AppSettings.Settings["SelectedIndex"].Value = "0";
-                config.Save();
-                ConfigurationManager.RefreshSection("appSettings");
-                Application.Restart();
-
+                // игнорируем исключения в WriteValue
+                vm.SelectedServer = null;
             }
+            Action a = this.ProcessLoad;
+            this.BeginInvoke(a);
+        }
+
+        void Sp_Note(DataTable DT)
+        {
+            
+            string sql = "SELECT StartDate, EndDate, Note FROM Sp_Note" + "\n" +
+                         "Where '" + DateTime.Now.ToShortDateString() + "' >= StartDate and '" + DateTime.Now.ToShortDateString() + "' <= EndDate \n" +
+                         "order by StartDate desc";
+
+            DT.Clear();
+            try
+            {
+                using (var con = new SqlConnection())
+                {
+                    con.ConnectionString = config.ConnectionString;
+                    SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//using System.Data.SqlClient;
+                    cmd.CommandText = sql;
+                    cmd.Connection = con;
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);//adapter.SelectCommand = cmd;
+                    adapter.Fill(DT);
+                    adapter.Dispose();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void F_Login_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            
         }
     }
 }

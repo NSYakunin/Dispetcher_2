@@ -12,37 +12,21 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Media.Animation;
-using System.ComponentModel;
+
 
 namespace Dispetcher2.Controls
 {
     /// <summary>
     /// Логика взаимодействия для WaitControl.xaml
     /// </summary>
-    public partial class WaitControl : UserControl, INotifyPropertyChanged
+    public partial class WaitControl : UserControl
     {
-        string messageValue;
-        public event PropertyChangedEventHandler PropertyChanged;
-        public string Message
-        {
-            get { return messageValue; }
-            set
-            {
-                messageValue = value;
-                if (PropertyChanged != null)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs(nameof(Message)));
-                }
-            }
-        }
-
         public WaitControl()
         {
             InitializeComponent();
-            this.DataContext = this;
-            Stop();
+            Start();
         }
-        public void Start()
+        void Start()
         {
             mainGrid.Visibility = Visibility.Visible;
             var a = new DoubleAnimation();
@@ -52,12 +36,15 @@ namespace Dispetcher2.Controls
             a.RepeatBehavior = RepeatBehavior.Forever;
             waitTransform.BeginAnimation(RotateTransform.AngleProperty, a);
         }
-
-        public void Stop()
+        void Stop()
         {
             waitTransform.BeginAnimation(RotateTransform.AngleProperty, null);
             mainGrid.Visibility = Visibility.Hidden;
+        }
 
+        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
+        {
+            Stop();
         }
     }
 }

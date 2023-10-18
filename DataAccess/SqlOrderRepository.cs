@@ -6,15 +6,13 @@ using System.Data;
 using System.Data.SqlClient;
 
 using Dispetcher2.Class;
+using System.Collections;
 
 namespace Dispetcher2.DataAccess
 {
-    public class SqlOrder : IOrder
+    public class SqlOrder : Order
     {
-        public int Id { get; set; }
-        public string Number { get; set; }
-        public string Name { get; set; }
-        public string Num1С { get; set; }
+        
         public DateTime CreateDate { get; set; }
         public int Status { get; set; }
         public bool ValidationOrder { get; set; }
@@ -27,26 +25,45 @@ namespace Dispetcher2.DataAccess
     {
         IConfig config;
         Nullable<int> status = null;
-        public SqlOrderRepository(IConfig config)
+        List<SqlOrder> orders = null;
+        IConverter converter;
+
+        public SqlOrderRepository(IConfig config, IConverter converter, Nullable<int> status = null)
         {
             if (config == null) throw new ArgumentException("Пожалуйста укажите параметр config");
+            if (converter == null) throw new ArgumentException("Пожалуйста укажите параметр converter");
             this.config = config;
-            this.status = null;
-        }
-        public SqlOrderRepository(IConfig config, int status)
-        {
-            this.config = config;
+            this.converter = converter;
             this.status = status;
         }
 
-        public override IEnumerable<IOrder> GetOrders()
+        public override IEnumerable GetList()
         {
-            return GetOrderByStatus();
+            if (orders == null) Load();
+            return orders;
+        }
+        public override IEnumerable<Order> GetOrders()
+        {
+            if (orders == null) Load();
+            return orders;
         }
 
-        List<IOrder> GetOrderByStatus()
+        public override void Load()
         {
-            List<IOrder> orderList = new List<IOrder>();
+            try
+            {
+                GetOrderByStatus();
+            }
+            catch(Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("SqlOrderRepository.Load: " + ex.Message);
+            }
+            
+        }
+
+        void GetOrderByStatus()
+        {
+            orders = new List<SqlOrder>();
             using (SqlConnection cn = new SqlConnection())
             {
                 cn.ConnectionString = config.ConnectionString;
@@ -63,41 +80,38 @@ namespace Dispetcher2.DataAccess
                         while (r.Read())
                         {
                             var item = new SqlOrder();
-                            orderList.Add(item);
-                            item.Id = Converter.GetInt(r["PK_IdOrder"]);
-                            item.Number = Converter.GetString(r["OrderNum"]);
-                            item.Name = Converter.GetString(r["OrderName"]);
-                            item.CreateDate = Converter.GetDateTime(r["DateCreateOrder"]);
-                            item.Status = Converter.GetInt(r["FK_IdStatusOrders"]);
-                            item.ValidationOrder = Converter.GetBool(r["ValidationOrder"]);
-                            item.Num1С = Converter.GetString(r["OrderNum1С"]);
-                            item.StartDate = Converter.GetDateTime(r["StartDate"]);
-                            item.PlannedDate = Converter.GetDateTime(r["PlannedDate"]);
-                            item.Amount = Converter.GetInt(r["Amount"]);
+                            
+                            if (converter.CheckConvert<int>(r["PK_IdOrder"])) 
+                                item.Id = converter.Convert<int>(r["PK_IdOrder"]);
+
+                            if (converter.CheckConvert<string>(r["OrderNum"]))
+                                item.Number = converter.Convert<string>(r["OrderNum"]);
+
+                            if (converter.CheckConvert<string>(r["OrderName"]))
+                                item.Name = converter.Convert<string>(r["OrderName"]);
+
+                            if (converter.CheckConvert<DateTime>(r["DateCreateOrder"]))
+                                item.CreateDate = converter.Convert<DateTime>(r["DateCreateOrder"]);
+
+                            if (converter.CheckConvert<int>(r["FK_IdStatusOrders"]))
+                                item.Status = converter.Convert<int>(r["FK_IdStatusOrders"]);
+
+                            if (converter.CheckConvert<bool>(r["ValidationOrder"]))
+                                item.ValidationOrder = converter.Convert<bool>(r["ValidationOrder"]);
+
+                            if (converter.CheckConvert<string>(r["OrderNum1С"]))
+                                item.Num1С = converter.Convert<string>(r["OrderNum1С"]);
+
+                            if (converter.CheckConvert<DateTime>(r["PlannedDate"]))
+                                item.PlannedDate = converter.Convert<DateTime>(r["PlannedDate"]);
+                            
+                            if (converter.CheckConvert<int>(r["Amount"]))
+                                item.Amount = converter.Convert<int>(r["Amount"]);
+                            orders.Add(item);
                         }
                     }
                 }
             }
-            return orderList;
-        }
-    }
-
-    public class MainOrderFactory : OrderFactory
-    {
-        // тут конечно надо будет сделать перечисление
-        // 1-ожидание,2-открыт,3-закрыт,4-в работе,5-выполнен
-        private const int status = 2;
-        OrderType type;
-        public MainOrderFactory(OrderType type)
-        {
-            this.type = type;
-        }
-
-        public override OrderRepository GetOrderRepository(IConfig config)
-        {
-            if (type == OrderType.SQL) return new SqlOrderRepository(config, status);
-
-            throw new NotImplementedException("В разработке...");
         }
     }
 }

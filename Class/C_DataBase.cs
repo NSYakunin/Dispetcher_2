@@ -6,42 +6,21 @@ using System.Data;
 using System.Windows.Forms;
 using System.Data.SqlClient;
 
+using Dispetcher2.DataAccess;
 
 namespace Dispetcher2.Class
 {
     class C_DataBase
     {
 
-        string connectionString;
+        IConfig config;
 
-        public C_DataBase(string connectionString)
+        public C_DataBase(IConfig config)
         {
-            this.connectionString = connectionString;
+            this.config = config;
         }
 
-        
 
-        public void Select_DT(ref DataTable DT,string SQLtext)
-        {
-            DT.Clear();
-            try
-            {
-                using (var con = new SqlConnection())
-                {
-                    con.ConnectionString = connectionString;
-                    SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//using System.Data.SqlClient;
-                    cmd.CommandText = SQLtext;
-                    cmd.Connection = con;
-                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);//adapter.SelectCommand = cmd;
-                    adapter.Fill(DT);
-                    adapter.Dispose();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
 
         /// <summary>
         /// Получение списка сборок заказа
@@ -54,7 +33,7 @@ namespace Dispetcher2.Class
             DataTable dt = new DataTable();
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = connectionString;
+                cn.ConnectionString = config.ConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -79,7 +58,7 @@ namespace Dispetcher2.Class
             DataTable dt = new DataTable();
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = connectionString;
+                cn.ConnectionString = config.LoodsmanConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -116,7 +95,7 @@ namespace Dispetcher2.Class
             DataTable dt = new DataTable();
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = connectionString;
+                cn.ConnectionString = config.LoodsmanConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -141,7 +120,7 @@ namespace Dispetcher2.Class
             DataTable dt = new DataTable();
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = connectionString;
+                cn.ConnectionString = config.ConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -166,7 +145,7 @@ namespace Dispetcher2.Class
         {
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = connectionString;
+                cn.ConnectionString = config.ConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -185,7 +164,7 @@ namespace Dispetcher2.Class
         {
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = connectionString;
+                cn.ConnectionString = config.ConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -212,7 +191,7 @@ namespace Dispetcher2.Class
         {
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = connectionString;
+                cn.ConnectionString = config.ConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -235,7 +214,7 @@ namespace Dispetcher2.Class
         {
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = connectionString;
+                cn.ConnectionString = config.ConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -255,7 +234,7 @@ namespace Dispetcher2.Class
         {
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = connectionString;
+                cn.ConnectionString = config.ConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -281,7 +260,7 @@ namespace Dispetcher2.Class
             DataTable dt = new DataTable();
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = connectionString;
+                cn.ConnectionString = config.ConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -303,108 +282,11 @@ namespace Dispetcher2.Class
         }
 
         
-        public List<Detail> GetOrderDetailAndFastener(int orderId)
-        {
-            List<Detail> detList = new List<Detail>();
-            using (var cn = new SqlConnection() { ConnectionString = connectionString })
-            {
-                using (var cmd = new SqlCommand() { Connection = cn })
-                {
-                    cmd.CommandText = "[dbo].[GetOrderDetailAndFastener]";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@OrderId", orderId);
-                    cn.Open();
-                    using (var r = cmd.ExecuteReader())
-                    {
-                        while (r.Read())
-                        {
-                            Detail item = new Detail();
-                            detList.Add(item);
-                            item.NameType = Converter.GetString(r["NameType"]);
-                            item.Position = Converter.GetInt(r["Position"]);
-                            item.Shcm = Converter.GetString(r["ShcmDetail"]);
-                            item.Name = Converter.GetString(r["NameDetail"]);
-                            item.Amount = Converter.GetInt(r["AmountDetails"]);
-                            item.AllPositionParent = Converter.GetString(r["AllPositionParent"]);
-                            item.OrderDetailId = Converter.GetLong(r["PK_IdOrderDetail"]);
-                            item.IdDetail = Converter.GetLong(r["FK_IdDetail"]);
-                            item.IdLoodsman = Converter.GetLong(r["IdLoodsman"]);
-                            item.PositionParent = Converter.GetInt(r["PositionParent"]);
-                        }
-                    }
-                }
-            }
-            return detList;
-        }
         
-        //public void Call_rep_VEDOMOST_TRUDOZATRAT_NIIPM_UNITED(Detail d)
-        //{
-        //    string s;
-        //    d.PlanOperations = new List<Operation>();
-        //    using (var cn = new SqlConnection() { ConnectionString = connectionString })
-        //    {
-        //        using (var cmd = new SqlCommand() { Connection = cn, CommandTimeout = 120 })
-        //        {
-        //            cmd.CommandText = "[dbo].[rep_VEDOMOST_TRUDOZATRAT_NIIPM_UNITED]";
-        //            cmd.CommandType = CommandType.StoredProcedure;
-        //            cmd.Parameters.AddWithValue("@objects", Convert.ToString(d.IdLoodsman));
-        //            s = $"Номер заказа=;Часть=1;Количество={d.Amount}";
-        //            cmd.Parameters.AddWithValue("@params", s);
-        //            cn.Open();
-        //            using (var r = cmd.ExecuteReader())
-        //            {
-        //                while (r.Read())
-        //                {
-        //                    // выбираем только итоговые строки
-        //                    s = Convert.ToString(r["Обозначение"]).Trim();
-        //                    if (s.Length > 0) continue;
-        //                    s = Convert.ToString(r["Наименование"]).Trim();
-        //                    if (s.Length > 0) continue;
-        //                    if (GetInt(r["numpozic"]) > 0) continue;
-        //                    if (GetInt(r["vsego"]) > 0) continue;
-
-        //                    var item = new Operation();
-        //                    item.SetName(r["marshrut"]);
-        //                    item.Numcol = GetInt(r["numcol"]);
-        //                    if (item.Numcol == 0) continue;
-        //                    item.Time = GetTime(r["Время на одну операцию по деталям"]);
-        //                    if (item.Time > TimeSpan.Zero) d.PlanOperations.Add(item);
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
-
-        //public List<Operation> GetFactOperation(long OrderDetailId)
-        //{
-        //    List<Operation> result = new List<Operation>();
-        //    using (var cn = new SqlConnection() { ConnectionString = connectionString })
-        //    {
-        //        using (var cmd = new SqlCommand() { Connection = cn })
-        //        {
-        //            cmd.CommandText = "[dbo].[GetFactOperation]";
-        //            cmd.CommandType = CommandType.StoredProcedure;
-        //            cmd.Parameters.AddWithValue("@OrderDetailId", OrderDetailId);
-        //            cn.Open();
-        //            using (var r = cmd.ExecuteReader())
-        //            {
-        //                while(r.Read())
-        //                {
-        //                    var item = new Operation();
-        //                    item.GroupId = GetInt(r["FK_IdOperGroup"]);
-        //                    item.Tpd = GetInt(r["Tpd"]);
-        //                    item.Tsh = GetInt(r["Tsh"]);
-        //                    item.Quantity = GetInt(r["fo_Amount"]);
-        //                    item.Number = GetString(r["NumOper"]);
-        //                    item.Name = GetString(r["NameOperation"]);
-        //                    result.Add(item);
-        //                }
-        //            }
-        //        }
-        //    }
-        //    return result;
-        //}
+        
 
         
+
+
     }
 }

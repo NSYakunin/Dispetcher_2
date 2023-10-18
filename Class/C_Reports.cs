@@ -9,6 +9,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 using System.Drawing;
 using SourceGrid;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace Dispetcher2.Class
 {
@@ -19,25 +20,21 @@ namespace Dispetcher2.Class
         private int[] _OperGroupFactTime;// Только для "План-график (форма №6)"
         private int[] _FactTime; // Только для "План-график (форма №6)
         private bool _err = false;//Наличие ошибок при формировании отчёта
+        IConfig config;
 
-        public C_Reports()
+        public C_Reports(IConfig config)
         {
+            if (config == null) throw new ArgumentException("Пожалуйста укажите параметр config");
+            this.config = config;
             _DT = new DataTable();
+
+            _OperGroupFactTime = new int[12];
+            _FactTime = new int[12];
         }
 
         public bool RepErrors
         {
             get { return _err; }
-        }
-
-        public C_Reports(bool PlanSheduleForm6)// Только для "План-график (форма №6)"
-        {
-            _DT = new DataTable();
-            if (PlanSheduleForm6)
-            {
-                _OperGroupFactTime = new int[12];
-                _FactTime = new int[12];
-            } 
         }
 
         public int[] GetGroupTimeForm6()
@@ -50,6 +47,12 @@ namespace Dispetcher2.Class
             return _FactTime;
         }
 
+        float DecimalToSec(decimal time)
+        {
+            string[] temp = time.ToString(CultureInfo.InvariantCulture).Split('.');
+            if (time.ToString().IndexOf(".") > 0) temp = time.ToString().Split('.');
+            return (Convert.ToInt32(temp[0]) * 3600) + Convert.ToInt32(temp[1]) * 60;
+        }
 
         // Только для "План-график (форма №6)"
         private int NormTimeFabrication(bool OnlyOncePay, int Tpd, int Tsh, int Amount)
@@ -143,16 +146,16 @@ namespace Dispetcher2.Class
             try
             {
                 _DT.Clear();
-                using (C_Gper.con)
+                using (SqlConnection con = new SqlConnection())
                 {
-                    C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
+                    con.ConnectionString = config.ConnectionString;
 
                     //Если не выбрано ничего, то процедура rep3All, если выбран логин rep3Worker, и наконец если выбран цех rep3Ceh
                     string sqlExpression = (loginWorker == "" & IdCeh == -1) ? "rep3All" : loginWorker != "" ? "rep3Worker" : "rep3Ceh";
 
                     SqlCommand cmd = new SqlCommand(sqlExpression) { CommandTimeout = 120 };
 
-                    cmd.Connection = C_Gper.con;
+                    cmd.Connection = con;
                     cmd.Parameters.Clear();
                     cmd.CommandType = CommandType.StoredProcedure;
 
@@ -405,7 +408,7 @@ namespace Dispetcher2.Class
                             {
                                 ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 13]).Value2 = Math.Round(((float)FactTimeWorker / _PlanHours) * 100,2);
                                 if (decimal.TryParse(_DT.Rows[i].ItemArray[17].ToString(), out TimeSheets))
-                                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 14]).Value2 = Math.Round((FactTimeWorker / (float)C_Gper.DecimalToSec(TimeSheets)) * 100, 2);
+                                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 14]).Value2 = Math.Round((FactTimeWorker / DecimalToSec(TimeSheets)) * 100, 2);
                             }
                             else
                             {
@@ -503,7 +506,7 @@ namespace Dispetcher2.Class
                                 NumRow++;
                                 //Строка для выработки******************************
                                 //if (FlagDays && IdCeh == -1 && loginWorker == "" && cWorkDays > 0 && (ExcelWorkSheet.Cells[NumRow - 1, 10] as Excel.Range).Value2 != 0)
-                                if (FlagDays && IdCeh == -1 && loginWorker == "" && cWorkDays > 0) ;
+                                if (FlagDays && IdCeh == -1 && loginWorker == "" && cWorkDays > 0)
                                 {
                                     string x = Convert.ToString((ExcelWorkSheet.Cells[NumRow - 1, 10] as Excel.Range).Value2);
                                 if (x != null)
@@ -629,9 +632,9 @@ namespace Dispetcher2.Class
             try
             {
                 int sec = 0;
-                using (C_Gper.con)
+                using (SqlConnection con = new SqlConnection())
                 {
-                    C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
+                    con.ConnectionString = config.ConnectionString;
                     SqlCommand cmd = new SqlCommand() { CommandTimeout = _CmdTimeout };//using System.Data.SqlClient;
                     SqlDataReader reader;
                     cmd.Parameters.Clear();
@@ -642,8 +645,8 @@ namespace Dispetcher2.Class
                     cmd.Parameters["@DateStart"].Value = DateStart;
                     cmd.Parameters.Add(new SqlParameter("@DateEnd", SqlDbType.Date));
                     cmd.Parameters["@DateEnd"].Value = DateEnd;
-                    cmd.Connection = C_Gper.con;
-                    C_Gper.con.Open();
+                    cmd.Connection = con;
+                    con.Open();
                     reader = cmd.ExecuteReader();
                     if (reader.HasRows)
                     {
@@ -653,7 +656,7 @@ namespace Dispetcher2.Class
                             if (!reader.IsDBNull(1)) cWorkDays = reader.GetInt32(1); else cWorkDays = 0;
                         }
                     }
-                    reader.Dispose(); reader.Close(); C_Gper.con.Close();
+                    reader.Dispose(); reader.Close(); con.Close();
                 }
                 return sec;
             }
@@ -666,25 +669,27 @@ namespace Dispetcher2.Class
 
         public int NormHoursPlanFromOneWorker(DateTime DateStart, DateTime DateEnd)
         {
+            int PlanHours = 0;
             try
             {
-                int PlanHours = 0;
-                C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
 
-                string sqlExpression = "NormHoursPlanFromOneWorker";
 
-                SqlCommand cmd = new SqlCommand(sqlExpression) { CommandTimeout = 60 };
-
-                cmd.Connection = C_Gper.con;
-                cmd.Parameters.Clear();
-                cmd.CommandType = CommandType.StoredProcedure;
-
-                cmd.Parameters.AddWithValue("@DateStart", DateStart);
-                cmd.Parameters.AddWithValue("@DateEnd", DateEnd);
-
-                using (C_Gper.con)
+                using (SqlConnection con = new SqlConnection())
                 {
-                    C_Gper.con.Open();
+
+                    con.ConnectionString = config.ConnectionString;
+
+                    string sqlExpression = "NormHoursPlanFromOneWorker";
+
+                    SqlCommand cmd = new SqlCommand(sqlExpression) { CommandTimeout = 60 };
+
+                    cmd.Connection = con;
+                    cmd.Parameters.Clear();
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@DateStart", DateStart);
+                    cmd.Parameters.AddWithValue("@DateEnd", DateEnd);
+                    con.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         if (reader.HasRows)
@@ -710,22 +715,24 @@ namespace Dispetcher2.Class
             try
             {
                 decimal PlanHours = 0;
-                C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
-                SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//seconds //using System.Data.SqlClient;
-                cmd.Connection = C_Gper.con;
-                cmd.Parameters.Clear();
-                cmd.CommandText = "SELECT sum((convert( decimal(4,1), Val_Time))) as Val_Time" + "\n" +
-                                  "FROM TimeSheets" + "\n" +
-                                  "Where FK_Login = @FK_Login and Val_Time != '' and Val_Time <='8' and PK_Date>=@DateStart and PK_Date<=@DateEnd";
-                cmd.Parameters.Add(new SqlParameter("@FK_Login", SqlDbType.VarChar));
-                cmd.Parameters["@FK_Login"].Value = FIO;
-                cmd.Parameters.Add(new SqlParameter("@DateStart", SqlDbType.Date));
-                cmd.Parameters["@DateStart"].Value = DateStart;
-                cmd.Parameters.Add(new SqlParameter("@DateEnd", SqlDbType.Date));
-                cmd.Parameters["@DateEnd"].Value = DateEnd;
-                using (C_Gper.con)
+
+                
+                using (SqlConnection con = new SqlConnection())
                 {
-                    C_Gper.con.Open();
+                    con.ConnectionString = config.ConnectionString;
+                    SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//seconds //using System.Data.SqlClient;
+                    cmd.Connection = con;
+                    cmd.Parameters.Clear();
+                    cmd.CommandText = "SELECT sum((convert( decimal(4,1), Val_Time))) as Val_Time" + "\n" +
+                                      "FROM TimeSheets" + "\n" +
+                                      "Where FK_Login = @FK_Login and Val_Time != '' and Val_Time <='8' and PK_Date>=@DateStart and PK_Date<=@DateEnd";
+                    cmd.Parameters.Add(new SqlParameter("@FK_Login", SqlDbType.VarChar));
+                    cmd.Parameters["@FK_Login"].Value = FIO;
+                    cmd.Parameters.Add(new SqlParameter("@DateStart", SqlDbType.Date));
+                    cmd.Parameters["@DateStart"].Value = DateStart;
+                    cmd.Parameters.Add(new SqlParameter("@DateEnd", SqlDbType.Date));
+                    cmd.Parameters["@DateEnd"].Value = DateEnd;
+                    con.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         if (reader.HasRows)
@@ -755,9 +762,9 @@ namespace Dispetcher2.Class
             try
             {
                 /*_DT.Clear();
-                using (C_Gper.con)
+                using (con)
                 {
-                    C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
+                    con.ConnectionString = config.ConnectionString;
                     SqlCommand cmd = new SqlCommand() { CommandTimeout = _CmdTimeout };//using System.Data.SqlClient;
                     cmd.Parameters.Clear();
                     cmd.CommandText = "Select PK_IdOrderDetail,FK_IdDetail,ShcmDetail,NameDetail,AmountDetails,Position,PositionParent" + "\n" +
@@ -768,7 +775,7 @@ namespace Dispetcher2.Class
                                       "Order by ShcmDetail";
                     cmd.Parameters.Add(new SqlParameter("@PK_IdOrder", SqlDbType.Int));
                     cmd.Parameters["@PK_IdOrder"].Value = PK_IdOrder;
-                    cmd.Connection = C_Gper.con;
+                    cmd.Connection = con;
                     SqlDataAdapter adapter = new SqlDataAdapter();
                     adapter.SelectCommand = cmd;
                     adapter.Fill(_DT);
@@ -862,35 +869,36 @@ namespace Dispetcher2.Class
         {
             try
             {
-                C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
-                SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//seconds //using System.Data.SqlClient;
-                cmd.Connection = C_Gper.con;
-                cmd.Parameters.Clear();
-                cmd.CommandText = "Select NumOper+'999' as NumOper,NameOperation,NumSpOper,Tpd,Tsh,sum(AmountDetails) as AmountDetailsFact, 'f' as FactOrSp, OnlyOncePay, max(DateFactOper) as DateFactOper " + "\n" +
-                                    "From FactOperation " + "\n" +
-                                    "inner join Sp_Operations on PK_IdOperation = FK_IdOperation " + "\n" +
-                                    "where FK_IdOrderDetail = @FK_IdOrderDetail " + "\n" +
-                                    "group by NumOper,NameOperation,NumSpOper,Tpd,Tsh,OnlyOncePay " + "\n" +
-                                    "union all" + "\n" +
-                                    "Select NumOper+'999' as NumOper,NameOperation,NumSpOper,Tpd,Tsh,0 as AmountDetails, 's' as FactOrSp, OnlyOncePay, '1983.04.01' as DateFactOper " + "\n" +
-                                    "From Sp_TechnologyDetails " + "\n" +
-                                    "inner join Sp_Operations on PK_IdOperation = FK_IdOperation " + "\n" +
-                                    "Where FK_IdDetails = @FK_IdDetails " + "\n" +
-                                    "union all" + "\n" +
-                                    "Select NumOperation+'999' as NumOper,NameOperation,NumSpOper,Tpd,Tsh,0 as AmountDetails, 's' as FactOrSp, OnlyOncePay, '1983.04.01' as DateFactOper " + "\n" +
-                                    "From Sp_OperationsType111" + "\n" +
-                                    "inner join Sp_Operations on PK_IdOperation = FK_IdOperation" + "\n" +
-                                    "Where FK_IdDetail = @FK_IdDetails" + "\n" +
-                                    "union all" + "\n" +
-                                    "Select '999','Передача детали на СГД',32,0,0,0 as AmountDetails, 's' as FactOrSp, 1 as OnlyOncePay, '1983.04.01' as DateFactOper " + "\n" +
-                                    "Order by NumOper,FactOrSp";
-                cmd.Parameters.Add(new SqlParameter("@FK_IdOrderDetail", SqlDbType.BigInt));
-                cmd.Parameters["@FK_IdOrderDetail"].Value = FK_IdOrderDetail;
-                cmd.Parameters.Add(new SqlParameter("@FK_IdDetails", SqlDbType.BigInt));
-                cmd.Parameters["@FK_IdDetails"].Value = FK_IdDetails;
-                using (C_Gper.con)
+                
+                using (SqlConnection con = new SqlConnection())
                 {
-                    C_Gper.con.Open();
+                    con.ConnectionString = config.ConnectionString;
+                    SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//seconds //using System.Data.SqlClient;
+                    cmd.Connection = con;
+                    cmd.Parameters.Clear();
+                    cmd.CommandText = "Select NumOper+'999' as NumOper,NameOperation,NumSpOper,Tpd,Tsh,sum(AmountDetails) as AmountDetailsFact, 'f' as FactOrSp, OnlyOncePay, max(DateFactOper) as DateFactOper " + "\n" +
+                                        "From FactOperation " + "\n" +
+                                        "inner join Sp_Operations on PK_IdOperation = FK_IdOperation " + "\n" +
+                                        "where FK_IdOrderDetail = @FK_IdOrderDetail " + "\n" +
+                                        "group by NumOper,NameOperation,NumSpOper,Tpd,Tsh,OnlyOncePay " + "\n" +
+                                        "union all" + "\n" +
+                                        "Select NumOper+'999' as NumOper,NameOperation,NumSpOper,Tpd,Tsh,0 as AmountDetails, 's' as FactOrSp, OnlyOncePay, '1983.04.01' as DateFactOper " + "\n" +
+                                        "From Sp_TechnologyDetails " + "\n" +
+                                        "inner join Sp_Operations on PK_IdOperation = FK_IdOperation " + "\n" +
+                                        "Where FK_IdDetails = @FK_IdDetails " + "\n" +
+                                        "union all" + "\n" +
+                                        "Select NumOperation+'999' as NumOper,NameOperation,NumSpOper,Tpd,Tsh,0 as AmountDetails, 's' as FactOrSp, OnlyOncePay, '1983.04.01' as DateFactOper " + "\n" +
+                                        "From Sp_OperationsType111" + "\n" +
+                                        "inner join Sp_Operations on PK_IdOperation = FK_IdOperation" + "\n" +
+                                        "Where FK_IdDetail = @FK_IdDetails" + "\n" +
+                                        "union all" + "\n" +
+                                        "Select '999','Передача детали на СГД',32,0,0,0 as AmountDetails, 's' as FactOrSp, 1 as OnlyOncePay, '1983.04.01' as DateFactOper " + "\n" +
+                                        "Order by NumOper,FactOrSp";
+                    cmd.Parameters.Add(new SqlParameter("@FK_IdOrderDetail", SqlDbType.BigInt));
+                    cmd.Parameters["@FK_IdOrderDetail"].Value = FK_IdOrderDetail;
+                    cmd.Parameters.Add(new SqlParameter("@FK_IdDetails", SqlDbType.BigInt));
+                    cmd.Parameters["@FK_IdDetails"].Value = FK_IdDetails;
+                    con.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         if (reader.HasRows)
@@ -1013,9 +1021,9 @@ namespace Dispetcher2.Class
             try
             {
                 _DT.Clear();
-                using (C_Gper.con)
+                using (SqlConnection con = new SqlConnection())
                 {
-                    C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
+                    con.ConnectionString = config.ConnectionString;
                     SqlCommand cmd = new SqlCommand() { CommandTimeout = _CmdTimeout };//using System.Data.SqlClient;
                     cmd.Parameters.Clear();
                     if (NameRep == "rep6")
@@ -1039,7 +1047,7 @@ namespace Dispetcher2.Class
                     }
                     cmd.Parameters.Add(new SqlParameter("@PK_IdOrder", SqlDbType.Int));
                     cmd.Parameters["@PK_IdOrder"].Value = PK_IdOrder;
-                    cmd.Connection = C_Gper.con;
+                    cmd.Connection = con;
                     SqlDataAdapter adapter = new SqlDataAdapter();
                     adapter.SelectCommand = cmd;
                     adapter.Fill(_DT);
@@ -1308,21 +1316,22 @@ namespace Dispetcher2.Class
         {
             try//string[] arrOper = { "Заготов","Токарн","Заточ","Координатн","лифоваль","Свар","ЧПУ","Фрезер","Слесарн","Комплект","Испытания","Малярная","струйная","Разметка","Промывка","Прессование","свар"};
             {
-                C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
-                string sqlExpression = "LoadPlanTehDetails";
-                SqlCommand cmd = new SqlCommand(sqlExpression) { CommandTimeout = 60 };//seconds //using System.Data.SqlClient;
-                cmd.Connection = C_Gper.con;
-                cmd.Parameters.Clear();
-                cmd.CommandType = CommandType.StoredProcedure;
-                SqlParameter nameParam = new SqlParameter
+                
+                using (SqlConnection con = new SqlConnection())
                 {
-                    ParameterName = "@FK_IdOrderDetail",
-                    Value = FK_IdOrderDetail
-                };
-                cmd.Parameters.Add(nameParam);
-                using (C_Gper.con)
-                {
-                    C_Gper.con.Open();
+                    con.ConnectionString = config.ConnectionString;
+                    string sqlExpression = "LoadPlanTehDetails";
+                    SqlCommand cmd = new SqlCommand(sqlExpression) { CommandTimeout = 60 };//seconds //using System.Data.SqlClient;
+                    cmd.Connection = con;
+                    cmd.Parameters.Clear();
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    SqlParameter nameParam = new SqlParameter
+                    {
+                        ParameterName = "@FK_IdOrderDetail",
+                        Value = FK_IdOrderDetail
+                    };
+                    cmd.Parameters.Add(nameParam);
+                    con.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         if (reader.HasRows)//Color.LightGreen;
@@ -1449,10 +1458,10 @@ namespace Dispetcher2.Class
 
                             if (reader.HasRows == false)   // Если в БД Диспетчера мы не находим ничего, то идем в Лотсман
                             {
-                                C_Gper.con.Close();
-                                C_Gper.con.ConnectionString = C_Gper.ConStr_Loodsman;
+                                con.Close();
+                                con.ConnectionString = config.LoodsmanConnectionString;
                                 SqlCommand cmd_2 = new SqlCommand() { CommandTimeout = 60 };
-                                cmd_2.Connection = C_Gper.con;
+                                cmd_2.Connection = con;
                                 cmd_2.Parameters.Clear();
                                 cmd_2.CommandText = "Select att.value AS Oper, Tpd.value AS Tpd,Tsh.asfloat AS Tsh" + "\n" +
                                       "FROM [НИИПМ].[dbo].[rvwRelations] r" + "\n" +
@@ -1465,9 +1474,9 @@ namespace Dispetcher2.Class
                                       "ORDER BY oper";
                                 cmd_2.Parameters.Add(new SqlParameter("@FK_IdOrderDetail", SqlDbType.BigInt));
                                 cmd_2.Parameters["@FK_IdOrderDetail"].Value = FK_IdOrderDetail;
-                                using (C_Gper.con)
+                                using (con)
                                 {
-                                    C_Gper.con.Open();
+                                    con.Open();
                                     using (SqlDataReader reader2 = cmd_2.ExecuteReader())
                                     {
                                         int slesarn = 0, zagotov = 0, tokar = 0, frezer = 0, shlif = 0, frezer_chu = 0, rastoch = 0, svaroch = 0, otk = 0;
@@ -1562,9 +1571,9 @@ namespace Dispetcher2.Class
             try
             {
                 _DT.Clear();
-                using (C_Gper.con)
+                using (SqlConnection con = new SqlConnection())
                 {
-                    C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
+                    con.ConnectionString = config.ConnectionString;
                     SqlCommand cmd = new SqlCommand() { CommandTimeout = _CmdTimeout };//using System.Data.SqlClient;
                     cmd.Parameters.Clear();
                     cmd.CommandText = "SELECT DateFactOper,OrderNum,Position,ShcmDetail,NameDetail,NameOperation,OnlyOncePay," + "\n" +
@@ -1583,7 +1592,7 @@ namespace Dispetcher2.Class
                     cmd.Parameters["@DateEnd"].Value = DateEnd;
                     cmd.Parameters.Add(new SqlParameter("@FK_LoginWorker", SqlDbType.VarChar));
                     cmd.Parameters["@FK_LoginWorker"].Value = loginWorker;
-                    cmd.Connection = C_Gper.con;
+                    cmd.Connection = con;
                     SqlDataAdapter adapter = new SqlDataAdapter();
                     adapter.SelectCommand = cmd;
                     adapter.Fill(_DT);
@@ -1950,9 +1959,9 @@ namespace Dispetcher2.Class
             try
             {
                 _DT.Clear();
-                using (C_Gper.con)
+                using (SqlConnection con = new SqlConnection())
                 {
-                    C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
+                    con.ConnectionString = config.ConnectionString;
                     SqlCommand cmd = new SqlCommand() { CommandTimeout = _CmdTimeout };//using System.Data.SqlClient;
                     cmd.Parameters.Clear();
                     string Where = "";
@@ -1990,7 +1999,7 @@ namespace Dispetcher2.Class
                                       "Where od.Position IS NULL and FK_IdStatusOrders = 2" + Where + "\n" +
                         //"Where od.Position IS NULL and o.OrderNum = '20544304' and fo111.DateFactOper >= @DateStart and fo111.DateFactOper <= @DateEnd" + "\n" +
                                       "Order by OrderNum,Position,FK_IdOrderDetail,NumOper";
-                    cmd.Connection = C_Gper.con;
+                    cmd.Connection = con;
                     SqlDataAdapter adapter = new SqlDataAdapter();
                     adapter.SelectCommand = cmd;
                     adapter.Fill(_DT);
@@ -2017,9 +2026,9 @@ namespace Dispetcher2.Class
             try
             {
                 DT.Clear();
-                using (C_Gper.con)
+                using (SqlConnection con = new SqlConnection())
                 {
-                    C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
+                    con.ConnectionString = config.ConnectionString;
                     SqlCommand cmd = new SqlCommand() { CommandTimeout = _CmdTimeout };//using System.Data.SqlClient;
                     cmd.Parameters.Clear();
                     string Where = "";
@@ -2041,7 +2050,7 @@ namespace Dispetcher2.Class
                     cmd.Parameters["@FK_IdOrderDetail"].Value = FK_IdOrderDetail;
                     cmd.Parameters.Add(new SqlParameter("@NumOper", SqlDbType.VarChar));
                     cmd.Parameters["@NumOper"].Value = NumOper;
-                    cmd.Connection = C_Gper.con;
+                    cmd.Connection = con;
                     SqlDataAdapter adapter = new SqlDataAdapter();
                     adapter.SelectCommand = cmd;
                     adapter.Fill(DT);
