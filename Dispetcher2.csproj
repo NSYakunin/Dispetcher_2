@@ -10,8 +10,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Dispetcher2</RootNamespace>
     <AssemblyName>Dispetcher2</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>\\Ascon\Dispetcher\UpdatesDisp2\Application Files\</PublishUrl>
@@ -28,7 +29,7 @@
     <UpdateUrl>\\Ascon\Dispetcher\UpdatesDisp2\Application Files\</UpdateUrl>
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>10</ApplicationRevision>
+    <ApplicationRevision>12</ApplicationRevision>
     <ApplicationVersion>2.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -45,6 +46,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -54,6 +56,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Computer.ico</ApplicationIcon>
@@ -66,19 +69,19 @@
   </PropertyGroup>
   <PropertyGroup />
   <PropertyGroup>
-    <SignManifests>false</SignManifests>
+    <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>FF4761871C65EF24FAA3D99807952387A25E8EFE</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>987E6EA793110B8406BE87B6547ED65030EFEB82</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>DispetcherKey2023.pfx</ManifestKeyFile>
+    <ManifestKeyFile>Dis04.10.2023.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>disp222.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>Dis04.10.2023.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup />
   <PropertyGroup />
@@ -135,7 +138,6 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class\AssemblyTest.cs" />
     <Compile Include="Class\Configuration.cs" />
     <Compile Include="Class\Converter.cs" />
     <Compile Include="Class\C_Brigade.cs" />
@@ -346,6 +348,7 @@
       <DependentUpon>F_Workers.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\JobViewModel.cs" />
+    <Compile Include="Models\LaborViewModel.cs" />
     <Compile Include="Models\OperationViewModel.cs" />
     <Compile Include="Models\OrderControlViewModel.cs" />
     <Compile Include="Models\ProgressViewModel.cs" />
@@ -430,6 +433,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
+    <None Include="Dis04.10.2023.pfx" />
     <None Include="disp222.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />

@@ -124,6 +124,9 @@ namespace Dispetcher2
 
             //*****************
             cB_InDetail.Checked = true;
+            if (Environment.UserName == "NSYakunin" || Environment.UserName == "IAPotapov") this.btnkoop.Visible = true;
+            else this.btnkoop.Visible = false;
+            // 
         }
 
         private void F_Fact_Enter(object sender, EventArgs e)
@@ -503,5 +506,72 @@ namespace Dispetcher2
         {
 
         }
+
+        private void btnkoop_Click(object sender, EventArgs e)
+        {
+            //Закрыть все работы на кооп
+
+            if (chB_cooperation.Checked)
+            {
+                _PK_IdBrigade = 0;//non target brigade
+                _LoginWorker = "кооп";
+                tB_Workers.Text = "кооп";
+
+                if (C_Gper.F_Fact_View) MessageBox.Show("Разрешение только на просмотр.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    for (int i = 0; i < dGV_Tehnology.Rows.Count; i++)
+                    {
+                        string NameOper = DT_Tehnology.Rows[i].ItemArray[1].ToString().Trim();
+                        string NumOper = "";
+                        Int16 FK_IdOperation = 0;
+                        if (NameOper != "Передача детали на СГД")
+                        {
+                            NumOper = NameOper.Remove(3);
+                            NameOper = NameOper.Remove(0, NameOper.IndexOf(' ', 2) + 1);
+                        }
+                        if (DT_Tehnology.Rows[i].ItemArray[0].ToString().Trim() != "") FK_IdOperation = Convert.ToInt16(DT_Tehnology.Rows[i].ItemArray[0].ToString().Trim());
+                        else FK_IdOperation = Detail.Find_FK_IdOperationInSp_Operations(NameOper);
+                        //*************************
+
+                        //*************************************************************************
+                        CurrencyManager cmgrDet = (CurrencyManager)dGV_Details.BindingContext[dGV_Details.DataSource, dGV_Details.DataMember];
+                        DataRow rowDet = ((DataRowView)cmgrDet.Current).Row;
+                        long PK_IdOrderDetail = Convert.ToInt64(rowDet["PK_IdOrderDetail"]);
+                        //int AmountDetails = Convert.ToInt32(nUpD_Tpd.Value);
+                        int AmountDetails = Convert.ToInt32(rowDet["AmountDetails"]);
+                        //***********************cmgr - row*****************************************************************
+
+                        int Tpd = Convert.ToInt32(DT_Tehnology.Rows[i].ItemArray[2] == DBNull.Value ? 0 : int.TryParse(DT_Tehnology.Rows[i].ItemArray[2].ToString(), out var number) == true ? Convert.ToInt32(DT_Tehnology.Rows[i].ItemArray[2]) : 0);
+                        int Tsh = Convert.ToInt32(DT_Tehnology.Rows[i].ItemArray[3] == DBNull.Value ? 0 : int.TryParse(DT_Tehnology.Rows[i].ItemArray[3].ToString(), out var number2) == true ? Convert.ToInt32(DT_Tehnology.Rows[i].ItemArray[3]) : 0);
+                        //Copmare fact detail amount and order detail amount
+                        //AmountDetails -= C_Details.Select_AmountFactDetailsOper(PK_IdOrderDetail, FK_IdOperation, NumOper);
+                        Console.WriteLine(AmountDetails);
+                        Console.WriteLine(PK_IdOrderDetail);
+                        Console.WriteLine(NumOper);
+                        AmountDetails -= Detail.Select_AmountFactDetailsOper(PK_IdOrderDetail, NumOper);
+                        if (AmountDetails > 0)//Insert operation
+                        {
+                            DateTime DateFactOper = dTimeP_Fact.Value;
+
+                            Detail.InsertFactOperation(PK_IdOrderDetail, NumOper, FK_IdOperation, Tpd, Tsh, AmountDetails, DateFactOper, _LoginWorker, 0);
+                            //Refresh DataGrid
+                            if (cB_InDetail.Checked)
+                            {
+                                Detail.SelectFullFactOperForDetail(PK_IdOrderDetail, ref DT_FactOper);
+                            }
+                            else
+                            {
+                                Detail.SelectFactOperForDetail(PK_IdOrderDetail, ref DT_FactOper);
+                            }
+                        }
+                    }
+
+            }
+            else
+            {
+                MessageBox.Show("Галочка 'кооп' не выбрана ", "Внимание!", MessageBoxButtons.OK);
+            }
+
+        }
+        
     }
 }

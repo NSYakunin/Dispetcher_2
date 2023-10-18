@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Dispetcher2.Controls"
-             mc:Ignorable="d">
+             mc:Ignorable="d" Unloaded="UserControl_Unloaded">
     <Viewbox>
         <Grid x:Name="mainGrid">
             <Grid.ColumnDefinitions>
@@ -625,7 +625,7 @@
                     <RotateTransform CenterX="199" CenterY="280" Angle="0" x:Name="waitTransform"/>
                 </Canvas.RenderTransform>
             </Canvas>
-            <TextBlock x:Name="messageText" Grid.Column="1" Text="{Binding Path=Message}" 
+            <TextBlock x:Name="messageText" Grid.Column="1" Text="{Binding Path=WaitMessage}" 
                        FontFamily="Arial" FontSize="250" VerticalAlignment="Center"/>
         </Grid>
     </Viewbox>
