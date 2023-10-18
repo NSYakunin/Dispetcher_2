@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.Common;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -18,7 +20,7 @@ namespace Dispetcher2
     {
 
         IConfig config;
-        
+
 
         // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
         C_Departments departments;
@@ -45,7 +47,7 @@ namespace Dispetcher2
             if (config == null) throw new ArgumentException("Пожалуйста укажите параметр: IConfig");
             if (converter == null) throw new ArgumentException("Пожалуйста укажите параметр converter");
             if (viewModel == null) throw new ArgumentException("Пожалуйста укажите параметр: LaborViewModel");
-            
+
             this.config = config;
 
             departments = new C_Departments(config);
@@ -57,12 +59,13 @@ namespace Dispetcher2
             labControl = new LaborControl();
             viewModel.Dispatcher = labControl.Dispatcher;
             labControl.DataContext = viewModel;
-            
+
 
             InitializeComponent();
-            if (config.SelectedReportMode == ReportMode.ОтчетНаряд 
+            if (config.SelectedReportMode == ReportMode.ОтчетНаряд
                 || config.SelectedReportMode == ReportMode.ДвижениеДеталей
-                || config.SelectedReportMode == ReportMode.ОтчетВыполненным)
+                || config.SelectedReportMode == ReportMode.ОтчетВыполненным
+                || config.SelectedReportMode == ReportMode.Гальваника)
             {
                 DT_Orders.Columns.Add("PK_IdOrder", typeof(int));
                 DT_Orders.Columns.Add("OrderNum", typeof(string));
@@ -136,7 +139,13 @@ namespace Dispetcher2
                 orders.SelectOrdersData(2, ref DT_Orders);//2-opened
             }
 
-            
+            if (config.SelectedReportMode == ReportMode.Гальваника)//Движение деталей
+            {
+                myTabC_Reports.SelectedTab = tabPageGalvan;
+                loaddGVGalvan();
+            }
+
+
         }
 
         #region rep3 C_Gper.NameReport == 3 Отчёт-наряд по выполненным операциям
@@ -303,7 +312,60 @@ namespace Dispetcher2
 
         #endregion
 
+        private void loaddGVGalvan()
+        {
+            try
+            {
+                using (var con = new SqlConnection())
+                {
+                    con.ConnectionString = config.ConnectionString;
+                    SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
+                    cmd.CommandText = $"SELECT OrderNum, OD.Position, SD.ShcmDetail Обозначение_ЩЦМ, SD.NameDetail AS Наименование, " +
+                                               $"FO.AmountDetails AS Колличество, SO.NameOperation AS Операция, DateFactOper " +
+                                      $"FROM[Dispetcher2].[dbo].[Orders] " +
+                                      $"INNER JOIN OrdersDetails OD " +
+                                      $"    ON OD.FK_IdOrder = Orders.PK_IdOrder " +
+                                      $"INNER JOIN FactOperation FO " +
+                                      $"    ON OD.PK_IdOrderDetail = FO.FK_IdOrderDetail " +
+                                      $"INNER JOIN Sp_Operations SO " +
+                                      $"    ON FO.FK_IdOperation = SO.PK_IdOperation " +
+                                      $"INNER JOIN Sp_Details SD " +
+                                      $"    ON OD.FK_IdDetail = SD.PK_IdDetail " +
+                                      $"WHERE SO.NameOperation LIKE '%Гальв%' " +
+                                      $"ORDER BY  OrderNum, ShcmDetail, DateFactOper";
+                    cmd.Connection = con;
+                    cmd.Connection.Open();
 
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    List<string[]> data = new List<string[]>();
+                    int pos = 1;
+
+                    while (reader.Read())
+                    {
+                        data.Add(new string[10]);
+
+                        data[data.Count - 1][0] = pos++.ToString();
+                        data[data.Count - 1][1] = reader[0].ToString();
+                        data[data.Count - 1][2] = reader[1].ToString();
+                        data[data.Count - 1][3] = reader[2].ToString();
+                        data[data.Count - 1][4] = reader[3].ToString();
+                        data[data.Count - 1][5] = reader[4].ToString();
+                        data[data.Count - 1][6] = reader[5].ToString();
+                        data[data.Count - 1][7] = reader[6].ToString().Replace(" 0:00:00", "");
+                    }
+                    reader.Close();
+
+                    foreach (string[] s in data)
+                        dGVGalvan.Rows.Add(s);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
 
 

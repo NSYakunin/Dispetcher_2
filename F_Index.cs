@@ -299,5 +299,12 @@ namespace Dispetcher2
             var f = factory.GetForm("Специальности");
             Show(f);
         }
+
+        private void актПриёмаПередачиГальваническоеПокрытиеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Text = "ПО \"Диспетчер\"" + " - Акт приёма-передачи. Гальваническое покрытие";
+            var f = factory.GetForm("Акт приёма-передачи. Гальваническое покрытие");
+            Show(f);
+        }
     }
 }
