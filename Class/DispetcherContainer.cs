@@ -151,6 +151,11 @@ namespace Dispetcher2.Class
                         f = new F_Reports(config, converter, labvm);
                         return f;
 
+                    case "Акт приёма-передачи. Гальваническое покрытие":
+                        config.SelectedReportMode = ReportMode.Гальваника;
+                        f = new F_Reports(config, converter, labvm);
+                        return f;
+
                     case "ПРОИЗВОДСТВО-ПЛАН":
                         f = new F_Planning(config);
                         return f;

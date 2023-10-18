@@ -91,6 +91,25 @@
             this.tB_OrderNameRep7 = new System.Windows.Forms.TextBox();
             this.LaborTabPage = new System.Windows.Forms.TabPage();
             this.LaborElementHost = new System.Windows.Forms.Integration.ElementHost();
+            this.tabPageGalvan = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+            this.dGVGalvan = new System.Windows.Forms.DataGridView();
+            this.panel6 = new System.Windows.Forms.Panel();
+            this.panel7 = new System.Windows.Forms.Panel();
+            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
+            this.dateTimePicker2 = new System.Windows.Forms.DateTimePicker();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.nameOrd = new System.Windows.Forms.Label();
+            this.OrderNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.OrderName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Pos = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ShcmName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.NameDetail = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Amount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Galvanic = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dateFact = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Notes = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.myTabC_Reports.SuspendLayout();
             this.tPageRep3.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -113,6 +132,11 @@
             this.panel5.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.LaborTabPage.SuspendLayout();
+            this.tabPageGalvan.SuspendLayout();
+            this.tableLayoutPanel5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dGVGalvan)).BeginInit();
+            this.panel6.SuspendLayout();
+            this.panel7.SuspendLayout();
             this.SuspendLayout();
             // 
             // myTabC_Reports
@@ -122,6 +146,7 @@
             this.myTabC_Reports.Controls.Add(this.tPageRep117);
             this.myTabC_Reports.Controls.Add(this.tPageRep7);
             this.myTabC_Reports.Controls.Add(this.LaborTabPage);
+            this.myTabC_Reports.Controls.Add(this.tabPageGalvan);
             this.myTabC_Reports.Dock = System.Windows.Forms.DockStyle.Fill;
             this.myTabC_Reports.Location = new System.Drawing.Point(0, 0);
             this.myTabC_Reports.Name = "myTabC_Reports";
@@ -837,6 +862,185 @@
             this.LaborElementHost.Text = "LaborElementHost";
             this.LaborElementHost.Child = null;
             // 
+            // tabPageGalvan
+            // 
+            this.tabPageGalvan.Controls.Add(this.tableLayoutPanel5);
+            this.tabPageGalvan.Location = new System.Drawing.Point(4, 25);
+            this.tabPageGalvan.Name = "tabPageGalvan";
+            this.tabPageGalvan.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageGalvan.Size = new System.Drawing.Size(987, 603);
+            this.tabPageGalvan.TabIndex = 5;
+            this.tabPageGalvan.Text = "tabPageGalvan";
+            this.tabPageGalvan.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel5
+            // 
+            this.tableLayoutPanel5.ColumnCount = 1;
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel5.Controls.Add(this.dGVGalvan, 0, 1);
+            this.tableLayoutPanel5.Controls.Add(this.panel6, 0, 0);
+            this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel5.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
+            this.tableLayoutPanel5.RowCount = 2;
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 14.74037F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 85.25963F));
+            this.tableLayoutPanel5.Size = new System.Drawing.Size(981, 597);
+            this.tableLayoutPanel5.TabIndex = 0;
+            // 
+            // dGVGalvan
+            // 
+            this.dGVGalvan.AllowUserToAddRows = false;
+            this.dGVGalvan.AllowUserToDeleteRows = false;
+            this.dGVGalvan.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dGVGalvan.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.OrderNumber,
+            this.OrderName,
+            this.Pos,
+            this.ShcmName,
+            this.NameDetail,
+            this.Amount,
+            this.Galvanic,
+            this.dateFact,
+            this.Notes});
+            this.dGVGalvan.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dGVGalvan.Location = new System.Drawing.Point(3, 91);
+            this.dGVGalvan.Name = "dGVGalvan";
+            this.dGVGalvan.ReadOnly = true;
+            this.dGVGalvan.RowHeadersVisible = false;
+            this.dGVGalvan.Size = new System.Drawing.Size(975, 503);
+            this.dGVGalvan.TabIndex = 0;
+            // 
+            // panel6
+            // 
+            this.panel6.Controls.Add(this.panel7);
+            this.panel6.Controls.Add(this.nameOrd);
+            this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel6.Location = new System.Drawing.Point(3, 3);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(975, 82);
+            this.panel6.TabIndex = 1;
+            // 
+            // panel7
+            // 
+            this.panel7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel7.Controls.Add(this.dateTimePicker1);
+            this.panel7.Controls.Add(this.dateTimePicker2);
+            this.panel7.Controls.Add(this.label14);
+            this.panel7.Controls.Add(this.label15);
+            this.panel7.Location = new System.Drawing.Point(517, 24);
+            this.panel7.Name = "panel7";
+            this.panel7.Size = new System.Drawing.Size(455, 55);
+            this.panel7.TabIndex = 1;
+            // 
+            // dateTimePicker1
+            // 
+            this.dateTimePicker1.Location = new System.Drawing.Point(262, 16);
+            this.dateTimePicker1.Name = "dateTimePicker1";
+            this.dateTimePicker1.Size = new System.Drawing.Size(180, 23);
+            this.dateTimePicker1.TabIndex = 1007;
+            // 
+            // dateTimePicker2
+            // 
+            this.dateTimePicker2.Location = new System.Drawing.Point(36, 16);
+            this.dateTimePicker2.Name = "dateTimePicker2";
+            this.dateTimePicker2.Size = new System.Drawing.Size(180, 23);
+            this.dateTimePicker2.TabIndex = 1008;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(13, 20);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(17, 17);
+            this.label14.TabIndex = 1009;
+            this.label14.Text = "C";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(232, 20);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(24, 17);
+            this.label15.TabIndex = 1010;
+            this.label15.Text = "по";
+            // 
+            // nameOrd
+            // 
+            this.nameOrd.Dock = System.Windows.Forms.DockStyle.Top;
+            this.nameOrd.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.nameOrd.Location = new System.Drawing.Point(0, 0);
+            this.nameOrd.Name = "nameOrd";
+            this.nameOrd.Size = new System.Drawing.Size(975, 21);
+            this.nameOrd.TabIndex = 0;
+            this.nameOrd.Text = "Акт Приёма-передачи.";
+            this.nameOrd.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
+            // OrderNumber
+            // 
+            this.OrderNumber.HeaderText = "№";
+            this.OrderNumber.Name = "OrderNumber";
+            this.OrderNumber.ReadOnly = true;
+            this.OrderNumber.Width = 50;
+            // 
+            // OrderName
+            // 
+            this.OrderName.HeaderText = "Заказ";
+            this.OrderName.Name = "OrderName";
+            this.OrderName.ReadOnly = true;
+            this.OrderName.Width = 120;
+            // 
+            // Pos
+            // 
+            this.Pos.HeaderText = "Поз.";
+            this.Pos.Name = "Pos";
+            this.Pos.ReadOnly = true;
+            this.Pos.Width = 40;
+            // 
+            // ShcmName
+            // 
+            this.ShcmName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ShcmName.HeaderText = "Обозначение ЩЦМ";
+            this.ShcmName.Name = "ShcmName";
+            this.ShcmName.ReadOnly = true;
+            // 
+            // NameDetail
+            // 
+            this.NameDetail.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.NameDetail.HeaderText = "Наименование детали";
+            this.NameDetail.MinimumWidth = 100;
+            this.NameDetail.Name = "NameDetail";
+            this.NameDetail.ReadOnly = true;
+            // 
+            // Amount
+            // 
+            this.Amount.HeaderText = "Кол-во";
+            this.Amount.Name = "Amount";
+            this.Amount.ReadOnly = true;
+            this.Amount.Width = 60;
+            // 
+            // Galvanic
+            // 
+            this.Galvanic.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Galvanic.HeaderText = "Покрытие";
+            this.Galvanic.MinimumWidth = 250;
+            this.Galvanic.Name = "Galvanic";
+            this.Galvanic.ReadOnly = true;
+            // 
+            // dateFact
+            // 
+            this.dateFact.HeaderText = "Дата факт";
+            this.dateFact.Name = "dateFact";
+            this.dateFact.ReadOnly = true;
+            // 
+            // Notes
+            // 
+            this.Notes.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Notes.HeaderText = "Примечания";
+            this.Notes.MinimumWidth = 50;
+            this.Notes.Name = "Notes";
+            this.Notes.ReadOnly = true;
+            // 
             // F_Reports
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -881,6 +1085,12 @@
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.LaborTabPage.ResumeLayout(false);
+            this.tabPageGalvan.ResumeLayout(false);
+            this.tableLayoutPanel5.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dGVGalvan)).EndInit();
+            this.panel6.ResumeLayout(false);
+            this.panel7.ResumeLayout(false);
+            this.panel7.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -950,5 +1160,24 @@
         private System.Windows.Forms.CheckBox chB_rep7AllOrders;
         private System.Windows.Forms.TabPage LaborTabPage;
         private System.Windows.Forms.Integration.ElementHost LaborElementHost;
+        private System.Windows.Forms.TabPage tabPageGalvan;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
+        private System.Windows.Forms.DataGridView dGVGalvan;
+        private System.Windows.Forms.Panel panel6;
+        private System.Windows.Forms.Label nameOrd;
+        private System.Windows.Forms.Panel panel7;
+        private System.Windows.Forms.DateTimePicker dateTimePicker1;
+        private System.Windows.Forms.DateTimePicker dateTimePicker2;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.DataGridViewTextBoxColumn OrderNumber;
+        private System.Windows.Forms.DataGridViewTextBoxColumn OrderName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Pos;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ShcmName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn NameDetail;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Amount;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Galvanic;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dateFact;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Notes;
     }
 }

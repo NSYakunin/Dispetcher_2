@@ -70,6 +70,8 @@
             this.С_PK_IdOrderDetail = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.С_FK_IdDetail = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.С_PositionParent = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dGV_AddDetailsFromRasConMenuSrt = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.копироватьВБуферToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.panel6 = new System.Windows.Forms.Panel();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
             this.tB_NameDetailRas = new System.Windows.Forms.TextBox();
@@ -138,8 +140,6 @@
             this.numericUpDChange = new System.Windows.Forms.NumericUpDown();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.tB_PK_IdDetailChange = new System.Windows.Forms.TextBox();
-            this.dGV_AddDetailsFromRasConMenuSrt = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.копироватьВБуферToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.cMStrip_TreeOrder.SuspendLayout();
             this.myTabC_Orders.SuspendLayout();
             this.tPageOrders.SuspendLayout();
@@ -153,6 +153,7 @@
             this.gB_OrderNum_Search.SuspendLayout();
             this.tPageOrdersDetails.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dGV_AddDetailsFromRas)).BeginInit();
+            this.dGV_AddDetailsFromRasConMenuSrt.SuspendLayout();
             this.panel6.SuspendLayout();
             this.groupBox10.SuspendLayout();
             this.groupBox11.SuspendLayout();
@@ -192,7 +193,6 @@
             this.groupBox6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDChange)).BeginInit();
             this.groupBox8.SuspendLayout();
-            this.dGV_AddDetailsFromRasConMenuSrt.SuspendLayout();
             this.SuspendLayout();
             // 
             // cMStrip_TreeOrder
@@ -618,6 +618,21 @@
             this.С_PositionParent.Name = "С_PositionParent";
             this.С_PositionParent.ReadOnly = true;
             this.С_PositionParent.Visible = false;
+            // 
+            // dGV_AddDetailsFromRasConMenuSrt
+            // 
+            this.dGV_AddDetailsFromRasConMenuSrt.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.копироватьВБуферToolStripMenuItem1});
+            this.dGV_AddDetailsFromRasConMenuSrt.Name = "dGV_AddDetailsFromRasConMenuSrt";
+            this.dGV_AddDetailsFromRasConMenuSrt.Size = new System.Drawing.Size(187, 26);
+            // 
+            // копироватьВБуферToolStripMenuItem1
+            // 
+            this.копироватьВБуферToolStripMenuItem1.Image = global::Dispetcher2.Properties.Resources.icons8_скопировать_30;
+            this.копироватьВБуферToolStripMenuItem1.Name = "копироватьВБуферToolStripMenuItem1";
+            this.копироватьВБуферToolStripMenuItem1.Size = new System.Drawing.Size(186, 22);
+            this.копироватьВБуферToolStripMenuItem1.Text = "Копировать в буфер";
+            this.копироватьВБуферToolStripMenuItem1.Click += new System.EventHandler(this.копироватьВБуферToolStripMenuItem1_Click);
             // 
             // panel6
             // 
@@ -1429,21 +1444,6 @@
             this.tB_PK_IdDetailChange.TabIndex = 999;
             this.tB_PK_IdDetailChange.TabStop = false;
             // 
-            // dGV_AddDetailsFromRasConMenuSrt
-            // 
-            this.dGV_AddDetailsFromRasConMenuSrt.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.копироватьВБуферToolStripMenuItem1});
-            this.dGV_AddDetailsFromRasConMenuSrt.Name = "dGV_AddDetailsFromRasConMenuSrt";
-            this.dGV_AddDetailsFromRasConMenuSrt.Size = new System.Drawing.Size(187, 26);
-            // 
-            // копироватьВБуферToolStripMenuItem1
-            // 
-            this.копироватьВБуферToolStripMenuItem1.Image = global::Dispetcher2.Properties.Resources.icons8_скопировать_30;
-            this.копироватьВБуферToolStripMenuItem1.Name = "копироватьВБуферToolStripMenuItem1";
-            this.копироватьВБуферToolStripMenuItem1.Size = new System.Drawing.Size(186, 22);
-            this.копироватьВБуферToolStripMenuItem1.Text = "Копировать в буфер";
-            this.копироватьВБуферToolStripMenuItem1.Click += new System.EventHandler(this.копироватьВБуферToolStripMenuItem1_Click);
-            // 
             // F_Orders
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1474,6 +1474,7 @@
             this.gB_OrderNum_Search.PerformLayout();
             this.tPageOrdersDetails.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dGV_AddDetailsFromRas)).EndInit();
+            this.dGV_AddDetailsFromRasConMenuSrt.ResumeLayout(false);
             this.panel6.ResumeLayout(false);
             this.groupBox10.ResumeLayout(false);
             this.groupBox10.PerformLayout();
@@ -1523,7 +1524,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDChange)).EndInit();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
-            this.dGV_AddDetailsFromRasConMenuSrt.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
