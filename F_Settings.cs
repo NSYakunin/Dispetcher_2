@@ -1,5 +1,5 @@
 ﻿using System;
-//using System.Collections.Generic;
+using System.Collections.Generic;
 //using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -192,6 +192,8 @@ namespace Dispetcher2
 
         private void btn_TehnologyUpdate_Click(object sender, EventArgs e)
         {
+            List<ErrorItem> errors = new List<ErrorItem>();
+            int eid = 1;
             //1.производим поиск деталей в работе
             updater.SelectDetailsInWork(ref DT_Details);
             if (DT_Details.Rows.Count > 0)
@@ -227,7 +229,10 @@ namespace Dispetcher2
                             if (FK_IdOperation == 0)
                             {
                                 err = true;
-                                MessageBox.Show("ID Детали:\"" + FK_IdDetails.ToString() + "; Операция:\"" + NameOper + "\" не найдена в справочнике операций ПО \"Диспетчеризация\".", "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                string error = "ID Детали:\"" + FK_IdDetails.ToString() + "; Операция:\"" + NameOper + "\" не найдена в справочнике операций ПО \"Диспетчеризация\".";
+                                //MessageBox.Show(error, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                ErrorItem item = new ErrorItem(eid++, error);
+                                errors.Add(item);
                             }
                             else//Saving
                             {
@@ -236,15 +241,28 @@ namespace Dispetcher2
                                 if (!updater.InsertTechnologyDetails(FK_IdDetails, NumOper, FK_IdOperation, Tpd2, Tsh2))
                                 {
                                     err = true;
-                                    MessageBox.Show("ID Детали:\"" + FK_IdDetails.ToString() + "\",IdLoodsman: \"" + IdLoodsman + "\", \"" + Shcm +
-                                        "\", операция:\"" + NameOper + "\" не найдена в справочнике операций ПО \"Диспетчеризация\".", "ОШИБКА сохранения!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    //MessageBox.Show("ID Детали:\"" + FK_IdDetails.ToString() + "\",IdLoodsman: \"" + IdLoodsman + "\", \"" + Shcm +
+                                    //    "\", операция:\"" + NameOper + "\" не найдена в справочнике операций ПО \"Диспетчеризация\".", "ОШИБКА сохранения!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    ErrorItem item = new ErrorItem(eid++, updater.LastError);
+                                    errors.Add(item);
                                 }
                             }
                         }
                     }
                 }
-                if (!err) MessageBox.Show("Технологии всех деталей находящихся в работе успешно обновлены.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else MessageBox.Show("Обновление завершено с ошибками.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                if (err) 
+                {
+                    MessageBox.Show("Обновление завершено с ошибками.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    dataGridView1.DataSource = errors;
+                }
+                else
+                {
+                    MessageBox.Show("Технологии всех деталей находящихся в работе успешно обновлены.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                    
+                
+                    
+                
             }
 
         }

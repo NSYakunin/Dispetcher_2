@@ -35,8 +35,6 @@ namespace Dispetcher2
         // Внешняя зависимость
         System.Windows.Controls.UserControl labControl;
 
-
-
         DataTable Dt_SpDepartment = new DataTable();
         DataTable Dt_SpWorkers = new DataTable();
         DataTable DT_Orders = new DataTable();
@@ -55,11 +53,11 @@ namespace Dispetcher2
             orders = new C_Orders(config);
             reports = new C_Reports(config);
 
-            // Внешняя зависимость
+            // Внешняя зависимость!
             labControl = new LaborControl();
-            viewModel.Dispatcher = labControl.Dispatcher;
+            //viewModel.Dispatcher = labControl.Dispatcher;
             labControl.DataContext = viewModel;
-
+            viewModel.ColumnContainer = labControl as IColumnUpdate;
 
             InitializeComponent();
             if (config.SelectedReportMode == ReportMode.ОтчетНаряд
@@ -368,23 +366,6 @@ namespace Dispetcher2
                 MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     }

@@ -15,7 +15,7 @@
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>\\Ascon\Dispetcher\UpdatesDisp2\Application Files\</PublishUrl>
+    <PublishUrl>\\filesrv\Производство\Программисты\DispPublic\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Unc</InstallFrom>
     <UpdateEnabled>true</UpdateEnabled>
@@ -25,8 +25,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>false</MapFileExtensions>
-    <InstallUrl>\\Ascon\Dispetcher\UpdatesDisp2\</InstallUrl>
     <UpdateUrl>\\Ascon\Dispetcher\UpdatesDisp2\Application Files\</UpdateUrl>
+    <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
     <ApplicationRevision>15</ApplicationRevision>
@@ -166,6 +166,7 @@
     <Compile Include="Class\ImportDataWorker.cs" />
     <Compile Include="Class\Job.cs" />
     <Compile Include="Class\KitUpdater.cs" />
+    <Compile Include="Class\LaborReport.cs" />
     <Compile Include="Class\Operation.cs" />
     <Compile Include="Class\Order.cs" />
     <Compile Include="Class\Receipt.cs" />
@@ -226,6 +227,7 @@
     <Compile Include="Controls\WorkTimeControl.xaml.cs">
       <DependentUpon>WorkTimeControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DataAccess\ExcelLaborReportWriter.cs" />
     <Compile Include="DataAccess\SqlDetailRepository.cs" />
     <Compile Include="DataAccess\SqlJobRepository.cs" />
     <Compile Include="DataAccess\SqlOperationGroupRepository.cs" />

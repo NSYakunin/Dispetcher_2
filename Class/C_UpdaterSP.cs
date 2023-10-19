@@ -24,7 +24,7 @@ namespace Dispetcher2.Class
             this.config = config;
             orders = new C_Orders(config);
         }
-
+        public string LastError { get; set; }
         public void SelectNewDataSp(string NameSp, ref DataTable Dt_Sp, ref DataGridView DGV, int idloodsman)
         {
             Dt_Sp.Clear();
@@ -274,7 +274,8 @@ namespace Dispetcher2.Class
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LastError = "InsertTechnologyDetails Не работает. " + ex.Message;
                 return false;
             }
         }

@@ -18,13 +18,14 @@ namespace Dispetcher2.Class
         {
             this.strings = strings;
         }
-        public override void Load()
-        {
-
-        }
+        public override void Load() { }
         public override System.Collections.IEnumerable GetList()
         {
             return strings;
         }
+    }
+    public interface IColumnUpdate
+    {
+        void Update(StringRepository names);
     }
 }
