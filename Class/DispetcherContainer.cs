@@ -77,10 +77,11 @@ namespace Dispetcher2.Class
                 var operations = new SqlOperationRepository(config, converter);
                 var groups = new SqlOperationGroupRepository(config, converter);
                 var workDays = new SqlWorkDayRepository(config, converter, DateTime.Now);
+                var writer = new ExcelLaborReportWriter();
 
                 var ocvm = new OrderControlViewModel(orders);
                 var rep = new LaborReport(details, operations, groups, workDays, ocvm as OrderRepository);
-                var labvm = new LaborViewModel(orders, ocvm, rep);
+                var labvm = new LaborViewModel(orders, ocvm, rep, writer);
 
                 rf = new F_Reports(config, converter, labvm);
 

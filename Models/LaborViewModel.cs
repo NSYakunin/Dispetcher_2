@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 
 using Dispetcher2.Class;
+using System.Diagnostics;
 
 namespace Dispetcher2.Models
 {
@@ -18,6 +19,9 @@ namespace Dispetcher2.Models
     {
         OrderRepository orders;
         LaborReport report;
+        LaborReportRepository labrep;
+        StringRepository colrep;
+        LaborReportWriter writer;
 
         OrderControlViewModel ocvm;
         Visibility dvValue;
@@ -87,22 +91,24 @@ namespace Dispetcher2.Models
         public bool ShowOperationFlag { get; set; }
         public ICommand RequestCommand { get { return requestCommandValue; } }
         public ICommand ExcelCommand { get { return excelCommandValue; } }
-
-        
+        public DateTime BeginDate { get; set; }
+        public DateTime EndDate { get; set; }
         public ObservableCollection<LaborReportRow> RowsView { get; set; }
         public IColumnUpdate ColumnContainer { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public LaborViewModel(OrderRepository orders, OrderControlViewModel ocvm, LaborReport report)
+        public LaborViewModel(OrderRepository orders, OrderControlViewModel ocvm, LaborReport report, LaborReportWriter writer)
         {
             if (orders == null) throw new ArgumentException("Пожалуйста укажите параметр: OrderRepository");
             if (ocvm == null) throw new ArgumentException("Пожалуйста укажите параметр: OrderControlViewModel");
             if (report == null) throw new ArgumentException("Пожалуйста укажите параметр: LaborReport");
+            if (writer == null) throw new ArgumentException("Пожалуйста укажите параметр: LaborReportWriter");
 
             this.orders = orders;
             this.ocvm = ocvm;
             this.report = report;
+            this.writer = writer;
 
             var c = new LaborCommand();
             c.ExecuteAction = this.ProcessRequestCommand;
@@ -118,6 +124,10 @@ namespace Dispetcher2.Models
             OperationVisibility = Visibility.Collapsed;
             
             RowsView = new ObservableCollection<LaborReportRow>();
+
+            DateTime n = DateTime.Now.Date;
+            BeginDate = new DateTime(n.Year, 1, 1);
+            EndDate = new DateTime(n.Year, n.Month, 1);
         }
         public void OnPropertyChanged(string prop)
         {
@@ -162,6 +172,9 @@ namespace Dispetcher2.Models
                     return;
                 }
 
+                Debug.WriteLine("BeginDate: " + BeginDate);
+                Debug.WriteLine("EndDate: " + EndDate);
+
                 WaitVisibility = Visibility.Visible;
                 DataVisibility = Visibility.Collapsed;
                 CommandVisibility = Visibility.Collapsed;
@@ -187,22 +200,23 @@ namespace Dispetcher2.Models
 
         void AfterLoadOperations()
         {
-            var names = report.GetOperationRepository();
-            if (ColumnContainer != null) ColumnContainer.Update(names);
+            colrep = report.GetOperationRepository();
+            if (ColumnContainer != null) ColumnContainer.Update(colrep);
             
             DataVisibility = Visibility.Visible;
             WaitVisibility = Visibility.Collapsed;
             CommandVisibility = Visibility.Visible;
             OperationVisibility = Visibility.Visible;
 
+            labrep = report.GetLaborReportRepository();
             RowsView.Clear();
-            foreach (var r in report.GetRows()) RowsView.Add(r);
+            foreach (LaborReportRow r in labrep.GetList()) RowsView.Add(r);
         }
         void ProcessExcelCommand()
         {
-
+            if (colrep != null && labrep != null)
+                writer.Write(colrep, labrep);
         }
-        
     }
     public class LaborCommand : ICommand
     {

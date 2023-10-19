@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace Dispetcher2.Class
 {
+    public abstract class LaborReportWriter
+    {
+        public abstract void Write(StringRepository colrep, LaborReportRepository labrep);
+    }
     public class LaborReportRow
     {
         // имя строки
@@ -23,6 +27,19 @@ namespace Dispetcher2.Class
         {
             Operations = new Dictionary<string, string>();
             TimeDictionary = new Dictionary<string, TimeSpan>();
+        }
+    }
+    public class LaborReportRepository : Repository
+    {
+        IEnumerable<LaborReportRow> rows;
+        public LaborReportRepository(IEnumerable<LaborReportRow> rows)
+        {
+            this.rows = rows;
+        }
+        public override void Load() { }
+        public override System.Collections.IEnumerable GetList()
+        {
+            return rows;
         }
     }
     public class LaborReport
@@ -358,9 +375,10 @@ namespace Dispetcher2.Class
             }
             ProcessDetailOperations();
         }
-        public IEnumerable<LaborReportRow> GetRows()
+        public LaborReportRepository GetLaborReportRepository()
         {
-            return rows;
+            LaborReportRepository repository = new LaborReportRepository(rows);
+            return repository;
         }
     }
 }

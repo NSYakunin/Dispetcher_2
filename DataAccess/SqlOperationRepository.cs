@@ -17,12 +17,10 @@ namespace Dispetcher2.DataAccess
             //В настоящее время, 24.08.2023 технологическая операция в Лоцмане
             //хранится так, что "время на деталь" содержит сумму основного и предварительно-заключительного.
             //Причина: работа связки Лоцман-Вертикаль.
-            //Трудоемкость следует считать так:
-            //Т = К * (Tsh - Tpz) + Tpz
+            //Можно считать так: t = Quantity * (Tsh - Tpd) + Tpd;
+            //Однако для "старых" деталей этой суммы нет
 
-            int t;
-            if (Tsh > Tpd) t = Quantity * (Tsh - Tpd) + Tpd;
-            else t = Quantity * Tsh + Tpd;
+            int t = Quantity * Tsh + Tpd;
             TimeSpan ts = TimeSpan.FromSeconds(t);
             this.Time = ts;
         }

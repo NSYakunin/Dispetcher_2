@@ -223,6 +223,7 @@
     <Compile Include="Controls\WorkTimeControl.xaml.cs">
       <DependentUpon>WorkTimeControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DataAccess\ExcelLaborReportWriter.cs" />
     <Compile Include="DataAccess\SqlDetailRepository.cs" />
     <Compile Include="DataAccess\SqlJobRepository.cs" />
     <Compile Include="DataAccess\SqlOperationGroupRepository.cs" />
