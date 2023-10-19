@@ -7,6 +7,9 @@ using Dispetcher2.Class;
 
 namespace Dispetcher2.Models
 {
+    // Архив
+    // Код перенесен в класс LaborViewModel
+    /*
     public class OperationReportRow
     {
         public string Name { get; set; }
@@ -38,7 +41,7 @@ namespace Dispetcher2.Models
 
         public IEnumerable<OperationReportRow> Rows { get { return rows; } }
 
-        /*
+        
 
         public IEnumerable<Detail> GetMainDetails()
         {
@@ -54,7 +57,7 @@ namespace Dispetcher2.Models
             return result;
         }
 
-        */
+        
 
         public void Update(OrderRepository orders)
         {
@@ -265,5 +268,5 @@ namespace Dispetcher2.Models
             var rep = new StringRepository(NameList);
             return rep;
         }
-    }
+    }*/
 }
