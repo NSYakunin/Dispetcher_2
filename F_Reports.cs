@@ -185,15 +185,17 @@ namespace Dispetcher2
             int IdCeh;
             bool flagDays;
             int cWorkDays = 0;
+            bool koop;
             if (cB_rep3Workers.SelectedIndex != -1) loginWorker = cB_rep3Workers.SelectedValue.ToString(); else loginWorker = "";
             if (cB_rep3Department.SelectedIndex != -1) IdCeh = Convert.ToInt32(cB_rep3Department.SelectedValue); else IdCeh = -1;
             if (chB_rep3Days.Checked) flagDays = true; else flagDays = false;
+            if (cBKoop.Checked) koop = true; else koop = false;
             
             int PlanHours = reports.NormHoursPlan(dTP_rep3Start.Value.Date, dTP_rep3End.Value.Date, ref cWorkDays);
             if (PlanHours == 0)
                 MessageBox.Show("Не указаны данные производственного календаря.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             else
-                reports.rep3(dTP_rep3Start.Value.Date, dTP_rep3End.Value.Date, loginWorker, IdCeh, flagDays, PlanHours, cWorkDays);
+                reports.rep3(dTP_rep3Start.Value.Date, dTP_rep3End.Value.Date, loginWorker, IdCeh, flagDays, PlanHours, cWorkDays, koop);
         }
         #endregion
 
