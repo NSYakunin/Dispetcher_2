@@ -94,13 +94,6 @@
             this.tabPageGalvan = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.dGVGalvan = new System.Windows.Forms.DataGridView();
-            this.panel6 = new System.Windows.Forms.Panel();
-            this.panel7 = new System.Windows.Forms.Panel();
-            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
-            this.dateTimePicker2 = new System.Windows.Forms.DateTimePicker();
-            this.label14 = new System.Windows.Forms.Label();
-            this.label15 = new System.Windows.Forms.Label();
-            this.nameOrd = new System.Windows.Forms.Label();
             this.OrderNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.OrderName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Pos = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -110,6 +103,14 @@
             this.Galvanic = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dateFact = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Notes = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.panel6 = new System.Windows.Forms.Panel();
+            this.panel7 = new System.Windows.Forms.Panel();
+            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
+            this.dateTimePicker2 = new System.Windows.Forms.DateTimePicker();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.nameOrd = new System.Windows.Forms.Label();
+            this.cBKoop = new System.Windows.Forms.CheckBox();
             this.myTabC_Reports.SuspendLayout();
             this.tPageRep3.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -185,6 +186,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.cBKoop);
             this.groupBox1.Controls.Add(this.btn_rep3Create);
             this.groupBox1.Controls.Add(this.chB_rep3Days);
             this.groupBox1.Controls.Add(this.dTP_rep3End);
@@ -911,6 +913,71 @@
             this.dGVGalvan.Size = new System.Drawing.Size(975, 503);
             this.dGVGalvan.TabIndex = 0;
             // 
+            // OrderNumber
+            // 
+            this.OrderNumber.HeaderText = "№";
+            this.OrderNumber.Name = "OrderNumber";
+            this.OrderNumber.ReadOnly = true;
+            this.OrderNumber.Width = 50;
+            // 
+            // OrderName
+            // 
+            this.OrderName.HeaderText = "Заказ";
+            this.OrderName.Name = "OrderName";
+            this.OrderName.ReadOnly = true;
+            this.OrderName.Width = 120;
+            // 
+            // Pos
+            // 
+            this.Pos.HeaderText = "Поз.";
+            this.Pos.Name = "Pos";
+            this.Pos.ReadOnly = true;
+            this.Pos.Width = 40;
+            // 
+            // ShcmName
+            // 
+            this.ShcmName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ShcmName.HeaderText = "Обозначение ЩЦМ";
+            this.ShcmName.Name = "ShcmName";
+            this.ShcmName.ReadOnly = true;
+            // 
+            // NameDetail
+            // 
+            this.NameDetail.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.NameDetail.HeaderText = "Наименование детали";
+            this.NameDetail.MinimumWidth = 100;
+            this.NameDetail.Name = "NameDetail";
+            this.NameDetail.ReadOnly = true;
+            // 
+            // Amount
+            // 
+            this.Amount.HeaderText = "Кол-во";
+            this.Amount.Name = "Amount";
+            this.Amount.ReadOnly = true;
+            this.Amount.Width = 60;
+            // 
+            // Galvanic
+            // 
+            this.Galvanic.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Galvanic.HeaderText = "Покрытие";
+            this.Galvanic.MinimumWidth = 250;
+            this.Galvanic.Name = "Galvanic";
+            this.Galvanic.ReadOnly = true;
+            // 
+            // dateFact
+            // 
+            this.dateFact.HeaderText = "Дата факт";
+            this.dateFact.Name = "dateFact";
+            this.dateFact.ReadOnly = true;
+            // 
+            // Notes
+            // 
+            this.Notes.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Notes.HeaderText = "Примечания";
+            this.Notes.MinimumWidth = 50;
+            this.Notes.Name = "Notes";
+            this.Notes.ReadOnly = true;
+            // 
             // panel6
             // 
             this.panel6.Controls.Add(this.panel7);
@@ -976,70 +1043,17 @@
             this.nameOrd.Text = "Акт Приёма-передачи.";
             this.nameOrd.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // OrderNumber
+            // cBKoop
             // 
-            this.OrderNumber.HeaderText = "№";
-            this.OrderNumber.Name = "OrderNumber";
-            this.OrderNumber.ReadOnly = true;
-            this.OrderNumber.Width = 50;
-            // 
-            // OrderName
-            // 
-            this.OrderName.HeaderText = "Заказ";
-            this.OrderName.Name = "OrderName";
-            this.OrderName.ReadOnly = true;
-            this.OrderName.Width = 120;
-            // 
-            // Pos
-            // 
-            this.Pos.HeaderText = "Поз.";
-            this.Pos.Name = "Pos";
-            this.Pos.ReadOnly = true;
-            this.Pos.Width = 40;
-            // 
-            // ShcmName
-            // 
-            this.ShcmName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.ShcmName.HeaderText = "Обозначение ЩЦМ";
-            this.ShcmName.Name = "ShcmName";
-            this.ShcmName.ReadOnly = true;
-            // 
-            // NameDetail
-            // 
-            this.NameDetail.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.NameDetail.HeaderText = "Наименование детали";
-            this.NameDetail.MinimumWidth = 100;
-            this.NameDetail.Name = "NameDetail";
-            this.NameDetail.ReadOnly = true;
-            // 
-            // Amount
-            // 
-            this.Amount.HeaderText = "Кол-во";
-            this.Amount.Name = "Amount";
-            this.Amount.ReadOnly = true;
-            this.Amount.Width = 60;
-            // 
-            // Galvanic
-            // 
-            this.Galvanic.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Galvanic.HeaderText = "Покрытие";
-            this.Galvanic.MinimumWidth = 250;
-            this.Galvanic.Name = "Galvanic";
-            this.Galvanic.ReadOnly = true;
-            // 
-            // dateFact
-            // 
-            this.dateFact.HeaderText = "Дата факт";
-            this.dateFact.Name = "dateFact";
-            this.dateFact.ReadOnly = true;
-            // 
-            // Notes
-            // 
-            this.Notes.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Notes.HeaderText = "Примечания";
-            this.Notes.MinimumWidth = 50;
-            this.Notes.Name = "Notes";
-            this.Notes.ReadOnly = true;
+            this.cBKoop.AutoSize = true;
+            this.cBKoop.Checked = true;
+            this.cBKoop.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cBKoop.Location = new System.Drawing.Point(247, 125);
+            this.cBKoop.Name = "cBKoop";
+            this.cBKoop.Size = new System.Drawing.Size(208, 21);
+            this.cBKoop.TabIndex = 13;
+            this.cBKoop.Text = "Не учитывать кооп в итого.";
+            this.cBKoop.UseVisualStyleBackColor = true;
             // 
             // F_Reports
             // 
@@ -1179,5 +1193,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Galvanic;
         private System.Windows.Forms.DataGridViewTextBoxColumn dateFact;
         private System.Windows.Forms.DataGridViewTextBoxColumn Notes;
+        private System.Windows.Forms.CheckBox cBKoop;
     }
 }

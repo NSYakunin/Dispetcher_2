@@ -10,40 +10,63 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 
 using Dispetcher2.Class;
+using System.Diagnostics;
 
 namespace Dispetcher2.Models
 {
+
     public class LaborViewModel : INotifyPropertyChanged
     {
-        OrderRepository ordRep;
-        DetailRepository details;
-        OperationRepository operations;
-        OperationGroupRepository groups;
+        OrderRepository orders;
+        LaborReport report;
+        LaborReportRepository labrep;
+        StringRepository colrep;
+        LaborReportWriter writer;
 
         OrderControlViewModel ocvm;
         Visibility dvValue;
         ICommand requestCommandValue;
-        public Dispatcher Dispatcher { get; set; }
+        ICommand excelCommandValue;
+
         string waitMessageValue;
         public Visibility DataVisibility
         {
             get
-            {
-                return dvValue;
-            }
+            { return dvValue; }
             set
             {
                 dvValue = value;
                 OnPropertyChanged(nameof(DataVisibility));
+            }
+        }
+        Visibility wtVis;
+        public Visibility WaitVisibility
+        {
+            get { return wtVis; }
+            set
+            {
+                wtVis = value;
                 OnPropertyChanged(nameof(WaitVisibility));
             }
         }
-        public Visibility WaitVisibility
+        Visibility comVis;
+        public Visibility CommandVisibility
         {
-            get
+            get { return comVis; }
+            set
             {
-                if (DataVisibility == Visibility.Visible) return Visibility.Collapsed;
-                else return Visibility.Visible;
+                comVis = value;
+                OnPropertyChanged(nameof(CommandVisibility));
+            }
+        }
+        Visibility opVis;
+        public Visibility OperationVisibility
+        {
+            get { return opVis; }
+            set
+            {
+                opVis = value;
+                OnPropertyChanged(nameof(OperationVisibility));
             }
         }
         public string WaitMessage
@@ -67,39 +90,58 @@ namespace Dispetcher2.Models
         public bool ShowDetailFlag { get; set; }
         public bool ShowOperationFlag { get; set; }
         public ICommand RequestCommand { get { return requestCommandValue; } }
+        public ICommand ExcelCommand { get { return excelCommandValue; } }
+        public DateTime BeginDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public ObservableCollection<LaborReportRow> RowsView { get; set; }
+        public IColumnUpdate ColumnContainer { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        // Нужно переделать конструктор, использовав шаблон Фасад
-        public LaborViewModel(OrderRepository ordRep, OrderControlViewModel ocvm,
-            DetailRepository details, OperationRepository operations, OperationGroupRepository groups)
+        public LaborViewModel(OrderRepository orders, OrderControlViewModel ocvm, LaborReport report, LaborReportWriter writer)
         {
-            if (ordRep == null) throw new ArgumentException("Пожалуйста укажите параметр: OrderRepository");
+            if (orders == null) throw new ArgumentException("Пожалуйста укажите параметр: OrderRepository");
             if (ocvm == null) throw new ArgumentException("Пожалуйста укажите параметр: OrderControlViewModel");
-            
-            if (details == null) throw new ArgumentException("Пожалуйста укажите параметр: DetailRepository");
-            if (operations == null) throw new ArgumentException("Пожалуйста укажите параметр: OperationRepository");
-            if (groups == null) throw new ArgumentException("Пожалуйста укажите параметр: OperationGroupRepository");
-            this.ordRep = ordRep;
+            if (report == null) throw new ArgumentException("Пожалуйста укажите параметр: LaborReport");
+            if (writer == null) throw new ArgumentException("Пожалуйста укажите параметр: LaborReportWriter");
+
+            this.orders = orders;
             this.ocvm = ocvm;
-            this.details = details;
-            this.operations = operations;
-            this.groups = groups;
+            this.report = report;
+            this.writer = writer;
+
             var c = new LaborCommand();
             c.ExecuteAction = this.ProcessRequestCommand;
             requestCommandValue = c;
+
+            c = new LaborCommand();
+            c.ExecuteAction = this.ProcessExcelCommand;
+            excelCommandValue = c;
+
+            WaitVisibility = Visibility.Visible;
+            DataVisibility = Visibility.Collapsed;
+            CommandVisibility = Visibility.Collapsed;
+            OperationVisibility = Visibility.Collapsed;
+            
+            RowsView = new ObservableCollection<LaborReportRow>();
+
+            DateTime n = DateTime.Now.Date;
+            BeginDate = new DateTime(n.Year, 1, 1);
+            EndDate = new DateTime(n.Year, n.Month, 1);
         }
         public void OnPropertyChanged(string prop)
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(prop));
         }
-        public void Start()
+        public async Task Start()
         {
             Before();
 
-            var t = new Task(Load);
-            t.Start();
+            Action a = this.Load;
+            await Task.Run(a);
+
+            After();
         }
         void Before()
         {
@@ -108,26 +150,72 @@ namespace Dispetcher2.Models
         }
         void Load()
         {
-            ordRep.Load();
-            details.Load();
-            operations.Load();
-            //System.Threading.Thread.Sleep(2000);
-
-            if (Dispatcher != null)
-            {
-                // Выполнение делегата After в потоке Dispatcer
-                Action a = After;
-                Dispatcher.BeginInvoke(a);
-            }
+            orders.Load();
+            report.Load();
         }
         void After()
         {
             DataVisibility = Visibility.Visible;
+            WaitVisibility = Visibility.Collapsed;
             Filter = String.Empty;
+            CommandVisibility = Visibility.Visible;
         }
         private void ProcessRequestCommand()
         {
-            System.Diagnostics.Debug.WriteLine("RequestCommand!");
+            try
+            {
+                // Список выбранных заказов
+                var selectedOrders = ocvm.GetOrders();
+                if (selectedOrders.Any() == false)
+                {
+                    MessageBox.Show("Пожалуйста выберите один или несколько заказов.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                Debug.WriteLine("BeginDate: " + BeginDate);
+                Debug.WriteLine("EndDate: " + EndDate);
+
+                WaitVisibility = Visibility.Visible;
+                DataVisibility = Visibility.Collapsed;
+                CommandVisibility = Visibility.Collapsed;
+                OperationVisibility = Visibility.Collapsed;
+
+                LoadOperationsAsync();
+            }
+            catch(Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
+        }
+        async Task LoadOperationsAsync()
+        {
+            report.ShowDetailFlag = this.ShowDetailFlag;
+            report.ShowOperationFlag = this.ShowOperationFlag;
+
+            Action a = report.Calculate;
+            await Task.Run(a);
+
+            AfterLoadOperations();
+        }
+
+        void AfterLoadOperations()
+        {
+            colrep = report.GetOperationRepository();
+            if (ColumnContainer != null) ColumnContainer.Update(colrep);
+            
+            DataVisibility = Visibility.Visible;
+            WaitVisibility = Visibility.Collapsed;
+            CommandVisibility = Visibility.Visible;
+            OperationVisibility = Visibility.Visible;
+
+            labrep = report.GetLaborReportRepository();
+            RowsView.Clear();
+            foreach (LaborReportRow r in labrep.GetList()) RowsView.Add(r);
+        }
+        void ProcessExcelCommand()
+        {
+            if (colrep != null && labrep != null)
+                writer.Write(colrep, labrep);
         }
     }
     public class LaborCommand : ICommand

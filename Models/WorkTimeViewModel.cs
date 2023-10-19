@@ -8,6 +8,9 @@ using Dispetcher2.Class;
 
 namespace Dispetcher2.Models
 {
+    // Архив
+    // Код перенесен в класс LaborViewModel
+    /*
     public class WorkTimeReportRow
     {
         public string Name { get; set; }
@@ -175,5 +178,5 @@ namespace Dispetcher2.Models
         {
             return columns;
         }
-    }
+    }*/
 }
