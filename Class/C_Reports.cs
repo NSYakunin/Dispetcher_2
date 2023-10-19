@@ -141,7 +141,7 @@ namespace Dispetcher2.Class
         /// <param name="IdUser">исполнитель</param>
         /// <param name="IdCeh">цех</param>
         /// <param name="FlagDays">Разбить по дням</param>
-        public void rep3(DateTime DateStart, DateTime DateEnd, string loginWorker, int IdCeh, bool FlagDays, int PlanHours,int cWorkDays)
+        public void rep3(DateTime DateStart, DateTime DateEnd, string loginWorker, int IdCeh, bool FlagDays, int PlanHours,int cWorkDays, bool koop)
         {
             try
             {
@@ -272,6 +272,7 @@ namespace Dispetcher2.Class
                     int[] AllWorkerForDay = new int[tsAll.Days+1];//"Всего" по дням
                     int[] AllDepartmentForDay = new int[tsAll.Days + 1];//"Итого по участку" по дням
                     int[] AllForDay = new int[tsAll.Days + 1];//"Итого" по дням
+                    ulong FactTimeDepartmentWithOutKoop = 0; //Всего по Участку без кооп
                     //int[] RowsAllDepartment = new int[10]; ;//Номера строк "Итого по участку" 10 - с запасом взял // пока есть 4 участка
                     //int RowsAllDep = 0; //Номер элемента в массиве RowsAllDepartment
                     for (int i = 0; i < _DT.Rows.Count-1; i++)
@@ -403,6 +404,7 @@ namespace Dispetcher2.Class
                             //Н/ч за период (факт)
                             ExcelWorkSheet.Cells[NumRow, 12] = IntToTime(FactTimeWorker);
                             FactTimeDepartment += (ulong)FactTimeWorker;
+                            FactTimeDepartmentWithOutKoop += _DT.Rows[i].ItemArray[0].ToString() == "кооп" ? 0 :(ulong)FactTimeWorker;
                             //% выполнения
                             if (_PlanHours > 0 & TimeSheets>0)
                             {
@@ -461,11 +463,12 @@ namespace Dispetcher2.Class
                                     ExcelWorkSheet.Cells[NumRow, 14] = 0;
                                 }
                                 AllPlanHours += PlanHoursDepartment;//н/ч за период (план)
-                                AllFactTime += FactTimeDepartment;//Н/ч за период (факт)
+                                AllFactTime += (koop == false ? FactTimeDepartment : FactTimeDepartmentWithOutKoop);//Н/ч за период (факт)
                                 AllTimeSheetsSec += TimeSheetsSecDepartment;//Время по табелю
                                 PlanHoursDepartment = 0;
                                 FactTimeDepartment = 0;
                                 TimeSheetsSecDepartment = 0;
+                                FactTimeDepartmentWithOutKoop = 0;
                                 //Подсчёт по дням****************************************************
                                 if (FlagDays)
                                 {
@@ -491,12 +494,17 @@ namespace Dispetcher2.Class
                                                 double Proc = (double)AllDepartmentForDay[m] / ((double)Workers1 * 28800 * 1.08 + (double)Workers05 * 14400 * 1.08);
                                                 ExcelWorkSheet.Cells[NumRow + 1, m + 16] = Proc;//где L это - Н/ч за период (факт)
                                             }
-                                            //else
-                                                //((Excel.Range)ExcelWorkSheet.Cells[4, m + 14]).Interior.Color = System.Drawing.Color.PaleGreen;
-                                                //((Excel.Range)ExcelWorkSheet.get_Range("A" + (4).ToString(), LastRep3Column + (NumRow - 1).ToString())).Interior.Color = System.Drawing.Color.PaleGreen;
-                                            //Выполнение по цеху (END)
-                                            AllForDay[m] += AllDepartmentForDay[m];
-                                            AllDepartmentForDay[m] = 0;
+
+                                            if (_DT.Rows[i].ItemArray[0].ToString() == "кооп" & koop == true)
+                                            {
+                                                AllForDay[m] += 0;
+                                                AllDepartmentForDay[m] = 0;
+                                            }
+                                            else
+                                            {
+                                                AllForDay[m] += AllDepartmentForDay[m];
+                                                AllDepartmentForDay[m] = 0;
+                                            }
                                         }
                                     }
                                     Workers1 = 0; Workers05 = 0;
