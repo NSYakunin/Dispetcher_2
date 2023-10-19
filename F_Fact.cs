@@ -283,69 +283,75 @@ namespace Dispetcher2
         private void btn_SaveTehnology_Click(object sender, EventArgs e)
         {
             if (C_Gper.F_Fact_View) MessageBox.Show("Разрешение только на просмотр.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            else
             if (dGV_Tehnology.CurrentRow == null) MessageBox.Show("Не выбрана операция.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            else
-                if (_PK_IdBrigade == 0 & _LoginWorker == "") MessageBox.Show("Не указан исполнитель операции.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                else
-                    if (dGV_Tehnology.CurrentRow.Cells[0].Value.ToString().Trim() != "Передача детали на СГД" & Convert.ToInt32(dGV_Tehnology.CurrentRow.Cells[2].Value == DBNull.Value ? "0" : dGV_Tehnology.CurrentRow.Cells[2].Value.ToString()) == 0)
-                            MessageBox.Show("Операция не пронормированна.", "Сохранение отменено!!!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+            if (_PK_IdBrigade == 0 & _LoginWorker == "")
+            {
+                MessageBox.Show("Не указан исполнитель операции.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+            if (dGV_Tehnology.CurrentRow.Cells[0].Value.ToString().Trim() != "Передача детали на СГД" & Convert.ToInt32(dGV_Tehnology.CurrentRow.Cells[2].Value == DBNull.Value ? "0" : dGV_Tehnology.CurrentRow.Cells[2].Value.ToString()) == 0)
+            {
+                DialogResult result = MessageBox.Show(
+                            "Операция не пронормированна. Закрыть со значением '0' ?",
+                            "Внимание",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Information,
+                            MessageBoxDefaultButton.Button1);
+                if (result == DialogResult.No) return;
+            }
 
+            CurrencyManager cmgr = (CurrencyManager)dGV_Tehnology.BindingContext[dGV_Tehnology.DataSource, dGV_Tehnology.DataMember];
+            DataRow row = ((DataRowView)cmgr.Current).Row;
+            string NameOper = row["Oper"].ToString();
+            string NumOper = "";
+            Int16 FK_IdOperation = 0;
+            if (row["Oper"].ToString() != "Передача детали на СГД")
+            {
+                NumOper = NameOper.Remove(3);
+                NameOper = NameOper.Remove(0, NameOper.IndexOf(' ', 2) + 1);
+            }
+            if (row["FK_IdOperation"].ToString() != "") FK_IdOperation = Convert.ToInt16(row["FK_IdOperation"]);
+            else FK_IdOperation = Detail.Find_FK_IdOperationInSp_Operations(NameOper);
+            //*************************
+            if (FK_IdOperation == 0) MessageBox.Show("Операция не найдена в справочнике операций ПО \"Диспетчеризация\".", "Сохранение отменено!!!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+            else//Saving
+            {
+                CurrencyManager cmgrDet = (CurrencyManager)dGV_Details.BindingContext[dGV_Details.DataSource, dGV_Details.DataMember];
+                DataRow rowDet = ((DataRowView)cmgrDet.Current).Row;
+                long PK_IdOrderDetail = Convert.ToInt64(rowDet["PK_IdOrderDetail"]);
+                //int AmountDetails = Convert.ToInt32(nUpD_Tpd.Value);
+                int AmountDetails = Convert.ToInt32(rowDet["AmountDetails"]);
+                //***********************cmgr - row*****************************************************************
+                int Tpd = row["Tpd"] is DBNull ? 0 : Convert.ToInt32(row["Tpd"]);//seconds
+                int Tsh = row["Tsh"] is DBNull ? 0 : Convert.ToInt32(row["Tsh"]);//seconds
+                                                                                    //Copmare fact detail amount and order detail amount
+                                                                                    //if (AmountDetails < Convert.ToInt32(nUpD_Tpd.Value) + C_Details.Select_AmountFactDetailsOper(PK_IdOrderDetail, FK_IdOperation, NumOper))  //Select Distinct
+                if (AmountDetails < Convert.ToInt32(nUpD_Tpd.Value) + Detail.Select_AmountFactDetailsOper(PK_IdOrderDetail, NumOper))  //Select Distinct
+                    MessageBox.Show("Превышен лимит на общее количество деталей по данной позиции.", "Сохранение отменено!!!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                else//Insert operation
+                {
+                    AmountDetails = Convert.ToInt32(nUpD_Tpd.Value);
+                    DateTime DateFactOper = dTimeP_Fact.Value;
+                    //Пока сообщение убираем
+                    //if (C_Details.InsertFactOperation(PK_IdOrderDetail, NumOper, FK_IdOperation, Tpd, Tsh, AmountDetails, DateFactOper, _LoginWorker, _PK_IdBrigade))
+                    //MessageBox.Show("Операция сохранена.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    Detail.InsertFactOperation(PK_IdOrderDetail, NumOper, FK_IdOperation, Tpd, Tsh, AmountDetails, DateFactOper, _LoginWorker, _PK_IdBrigade);
+                    //Refresh DataGrid
+                    if (cB_InDetail.Checked)
+                    {
+                        dGV_FactOperation.Columns["Col_DateFactOper"].Visible = true;
+                        dGV_FactOperation.Columns["Col_FK_LoginWorker"].Visible = true;
+                        Detail.SelectFullFactOperForDetail(PK_IdOrderDetail, ref DT_FactOper);
+                    }
                     else
                     {
-                        CurrencyManager cmgr = (CurrencyManager)dGV_Tehnology.BindingContext[dGV_Tehnology.DataSource, dGV_Tehnology.DataMember];
-                        DataRow row = ((DataRowView)cmgr.Current).Row;
-                        string NameOper = row["Oper"].ToString();
-                        string NumOper = "";
-                        Int16 FK_IdOperation = 0;
-                        if (row["Oper"].ToString() != "Передача детали на СГД")
-                        {
-                            NumOper = NameOper.Remove(3);
-                            NameOper = NameOper.Remove(0, NameOper.IndexOf(' ', 2) + 1);
-                        }
-                        if (row["FK_IdOperation"].ToString() != "") FK_IdOperation = Convert.ToInt16(row["FK_IdOperation"]);
-                        else FK_IdOperation = Detail.Find_FK_IdOperationInSp_Operations(NameOper);
-                        //*************************
-                        if (FK_IdOperation == 0) MessageBox.Show("Операция не найдена в справочнике операций ПО \"Диспетчеризация\".", "Сохранение отменено!!!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                        else//Saving
-                        {
-                            CurrencyManager cmgrDet = (CurrencyManager)dGV_Details.BindingContext[dGV_Details.DataSource, dGV_Details.DataMember];
-                            DataRow rowDet = ((DataRowView)cmgrDet.Current).Row;
-                            long PK_IdOrderDetail = Convert.ToInt64(rowDet["PK_IdOrderDetail"]);
-                            //int AmountDetails = Convert.ToInt32(nUpD_Tpd.Value);
-                            int AmountDetails = Convert.ToInt32(rowDet["AmountDetails"]);
-                            //***********************cmgr - row*****************************************************************
-                            int Tpd = Convert.ToInt32(row["Tpd"]);//seconds
-                            int Tsh = Convert.ToInt32(row["Tsh"]);//seconds
-                            //Copmare fact detail amount and order detail amount
-                            //if (AmountDetails < Convert.ToInt32(nUpD_Tpd.Value) + C_Details.Select_AmountFactDetailsOper(PK_IdOrderDetail, FK_IdOperation, NumOper))  //Select Distinct
-                            if (AmountDetails < Convert.ToInt32(nUpD_Tpd.Value) + Detail.Select_AmountFactDetailsOper(PK_IdOrderDetail, NumOper))  //Select Distinct
-                                MessageBox.Show("Превышен лимит на общее количество деталей по данной позиции.", "Сохранение отменено!!!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                            else//Insert operation
-                            {
-                                AmountDetails = Convert.ToInt32(nUpD_Tpd.Value);
-                                DateTime DateFactOper = dTimeP_Fact.Value;
-                                //Пока сообщение убираем
-                                //if (C_Details.InsertFactOperation(PK_IdOrderDetail, NumOper, FK_IdOperation, Tpd, Tsh, AmountDetails, DateFactOper, _LoginWorker, _PK_IdBrigade))
-                                //MessageBox.Show("Операция сохранена.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                Detail.InsertFactOperation(PK_IdOrderDetail, NumOper, FK_IdOperation, Tpd, Tsh, AmountDetails, DateFactOper, _LoginWorker, _PK_IdBrigade);
-                                //Refresh DataGrid
-                                if (cB_InDetail.Checked)
-                                {
-                                    dGV_FactOperation.Columns["Col_DateFactOper"].Visible = true;
-                                    dGV_FactOperation.Columns["Col_FK_LoginWorker"].Visible = true;
-                                    Detail.SelectFullFactOperForDetail(PK_IdOrderDetail, ref DT_FactOper);
-                                }
-                                else
-                                {
-                                    dGV_FactOperation.Columns["Col_DateFactOper"].Visible = false;
-                                    dGV_FactOperation.Columns["Col_FK_LoginWorker"].Visible = false;
-                                    Detail.SelectFactOperForDetail(PK_IdOrderDetail, ref DT_FactOper);
-                                }
-                            }
-                        }
+                        dGV_FactOperation.Columns["Col_DateFactOper"].Visible = false;
+                        dGV_FactOperation.Columns["Col_FK_LoginWorker"].Visible = false;
+                        Detail.SelectFactOperForDetail(PK_IdOrderDetail, ref DT_FactOper);
                     }
-        }
+                }
+            }
+        }                  
 
         private void cB_InDetail_CheckedChanged(object sender, EventArgs e)
         {
@@ -513,7 +519,7 @@ namespace Dispetcher2
 
             if (chB_cooperation.Checked)
             {
-                _PK_IdBrigade = 0;//non target brigade
+                _PK_IdBrigade = 0;
                 _LoginWorker = "кооп";
                 tB_Workers.Text = "кооп";
 
@@ -530,23 +536,16 @@ namespace Dispetcher2
                         }
                         if (DT_Tehnology.Rows[i].ItemArray[0].ToString().Trim() != "") FK_IdOperation = Convert.ToInt16(DT_Tehnology.Rows[i].ItemArray[0].ToString().Trim());
                         else FK_IdOperation = Detail.Find_FK_IdOperationInSp_Operations(NameOper);
-                        //*************************
 
-                        //*************************************************************************
                         CurrencyManager cmgrDet = (CurrencyManager)dGV_Details.BindingContext[dGV_Details.DataSource, dGV_Details.DataMember];
                         DataRow rowDet = ((DataRowView)cmgrDet.Current).Row;
                         long PK_IdOrderDetail = Convert.ToInt64(rowDet["PK_IdOrderDetail"]);
-                        //int AmountDetails = Convert.ToInt32(nUpD_Tpd.Value);
                         int AmountDetails = Convert.ToInt32(rowDet["AmountDetails"]);
-                        //***********************cmgr - row*****************************************************************
+
 
                         int Tpd = Convert.ToInt32(DT_Tehnology.Rows[i].ItemArray[2] == DBNull.Value ? 0 : int.TryParse(DT_Tehnology.Rows[i].ItemArray[2].ToString(), out var number) == true ? Convert.ToInt32(DT_Tehnology.Rows[i].ItemArray[2]) : 0);
                         int Tsh = Convert.ToInt32(DT_Tehnology.Rows[i].ItemArray[3] == DBNull.Value ? 0 : int.TryParse(DT_Tehnology.Rows[i].ItemArray[3].ToString(), out var number2) == true ? Convert.ToInt32(DT_Tehnology.Rows[i].ItemArray[3]) : 0);
-                        //Copmare fact detail amount and order detail amount
-                        //AmountDetails -= C_Details.Select_AmountFactDetailsOper(PK_IdOrderDetail, FK_IdOperation, NumOper);
-                        Console.WriteLine(AmountDetails);
-                        Console.WriteLine(PK_IdOrderDetail);
-                        Console.WriteLine(NumOper);
+
                         AmountDetails -= Detail.Select_AmountFactDetailsOper(PK_IdOrderDetail, NumOper);
                         if (AmountDetails > 0)//Insert operation
                         {
