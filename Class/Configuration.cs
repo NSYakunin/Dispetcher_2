@@ -18,6 +18,7 @@ namespace Dispetcher2.Class
         ПланГрафик = 106,
         ОперацииВыполненныеРабочим = 117,
         Трудоемкость = 66,
+        Гальваника = 77,
     }
     public interface IConfig
     {

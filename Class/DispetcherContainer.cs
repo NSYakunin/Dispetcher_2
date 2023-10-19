@@ -93,8 +93,6 @@ namespace Dispetcher2.Class
                 
                 switch (purpose)
                 {
-                    
-                        
                     case "Меню":
                         f = new F_Index(this);
                         return f;
@@ -158,6 +156,10 @@ namespace Dispetcher2.Class
                         config.SelectedReportMode = ReportMode.ПланГрафик;
                         f = new F_ReportsPlan(config);
                         return f;
+
+                    case "Акт приёма-передачи. Гальваническое покрытие":
+                        config.SelectedReportMode = ReportMode.Гальваника;
+                        return GetReportForm();
 
                     case "ПРОИЗВОДСТВО-ПЛАН":
                         f = new F_Planning(config);
