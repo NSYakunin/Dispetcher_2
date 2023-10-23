@@ -1,4 +1,6 @@
-﻿namespace Dispetcher2
+﻿using System;
+
+namespace Dispetcher2
 {
     partial class F_Reports
     {
@@ -32,6 +34,7 @@
             this.tPageRep3 = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.cBKoop = new System.Windows.Forms.CheckBox();
             this.btn_rep3Create = new System.Windows.Forms.Button();
             this.chB_rep3Days = new System.Windows.Forms.CheckBox();
             this.dTP_rep3End = new System.Windows.Forms.DateTimePicker();
@@ -104,13 +107,15 @@
             this.dateFact = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Notes = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel6 = new System.Windows.Forms.Panel();
+            this.dataNowLabel = new System.Windows.Forms.Label();
+            this.exelGalvan = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.panel7 = new System.Windows.Forms.Panel();
-            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
-            this.dateTimePicker2 = new System.Windows.Forms.DateTimePicker();
+            this.galvanEnd = new System.Windows.Forms.DateTimePicker();
+            this.galvanStart = new System.Windows.Forms.DateTimePicker();
             this.label14 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.nameOrd = new System.Windows.Forms.Label();
-            this.cBKoop = new System.Windows.Forms.CheckBox();
             this.myTabC_Reports.SuspendLayout();
             this.tPageRep3.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -205,6 +210,18 @@
             this.groupBox1.Size = new System.Drawing.Size(464, 218);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
+            // 
+            // cBKoop
+            // 
+            this.cBKoop.AutoSize = true;
+            this.cBKoop.Checked = true;
+            this.cBKoop.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cBKoop.Location = new System.Drawing.Point(247, 125);
+            this.cBKoop.Name = "cBKoop";
+            this.cBKoop.Size = new System.Drawing.Size(208, 21);
+            this.cBKoop.TabIndex = 13;
+            this.cBKoop.Text = "Не учитывать кооп в итого.";
+            this.cBKoop.UseVisualStyleBackColor = true;
             // 
             // btn_rep3Create
             // 
@@ -894,6 +911,8 @@
             // 
             this.dGVGalvan.AllowUserToAddRows = false;
             this.dGVGalvan.AllowUserToDeleteRows = false;
+            this.dGVGalvan.BackgroundColor = System.Drawing.SystemColors.Window;
+            this.dGVGalvan.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.dGVGalvan.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dGVGalvan.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.OrderNumber,
@@ -980,6 +999,9 @@
             // 
             // panel6
             // 
+            this.panel6.Controls.Add(this.dataNowLabel);
+            this.panel6.Controls.Add(this.exelGalvan);
+            this.panel6.Controls.Add(this.button1);
             this.panel6.Controls.Add(this.panel7);
             this.panel6.Controls.Add(this.nameOrd);
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -988,31 +1010,63 @@
             this.panel6.Size = new System.Drawing.Size(975, 82);
             this.panel6.TabIndex = 1;
             // 
+            // dataNowLabel
+            // 
+            this.dataNowLabel.AutoSize = true;
+            this.dataNowLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.dataNowLabel.Location = new System.Drawing.Point(653, 1);
+            this.dataNowLabel.Name = "dataNowLabel";
+            this.dataNowLabel.Size = new System.Drawing.Size(0, 20);
+            this.dataNowLabel.TabIndex = 5;
+            // 
+            // exelGalvan
+            // 
+            this.exelGalvan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.exelGalvan.Location = new System.Drawing.Point(853, 24);
+            this.exelGalvan.Name = "exelGalvan";
+            this.exelGalvan.Size = new System.Drawing.Size(119, 55);
+            this.exelGalvan.TabIndex = 3;
+            this.exelGalvan.Text = "Выгрузить в Exel";
+            this.exelGalvan.UseVisualStyleBackColor = true;
+            this.exelGalvan.Click += new System.EventHandler(this.exelGalvan_Click);
+            // 
+            // button1
+            // 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.button1.Location = new System.Drawing.Point(465, 27);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(109, 52);
+            this.button1.TabIndex = 2;
+            this.button1.Text = "Обновить";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // panel7
             // 
-            this.panel7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel7.Controls.Add(this.dateTimePicker1);
-            this.panel7.Controls.Add(this.dateTimePicker2);
+            this.panel7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.panel7.Controls.Add(this.galvanEnd);
+            this.panel7.Controls.Add(this.galvanStart);
             this.panel7.Controls.Add(this.label14);
             this.panel7.Controls.Add(this.label15);
-            this.panel7.Location = new System.Drawing.Point(517, 24);
+            this.panel7.Location = new System.Drawing.Point(4, 27);
             this.panel7.Name = "panel7";
             this.panel7.Size = new System.Drawing.Size(455, 55);
             this.panel7.TabIndex = 1;
             // 
-            // dateTimePicker1
+            // galvanEnd
             // 
-            this.dateTimePicker1.Location = new System.Drawing.Point(262, 16);
-            this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(180, 23);
-            this.dateTimePicker1.TabIndex = 1007;
+            this.galvanEnd.Location = new System.Drawing.Point(262, 16);
+            this.galvanEnd.Name = "galvanEnd";
+            this.galvanEnd.Size = new System.Drawing.Size(180, 23);
+            this.galvanEnd.TabIndex = 1007;
             // 
-            // dateTimePicker2
+            // galvanStart
             // 
-            this.dateTimePicker2.Location = new System.Drawing.Point(36, 16);
-            this.dateTimePicker2.Name = "dateTimePicker2";
-            this.dateTimePicker2.Size = new System.Drawing.Size(180, 23);
-            this.dateTimePicker2.TabIndex = 1008;
+            this.galvanStart.Location = new System.Drawing.Point(36, 16);
+            this.galvanStart.Name = "galvanStart";
+            this.galvanStart.Size = new System.Drawing.Size(180, 23);
+            this.galvanStart.TabIndex = 1008;
+            this.galvanStart.Value = new System.DateTime(2023, 1, 1, 0, 0, 0, 0);
             // 
             // label14
             // 
@@ -1040,20 +1094,8 @@
             this.nameOrd.Name = "nameOrd";
             this.nameOrd.Size = new System.Drawing.Size(975, 21);
             this.nameOrd.TabIndex = 0;
-            this.nameOrd.Text = "Акт Приёма-передачи.";
+            this.nameOrd.Text = "Акт Приёма-передачи №                            от";
             this.nameOrd.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
-            // cBKoop
-            // 
-            this.cBKoop.AutoSize = true;
-            this.cBKoop.Checked = true;
-            this.cBKoop.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cBKoop.Location = new System.Drawing.Point(247, 125);
-            this.cBKoop.Name = "cBKoop";
-            this.cBKoop.Size = new System.Drawing.Size(208, 21);
-            this.cBKoop.TabIndex = 13;
-            this.cBKoop.Text = "Не учитывать кооп в итого.";
-            this.cBKoop.UseVisualStyleBackColor = true;
             // 
             // F_Reports
             // 
@@ -1103,6 +1145,7 @@
             this.tableLayoutPanel5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dGVGalvan)).EndInit();
             this.panel6.ResumeLayout(false);
+            this.panel6.PerformLayout();
             this.panel7.ResumeLayout(false);
             this.panel7.PerformLayout();
             this.ResumeLayout(false);
@@ -1180,8 +1223,8 @@
         private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.Label nameOrd;
         private System.Windows.Forms.Panel panel7;
-        private System.Windows.Forms.DateTimePicker dateTimePicker1;
-        private System.Windows.Forms.DateTimePicker dateTimePicker2;
+        private System.Windows.Forms.DateTimePicker galvanEnd;
+        private System.Windows.Forms.DateTimePicker galvanStart;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.DataGridViewTextBoxColumn OrderNumber;
@@ -1194,5 +1237,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dateFact;
         private System.Windows.Forms.DataGridViewTextBoxColumn Notes;
         private System.Windows.Forms.CheckBox cBKoop;
+        private System.Windows.Forms.Button exelGalvan;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label dataNowLabel;
     }
 }

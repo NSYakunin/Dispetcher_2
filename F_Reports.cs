@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using Excel = Microsoft.Office.Interop.Excel;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Drawing;
@@ -13,6 +14,7 @@ using Dispetcher2.Class;
 using Dispetcher2.Controls;
 using Dispetcher2.DataAccess;
 using Dispetcher2.Models;
+using System.Windows.Markup;
 
 namespace Dispetcher2
 {
@@ -140,7 +142,7 @@ namespace Dispetcher2
             if (config.SelectedReportMode == ReportMode.Гальваника)//Движение деталей
             {
                 myTabC_Reports.SelectedTab = tabPageGalvan;
-                loaddGVGalvan();
+                loaddGVGalvan(galvanStart.Value.Date, galvanEnd.Value.Date);
             }
 
 
@@ -312,14 +314,17 @@ namespace Dispetcher2
 
         #endregion
 
-        private void loaddGVGalvan()
+        private void loaddGVGalvan(DateTime DateStart, DateTime DateEnd)
         {
+            dataNowLabel.Text = DateTime.Now.ToString();
+
             try
             {
                 using (var con = new SqlConnection())
                 {
                     con.ConnectionString = config.ConnectionString;
                     SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
+
                     cmd.CommandText = $"SELECT OrderNum, OD.Position, SD.ShcmDetail Обозначение_ЩЦМ, SD.NameDetail AS Наименование, " +
                                                $"FO.AmountDetails AS Колличество, SO.NameOperation AS Операция, DateFactOper " +
                                       $"FROM[Dispetcher2].[dbo].[Orders] " +
@@ -331,8 +336,12 @@ namespace Dispetcher2
                                       $"    ON FO.FK_IdOperation = SO.PK_IdOperation " +
                                       $"INNER JOIN Sp_Details SD " +
                                       $"    ON OD.FK_IdDetail = SD.PK_IdDetail " +
-                                      $"WHERE SO.NameOperation LIKE '%Гальв%' " +
+                                      $"WHERE SO.NameOperation LIKE '%Гальв%' AND DateFactOper >= @DateStart AND DateFactOper <= @DateEnd " +
                                       $"ORDER BY  OrderNum, ShcmDetail, DateFactOper";
+
+                    cmd.Parameters.AddWithValue("@DateStart", DateStart);
+                    cmd.Parameters.AddWithValue("@DateEnd", DateEnd);
+
                     cmd.Connection = con;
                     cmd.Connection.Open();
 
@@ -343,7 +352,7 @@ namespace Dispetcher2
 
                     while (reader.Read())
                     {
-                        data.Add(new string[10]);
+                        data.Add(new string[8]);
 
                         data[data.Count - 1][0] = pos++.ToString();
                         data[data.Count - 1][1] = reader[0].ToString();
@@ -362,11 +371,78 @@ namespace Dispetcher2
             }
             catch (Exception ex)
             {
-
                 MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            dGVGalvan.Rows.Clear();
+            loaddGVGalvan(galvanStart.Value.Date, galvanEnd.Value.Date);
+        }
 
+        private void exelGalvan_Click(object sender, EventArgs e)
+        {
+            if (dGVGalvan.Rows.Count < 1)
+            {
+                MessageBox.Show("Нет данных для выгрузки в Excel.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
+
+            DateTime DateStart = galvanStart.Value;
+            DateTime DateEnd = galvanEnd.Value;
+            Excel.Application ExcelApp = new Excel.Application() { Visible = true };
+            ExcelApp.Workbooks.Add(1);
+            Excel.Worksheet ExcelWorkSheet = (Excel.Worksheet)ExcelApp.Sheets.get_Item(1);
+
+            ExcelWorkSheet.PageSetup.Orientation = Excel.XlPageOrientation.xlLandscape;
+            ExcelWorkSheet.PageSetup.LeftMargin = ExcelApp.CentimetersToPoints(0.25);
+            ExcelWorkSheet.PageSetup.RightMargin = ExcelApp.CentimetersToPoints(0.25);
+            ExcelWorkSheet.PageSetup.TopMargin = ExcelApp.CentimetersToPoints(0.75);
+            ExcelWorkSheet.PageSetup.BottomMargin = ExcelApp.CentimetersToPoints(0.75);
+            ExcelWorkSheet.PageSetup.HeaderMargin = ExcelApp.CentimetersToPoints(0.3);
+            ExcelWorkSheet.PageSetup.FooterMargin = ExcelApp.CentimetersToPoints(0.3);
+
+            ((Excel.Range)ExcelWorkSheet.Columns[1]).ColumnWidth = 3;
+            ((Excel.Range)ExcelWorkSheet.Columns[2]).ColumnWidth = 20;
+            //((Excel.Range)ExcelWorkSheet.Columns[2]).Font.Bold = 1;
+            ((Excel.Range)ExcelWorkSheet.Columns[3]).ColumnWidth = 5;
+            ((Excel.Range)ExcelWorkSheet.Columns[4]).ColumnWidth = 20;
+            ((Excel.Range)ExcelWorkSheet.Columns[5]).ColumnWidth = 30;
+            ((Excel.Range)ExcelWorkSheet.Columns[6]).ColumnWidth = 6;
+            ((Excel.Range)ExcelWorkSheet.Columns[7]).ColumnWidth = 45;
+            ((Excel.Range)ExcelWorkSheet.Columns[8]).ColumnWidth = 10;
+            ((Excel.Range)ExcelWorkSheet.Columns[9]).ColumnWidth = 30;
+
+
+            ((Excel.Range)ExcelWorkSheet.Cells[1, 1]).Value2 = "Акт приёма-передачи. Гальваническое покрытие. № 1";
+            ((Excel.Range)ExcelWorkSheet.Cells[1, 1]).HorizontalAlignment = Excel.Constants.xlCenter;
+            ((Excel.Range)ExcelWorkSheet.Cells[1, 1]).Font.Bold = 1;
+            ((Excel.Range)ExcelWorkSheet.Cells[2, 1]).Value2 = "с " + DateStart.ToShortDateString() + " по " + DateEnd.ToShortDateString();
+            ((Excel.Range)ExcelWorkSheet.Cells[2, 1]).HorizontalAlignment = Excel.Constants.xlCenter;
+            ((Excel.Range)ExcelWorkSheet.get_Range("A1:I1")).Merge();
+            ((Excel.Range)ExcelWorkSheet.get_Range("A2:I2")).Merge();
+            ExcelWorkSheet.Cells[4, 1] = "№";
+            ExcelWorkSheet.Cells[4, 2] = "Заказ";
+            ExcelWorkSheet.Cells[4, 3] = "Поз.";
+            ExcelWorkSheet.Cells[4, 4] = "Обозначение ЩЦМ";
+            ExcelWorkSheet.Cells[4, 5] = "Наименование детали";
+            ExcelWorkSheet.Cells[4, 6] = "Кол-во";
+            ExcelWorkSheet.Cells[4, 7] = "Покрытие";
+            ExcelWorkSheet.Cells[4, 8] = "Дата Факт";
+            ExcelWorkSheet.Cells[4, 9] = "Примечание";
+
+
+            for (int row = 0; row < dGVGalvan.Rows.Count; row++)
+            {
+                for (int col = 0; col < dGVGalvan.Columns.Count - 1; col++)
+                {
+                    ExcelWorkSheet.Cells[row + 5, col + 1] = dGVGalvan.Rows[row].Cells[col].Value.ToString();
+                }
+            }
+
+            ExcelWorkSheet.get_Range("A4", "I" + (dGVGalvan.Rows.Count + 4)).Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+        }
     }
 }
