@@ -316,7 +316,7 @@ namespace Dispetcher2
 
         private void loaddGVGalvan(DateTime DateStart, DateTime DateEnd)
         {
-            dataNowLabel.Text = DateTime.Now.ToString();
+            dataNowLabel.Text = DateTime.Now.ToShortDateString();
 
             try
             {
@@ -392,7 +392,7 @@ namespace Dispetcher2
 
             DateTime DateStart = galvanStart.Value;
             DateTime DateEnd = galvanEnd.Value;
-            Excel.Application ExcelApp = new Excel.Application() { Visible = true };
+            Excel.Application ExcelApp = new Excel.Application() { Visible = false };
             ExcelApp.Workbooks.Add(1);
             Excel.Worksheet ExcelWorkSheet = (Excel.Worksheet)ExcelApp.Sheets.get_Item(1);
 
@@ -406,17 +406,24 @@ namespace Dispetcher2
 
             ((Excel.Range)ExcelWorkSheet.Columns[1]).ColumnWidth = 3;
             ((Excel.Range)ExcelWorkSheet.Columns[2]).ColumnWidth = 20;
-            //((Excel.Range)ExcelWorkSheet.Columns[2]).Font.Bold = 1;
+            ((Excel.Range)ExcelWorkSheet.Columns[2]).Font.Bold = 1;
             ((Excel.Range)ExcelWorkSheet.Columns[3]).ColumnWidth = 5;
+            ((Excel.Range)ExcelWorkSheet.Columns[3]).Font.Bold = 1;
             ((Excel.Range)ExcelWorkSheet.Columns[4]).ColumnWidth = 20;
+            ((Excel.Range)ExcelWorkSheet.Columns[4]).Font.Bold = 1;
             ((Excel.Range)ExcelWorkSheet.Columns[5]).ColumnWidth = 30;
+            ((Excel.Range)ExcelWorkSheet.Columns[5]).Font.Bold = 1;
             ((Excel.Range)ExcelWorkSheet.Columns[6]).ColumnWidth = 6;
+            ((Excel.Range)ExcelWorkSheet.Columns[6]).Font.Bold = 1;
             ((Excel.Range)ExcelWorkSheet.Columns[7]).ColumnWidth = 45;
+            ((Excel.Range)ExcelWorkSheet.Columns[7]).Font.Bold = 1;
             ((Excel.Range)ExcelWorkSheet.Columns[8]).ColumnWidth = 10;
+            ((Excel.Range)ExcelWorkSheet.Columns[8]).Font.Bold = 1;
             ((Excel.Range)ExcelWorkSheet.Columns[9]).ColumnWidth = 30;
+            ((Excel.Range)ExcelWorkSheet.Columns[9]).Font.Bold = 1;
 
 
-            ((Excel.Range)ExcelWorkSheet.Cells[1, 1]).Value2 = "Акт приёма-передачи. Гальваническое покрытие. № 1";
+            ((Excel.Range)ExcelWorkSheet.Cells[1, 1]).Value2 = $"Акт приёма-передачи №{numActPeredachi.Text} от {dataNowLabel.Text}";
             ((Excel.Range)ExcelWorkSheet.Cells[1, 1]).HorizontalAlignment = Excel.Constants.xlCenter;
             ((Excel.Range)ExcelWorkSheet.Cells[1, 1]).Font.Bold = 1;
             ((Excel.Range)ExcelWorkSheet.Cells[2, 1]).Value2 = "с " + DateStart.ToShortDateString() + " по " + DateEnd.ToShortDateString();
@@ -433,16 +440,25 @@ namespace Dispetcher2
             ExcelWorkSheet.Cells[4, 8] = "Дата Факт";
             ExcelWorkSheet.Cells[4, 9] = "Примечание";
 
+            progressBar1.Maximum = dGVGalvan.Rows.Count * 8;
 
             for (int row = 0; row < dGVGalvan.Rows.Count; row++)
             {
                 for (int col = 0; col < dGVGalvan.Columns.Count - 1; col++)
                 {
-                    ExcelWorkSheet.Cells[row + 5, col + 1] = dGVGalvan.Rows[row].Cells[col].Value.ToString();
+                    ExcelWorkSheet.Cells[row + 5, col + 1] = dGVGalvan.Rows[row].Cells[col].Value.ToString().Trim();
+                    if (col == 1) ExcelWorkSheet.Cells[row + 5, col + 1].HorizontalAlignment = Excel.Constants.xlLeft;
+                    progressBar1.Value++;
+                    //ExcelWorkSheet.Cells[row + 5, col + 1].Font.Bold = 1;
                 }
             }
 
+
             ExcelWorkSheet.get_Range("A4", "I" + (dGVGalvan.Rows.Count + 4)).Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+
+            ExcelApp.Visible = true;
+            progressBar1.Value = 0;
+            MessageBox.Show("Формирование отчета завершено.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }
