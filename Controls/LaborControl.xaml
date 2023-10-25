@@ -20,7 +20,7 @@
     </UserControl.Resources>
     <Grid x:Name="mainGrid" ShowGridLines="False">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition MinWidth="200"/>
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="4*"/>
         </Grid.ColumnDefinitions>
 
@@ -44,6 +44,8 @@
                     VerticalAlignment="Center" Margin="5"/>
                 <CheckBox Content="По операциям" IsChecked="{Binding Path=ShowOperationFlag}" 
                     VerticalAlignment="Center" Margin="5" />
+                <CheckBox Content="Заказы по факту" IsChecked="{Binding Path=FactOrdersFlag}"
+                          VerticalAlignment="Center" Margin="5" />
             </StackPanel>
             
             <local:OperationControl x:Name="opc" Grid.Row="1" Visibility="{Binding Path=OperationVisibility}" />

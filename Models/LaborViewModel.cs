@@ -7,14 +7,11 @@ using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.Threading.Tasks;
-using System.Windows.Threading;
 
 using Dispetcher2.Class;
-using System.Diagnostics;
 
 namespace Dispetcher2.Models
 {
-
     public class LaborViewModel : INotifyPropertyChanged
     {
         OrderRepository orders;
@@ -89,13 +86,38 @@ namespace Dispetcher2.Models
         }
         public bool ShowDetailFlag { get; set; }
         public bool ShowOperationFlag { get; set; }
+        bool factOrdVal = true;
+        public bool FactOrdersFlag
+        {
+            get { return factOrdVal; }
+            set
+            {
+                factOrdVal = value;
+                if (factOrdVal)
+                {
+                    DataVisibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    DataVisibility = Visibility.Visible;
+                }
+            }
+        }
         public ICommand RequestCommand { get { return requestCommandValue; } }
         public ICommand ExcelCommand { get { return excelCommandValue; } }
         public DateTime BeginDate { get; set; }
         public DateTime EndDate { get; set; }
         public ObservableCollection<LaborReportRow> RowsView { get; set; }
-        public IColumnUpdate ColumnContainer { get; set; }
 
+        public StringRepository Columns
+        {
+            get { return colrep; }
+            set
+            {
+                colrep = value;
+                OnPropertyChanged(nameof(Columns));
+            }
+        }
         public event PropertyChangedEventHandler PropertyChanged;
 
         public LaborViewModel(OrderRepository orders, OrderControlViewModel ocvm, LaborReport report, LaborReportWriter writer)
@@ -128,6 +150,7 @@ namespace Dispetcher2.Models
             DateTime n = DateTime.Now.Date;
             BeginDate = new DateTime(n.Year, 1, 1);
             EndDate = new DateTime(n.Year, n.Month, 1);
+            FactOrdersFlag = true;
         }
         public void OnPropertyChanged(string prop)
         {
@@ -155,7 +178,7 @@ namespace Dispetcher2.Models
         }
         void After()
         {
-            DataVisibility = Visibility.Visible;
+            if (factOrdVal == false) DataVisibility = Visibility.Visible;
             WaitVisibility = Visibility.Collapsed;
             Filter = String.Empty;
             CommandVisibility = Visibility.Visible;
@@ -164,16 +187,13 @@ namespace Dispetcher2.Models
         {
             try
             {
-                // Список выбранных заказов
+                /*// Список выбранных заказов
                 var selectedOrders = ocvm.GetOrders();
                 if (selectedOrders.Any() == false)
                 {
                     MessageBox.Show("Пожалуйста выберите один или несколько заказов.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
-                }
-
-                Debug.WriteLine("BeginDate: " + BeginDate);
-                Debug.WriteLine("EndDate: " + EndDate);
+                }*/
 
                 WaitVisibility = Visibility.Visible;
                 DataVisibility = Visibility.Collapsed;
@@ -189,8 +209,12 @@ namespace Dispetcher2.Models
         }
         async Task LoadOperationsAsync()
         {
+            report.SelectedOrders = ocvm.SelectedOrders;
             report.ShowDetailFlag = this.ShowDetailFlag;
             report.ShowOperationFlag = this.ShowOperationFlag;
+            report.BeginDate = this.BeginDate;
+            report.EndDate = this.EndDate;
+            report.FactOrdersFlag = this.FactOrdersFlag;
 
             Action a = report.Calculate;
             await Task.Run(a);
@@ -200,10 +224,9 @@ namespace Dispetcher2.Models
 
         void AfterLoadOperations()
         {
-            colrep = report.GetOperationRepository();
-            if (ColumnContainer != null) ColumnContainer.Update(colrep);
-            
-            DataVisibility = Visibility.Visible;
+            Columns = report.GetOperationRepository();
+
+            if (factOrdVal == false) DataVisibility = Visibility.Visible;
             WaitVisibility = Visibility.Collapsed;
             CommandVisibility = Visibility.Visible;
             OperationVisibility = Visibility.Visible;
@@ -214,8 +237,8 @@ namespace Dispetcher2.Models
         }
         void ProcessExcelCommand()
         {
-            if (colrep != null && labrep != null)
-                writer.Write(colrep, labrep);
+            if (Columns != null && labrep != null)
+                writer.Write(Columns, labrep);
         }
     }
     public class LaborCommand : ICommand

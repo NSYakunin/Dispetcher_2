@@ -18,9 +18,7 @@ namespace Dispetcher2
 {
     public partial class F_Reports : Form
     {
-
         IConfig config;
-
 
         // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
         C_Departments departments;
@@ -32,19 +30,15 @@ namespace Dispetcher2
         // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
         C_Reports reports;
 
-        // Внешняя зависимость
-        System.Windows.Controls.UserControl labControl;
-
         DataTable Dt_SpDepartment = new DataTable();
         DataTable Dt_SpWorkers = new DataTable();
         DataTable DT_Orders = new DataTable();
         BindingSource BS_Orders = new BindingSource();
 
-        public F_Reports(IConfig config, IConverter converter, LaborViewModel viewModel)
+        public F_Reports(IConfig config, IConverter converter)
         {
-            if (config == null) throw new ArgumentException("Пожалуйста укажите параметр: IConfig");
+            if (config == null) throw new ArgumentException("Пожалуйста укажите параметр: config");
             if (converter == null) throw new ArgumentException("Пожалуйста укажите параметр converter");
-            if (viewModel == null) throw new ArgumentException("Пожалуйста укажите параметр: LaborViewModel");
 
             this.config = config;
 
@@ -52,12 +46,6 @@ namespace Dispetcher2
             users = new C_Users(config);
             orders = new C_Orders(config);
             reports = new C_Reports(config);
-
-            // Внешняя зависимость!
-            labControl = new LaborControl();
-            //viewModel.Dispatcher = labControl.Dispatcher;
-            labControl.DataContext = viewModel;
-            viewModel.ColumnContainer = labControl as IColumnUpdate;
 
             InitializeComponent();
             if (config.SelectedReportMode == ReportMode.ОтчетНаряд
@@ -68,13 +56,6 @@ namespace Dispetcher2
                 DT_Orders.Columns.Add("PK_IdOrder", typeof(int));
                 DT_Orders.Columns.Add("OrderNum", typeof(string));
                 DT_Orders.Columns.Add("OrderName", typeof(string));
-            }
-
-            if (config.SelectedReportMode == ReportMode.Трудоемкость)
-            {
-                LaborElementHost.Child = labControl;
-                myTabC_Reports.SelectedTab = LaborTabPage;
-                viewModel.Start();
             }
         }
 

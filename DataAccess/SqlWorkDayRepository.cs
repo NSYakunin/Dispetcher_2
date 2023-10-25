@@ -13,42 +13,21 @@ namespace Dispetcher2.DataAccess
     {
         IConfig config;
         IConverter converter;
-        DateTime point;
+
         List<WorkDay> dayList;
-        TimeSpan total;
-        TimeSpan past;
-        public SqlWorkDayRepository(IConfig config, IConverter converter, DateTime point)
+
+        public SqlWorkDayRepository(IConfig config, IConverter converter)
         {
             if (config == null) throw new ArgumentException("Пожалуйста укажите параметр: config");
             if (converter == null) throw new ArgumentException("Пожалуйста укажите параметр converter");
             this.config = config;
             this.converter = converter;
-            this.point = point;
+
             
         }
-        public override void Load()
-        {
-            int year = point.Year;
-            DateTime begin = new DateTime(year, 1, 1);
-            DateTime end = new DateTime(year + 1, 1, 1);
 
-            dayList = GetProductionCalendar(begin, end);
-
-            // Нужно вычислить:
-            // общее рабочее время в году
-            total = TimeSpan.Zero;
-            foreach (var wd in dayList) total = total.Add(wd.Time);
-            DateTime d = point.Date;
-            // прошедшее рабочее время в году
-            var e = from wd in dayList
-                    where wd.Date < d
-                    select wd;
-            past = TimeSpan.Zero;
-            foreach (var wd in e) past = past.Add(wd.Time);
-
-            dayList = GetTimeSheet(year);
-        }
-
+        // Архив
+        /*
         List<WorkDay> GetProductionCalendar(DateTime beginDate, DateTime endDate)
         {
             List<WorkDay> result = new List<WorkDay>();
@@ -82,17 +61,18 @@ namespace Dispetcher2.DataAccess
                 }
             }
             return result;
-        }
-        List<WorkDay> GetTimeSheet(int year)
+        }*/
+        List<WorkDay> GetTimeSheet(DateTime beginDate, DateTime endDate)
         {
             List<WorkDay> result = new List<WorkDay>();
             using (var cn = new SqlConnection() { ConnectionString = config.ConnectionString })
             {
                 using (var cmd = new SqlCommand() { Connection = cn })
                 {
-                    cmd.CommandText = "[dbo].[GetTimeSheet]";
+                    cmd.CommandText = "[dbo].[GetPeriodTimeSheet]";
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@Year", year);
+                    cmd.Parameters.AddWithValue("@BeginDate", beginDate);
+                    cmd.Parameters.AddWithValue("@EndDate", endDate);
                     cn.Open();
                     using (var r = cmd.ExecuteReader())
                     {
@@ -143,25 +123,10 @@ namespace Dispetcher2.DataAccess
             }
             return result;
         }
-        public override System.Collections.IEnumerable GetList()
-        {
-            if (dayList == null) Load();
-            return dayList;
-        }
-        public override IEnumerable<WorkDay> GetWorkDays()
-        {
-            if (dayList == null) Load();
-            return dayList;
-        }
 
-        public override TimeSpan GetTotalTime()
+        public override IEnumerable<WorkDay> GetWorkDays(DateTime beginDate, DateTime endDate)
         {
-            return total;
-        }
-
-        public override TimeSpan GetPastTime()
-        {
-            return past;
+            return GetTimeSheet(beginDate, endDate);
         }
     }
 }

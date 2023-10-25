@@ -26,6 +26,8 @@ namespace Dispetcher2.Class
         public string Number { get; set; }
         public string TypeRow { get; set; }
         public string Login { get; set; }
+        public DateTime FactDate { get; set; }
+        public int OrderId { get; set; }
     }
     public abstract class OperationRepository : Repository
     {

@@ -5,22 +5,17 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-
-using Dispetcher2.Models;
 
 namespace Dispetcher2.Controls
 {
-    public partial class JobForm : Form
+    public partial class HostForm : Form
     {
-        public JobForm(object viewmodel)
+        public HostForm(System.Windows.Controls.UserControl control)
         {
             InitializeComponent();
-
-            JobControl control = new JobControl();
-            JobElementHost.Child = control;
-            control.DataContext = viewmodel;
-
+            this.MainElementHost.Child = control;
         }
     }
 }

@@ -68,25 +68,6 @@ namespace Dispetcher2.Class
                 return config.Information;
             }
 
-            Form GetReportForm()
-            {
-                Form rf;
-
-                var orders = new SqlOrderRepository(config, converter, 2);
-                var details = new SqlDetailRepository(config, converter);
-                var operations = new SqlOperationRepository(config, converter);
-                var groups = new SqlOperationGroupRepository(config, converter);
-                var workDays = new SqlWorkDayRepository(config, converter, DateTime.Now);
-                var writer = new ExcelLaborReportWriter();
-
-                var ocvm = new OrderControlViewModel(orders);
-                var rep = new LaborReport(details, operations, groups, workDays, ocvm as OrderRepository);
-                var labvm = new LaborViewModel(orders, ocvm, rep, writer);
-
-                rf = new F_Reports(config, converter, labvm);
-
-                return rf;
-            }
             public override Form GetForm(string purpose)
             {
                 Form f;
@@ -134,23 +115,49 @@ namespace Dispetcher2.Class
 
                     case "Отчёт-наряд по выполненным операциям":
                         config.SelectedReportMode = ReportMode.ОтчетНаряд;
-                        return GetReportForm();
+                        f = new F_Reports(config, converter);
+                        return f;
 
                     case "Операции выполненные рабочим по заказам":
                         config.SelectedReportMode = ReportMode.ОперацииВыполненныеРабочим;
-                        return GetReportForm();
+                        f = new F_Reports(config, converter);
+                        return f;
 
                     case "Движение деталей":
                         config.SelectedReportMode = ReportMode.ДвижениеДеталей;
-                        return GetReportForm();
+                        f = new F_Reports(config, converter);
+                        return f;
 
                     case "Отчет по выполненным операциям":
                         config.SelectedReportMode = ReportMode.ОтчетВыполненным;
-                        return GetReportForm();
-                                            
+                        f = new F_Reports(config, converter);
+                        return f;
+
                     case "Трудоемкость":
                         config.SelectedReportMode = ReportMode.Трудоемкость;
-                        return GetReportForm();
+                        var orders = new SqlOrderRepository(config, converter, 2);
+                        var details = new SqlDetailRepository(config, converter);
+                        var operations = new SqlOperationRepository(config, converter);
+                        var groups = new SqlOperationGroupRepository(config, converter);
+                        var workDays = new SqlWorkDayRepository(config, converter);
+                        var writer = new ExcelLaborReportWriter();
+
+                        var ocvm = new OrderControlViewModel(orders);
+                        var rep = new LaborReport(details, operations, groups, workDays, orders);
+                        var labvm = new LaborViewModel(orders, ocvm, rep, writer);
+                        LaborControl con = new LaborControl();
+                        con.DataContext = labvm;
+                        f = new HostForm(con);
+                        labvm.PropertyChanged += (s, e) =>
+                        {
+                            if (e.PropertyName == nameof(labvm.Columns))
+                            {
+                                var p = labvm.Columns;
+                                con.Update(p);
+                            }
+                        };
+                        labvm.Start();
+                        return f;
 
                     case "План-график":
                         config.SelectedReportMode = ReportMode.ПланГрафик;
@@ -159,7 +166,8 @@ namespace Dispetcher2.Class
 
                     case "Акт приёма-передачи. Гальваническое покрытие":
                         config.SelectedReportMode = ReportMode.Гальваника;
-                        return GetReportForm();
+                        f = new F_Reports(config, converter);
+                        return f;
 
                     case "ПРОИЗВОДСТВО-ПЛАН":
                         f = new F_Planning(config);
@@ -169,7 +177,9 @@ namespace Dispetcher2.Class
                         var jr = new SqlJobRepository(config, converter);
                         var gr = new SqlOperationGroupRepository(config, converter);
                         var vm = new JobViewModel(jr, gr);
-                        f = new JobForm(vm);
+                        JobControl control = new JobControl();
+                        control.DataContext = vm;
+                        f = new HostForm(control);
                         return f;
 
                     default:
