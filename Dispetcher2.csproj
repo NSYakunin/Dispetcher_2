@@ -82,7 +82,8 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>d2key.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup />
   <PropertyGroup />
@@ -164,6 +165,7 @@
     <Compile Include="Class\ErrorItem.cs" />
     <Compile Include="Class\FormFactory.cs" />
     <Compile Include="Class\ImportDataWorker.cs" />
+    <Compile Include="Class\IObserver.cs" />
     <Compile Include="Class\Job.cs" />
     <Compile Include="Class\KitUpdater.cs" />
     <Compile Include="Class\LaborReport.cs" />
@@ -177,17 +179,17 @@
     <Compile Include="Controls\CheckedOrderControl.xaml.cs">
       <DependentUpon>CheckedOrderControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\HostForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\HostForm.Designer.cs">
+      <DependentUpon>HostForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ImportDataControl.xaml.cs">
       <DependentUpon>ImportDataControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\JobControl.xaml.cs">
       <DependentUpon>JobControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\JobForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\JobForm.Designer.cs">
-      <DependentUpon>JobForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\KitUpdaterControl.xaml.cs">
       <DependentUpon>KitUpdaterControl.xaml</DependentUpon>
@@ -362,14 +364,15 @@
     <Compile Include="Models\WorkTimeViewModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Controls\JobForm.resx">
-      <DependentUpon>JobForm.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\HostForm.resx">
+      <DependentUpon>HostForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\ucProdCal.resx">
       <DependentUpon>ucProdCal.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="DialogsForms\dF_Brigade.resx">
       <DependentUpon>dF_Brigade.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="DialogsForms\dF_Tehnology.resx">
       <DependentUpon>dF_Tehnology.cs</DependentUpon>
@@ -440,7 +443,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
-    <None Include="d2key.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">

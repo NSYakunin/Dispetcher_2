@@ -92,8 +92,6 @@ namespace Dispetcher2
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tB_OrderNumInfoRep7 = new System.Windows.Forms.TextBox();
             this.tB_OrderNameRep7 = new System.Windows.Forms.TextBox();
-            this.LaborTabPage = new System.Windows.Forms.TabPage();
-            this.LaborElementHost = new System.Windows.Forms.Integration.ElementHost();
             this.tabPageGalvan = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.dGVGalvan = new System.Windows.Forms.DataGridView();
@@ -141,7 +139,6 @@ namespace Dispetcher2
             this.groupBox2.SuspendLayout();
             this.panel5.SuspendLayout();
             this.groupBox3.SuspendLayout();
-            this.LaborTabPage.SuspendLayout();
             this.tabPageGalvan.SuspendLayout();
             this.tableLayoutPanel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dGVGalvan)).BeginInit();
@@ -159,7 +156,6 @@ namespace Dispetcher2
             this.myTabC_Reports.Controls.Add(this.tPageRep6);
             this.myTabC_Reports.Controls.Add(this.tPageRep117);
             this.myTabC_Reports.Controls.Add(this.tPageRep7);
-            this.myTabC_Reports.Controls.Add(this.LaborTabPage);
             this.myTabC_Reports.Controls.Add(this.tabPageGalvan);
             this.myTabC_Reports.Dock = System.Windows.Forms.DockStyle.Fill;
             this.myTabC_Reports.Location = new System.Drawing.Point(0, 0);
@@ -869,26 +865,6 @@ namespace Dispetcher2
             this.tB_OrderNameRep7.TabIndex = 2;
             this.tB_OrderNameRep7.TabStop = false;
             // 
-            // LaborTabPage
-            // 
-            this.LaborTabPage.Controls.Add(this.LaborElementHost);
-            this.LaborTabPage.Location = new System.Drawing.Point(4, 25);
-            this.LaborTabPage.Name = "LaborTabPage";
-            this.LaborTabPage.Size = new System.Drawing.Size(987, 603);
-            this.LaborTabPage.TabIndex = 4;
-            this.LaborTabPage.Text = "Трудоемкость";
-            this.LaborTabPage.UseVisualStyleBackColor = true;
-            // 
-            // LaborElementHost
-            // 
-            this.LaborElementHost.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.LaborElementHost.Location = new System.Drawing.Point(0, 0);
-            this.LaborElementHost.Name = "LaborElementHost";
-            this.LaborElementHost.Size = new System.Drawing.Size(987, 603);
-            this.LaborElementHost.TabIndex = 0;
-            this.LaborElementHost.Text = "LaborElementHost";
-            this.LaborElementHost.Child = null;
-            // 
             // tabPageGalvan
             // 
             this.tabPageGalvan.Controls.Add(this.tableLayoutPanel5);
@@ -1199,7 +1175,6 @@ namespace Dispetcher2
             this.panel5.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
-            this.LaborTabPage.ResumeLayout(false);
             this.tabPageGalvan.ResumeLayout(false);
             this.tableLayoutPanel5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dGVGalvan)).EndInit();
@@ -1278,8 +1253,6 @@ namespace Dispetcher2
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.CheckBox chB_rep7AllOrders;
-        private System.Windows.Forms.TabPage LaborTabPage;
-        private System.Windows.Forms.Integration.ElementHost LaborElementHost;
         private System.Windows.Forms.TabPage tabPageGalvan;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
         private System.Windows.Forms.DataGridView dGVGalvan;
