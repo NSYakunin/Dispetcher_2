@@ -23,6 +23,7 @@ namespace Dispetcher2.Class
         /// </summary>
         public int Tsh { get; set; }
         public int Quantity { get; set; }
+        public bool OnlyOncePay { get; set; }
         public string Number { get; set; }
         public string TypeRow { get; set; }
         public string Login { get; set; }
