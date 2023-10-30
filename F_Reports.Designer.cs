@@ -105,7 +105,13 @@ namespace Dispetcher2
             this.dateFact = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Notes = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel6 = new System.Windows.Forms.Panel();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.nameOrd = new System.Windows.Forms.Label();
+            this.button6 = new System.Windows.Forms.Button();
             this.dataNowLabel = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.numActPeredachi = new System.Windows.Forms.TextBox();
             this.exelGalvan = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.panel7 = new System.Windows.Forms.Panel();
@@ -113,11 +119,6 @@ namespace Dispetcher2
             this.galvanStart = new System.Windows.Forms.DateTimePicker();
             this.label14 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
-            this.nameOrd = new System.Windows.Forms.Label();
-            this.numActPeredachi = new System.Windows.Forms.TextBox();
-            this.label16 = new System.Windows.Forms.Label();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.myTabC_Reports.SuspendLayout();
             this.tPageRep3.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -143,11 +144,11 @@ namespace Dispetcher2
             this.tableLayoutPanel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dGVGalvan)).BeginInit();
             this.panel6.SuspendLayout();
-            this.panel7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.panel7.SuspendLayout();
             this.SuspendLayout();
             // 
             // myTabC_Reports
@@ -994,6 +995,56 @@ namespace Dispetcher2
             this.panel6.Size = new System.Drawing.Size(975, 84);
             this.panel6.TabIndex = 1;
             // 
+            // progressBar1
+            // 
+            this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.progressBar1.Location = new System.Drawing.Point(705, 45);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(267, 23);
+            this.progressBar1.TabIndex = 10;
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.nameOrd);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.button6);
+            this.splitContainer1.Panel2.Controls.Add(this.dataNowLabel);
+            this.splitContainer1.Panel2.Controls.Add(this.label16);
+            this.splitContainer1.Panel2.Controls.Add(this.numActPeredachi);
+            this.splitContainer1.Size = new System.Drawing.Size(975, 34);
+            this.splitContainer1.SplitterDistance = 450;
+            this.splitContainer1.TabIndex = 9;
+            // 
+            // nameOrd
+            // 
+            this.nameOrd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.nameOrd.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.nameOrd.Location = new System.Drawing.Point(236, 9);
+            this.nameOrd.Name = "nameOrd";
+            this.nameOrd.Size = new System.Drawing.Size(211, 25);
+            this.nameOrd.TabIndex = 0;
+            this.nameOrd.Text = "Акт Приёма-передачи №";
+            this.nameOrd.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(454, 3);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(64, 26);
+            this.button6.TabIndex = 12;
+            this.button6.Text = "Бирки";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
             // dataNowLabel
             // 
             this.dataNowLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -1005,6 +1056,27 @@ namespace Dispetcher2
             this.dataNowLabel.TabIndex = 5;
             this.dataNowLabel.Text = "Дата";
             // 
+            // label16
+            // 
+            this.label16.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label16.AutoSize = true;
+            this.label16.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold);
+            this.label16.Location = new System.Drawing.Point(55, 9);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(27, 21);
+            this.label16.TabIndex = 7;
+            this.label16.Text = "от";
+            // 
+            // numActPeredachi
+            // 
+            this.numActPeredachi.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.numActPeredachi.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.numActPeredachi.Location = new System.Drawing.Point(3, 7);
+            this.numActPeredachi.MaximumSize = new System.Drawing.Size(46, 23);
+            this.numActPeredachi.Name = "numActPeredachi";
+            this.numActPeredachi.Size = new System.Drawing.Size(46, 26);
+            this.numActPeredachi.TabIndex = 6;
+            // 
             // exelGalvan
             // 
             this.exelGalvan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -1012,9 +1084,9 @@ namespace Dispetcher2
             this.exelGalvan.Name = "exelGalvan";
             this.exelGalvan.Size = new System.Drawing.Size(119, 45);
             this.exelGalvan.TabIndex = 3;
-            this.exelGalvan.Text = "Выгрузить в Exel";
+            this.exelGalvan.Text = "Выгрузить в Excel";
             this.exelGalvan.UseVisualStyleBackColor = true;
-            this.exelGalvan.Click += new System.EventHandler(this.exelGalvan_Click);
+            this.exelGalvan.Click += new System.EventHandler(this.excelGalvan_Click);
             // 
             // button1
             // 
@@ -1072,66 +1144,6 @@ namespace Dispetcher2
             this.label15.TabIndex = 1010;
             this.label15.Text = "по";
             // 
-            // nameOrd
-            // 
-            this.nameOrd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.nameOrd.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.nameOrd.Location = new System.Drawing.Point(236, 9);
-            this.nameOrd.Name = "nameOrd";
-            this.nameOrd.Size = new System.Drawing.Size(211, 25);
-            this.nameOrd.TabIndex = 0;
-            this.nameOrd.Text = "Акт Приёма-передачи №";
-            this.nameOrd.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
-            // numActPeredachi
-            // 
-            this.numActPeredachi.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.numActPeredachi.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.numActPeredachi.Location = new System.Drawing.Point(3, 7);
-            this.numActPeredachi.MaximumSize = new System.Drawing.Size(46, 23);
-            this.numActPeredachi.Name = "numActPeredachi";
-            this.numActPeredachi.Size = new System.Drawing.Size(46, 23);
-            this.numActPeredachi.TabIndex = 6;
-            // 
-            // label16
-            // 
-            this.label16.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label16.AutoSize = true;
-            this.label16.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold);
-            this.label16.Location = new System.Drawing.Point(55, 9);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(27, 21);
-            this.label16.TabIndex = 7;
-            this.label16.Text = "от";
-            // 
-            // splitContainer1
-            // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer1.Name = "splitContainer1";
-            // 
-            // splitContainer1.Panel1
-            // 
-            this.splitContainer1.Panel1.Controls.Add(this.nameOrd);
-            // 
-            // splitContainer1.Panel2
-            // 
-            this.splitContainer1.Panel2.Controls.Add(this.dataNowLabel);
-            this.splitContainer1.Panel2.Controls.Add(this.label16);
-            this.splitContainer1.Panel2.Controls.Add(this.numActPeredachi);
-            this.splitContainer1.Size = new System.Drawing.Size(975, 34);
-            this.splitContainer1.SplitterDistance = 450;
-            this.splitContainer1.TabIndex = 9;
-            // 
-            // progressBar1
-            // 
-            this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBar1.Location = new System.Drawing.Point(705, 45);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(267, 23);
-            this.progressBar1.TabIndex = 10;
-            // 
             // F_Reports
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1179,13 +1191,13 @@ namespace Dispetcher2
             this.tableLayoutPanel5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dGVGalvan)).EndInit();
             this.panel6.ResumeLayout(false);
-            this.panel7.ResumeLayout(false);
-            this.panel7.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            this.panel7.ResumeLayout(false);
+            this.panel7.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1280,5 +1292,6 @@ namespace Dispetcher2
         private System.Windows.Forms.TextBox numActPeredachi;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.Button button6;
     }
 }

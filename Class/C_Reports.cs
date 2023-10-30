@@ -1310,6 +1310,8 @@ namespace Dispetcher2.Class
                     ((Excel.Range)ExcelWorkSheet.get_Range((NumRow - 1) + ":" + (NumRow - 1))).Group();*/
 
                     //************************************
+
+
                     MessageBox.Show("Формирование отчета завершено.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
@@ -1317,7 +1319,14 @@ namespace Dispetcher2.Class
             {
                 MessageBox.Show("Не работает. " + ex.Message, "Внимание!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
+            finally
+            {
+                for (int i = 0; i < 12; i++)
+                {
+                    _OperGroupFactTime[i] = 0;
+                    _FactTime[i] = 0;
+                }
+            }
         }
 
         private void Load_Plan_TehDetails(Int64 FK_IdOrderDetail, int AmountDetails, int row, Excel.Worksheet exW)
