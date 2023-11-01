@@ -47,6 +47,7 @@ namespace Dispetcher2
         DataTable DT_Orders = new DataTable();
         BindingSource BS_Orders = new BindingSource();
 
+
         public F_Reports(IConfig config, IConverter converter)
         {
             if (config == null) throw new ArgumentException("Пожалуйста укажите параметр: config");
@@ -436,7 +437,7 @@ namespace Dispetcher2
 
             for (int row = 0; row < dGVGalvan.Rows.Count; row++)
             {
-                for (int col = 0; col < dGVGalvan.Columns.Count - 1; col++)
+                for (int col = 0; col < dGVGalvan.Columns.Count - 2; col++)
                 {
                     ExcelWorkSheet.Cells[row + 5, col + 1] = dGVGalvan.Rows[row].Cells[col].Value.ToString().Trim();                    
                     ExcelWorkSheet.Cells[row + 5, col + 1].WrapText = true;
@@ -454,15 +455,17 @@ namespace Dispetcher2
             }
 
 
+
             ExcelWorkSheet.get_Range("A4", "I" + (dGVGalvan.Rows.Count + 4)).Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
 
             ExcelApp.Visible = true;
             progressBar1.Value = 0;
             MessageBox.Show("Формирование отчета завершено.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            ExcelApp.Quit();
         }
 
 
-        private void button6_Click(object sender, EventArgs e)
+        private void bTNBirki_Click(object sender, EventArgs e)
         {
 
             // Create a new Excel application
@@ -572,8 +575,8 @@ namespace Dispetcher2
                 endRow += 10;
                 startPos += 4;
 
-
+    
             }
-        }
+        }   
     }
 }

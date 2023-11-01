@@ -95,20 +95,11 @@ namespace Dispetcher2
             this.tabPageGalvan = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.dGVGalvan = new System.Windows.Forms.DataGridView();
-            this.OrderNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.OrderName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Pos = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ShcmName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.NameDetail = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Amount = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Galvanic = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dateFact = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Notes = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel6 = new System.Windows.Forms.Panel();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.nameOrd = new System.Windows.Forms.Label();
-            this.button6 = new System.Windows.Forms.Button();
+            this.bTNBirki = new System.Windows.Forms.Button();
             this.dataNowLabel = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.numActPeredachi = new System.Windows.Forms.TextBox();
@@ -119,6 +110,16 @@ namespace Dispetcher2
             this.galvanStart = new System.Windows.Forms.DateTimePicker();
             this.label14 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
+            this.OrderNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.OrderName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Pos = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ShcmName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.NameDetail = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Amount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Galvanic = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dateFact = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Notes = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.birka = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.myTabC_Reports.SuspendLayout();
             this.tPageRep3.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -908,79 +909,14 @@ namespace Dispetcher2
             this.Amount,
             this.Galvanic,
             this.dateFact,
-            this.Notes});
+            this.Notes,
+            this.birka});
             this.dGVGalvan.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dGVGalvan.Location = new System.Drawing.Point(3, 93);
             this.dGVGalvan.Name = "dGVGalvan";
-            this.dGVGalvan.ReadOnly = true;
             this.dGVGalvan.RowHeadersVisible = false;
             this.dGVGalvan.Size = new System.Drawing.Size(975, 501);
             this.dGVGalvan.TabIndex = 0;
-            // 
-            // OrderNumber
-            // 
-            this.OrderNumber.HeaderText = "№";
-            this.OrderNumber.Name = "OrderNumber";
-            this.OrderNumber.ReadOnly = true;
-            this.OrderNumber.Width = 50;
-            // 
-            // OrderName
-            // 
-            this.OrderName.HeaderText = "Заказ";
-            this.OrderName.Name = "OrderName";
-            this.OrderName.ReadOnly = true;
-            this.OrderName.Width = 120;
-            // 
-            // Pos
-            // 
-            this.Pos.HeaderText = "Поз.";
-            this.Pos.Name = "Pos";
-            this.Pos.ReadOnly = true;
-            this.Pos.Width = 40;
-            // 
-            // ShcmName
-            // 
-            this.ShcmName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.ShcmName.HeaderText = "Обозначение ЩЦМ";
-            this.ShcmName.Name = "ShcmName";
-            this.ShcmName.ReadOnly = true;
-            // 
-            // NameDetail
-            // 
-            this.NameDetail.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.NameDetail.HeaderText = "Наименование детали";
-            this.NameDetail.MinimumWidth = 100;
-            this.NameDetail.Name = "NameDetail";
-            this.NameDetail.ReadOnly = true;
-            // 
-            // Amount
-            // 
-            this.Amount.HeaderText = "Кол-во";
-            this.Amount.Name = "Amount";
-            this.Amount.ReadOnly = true;
-            this.Amount.Width = 60;
-            // 
-            // Galvanic
-            // 
-            this.Galvanic.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Galvanic.HeaderText = "Покрытие";
-            this.Galvanic.MinimumWidth = 250;
-            this.Galvanic.Name = "Galvanic";
-            this.Galvanic.ReadOnly = true;
-            // 
-            // dateFact
-            // 
-            this.dateFact.HeaderText = "Дата факт";
-            this.dateFact.Name = "dateFact";
-            this.dateFact.ReadOnly = true;
-            // 
-            // Notes
-            // 
-            this.Notes.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Notes.HeaderText = "Примечания";
-            this.Notes.MinimumWidth = 50;
-            this.Notes.Name = "Notes";
-            this.Notes.ReadOnly = true;
             // 
             // panel6
             // 
@@ -1016,7 +952,7 @@ namespace Dispetcher2
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.button6);
+            this.splitContainer1.Panel2.Controls.Add(this.bTNBirki);
             this.splitContainer1.Panel2.Controls.Add(this.dataNowLabel);
             this.splitContainer1.Panel2.Controls.Add(this.label16);
             this.splitContainer1.Panel2.Controls.Add(this.numActPeredachi);
@@ -1035,15 +971,15 @@ namespace Dispetcher2
             this.nameOrd.Text = "Акт Приёма-передачи №";
             this.nameOrd.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // button6
+            // bTNBirki
             // 
-            this.button6.Location = new System.Drawing.Point(454, 3);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(64, 26);
-            this.button6.TabIndex = 12;
-            this.button6.Text = "Бирки";
-            this.button6.UseVisualStyleBackColor = true;
-            this.button6.Click += new System.EventHandler(this.button6_Click);
+            this.bTNBirki.Location = new System.Drawing.Point(454, 3);
+            this.bTNBirki.Name = "bTNBirki";
+            this.bTNBirki.Size = new System.Drawing.Size(64, 26);
+            this.bTNBirki.TabIndex = 12;
+            this.bTNBirki.Text = "Бирки";
+            this.bTNBirki.UseVisualStyleBackColor = true;
+            this.bTNBirki.Click += new System.EventHandler(this.bTNBirki_Click);
             // 
             // dataNowLabel
             // 
@@ -1143,6 +1079,68 @@ namespace Dispetcher2
             this.label15.Size = new System.Drawing.Size(24, 17);
             this.label15.TabIndex = 1010;
             this.label15.Text = "по";
+            // 
+            // OrderNumber
+            // 
+            this.OrderNumber.HeaderText = "№";
+            this.OrderNumber.Name = "OrderNumber";
+            this.OrderNumber.Width = 50;
+            // 
+            // OrderName
+            // 
+            this.OrderName.HeaderText = "Заказ";
+            this.OrderName.Name = "OrderName";
+            this.OrderName.Width = 120;
+            // 
+            // Pos
+            // 
+            this.Pos.HeaderText = "Поз.";
+            this.Pos.Name = "Pos";
+            this.Pos.Width = 40;
+            // 
+            // ShcmName
+            // 
+            this.ShcmName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ShcmName.HeaderText = "Обозначение ЩЦМ";
+            this.ShcmName.Name = "ShcmName";
+            // 
+            // NameDetail
+            // 
+            this.NameDetail.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.NameDetail.HeaderText = "Наименование детали";
+            this.NameDetail.MinimumWidth = 100;
+            this.NameDetail.Name = "NameDetail";
+            // 
+            // Amount
+            // 
+            this.Amount.HeaderText = "Кол-во";
+            this.Amount.Name = "Amount";
+            this.Amount.Width = 60;
+            // 
+            // Galvanic
+            // 
+            this.Galvanic.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Galvanic.HeaderText = "Покрытие";
+            this.Galvanic.MinimumWidth = 250;
+            this.Galvanic.Name = "Galvanic";
+            // 
+            // dateFact
+            // 
+            this.dateFact.HeaderText = "Дата факт";
+            this.dateFact.Name = "dateFact";
+            // 
+            // Notes
+            // 
+            this.Notes.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Notes.HeaderText = "Примечания";
+            this.Notes.MinimumWidth = 50;
+            this.Notes.Name = "Notes";
+            // 
+            // birka
+            // 
+            this.birka.HeaderText = "";
+            this.birka.Name = "birka";
+            this.birka.Width = 30;
             // 
             // F_Reports
             // 
@@ -1275,6 +1273,15 @@ namespace Dispetcher2
         private System.Windows.Forms.DateTimePicker galvanStart;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.CheckBox cBKoop;
+        private System.Windows.Forms.Button exelGalvan;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label dataNowLabel;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.TextBox numActPeredachi;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.Button bTNBirki;
         private System.Windows.Forms.DataGridViewTextBoxColumn OrderNumber;
         private System.Windows.Forms.DataGridViewTextBoxColumn OrderName;
         private System.Windows.Forms.DataGridViewTextBoxColumn Pos;
@@ -1284,14 +1291,6 @@ namespace Dispetcher2
         private System.Windows.Forms.DataGridViewTextBoxColumn Galvanic;
         private System.Windows.Forms.DataGridViewTextBoxColumn dateFact;
         private System.Windows.Forms.DataGridViewTextBoxColumn Notes;
-        private System.Windows.Forms.CheckBox cBKoop;
-        private System.Windows.Forms.Button exelGalvan;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Label dataNowLabel;
-        private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.TextBox numActPeredachi;
-        private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.ProgressBar progressBar1;
-        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn birka;
     }
 }
