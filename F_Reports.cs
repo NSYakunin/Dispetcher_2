@@ -25,6 +25,7 @@ using OfficeOpenXml.Style;
 using Microsoft.Office.Interop.Excel;
 using System.IO;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
+using System.Windows.Forms.VisualStyles;
 
 namespace Dispetcher2
 {
@@ -46,6 +47,8 @@ namespace Dispetcher2
         DataTable Dt_SpWorkers = new DataTable();
         DataTable DT_Orders = new DataTable();
         BindingSource BS_Orders = new BindingSource();
+
+        private List<DataGridViewRow> selectedRows = new List<DataGridViewRow>();
 
 
         public F_Reports(IConfig config, IConverter converter)
@@ -487,6 +490,7 @@ namespace Dispetcher2
             sheet.PageSetup.FooterMargin = excelApp.CentimetersToPoints(0);
 
             int startRow = 1;
+            int startRowList = 0;
             for (int i = 1; i <= 4; i++)
             {
                 int endRow = startRow + 9;
@@ -503,40 +507,7 @@ namespace Dispetcher2
                 sheet.Range[sheet.Cells[startRow, 4], sheet.Cells[endRow, 4]].Borders[Excel.XlBordersIndex.xlEdgeRight].LineStyle = Excel.XlLineStyle.xlContinuous;
                 sheet.Range[sheet.Cells[startRow, 4], sheet.Cells[endRow, 4]].Borders[Excel.XlBordersIndex.xlEdgeRight].Weight = Excel.XlBorderWeight.xlMedium;
 
-                int startPos = 1;
-                for (int j = 0; j < 4; j++)
-                {
-                    sheet.Cells[startRow, startPos].Value = "ЗАКАЗ";
-                    sheet.Cells[startRow, startPos].Font.Size = 11;
-                    sheet.Cells[startRow, startPos].Font.Bold = 1;
 
-                    sheet.Cells[startRow + 1, startPos].Value = "НАИМЕНОВАНИЕ";
-                    sheet.Cells[startRow + 1, startPos].Font.Size = 11;
-                    sheet.Cells[startRow + 1, startPos].Font.Bold = 1;
-
-                    sheet.Cells[startRow + 2, startPos].Value = "";
-                    sheet.Cells[startRow + 2, startPos].Font.Size = 11;
-                    sheet.Cells[startRow + 2, startPos].Font.Bold = 1;
-
-                    sheet.Cells[startRow + 3, startPos].Value = "ЩЦМ";
-                    sheet.Cells[startRow + 3, startPos].Font.Size = 11;
-                    sheet.Cells[startRow + 3, startPos].Font.Bold = 1;
-
-                    sheet.Cells[startRow + 4, startPos].Value = "КОЛ-ВО";
-                    sheet.Cells[startRow + 4, startPos].Font.Size = 11;
-                    sheet.Cells[startRow + 4, startPos].Font.Bold = 1;
-
-                    sheet.Cells[startRow + 5, startPos].Value = "ДАТА";
-                    sheet.Cells[startRow + 5, startPos].Font.Size = 11;
-                    sheet.Cells[startRow + 5, startPos].Font.Bold = 1;
-
-                    sheet.Cells[startRow + 6, startPos].Value = "ПОКРЫТИЕ";
-                    sheet.Cells[startRow + 6, startPos].Font.Size = 11;
-                    sheet.Cells[startRow + 6, startPos].Font.Bold = 1;
-                    startPos += 4;
-                }
-
-                //**************************
 
                 // Draw the top border line for the block
                 sheet.Range[sheet.Cells[startRow, 5], sheet.Cells[startRow, 8]].Borders[Excel.XlBordersIndex.xlEdgeTop].LineStyle = Excel.XlLineStyle.xlContinuous;
@@ -571,12 +542,110 @@ namespace Dispetcher2
                 sheet.Range[sheet.Cells[startRow, 16], sheet.Cells[endRow, 16]].Borders[Excel.XlBordersIndex.xlEdgeRight].LineStyle = Excel.XlLineStyle.xlContinuous;
                 sheet.Range[sheet.Cells[startRow, 16], sheet.Cells[endRow, 16]].Borders[Excel.XlBordersIndex.xlEdgeRight].Weight = Excel.XlBorderWeight.xlMedium;
 
+                sheet.get_Range($"A{startRow + 7}:D{startRow + 9}").Merge();
+                sheet.get_Range($"E{startRow + 7}:H{startRow + 9}").Merge();
+                sheet.get_Range($"I{startRow + 7}:L{startRow + 9}").Merge();
+                sheet.get_Range($"M{startRow + 7}:P{startRow + 9}").Merge();
+                //sheet.get_Range($"A{startRow + 8}:D{startRow + 8}").Merge();
+                //sheet.get_Range($"A{startRow + 8}:D{startRow + 9}").Merge();
+                //sheet.get_Range($"A{startRow + 8}:D{startRow + 9}").Merge();
+
+
+
+                int startPos = 1;
+                for (int j = 0; j < 4; j++)
+                {
+                    sheet.Cells[startRow, startPos].Value = "ЗАКАЗ";
+                    sheet.Cells[startRow, startPos].Font.Size = 10;
+                    sheet.Cells[startRow, startPos].Font.Bold = 1;
+                    sheet.Cells[startRow, startPos + 1].Value = selectedRows[startRowList].Cells[1].Value;
+                    sheet.Cells[startRow, startPos + 1].Font.Size = 9;
+                    sheet.Cells[startRow, startPos + 1].Font.Bold = 0;
+
+                    sheet.Cells[startRow + 1, startPos].Value = "НАИМЕНОВАНИЕ";
+                    sheet.Cells[startRow + 1, startPos].Font.Size = 10;
+                    sheet.Cells[startRow + 1, startPos].Font.Bold = 1;
+
+                    sheet.Cells[startRow + 2, startPos].Value = selectedRows[startRowList].Cells[4].Value;
+                    sheet.Cells[startRow + 2, startPos].Font.Size = 9;
+                    sheet.Cells[startRow + 2, startPos].Font.Bold = 0;
+
+                    sheet.Cells[startRow + 3, startPos].Value = "ЩЦМ";
+                    sheet.Cells[startRow + 3, startPos].Font.Size = 10;
+                    sheet.Cells[startRow + 3, startPos].Font.Bold = 1;
+                    sheet.Cells[startRow + 3, startPos + 1].Value = selectedRows[startRowList].Cells[3].Value;
+                    sheet.Cells[startRow + 3, startPos + 1].Font.Size = 9;
+                    sheet.Cells[startRow + 3, startPos + 1].Font.Bold = 0;
+
+                    sheet.Cells[startRow + 4, startPos].Value = "КОЛ-ВО";
+                    sheet.Cells[startRow + 4, startPos].Font.Size = 10;
+                    sheet.Cells[startRow + 4, startPos].Font.Bold = 1;
+                    sheet.Cells[startRow + 4, startPos + 1].Value = selectedRows[startRowList].Cells[5].Value;
+                    sheet.Cells[startRow + 4, startPos + 1].Font.Size = 9;
+                    sheet.Cells[startRow + 4, startPos + 1].Font.Bold = 0;
+
+                    sheet.Cells[startRow + 5, startPos].Value = "ДАТА";
+                    sheet.Cells[startRow + 5, startPos].Font.Size = 10;
+                    sheet.Cells[startRow + 5, startPos].Font.Bold = 1;
+                    sheet.Cells[startRow + 5, startPos + 1].Value = selectedRows[startRowList].Cells[7].Value;
+                    sheet.Cells[startRow + 5, startPos + 1].Font.Size = 9;
+                    sheet.Cells[startRow + 5, startPos + 1].Font.Bold = 0;
+
+                    sheet.Cells[startRow + 6, startPos].Value = "ПОКРЫТИЕ";
+                    sheet.Cells[startRow + 6, startPos].Font.Size = 10;
+                    sheet.Cells[startRow + 6, startPos].Font.Bold = 1;
+                    sheet.Cells[startRow + 7, startPos].Value = selectedRows[startRowList].Cells[6].Value;
+                    sheet.Cells[startRow + 7, startPos].Font.Size = 9;
+                    sheet.Cells[startRow + 7, startPos].Font.Bold = 0;
+                    sheet.Cells[startRow + 7, startPos].Font.Underline = true;
+                    sheet.Cells[startRow + 7, startPos].HorizontalAlignment = Excel.Constants.xlCenter;
+                    sheet.Cells[startRow + 7, startPos].VerticalAlignment = Excel.Constants.xlCenter;
+                    sheet.Cells[startRow + 7, startPos].IndentLevel = 6;
+                    sheet.Cells[startRow + 7, startPos].WrapText = true;
+
+
+                    startPos += 4;
+
+                    startRowList++;
+                    if (startRowList > selectedRows.Count - 1)
+                    {
+                        selectedRows.Clear();
+                        return;
+                    }
+                }
+
+                //**************************
                 startRow += 10;
                 endRow += 10;
                 startPos += 4;
 
-    
+                foreach (DataGridViewRow row in selectedRows)
+                {
+                    row.DefaultCellStyle.BackColor = Color.Yellow;
+                }
             }
-        }   
+        }
+
+        private void dGVGalvan_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            
+            // Проверяем, что изменено значение в последнем столбце
+            if (e.ColumnIndex == dGVGalvan.Columns.Count - 1 && e.RowIndex >= 0)
+            {
+                DataGridViewCheckBoxCell checkBoxCell = (DataGridViewCheckBoxCell)dGVGalvan.Rows[e.RowIndex].Cells[e.ColumnIndex];
+
+                bool isChecked = (bool)checkBoxCell.EditedFormattedValue;
+                // Если чекбокс отмечен, добавляем строку в список
+                if (isChecked)
+                {
+                    selectedRows.Add(dGVGalvan.Rows[e.RowIndex]);
+                }
+                // Если чекбокс снят, удаляем строку из списка
+                else
+                {
+                    selectedRows.Remove(dGVGalvan.Rows[e.RowIndex]);
+                }
+            }
+        }
     }
 }
