@@ -28,6 +28,7 @@ namespace Dispetcher2.DataAccess
         List<SqlOrder> orders = null;
         IConverter converter;
 
+        // <param name="_IdStatusOrders">1-ожидание,2-открыт,3-закрыт,4-в работе,5-выполнен</param>
         public SqlOrderRepository(IConfig config, IConverter converter, Nullable<int> status = null)
         {
             if (config == null) throw new ArgumentException("Пожалуйста укажите параметр config");

@@ -197,6 +197,9 @@
     <Compile Include="Controls\LaborControl.xaml.cs">
       <DependentUpon>LaborControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\LaborDetailControl.xaml.cs">
+      <DependentUpon>LaborDetailControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\OperationControl.xaml.cs">
       <DependentUpon>OperationControl.xaml</DependentUpon>
     </Compile>
@@ -357,6 +360,7 @@
       <DependentUpon>F_Workers.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\JobViewModel.cs" />
+    <Compile Include="Models\LaborDetailViewModel.cs" />
     <Compile Include="Models\LaborViewModel.cs" />
     <Compile Include="Models\OperationViewModel.cs" />
     <Compile Include="Models\OrderControlViewModel.cs" />
@@ -515,6 +519,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\LaborControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\LaborDetailControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
