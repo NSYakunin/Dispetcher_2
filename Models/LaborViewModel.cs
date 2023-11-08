@@ -9,6 +9,10 @@ using System.Windows.Input;
 using System.Threading.Tasks;
 
 using Dispetcher2.Class;
+using Dispetcher2.Controls;
+using System.Diagnostics;
+using System.Windows.Controls;
+
 
 namespace Dispetcher2.Models
 {
@@ -16,9 +20,9 @@ namespace Dispetcher2.Models
     {
         OrderRepository orders;
         LaborReport report;
-        LaborReportRepository labrep;
-        StringRepository colrep;
+        
         LaborReportWriter writer;
+        IObserver observer;
 
         OrderControlViewModel ocvm;
         Visibility dvValue;
@@ -26,6 +30,12 @@ namespace Dispetcher2.Models
         ICommand excelCommandValue;
 
         string waitMessageValue;
+
+
+
+        LaborDetailViewModel detModel;
+        FormFactory factory;
+
         public Visibility DataVisibility
         {
             get
@@ -105,32 +115,50 @@ namespace Dispetcher2.Models
         }
         public ICommand RequestCommand { get { return requestCommandValue; } }
         public ICommand ExcelCommand { get { return excelCommandValue; } }
+        public ICommand DetailCommand { get; set; }
         public DateTime BeginDate { get; set; }
         public DateTime EndDate { get; set; }
         public ObservableCollection<LaborReportRow> RowsView { get; set; }
 
-        public StringRepository Columns
+        
+        
+        LaborReportRow SelectedLaborReportRow = null;
+        string SelectedColumnHeader = null;
+        public DataGridCellInfo CellInfo
         {
-            get { return colrep; }
             set
             {
-                colrep = value;
-                OnPropertyChanged(nameof(Columns));
+                DataGridCellInfo info = value;
+                if (info != null)
+                {
+                    SelectedLaborReportRow = info.Item as LaborReportRow;
+                    if (info.Column != null) SelectedColumnHeader = Convert.ToString(info.Column.Header);
+                }
             }
         }
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public LaborViewModel(OrderRepository orders, OrderControlViewModel ocvm, LaborReport report, LaborReportWriter writer)
+        public LaborViewModel(OrderRepository orders, OrderControlViewModel ocvm, LaborReport report, 
+            LaborReportWriter writer, IObserver observer,
+            FormFactory factory, LaborDetailViewModel detModel)
         {
             if (orders == null) throw new ArgumentException("Пожалуйста укажите параметр: OrderRepository");
             if (ocvm == null) throw new ArgumentException("Пожалуйста укажите параметр: OrderControlViewModel");
             if (report == null) throw new ArgumentException("Пожалуйста укажите параметр: LaborReport");
             if (writer == null) throw new ArgumentException("Пожалуйста укажите параметр: LaborReportWriter");
+            if (observer == null) throw new ArgumentException("Пожалуйста укажите параметр: IObserver");
+
+            if (factory == null) throw new ArgumentException("Пожалуйста укажите параметр: factory");
+            if (detModel == null) throw new ArgumentException("Пожалуйста укажите параметр: detModel");
 
             this.orders = orders;
             this.ocvm = ocvm;
             this.report = report;
             this.writer = writer;
+            this.observer = observer;
+
+            this.factory = factory;
+            this.detModel = detModel;
 
             var c = new LaborCommand();
             c.ExecuteAction = this.ProcessRequestCommand;
@@ -139,6 +167,10 @@ namespace Dispetcher2.Models
             c = new LaborCommand();
             c.ExecuteAction = this.ProcessExcelCommand;
             excelCommandValue = c;
+
+            c = new LaborCommand();
+            c.ExecuteAction = this.ProcessDetailCommand;
+            DetailCommand = c;
 
             WaitVisibility = Visibility.Visible;
             DataVisibility = Visibility.Collapsed;
@@ -224,22 +256,52 @@ namespace Dispetcher2.Models
 
         void AfterLoadOperations()
         {
-            Columns = report.GetOperationRepository();
+            var columns = report.GetColumns();
+            observer.Update(columns);
 
             if (factOrdVal == false) DataVisibility = Visibility.Visible;
             WaitVisibility = Visibility.Collapsed;
             CommandVisibility = Visibility.Visible;
             OperationVisibility = Visibility.Visible;
 
-            labrep = report.GetLaborReportRepository();
+            var rows = report.GetRows();
             RowsView.Clear();
-            foreach (LaborReportRow r in labrep.GetList()) RowsView.Add(r);
+            foreach (LaborReportRow r in rows) RowsView.Add(r);
         }
         void ProcessExcelCommand()
         {
-            if (Columns != null && labrep != null)
-                writer.Write(Columns, labrep);
+            var columns = report.GetColumns();
+            var rows = report.GetRows();
+
+            if (columns != null && rows != null) writer.Write(columns, rows);
         }
+        void ProcessDetailCommand()
+        {
+            if (SelectedLaborReportRow == null) return;
+            if (SelectedColumnHeader == null) return;
+            if (SelectedLaborReportRow.TimeDictionary.ContainsKey(SelectedColumnHeader) == false) return;
+            var a = SelectedLaborReportRow.TimeDictionary[SelectedColumnHeader];
+
+            List<LaborReportRow> detRows = new List<LaborReportRow>();
+            foreach (var item in a)
+            {
+                if (item is WorkDay) detRows.Add(report.GetReportRow(item as WorkDay));
+                if (item is Operation) detRows.Add(report.GetReportRow(item as Operation));
+            }
+            if (detRows.Count() < 1) return;
+            LaborReportRow r1 = detRows[0];
+
+            HashSet<string> NameList = new HashSet<string>();
+            foreach (var k in r1.Operations.Keys)
+                NameList.Add(k);
+
+            detModel.Columns = NameList;
+            detModel.Rows = detRows;
+
+            var f = factory.GetForm("Подробный список операций");
+            f.ShowDialog();
+        }
+        
     }
     public class LaborCommand : ICommand
     {

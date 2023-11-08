@@ -8,6 +8,6 @@ namespace Dispetcher2.Class
 {
     public interface IObserver
     {
-        void Update(object parameters);
+        void Update(IEnumerable<string> columns);
     }
 }

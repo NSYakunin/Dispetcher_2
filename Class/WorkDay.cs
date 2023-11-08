@@ -9,7 +9,7 @@ namespace Dispetcher2.Class
     /// <summary>
     /// Рабочий день
     /// </summary>
-    public class WorkDay
+    public class WorkDay : WorkTime
     {
         /// <summary>
         /// Дата
@@ -18,7 +18,6 @@ namespace Dispetcher2.Class
         /// <summary>
         /// Количество рабочего времени
         /// </summary>
-        public TimeSpan Time { get; set; }
         public string Login { get; set; }
         public string LastName { get; set; }
         public string Name { get; set; }

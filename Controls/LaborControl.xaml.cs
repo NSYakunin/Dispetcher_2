@@ -10,9 +10,9 @@ namespace Dispetcher2.Controls
             InitializeComponent();
         }
 
-        public void Update(object parameters)
+        public void Update(IEnumerable<string> columns)
         {
-            opc.Update(parameters);
+            opc.Update(columns);
         }
     }
 }

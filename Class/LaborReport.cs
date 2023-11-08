@@ -1,15 +1,17 @@
 ﻿using System;
+//using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Dispetcher2.Class
 {
     public abstract class LaborReportWriter
     {
-        public abstract void Write(StringRepository colrep, LaborReportRepository labrep);
+        public abstract void Write(IEnumerable<string> columns, IEnumerable<LaborReportRow> rows);
     }
     public class LaborReportRow
     {
@@ -19,30 +21,39 @@ namespace Dispetcher2.Class
         // ключ словаря: имя операции
         // значение словаря: текст в ячейке
         public Dictionary<string, string> Operations { get; set; }
-        // для целей рассчета
+        // словарь операций данной строки отчета
         // ключ словаря: имя операции
-        // значение словаря: фактическое время
-        public Dictionary<string, TimeSpan> TimeDictionary { get; set; }
+        // значение словаря: список операций или рабочих дней
+        public Dictionary<string, List<WorkTime>> TimeDictionary { get; set; }
 
         public LaborReportRow()
         {
             Operations = new Dictionary<string, string>();
-            TimeDictionary = new Dictionary<string, TimeSpan>();
+            TimeDictionary = new Dictionary<string, List<WorkTime>>();
+        }
+        public void AddWorkTime(string name, WorkTime value)
+        {
+            if (TimeDictionary.ContainsKey(name) == false) TimeDictionary[name] = new List<WorkTime>();
+            TimeDictionary[name].Add(value);
+        }
+        public TimeSpan GetTimeSpan(string name)
+        {
+            TimeSpan t = TimeSpan.Zero;
+            if (TimeDictionary.ContainsKey(name))
+            {
+                if (TimeDictionary[name] != null)
+                {
+                    foreach(var item in TimeDictionary[name])
+                    {
+                        if (item is WorkDay) t = t.Add((item as WorkDay).Time);
+                        if (item is Operation) t = t.Add((item as Operation).Time);
+                    }
+                }
+            }
+            return t;
         }
     }
-    public class LaborReportRepository : Repository
-    {
-        IEnumerable<LaborReportRow> rows;
-        public LaborReportRepository(IEnumerable<LaborReportRow> rows)
-        {
-            this.rows = rows;
-        }
-        public override void Load() { }
-        public override System.Collections.IEnumerable GetList()
-        {
-            return rows;
-        }
-    }
+
     public class LaborReport
     {
         private const string QuantityName = "Кол-во работников";
@@ -63,8 +74,11 @@ namespace Dispetcher2.Class
         List<LaborReportRow> rows;
         // Внешние зависимости
         DetailRepository details;
+        Dictionary<long, Detail> detailDict;
         OperationRepository operations;
         OperationGroupRepository groups;
+        // словарь операций по коду
+        Dictionary<int, OperationGroup> opgDict;
         WorkDayRepository workDays;
 
         Dictionary<int, Order> allOrderDict;
@@ -100,15 +114,18 @@ namespace Dispetcher2.Class
         public void Load()
         {
             details.Load();
+            detailDict = new Dictionary<long, Detail>();
+            foreach (var item in details.GetDetails()) detailDict[item.OrderDetailId] = item;
             operations.Load();
             groups.Load();
+            opgDict = new Dictionary<int, OperationGroup>();
+            foreach (var item in groups.GetGroups()) opgDict[item.Id] = item;
         }
 
         private void ProcessEmployeeTime()
         {
-            // словарь операций по коду
-            var opDic = new Dictionary<int, OperationGroup>();
-            foreach (var item in groups.GetGroups()) opDic[item.Id] = item;
+            
+            
 
             // фильтруем рабочие дни по дате
             // Группировать данные в словарь списков по коду группы операции
@@ -144,7 +161,7 @@ namespace Dispetcher2.Class
             // Всего, количество работников
             int totalCount = 0;
 
-            foreach (var item in opDic)
+            foreach (var item in opgDict)
             {
                 OperationGroup op = item.Value;
                 if (empDic.ContainsKey(op.Id))
@@ -159,24 +176,30 @@ namespace Dispetcher2.Class
             dv = new LaborReportRow() { Name = TimeSheetName };
             // Всего, табельное время
             TimeSpan totalTime = TimeSpan.Zero;
-
-            foreach (var item in opDic)
+            
+            foreach (var item in opgDict)
             {
                 OperationGroup op = item.Value;
                 if (wdDic.ContainsKey(op.Id))
                 {
+                    string name = op.Name;
                     TimeSpan time = TimeSpan.Zero;
+                    
                     foreach (var day in wdDic[op.Id])
                     {
-                        time = time.Add(day.Time);
+                        if (day.Time > TimeSpan.Zero)
+                        {
+                            time = time.Add(day.Time);
+                            dv.AddWorkTime(name, day);
+                            dv.AddWorkTime(TotalName, day);
+                        }
                     }
                     dv.Operations[op.Name] = Format(time);
-                    dv.TimeDictionary[op.Name] = time;
                     totalTime = totalTime.Add(time);
                 }
             }
             dv.Operations[TotalName] = Format(totalTime);
-            dv.TimeDictionary[TotalName] = totalTime;
+            
             this.rows.Add(dv);
         }
         void ProcessDetailOperations()
@@ -287,12 +310,22 @@ namespace Dispetcher2.Class
                         if (op.TypeRow == "1sp" || op.TypeRow == "2sp111")
                         {
                             planTime = planTime.Add(op.Time);
+                            dv.AddWorkTime(LimitName, op);
                         }
                         // фактические операции
                         if (op.TypeRow == "3fact" && BeginDate <= op.FactDate && op.FactDate < EndDate)
                         {
-                            if (op.Login == coopLogin) coopTime = coopTime.Add(op.Time);
-                            else factTime = factTime.Add(op.Time);
+                            if (op.Login == coopLogin)
+                            {
+                                coopTime = coopTime.Add(op.Time);
+                                dv.AddWorkTime(CoopName, op);
+                            }
+                            else
+                            {
+                                factTime = factTime.Add(op.Time);
+                                dv.AddWorkTime(name, op);
+                                dv.AddWorkTime(TotalName, op);
+                            }
                         }
                     }
 
@@ -301,16 +334,18 @@ namespace Dispetcher2.Class
                     totalTime = totalTime.Add(factTime);
                     totalPlanTime = totalPlanTime.Add(planTime);
 
-                    dv.TimeDictionary[name] = factTime;
+                    //dv.TimeDictionary[name] = factTime;
                 }
             }
             else
             {
                 // Операции в группах
                 // Для каждой группы
-                foreach (var g in groups.GetGroups())
+                foreach (var kv in opgDict)
                 {
-                    // Получаем опперации
+                    var g = kv.Value;
+                    string name = g.Name;
+                    // Получаем операции
                     var se = from item in dvOperations
                              where item.GroupId == g.Id
                              select item;
@@ -324,22 +359,32 @@ namespace Dispetcher2.Class
                         if (op.TypeRow == "1sp" || op.TypeRow == "2sp111")
                         {
                             planTime = planTime.Add(op.Time);
+                            dv.AddWorkTime(LimitName, op);
                         }
                         // фактические операции
-                        if (op.TypeRow == "3fact")
+                        if (op.TypeRow == "3fact" && BeginDate <= op.FactDate && op.FactDate < EndDate)
                         {
-                            if (op.Login == coopLogin) coopTime = coopTime.Add(op.Time);
-                            else factTime = factTime.Add(op.Time);
+                            if (op.Login == coopLogin)
+                            {
+                                coopTime = coopTime.Add(op.Time);
+                                dv.AddWorkTime(CoopName, op);
+                            }
+                            else
+                            {
+                                factTime = factTime.Add(op.Time);
+                                dv.AddWorkTime(name, op);
+                                dv.AddWorkTime(TotalName, op);
+                            }
                         }
                     }
-                    string name = g.Name;
+                    
 
                     if (factTime > TimeSpan.Zero)
                         dv.Operations[name] = Format(factTime);
                     totalTime = totalTime.Add(factTime);
                     totalPlanTime = totalPlanTime.Add(planTime);
 
-                    dv.TimeDictionary[name] = factTime;
+                    //dv.TimeDictionary[name] = factTime;
                 }
             }
             if (totalTime > TimeSpan.Zero)
@@ -350,14 +395,20 @@ namespace Dispetcher2.Class
                 dv.Operations[CoopName] = Format(coopTime);
             TimeSpan ts = totalPlanTime.Subtract(coopTime);
             if (ts > TimeSpan.Zero)
+            {
                 dv.Operations[LimitCoopName] = Format(ts);
+                // Фиктивная "операция" для LimitCoopName
+                Operation x = new Operation() { Name = LimitCoopName, Time = ts };
+                dv.AddWorkTime(LimitCoopName, x);
+            }
 
-            dv.TimeDictionary[TotalName] = totalTime;
-            dv.TimeDictionary[LimitName] = totalPlanTime;
-            dv.TimeDictionary[CoopName] = coopTime;
-            dv.TimeDictionary[LimitCoopName] = ts;
+            // !!! Если нужно, подробности по итоговым ячейкам надо собирать выше в цикле
+            
+            //dv.TimeDictionary[LimitName] = totalPlanTime;
+            //dv.TimeDictionary[CoopName] = coopTime;
+            //dv.TimeDictionary[LimitCoopName] = ts;
         }
-        public StringRepository GetOperationRepository()
+        public IEnumerable<string> GetColumns()
         {
             HashSet<string> NameList = new HashSet<string>();
             NameList.Add(LimitName);
@@ -370,8 +421,7 @@ namespace Dispetcher2.Class
                     NameList.Add(k);
             }
 
-            var rep = new StringRepository(NameList);
-            return rep;
+            return NameList;
         }
         public void Calculate()
         {
@@ -385,6 +435,8 @@ namespace Dispetcher2.Class
         }
         void ProcessTotal()
         {
+
+
             LaborReportRow tsrow = null;
             // Считаем итого
             LaborReportRow itog = new LaborReportRow() { Name = ItogoName };
@@ -398,16 +450,26 @@ namespace Dispetcher2.Class
                 }
                 foreach (var name in dv.TimeDictionary.Keys)
                 {
-                    if (itog.TimeDictionary.ContainsKey(name) == false)
-                        itog.TimeDictionary[name] = TimeSpan.Zero;
-                    itog.TimeDictionary[name] = itog.TimeDictionary[name].Add(dv.TimeDictionary[name]);
+                    //if (itog.TimeDictionary.ContainsKey(name) == false)
+                    //    itog.TimeDictionary[name] = TimeSpan.Zero;
+                    //itog.TimeDictionary[name] = itog.TimeDictionary[name].Add(dv.TimeDictionary[name]);
+
+                    
+                    foreach (var item in dv.TimeDictionary[name])
+                    {
+                        itog.AddWorkTime(name, item);
+                    }
                 }
             }
             foreach (var name in itog.TimeDictionary.Keys)
             {
-                if (itog.TimeDictionary[name] > TimeSpan.Zero)
-                    itog.Operations[name] = Format(itog.TimeDictionary[name]);
+                //if (itog.TimeDictionary[name] > TimeSpan.Zero)
+                //    itog.Operations[name] = Format(itog.TimeDictionary[name]);
+                var t = itog.GetTimeSpan(name);
+                if (t > TimeSpan.Zero) itog.Operations[name] = Format(t);
             }
+            
+
             rows.Add(itog);
             // Считаем выработку
             LaborReportRow vrow = new LaborReportRow() { Name = ProductivityName };
@@ -417,8 +479,10 @@ namespace Dispetcher2.Class
                 {
                     if (tsrow.TimeDictionary.ContainsKey(name))
                     {
-                        double t1 = itog.TimeDictionary[name].TotalMinutes;
-                        double t2 = tsrow.TimeDictionary[name].TotalMinutes;
+                        //double t1 = itog.TimeDictionary[name].TotalMinutes;
+                        double t1 = itog.GetTimeSpan(name).TotalMinutes;
+                        //double t2 = tsrow.TimeDictionary[name].TotalMinutes;
+                        double t2 = tsrow.GetTimeSpan(name).TotalMinutes;
                         double v = 100.0 * t1 / t2;
                         vrow.Operations[name] = v.ToString("0.00") + "%";
                     }
@@ -426,10 +490,9 @@ namespace Dispetcher2.Class
             }
             rows.Add(vrow);
         }
-        public LaborReportRepository GetLaborReportRepository()
+        public IEnumerable<LaborReportRow> GetRows()
         {
-            LaborReportRepository repository = new LaborReportRepository(rows);
-            return repository;
+            return rows;
         }
         // Определяем в каких заказах есть факты для указанного диаппазона дат
         void CalculateFactOrders()
@@ -450,6 +513,39 @@ namespace Dispetcher2.Class
             {
                 if (allOrderDict.ContainsKey(item)) factOrders.Add(allOrderDict[item]);
             }
+        }
+        public LaborReportRow GetReportRow(WorkDay item)
+        {
+            LaborReportRow r = new LaborReportRow();
+            r.Name = item.Date.ToShortDateString();
+            r.Operations["Логин"] = item.Login;
+            r.Operations["Фамилия"] = item.LastName;
+            r.Operations["Имя"] = item.Name;
+            r.Operations["Отчество"] = item.SecondName;
+            r.Operations["Специальность"] = item.JobName;
+            if (opgDict.ContainsKey(item.OperationGroupId))
+                r.Operations["Операция"] = opgDict[item.OperationGroupId].Name;
+            r.Operations["Время"] = item.TimeString;
+            return r;
+        }
+        public LaborReportRow GetReportRow(Operation item)
+        {
+            LaborReportRow r = new LaborReportRow();
+            if (allOrderDict.ContainsKey(item.OrderId))
+                r.Name = allOrderDict[item.OrderId].Number;
+            if (detailDict.ContainsKey(item.OrderDetailId))
+                r.Operations["ЩЦМ"] = detailDict[item.OrderDetailId].Shcm;
+            
+            r.Operations["Операция"] = item.Name;
+            if (opgDict.ContainsKey(item.GroupId))
+                r.Operations["Группа"] = opgDict[item.GroupId].Name;
+            if (item.FactDate > DateTime.MinValue) r.Operations["Дата"] = item.FactDate.ToShortDateString();
+            if (item.Login != null) r.Operations["Логин"] = item.Login;
+            r.Operations["Кол-во"] = item.Quantity.ToString();
+            r.Operations["TPD"] = item.Tpd.ToString();
+            r.Operations["TSH"] = item.Tsh.ToString();
+            r.Operations["Время"] = Format(item.Time);
+            return r;
         }
     }
 }
