@@ -603,7 +603,7 @@ namespace Dispetcher2
                     sheet.Cells[startRow + 7, startPos].IndentLevel = 6;
                     sheet.Cells[startRow + 7, startPos].WrapText = true;
 
-
+                    selectedRows[startRowList].DefaultCellStyle.BackColor = Color.Aquamarine;
                     startPos += 4;
 
                     startRowList++;
@@ -618,11 +618,6 @@ namespace Dispetcher2
                 startRow += 10;
                 endRow += 10;
                 startPos += 4;
-
-                foreach (DataGridViewRow row in selectedRows)
-                {
-                    row.DefaultCellStyle.BackColor = Color.Yellow;
-                }
             }
         }
 
