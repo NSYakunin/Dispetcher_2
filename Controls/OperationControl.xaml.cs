@@ -1,4 +1,5 @@
 ﻿
+using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Data;
 
@@ -14,13 +15,12 @@ namespace Dispetcher2.Controls
             InitializeComponent();
         }
 
-        public void Update(object parameters)
+        public void Update(IEnumerable<string> columns)
         {
-            StringRepository names = parameters as StringRepository;
-            if (names != null)
+            if (columns != null)
             {
                 mainGrid.Columns.Clear();
-                foreach (var n in names.GetList())
+                foreach (var n in columns)
                 {
                     var c = new DataGridTextColumn();
                     c.Header = n;

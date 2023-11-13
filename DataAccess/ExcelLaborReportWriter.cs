@@ -17,12 +17,12 @@ namespace Dispetcher2.DataAccess
         Excel.Application app;
         Excel.Workbook workbook;
         Excel.Worksheet worksheet;
-        public override void Write(StringRepository colrep, LaborReportRepository labrep)
+        public override void Write(IEnumerable<string> columns, IEnumerable<LaborReportRow> rows)
         {
             Initialize();
             if (app != null)
             {
-                Main(colrep, labrep);
+                Main(columns, rows);
                 Finish();
             }
         }
@@ -46,7 +46,7 @@ namespace Dispetcher2.DataAccess
         {
             app.Visible = true;
         }
-        void Main(StringRepository colrep, LaborReportRepository labrep)
+        void Main(IEnumerable<string> columns, IEnumerable<LaborReportRow> rows)
         {
             bool f = true;
             int firstCol = 1;
@@ -55,13 +55,13 @@ namespace Dispetcher2.DataAccess
             int lastRow = 0;
 
             int numCol = firstCol + 1;
-            foreach (string c in colrep.GetList())
+            foreach (string c in columns)
             {
 
                 worksheet.Columns[numCol].ColumnWidth = 12;
                 worksheet.Cells[firstCol, numCol] = c;
                 int numRow = firstRow + 1;
-                foreach (LaborReportRow row in labrep.GetList())
+                foreach (LaborReportRow row in rows)
                 {
                     if (f)
                     {

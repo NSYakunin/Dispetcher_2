@@ -14,10 +14,9 @@ namespace Dispetcher2
         [STAThread]
         static void Main()
         {
-            var d = new DispetcherContainer();
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            var d = new DispetcherContainer();
             Application.Run(d.ResolveStartForm());
         }
     }

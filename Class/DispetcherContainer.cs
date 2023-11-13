@@ -52,16 +52,24 @@ namespace Dispetcher2.Class
         {
             IConfig config;
             IConverter converter;
-            
+
+            ExcelLaborReportWriter writer;
+            LaborDetailViewModel detModel;
+            LaborDetailControl ldControl;
+            HostForm detHostForm;
 
             //LaborViewModel labvm;
             public DispetcherFormFactory(IConfig config, IConverter converter)
             {
                 this.config = config;
                 this.converter = converter;
-                
-                // <param name="_IdStatusOrders">1-ожидание,2-открыт,3-закрыт,4-в работе,5-выполнен</param>
 
+                writer = new ExcelLaborReportWriter();
+                ldControl = new LaborDetailControl();
+                IObserver observer = ldControl as IObserver;
+                detModel = new LaborDetailViewModel(observer, writer);
+                ldControl.DataContext = detModel;
+                detHostForm = new HostForm(ldControl);
             }
             public override string GetInformation()
             {
@@ -140,22 +148,17 @@ namespace Dispetcher2.Class
                         var operations = new SqlOperationRepository(config, converter);
                         var groups = new SqlOperationGroupRepository(config, converter);
                         var workDays = new SqlWorkDayRepository(config, converter);
-                        var writer = new ExcelLaborReportWriter();
-
+                        
                         var ocvm = new OrderControlViewModel(orders);
                         var rep = new LaborReport(details, operations, groups, workDays, orders);
-                        var labvm = new LaborViewModel(orders, ocvm, rep, writer);
+
                         LaborControl con = new LaborControl();
+                        IObserver observer = con as IObserver;
+                        
+                        var labvm = new LaborViewModel(orders, ocvm, rep, writer, observer, this, detModel);
+                        
                         con.DataContext = labvm;
                         f = new HostForm(con);
-                        labvm.PropertyChanged += (s, e) =>
-                        {
-                            if (e.PropertyName == nameof(labvm.Columns))
-                            {
-                                var p = labvm.Columns;
-                                con.Update(p);
-                            }
-                        };
                         labvm.Start();
                         return f;
 
@@ -181,6 +184,9 @@ namespace Dispetcher2.Class
                         control.DataContext = vm;
                         f = new HostForm(control);
                         return f;
+
+                    case "Подробный список операций":
+                        return detHostForm;
 
                     default:
                         f = new F_IndexLogo();

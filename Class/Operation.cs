@@ -7,12 +7,16 @@ using System.Text;
 
 namespace Dispetcher2.Class
 {
-    public class Operation
+    public abstract class WorkTime
+    {
+        public TimeSpan Time { get; set; }
+    }
+    public class Operation : WorkTime
     {
         public long OrderDetailId { get; set; }
         public int Numcol { get; set; }
         public string Name { get; set; }
-        public TimeSpan Time { get; set; }
+        
         public int GroupId { get; set; }
         /// <summary>
         /// Предварительно-заключительное время в секундах
