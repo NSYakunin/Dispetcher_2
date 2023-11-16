@@ -22,16 +22,12 @@ namespace Dispetcher2.Models
         LaborReport report;
         
         LaborReportWriter writer;
-        IObserver observer;
+        IColumnsObserver observer;
 
         OrderControlViewModel ocvm;
         Visibility dvValue;
-        ICommand requestCommandValue;
-        ICommand excelCommandValue;
 
         string waitMessageValue;
-
-
 
         LaborDetailViewModel detModel;
         FormFactory factory;
@@ -113,14 +109,12 @@ namespace Dispetcher2.Models
                 }
             }
         }
-        public ICommand RequestCommand { get { return requestCommandValue; } }
-        public ICommand ExcelCommand { get { return excelCommandValue; } }
+        public ICommand RequestCommand { get; set; }
+        public ICommand ExcelCommand { get; set; }
         public ICommand DetailCommand { get; set; }
         public DateTime BeginDate { get; set; }
         public DateTime EndDate { get; set; }
         public ObservableCollection<LaborReportRow> RowsView { get; set; }
-
-        
         
         LaborReportRow SelectedLaborReportRow = null;
         string SelectedColumnHeader = null;
@@ -139,14 +133,13 @@ namespace Dispetcher2.Models
         public event PropertyChangedEventHandler PropertyChanged;
 
         public LaborViewModel(OrderRepository orders, OrderControlViewModel ocvm, LaborReport report, 
-            LaborReportWriter writer, IObserver observer,
+            LaborReportWriter writer, IColumnsObserver observer,
             FormFactory factory, LaborDetailViewModel detModel)
         {
             if (orders == null) throw new ArgumentException("Пожалуйста укажите параметр: OrderRepository");
             if (ocvm == null) throw new ArgumentException("Пожалуйста укажите параметр: OrderControlViewModel");
             if (report == null) throw new ArgumentException("Пожалуйста укажите параметр: LaborReport");
             if (writer == null) throw new ArgumentException("Пожалуйста укажите параметр: LaborReportWriter");
-            if (observer == null) throw new ArgumentException("Пожалуйста укажите параметр: IObserver");
 
             if (factory == null) throw new ArgumentException("Пожалуйста укажите параметр: factory");
             if (detModel == null) throw new ArgumentException("Пожалуйста укажите параметр: detModel");
@@ -162,11 +155,11 @@ namespace Dispetcher2.Models
 
             var c = new LaborCommand();
             c.ExecuteAction = this.ProcessRequestCommand;
-            requestCommandValue = c;
+            RequestCommand = c;
 
             c = new LaborCommand();
             c.ExecuteAction = this.ProcessExcelCommand;
-            excelCommandValue = c;
+            ExcelCommand = c;
 
             c = new LaborCommand();
             c.ExecuteAction = this.ProcessDetailCommand;
@@ -184,7 +177,7 @@ namespace Dispetcher2.Models
             EndDate = new DateTime(n.Year, n.Month, 1);
             FactOrdersFlag = true;
         }
-        public void OnPropertyChanged(string prop)
+        void OnPropertyChanged(string prop)
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(prop));
@@ -257,7 +250,7 @@ namespace Dispetcher2.Models
         void AfterLoadOperations()
         {
             var columns = report.GetColumns();
-            observer.Update(columns);
+            if (observer != null) observer.Update(columns);
 
             if (factOrdVal == false) DataVisibility = Visibility.Visible;
             WaitVisibility = Visibility.Collapsed;
@@ -270,10 +263,34 @@ namespace Dispetcher2.Models
         }
         void ProcessExcelCommand()
         {
-            var columns = report.GetColumns();
-            var rows = report.GetRows();
+            WaitVisibility = Visibility.Visible;
+            DataVisibility = Visibility.Collapsed;
+            CommandVisibility = Visibility.Collapsed;
+            OperationVisibility = Visibility.Collapsed;
 
-            if (columns != null && rows != null) writer.Write(columns, rows);
+            ExcelCommandMainAsync();
+        }
+        void ExcelCommandMain()
+        {
+            var columns = report.GetColumns();
+            if (columns == null) return;
+            var rows = report.GetRows();
+            if (rows == null) return;
+
+            writer.Write(columns, rows);
+        }
+        async Task ExcelCommandMainAsync()
+        {
+            Action a = this.ExcelCommandMain;
+            await Task.Run(a);
+            AfterExcelCommand();
+        }
+        void AfterExcelCommand()
+        {
+            if (factOrdVal == false) DataVisibility = Visibility.Visible;
+            WaitVisibility = Visibility.Collapsed;
+            CommandVisibility = Visibility.Visible;
+            OperationVisibility = Visibility.Visible;
         }
         void ProcessDetailCommand()
         {
@@ -295,11 +312,14 @@ namespace Dispetcher2.Models
             foreach (var k in r1.Operations.Keys)
                 NameList.Add(k);
 
-            detModel.Columns = NameList;
-            detModel.Rows = detRows;
 
-            var f = factory.GetForm("Подробный список операций");
-            f.ShowDialog();
+
+            using(System.Windows.Forms.Form f = factory.GetForm("Подробный список операций"))
+            {
+                detModel.Columns = NameList;
+                detModel.Rows = detRows;
+                f.ShowDialog();
+            }
         }
         
     }

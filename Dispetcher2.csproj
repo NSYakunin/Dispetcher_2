@@ -165,7 +165,7 @@
     <Compile Include="Class\ErrorItem.cs" />
     <Compile Include="Class\FormFactory.cs" />
     <Compile Include="Class\ImportDataWorker.cs" />
-    <Compile Include="Class\IObserver.cs" />
+    <Compile Include="Class\IColumnsObserver.cs" />
     <Compile Include="Class\Job.cs" />
     <Compile Include="Class\KitUpdater.cs" />
     <Compile Include="Class\LaborReport.cs" />
