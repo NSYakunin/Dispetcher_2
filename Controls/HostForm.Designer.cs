@@ -49,6 +49,7 @@
             this.Controls.Add(this.MainElementHost);
             this.Name = "HostForm";
             this.Text = "HostForm";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.HostForm_FormClosed);
             this.ResumeLayout(false);
 
         }

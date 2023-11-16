@@ -55,8 +55,7 @@ namespace Dispetcher2.Class
 
             ExcelLaborReportWriter writer;
             LaborDetailViewModel detModel;
-            LaborDetailControl ldControl;
-            HostForm detHostForm;
+            
 
             //LaborViewModel labvm;
             public DispetcherFormFactory(IConfig config, IConverter converter)
@@ -65,11 +64,7 @@ namespace Dispetcher2.Class
                 this.converter = converter;
 
                 writer = new ExcelLaborReportWriter();
-                ldControl = new LaborDetailControl();
-                IObserver observer = ldControl as IObserver;
-                detModel = new LaborDetailViewModel(observer, writer);
-                ldControl.DataContext = detModel;
-                detHostForm = new HostForm(ldControl);
+                detModel = new LaborDetailViewModel(writer);
             }
             public override string GetInformation()
             {
@@ -153,9 +148,8 @@ namespace Dispetcher2.Class
                         var rep = new LaborReport(details, operations, groups, workDays, orders);
 
                         LaborControl con = new LaborControl();
-                        IObserver observer = con as IObserver;
                         
-                        var labvm = new LaborViewModel(orders, ocvm, rep, writer, observer, this, detModel);
+                        var labvm = new LaborViewModel(orders, ocvm, rep, writer, con, this, detModel);
                         
                         con.DataContext = labvm;
                         f = new HostForm(con);
@@ -186,6 +180,10 @@ namespace Dispetcher2.Class
                         return f;
 
                     case "Подробный список операций":
+                        LaborDetailControl ldControl = new LaborDetailControl();
+                        ldControl.DataContext = detModel;
+                        detModel.Observer = ldControl;
+                        HostForm detHostForm = new HostForm(ldControl);
                         return detHostForm;
 
                     default:

@@ -11,18 +11,25 @@ using System.Windows.Forms;
 
 namespace Dispetcher2.Controls
 {
-    public partial class HostForm : Form, IObserver
+    public partial class HostForm : Form, IColumnsObserver
     {
+        IColumnsObserver observer;
         public HostForm(System.Windows.Controls.UserControl control)
         {
             InitializeComponent();
             this.MainElementHost.Child = control;
+            observer = control as IColumnsObserver;
         }
 
-        public void Update(IEnumerable<string> columns)
+        void IColumnsObserver.Update(IEnumerable<string> columns)
         {
-            IObserver observer = this.MainElementHost.Child as IObserver;
             if (observer != null) observer.Update(columns);
+        }
+
+        private void HostForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            System.Windows.Controls.UserControl control = this.MainElementHost.Child as System.Windows.Controls.UserControl;
+            if (control != null) control.DataContext = null;
         }
     }
 }
