@@ -12,8 +12,9 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Height="40" Orientation="Horizontal">
-            <Button Content="Excel" Margin="5" Command="{Binding Path=ExcelCommand}" MinWidth="80"/>
+            <Button Content="Excel" Margin="5" Command="{Binding Path=ExcelCommand}" MinWidth="80" Visibility="{Binding Path=MainVisibility}" />
+            <TextBlock Text="Загрузка..." Visibility="{Binding Path=LoadVisibility}" Margin="5" FontFamily="Segoe UI" FontSize="20"  />
         </StackPanel>
-        <local:OperationControl x:Name="opc" Grid.Row="1" />
+        <local:OperationControl x:Name="opc" Grid.Row="1" Visibility="{Binding Path=MainVisibility}" />
     </Grid>
 </UserControl>

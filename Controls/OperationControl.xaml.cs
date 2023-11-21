@@ -8,14 +8,13 @@ using Dispetcher2.Class;
 
 namespace Dispetcher2.Controls
 {
-    public partial class OperationControl : UserControl, IObserver
+    public partial class OperationControl : UserControl, IColumnsObserver
     {
         public OperationControl()
         {
             InitializeComponent();
         }
-
-        public void Update(IEnumerable<string> columns)
+        void IColumnsObserver.Update(IEnumerable<string> columns)
         {
             if (columns != null)
             {
