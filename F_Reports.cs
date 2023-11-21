@@ -26,6 +26,7 @@ using Microsoft.Office.Interop.Excel;
 using System.IO;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 using System.Windows.Forms.VisualStyles;
+using Task = System.Threading.Tasks.Task;
 
 namespace Dispetcher2
 {
@@ -468,9 +469,103 @@ namespace Dispetcher2
         }
 
 
+        private async Task excelGalvanClickAsync(object sender, EventArgs e)
+        {
+            if (dGVGalvan.Rows.Count < 1)
+            {
+                MessageBox.Show("Нет данных для выгрузки в Excel.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+            DateTime DateStart = galvanStart.Value;
+            DateTime DateEnd = galvanEnd.Value;
+            Excel.Application ExcelApp = new Excel.Application() { Visible = false };
+            ExcelApp.Workbooks.Add(1);
+            Excel.Worksheet ExcelWorkSheet = (Excel.Worksheet)ExcelApp.Sheets.get_Item(1);
+
+            //ExcelWorkSheet.PageSetup.Orientation = Excel.XlPageOrientation.xlLandscape;
+            ExcelWorkSheet.PageSetup.Orientation = Excel.XlPageOrientation.xlPortrait;
+            ExcelWorkSheet.PageSetup.LeftMargin = ExcelApp.CentimetersToPoints(0.25);
+            ExcelWorkSheet.PageSetup.RightMargin = ExcelApp.CentimetersToPoints(0.25);
+            ExcelWorkSheet.PageSetup.TopMargin = ExcelApp.CentimetersToPoints(0.75);
+            ExcelWorkSheet.PageSetup.BottomMargin = ExcelApp.CentimetersToPoints(0.75);
+            ExcelWorkSheet.PageSetup.HeaderMargin = ExcelApp.CentimetersToPoints(0.3);
+            ExcelWorkSheet.PageSetup.FooterMargin = ExcelApp.CentimetersToPoints(0.3);
+
+            ExcelWorkSheet.Columns[1].ColumnWidth = 3;
+            ExcelWorkSheet.Columns[2].ColumnWidth = 9;
+            ExcelWorkSheet.Columns[3].ColumnWidth = 5;
+            ExcelWorkSheet.Columns[4].ColumnWidth = 20;
+            ExcelWorkSheet.Columns[5].ColumnWidth = 25;
+            ExcelWorkSheet.Columns[6].ColumnWidth = 5;
+            ExcelWorkSheet.Columns[7].ColumnWidth = 26;
+            ExcelWorkSheet.Columns[8].ColumnWidth = 12;
+            ExcelWorkSheet.Columns[9].ColumnWidth = 20;
+
+
+            ExcelWorkSheet.Cells[1, 1].Value2 = $"Акт приёма-передачи №{numActPeredachi.Text} от {dataNowLabel.Text}";
+            ExcelWorkSheet.Cells[1, 1].HorizontalAlignment = Excel.Constants.xlCenter;
+            ExcelWorkSheet.Cells[1, 1].Font.Bold = 1;
+            ExcelWorkSheet.Cells[1, 1].Font.Size = 11;
+            ExcelWorkSheet.Cells[2, 1].Value2 = "с " + DateStart.ToShortDateString() + " по " + DateEnd.ToShortDateString();
+            ExcelWorkSheet.Cells[2, 1].HorizontalAlignment = Excel.Constants.xlCenter;
+            ExcelWorkSheet.get_Range("A1:I1").Merge();
+            ExcelWorkSheet.get_Range("A2:I2").Merge();
+            ExcelWorkSheet.Cells[4, 1] = "№";
+            ExcelWorkSheet.Cells[4, 2] = "Заказ";
+            ExcelWorkSheet.Cells[4, 3] = "Поз.";
+            ExcelWorkSheet.Cells[4, 4] = "Обозначение ЩЦМ";
+            ExcelWorkSheet.Cells[4, 5] = "Наименование детали";
+            ExcelWorkSheet.Cells[4, 6] = "Кол-во";
+            ExcelWorkSheet.Cells[4, 7] = "Покрытие";
+            ExcelWorkSheet.Cells[4, 8] = "Фактическая дата";
+            ExcelWorkSheet.Cells[4, 9] = "Примечание";
+            ExcelWorkSheet.get_Range("A4:I4").Font.Bold = 1;
+            ExcelWorkSheet.get_Range("A4:I4").WrapText = true;
+            ExcelWorkSheet.get_Range("A4:I4").Font.Size = 11;
+            ExcelWorkSheet.get_Range("A4:I4").HorizontalAlignment = Excel.Constants.xlCenter;
+            ExcelWorkSheet.get_Range("A4:I4").VerticalAlignment = Excel.Constants.xlCenter;
+
+            progressBar1.Maximum = dGVGalvan.Rows.Count * 8;
+            await Task.Run(() =>
+            {
+                for (int row = 0; row < dGVGalvan.Rows.Count; row++)
+                {
+                    for (int col = 0; col < dGVGalvan.Columns.Count - 2; col++)
+                    {
+                        ExcelWorkSheet.Cells[row + 5, col + 1] = dGVGalvan.Rows[row].Cells[col].Value.ToString().Trim();
+                        ExcelWorkSheet.Cells[row + 5, col + 1].WrapText = true;
+                        ExcelWorkSheet.Cells[row + 5, col + 1].Font.Size = 11;
+                        if (col == 1 || col == 6) ExcelWorkSheet.Cells[row + 5, col + 1].HorizontalAlignment = Excel.Constants.xlLeft;
+                        else
+                        {
+                            ExcelWorkSheet.Cells[row + 5, col + 1].HorizontalAlignment = Excel.Constants.xlCenter;
+                            ExcelWorkSheet.Cells[row + 5, col + 1].VerticalAlignment = Excel.Constants.xlCenter;
+                        }
+
+                        progressBar1.Invoke(new System.Action(() =>
+                        {
+                            progressBar1.Value += 1;
+                        }));
+                    }
+                }
+            });
+
+            ExcelWorkSheet.get_Range("A4", "I" + (dGVGalvan.Rows.Count + 4)).Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+
+            ExcelApp.Visible = true;
+            progressBar1.Value = 0;
+            MessageBox.Show("Формирование отчета завершено.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            ExcelApp.Quit();
+        }
+
         private void bTNBirki_Click(object sender, EventArgs e)
         {
 
+            if (selectedRows.Count == 0)
+            {
+                MessageBox.Show("Выберите хотя бы одну позицию!", "Внимание!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
             // Create a new Excel application
             Excel.Application excelApp = new Excel.Application();
             excelApp.Visible = true;
@@ -491,133 +586,140 @@ namespace Dispetcher2
 
             int startRow = 1;
             int startRowList = 0;
-            for (int i = 1; i <= 4; i++)
+            int countList = (selectedRows.Count <= 16 ? 1 : selectedRows.Count <= 32 ? 2 : 3);
+
+            while(countList > 0)
             {
-                int endRow = startRow + 9;
-                // Draw the top border line for the block
-                sheet.Range[sheet.Cells[startRow, 1], sheet.Cells[startRow, 4]].Borders[Excel.XlBordersIndex.xlEdgeTop].LineStyle = Excel.XlLineStyle.xlContinuous;
-                sheet.Range[sheet.Cells[startRow, 1], sheet.Cells[startRow, 4]].Borders[Excel.XlBordersIndex.xlEdgeTop].Weight = Excel.XlBorderWeight.xlMedium;
-                // Draw the bottom border line for the block
-                sheet.Range[sheet.Cells[endRow, 1], sheet.Cells[endRow, 4]].Borders[Excel.XlBordersIndex.xlEdgeBottom].LineStyle = Excel.XlLineStyle.xlContinuous;
-                sheet.Range[sheet.Cells[endRow, 1], sheet.Cells[endRow, 4]].Borders[Excel.XlBordersIndex.xlEdgeBottom].Weight = Excel.XlBorderWeight.xlMedium;
-                // Draw the left border line for the block
-                sheet.Range[sheet.Cells[startRow, 1], sheet.Cells[endRow, 1]].Borders[Excel.XlBordersIndex.xlEdgeLeft].LineStyle = Excel.XlLineStyle.xlContinuous;
-                sheet.Range[sheet.Cells[startRow, 1], sheet.Cells[endRow, 1]].Borders[Excel.XlBordersIndex.xlEdgeLeft].Weight = Excel.XlBorderWeight.xlMedium;
-                // Draw the right border line for the block
-                sheet.Range[sheet.Cells[startRow, 4], sheet.Cells[endRow, 4]].Borders[Excel.XlBordersIndex.xlEdgeRight].LineStyle = Excel.XlLineStyle.xlContinuous;
-                sheet.Range[sheet.Cells[startRow, 4], sheet.Cells[endRow, 4]].Borders[Excel.XlBordersIndex.xlEdgeRight].Weight = Excel.XlBorderWeight.xlMedium;
-
-
-
-                // Draw the top border line for the block
-                sheet.Range[sheet.Cells[startRow, 5], sheet.Cells[startRow, 8]].Borders[Excel.XlBordersIndex.xlEdgeTop].LineStyle = Excel.XlLineStyle.xlContinuous;
-                sheet.Range[sheet.Cells[startRow, 5], sheet.Cells[startRow, 8]].Borders[Excel.XlBordersIndex.xlEdgeTop].Weight = Excel.XlBorderWeight.xlMedium;
-                // Draw the bottom border line for the block
-                sheet.Range[sheet.Cells[endRow, 5], sheet.Cells[endRow, 8]].Borders[Excel.XlBordersIndex.xlEdgeBottom].LineStyle = Excel.XlLineStyle.xlContinuous;
-                sheet.Range[sheet.Cells[endRow, 5], sheet.Cells[endRow, 8]].Borders[Excel.XlBordersIndex.xlEdgeBottom].Weight = Excel.XlBorderWeight.xlMedium;
-
-                // Draw the right border line for the block
-                sheet.Range[sheet.Cells[startRow, 8], sheet.Cells[endRow, 8]].Borders[Excel.XlBordersIndex.xlEdgeRight].LineStyle = Excel.XlLineStyle.xlContinuous;
-                sheet.Range[sheet.Cells[startRow, 8], sheet.Cells[endRow, 8]].Borders[Excel.XlBordersIndex.xlEdgeRight].Weight = Excel.XlBorderWeight.xlMedium;
-                //**************************
-
-                // Draw the top border line for the block
-                sheet.Range[sheet.Cells[startRow, 9], sheet.Cells[startRow, 12]].Borders[Excel.XlBordersIndex.xlEdgeTop].LineStyle = Excel.XlLineStyle.xlContinuous;
-                sheet.Range[sheet.Cells[startRow, 9], sheet.Cells[startRow, 12]].Borders[Excel.XlBordersIndex.xlEdgeTop].Weight = Excel.XlBorderWeight.xlMedium;
-                // Draw the bottom border line for the block
-                sheet.Range[sheet.Cells[endRow, 9], sheet.Cells[endRow, 12]].Borders[Excel.XlBordersIndex.xlEdgeBottom].LineStyle = Excel.XlLineStyle.xlContinuous;
-                sheet.Range[sheet.Cells[endRow, 9], sheet.Cells[endRow, 12]].Borders[Excel.XlBordersIndex.xlEdgeBottom].Weight = Excel.XlBorderWeight.xlMedium;
-
-                sheet.Range[sheet.Cells[startRow, 12], sheet.Cells[endRow, 12]].Borders[Excel.XlBordersIndex.xlEdgeRight].LineStyle = Excel.XlLineStyle.xlContinuous;
-                sheet.Range[sheet.Cells[startRow, 12], sheet.Cells[endRow, 12]].Borders[Excel.XlBordersIndex.xlEdgeRight].Weight = Excel.XlBorderWeight.xlMedium;
-                //***************************
-
-                // Draw the top border line for the block
-                sheet.Range[sheet.Cells[startRow, 13], sheet.Cells[startRow, 16]].Borders[Excel.XlBordersIndex.xlEdgeTop].LineStyle = Excel.XlLineStyle.xlContinuous;
-                sheet.Range[sheet.Cells[startRow, 13], sheet.Cells[startRow, 16]].Borders[Excel.XlBordersIndex.xlEdgeTop].Weight = Excel.XlBorderWeight.xlMedium;
-                // Draw the bottom border line for the block
-                sheet.Range[sheet.Cells[endRow, 13], sheet.Cells[endRow, 16]].Borders[Excel.XlBordersIndex.xlEdgeBottom].LineStyle = Excel.XlLineStyle.xlContinuous;
-                sheet.Range[sheet.Cells[endRow, 13], sheet.Cells[endRow, 16]].Borders[Excel.XlBordersIndex.xlEdgeBottom].Weight = Excel.XlBorderWeight.xlMedium;
-
-                sheet.Range[sheet.Cells[startRow, 16], sheet.Cells[endRow, 16]].Borders[Excel.XlBordersIndex.xlEdgeRight].LineStyle = Excel.XlLineStyle.xlContinuous;
-                sheet.Range[sheet.Cells[startRow, 16], sheet.Cells[endRow, 16]].Borders[Excel.XlBordersIndex.xlEdgeRight].Weight = Excel.XlBorderWeight.xlMedium;
-
-                sheet.get_Range($"A{startRow + 7}:D{startRow + 9}").Merge();
-                sheet.get_Range($"E{startRow + 7}:H{startRow + 9}").Merge();
-                sheet.get_Range($"I{startRow + 7}:L{startRow + 9}").Merge();
-                sheet.get_Range($"M{startRow + 7}:P{startRow + 9}").Merge();
-                //sheet.get_Range($"A{startRow + 8}:D{startRow + 8}").Merge();
-                //sheet.get_Range($"A{startRow + 8}:D{startRow + 9}").Merge();
-                //sheet.get_Range($"A{startRow + 8}:D{startRow + 9}").Merge();
-
-
-
-                int startPos = 1;
-                for (int j = 0; j < 4; j++)
+                for (int i = 1; i <= 4; i++)
                 {
-                    sheet.Cells[startRow, startPos].Value = "ЗАКАЗ";
-                    sheet.Cells[startRow, startPos].Font.Size = 10;
-                    sheet.Cells[startRow, startPos].Font.Bold = 1;
-                    sheet.Cells[startRow, startPos + 1].Value = selectedRows[startRowList].Cells[1].Value;
-                    sheet.Cells[startRow, startPos + 1].Font.Size = 9;
-                    sheet.Cells[startRow, startPos + 1].Font.Bold = 0;
+                    int endRow = startRow + 9;
+                    // Draw the top border line for the block
+                    sheet.Range[sheet.Cells[startRow, 1], sheet.Cells[startRow, 4]].Borders[Excel.XlBordersIndex.xlEdgeTop].LineStyle = Excel.XlLineStyle.xlContinuous;
+                    sheet.Range[sheet.Cells[startRow, 1], sheet.Cells[startRow, 4]].Borders[Excel.XlBordersIndex.xlEdgeTop].Weight = Excel.XlBorderWeight.xlMedium;
+                    // Draw the bottom border line for the block
+                    sheet.Range[sheet.Cells[endRow, 1], sheet.Cells[endRow, 4]].Borders[Excel.XlBordersIndex.xlEdgeBottom].LineStyle = Excel.XlLineStyle.xlContinuous;
+                    sheet.Range[sheet.Cells[endRow, 1], sheet.Cells[endRow, 4]].Borders[Excel.XlBordersIndex.xlEdgeBottom].Weight = Excel.XlBorderWeight.xlMedium;
+                    // Draw the left border line for the block
+                    sheet.Range[sheet.Cells[startRow, 1], sheet.Cells[endRow, 1]].Borders[Excel.XlBordersIndex.xlEdgeLeft].LineStyle = Excel.XlLineStyle.xlContinuous;
+                    sheet.Range[sheet.Cells[startRow, 1], sheet.Cells[endRow, 1]].Borders[Excel.XlBordersIndex.xlEdgeLeft].Weight = Excel.XlBorderWeight.xlMedium;
+                    // Draw the right border line for the block
+                    sheet.Range[sheet.Cells[startRow, 4], sheet.Cells[endRow, 4]].Borders[Excel.XlBordersIndex.xlEdgeRight].LineStyle = Excel.XlLineStyle.xlContinuous;
+                    sheet.Range[sheet.Cells[startRow, 4], sheet.Cells[endRow, 4]].Borders[Excel.XlBordersIndex.xlEdgeRight].Weight = Excel.XlBorderWeight.xlMedium;
 
-                    sheet.Cells[startRow + 1, startPos].Value = "НАИМЕНОВАНИЕ";
-                    sheet.Cells[startRow + 1, startPos].Font.Size = 10;
-                    sheet.Cells[startRow + 1, startPos].Font.Bold = 1;
 
-                    sheet.Cells[startRow + 2, startPos].Value = selectedRows[startRowList].Cells[4].Value;
-                    sheet.Cells[startRow + 2, startPos].Font.Size = 9;
-                    sheet.Cells[startRow + 2, startPos].Font.Bold = 0;
 
-                    sheet.Cells[startRow + 3, startPos].Value = "ЩЦМ";
-                    sheet.Cells[startRow + 3, startPos].Font.Size = 10;
-                    sheet.Cells[startRow + 3, startPos].Font.Bold = 1;
-                    sheet.Cells[startRow + 3, startPos + 1].Value = selectedRows[startRowList].Cells[3].Value;
-                    sheet.Cells[startRow + 3, startPos + 1].Font.Size = 9;
-                    sheet.Cells[startRow + 3, startPos + 1].Font.Bold = 0;
+                    // Draw the top border line for the block
+                    sheet.Range[sheet.Cells[startRow, 5], sheet.Cells[startRow, 8]].Borders[Excel.XlBordersIndex.xlEdgeTop].LineStyle = Excel.XlLineStyle.xlContinuous;
+                    sheet.Range[sheet.Cells[startRow, 5], sheet.Cells[startRow, 8]].Borders[Excel.XlBordersIndex.xlEdgeTop].Weight = Excel.XlBorderWeight.xlMedium;
+                    // Draw the bottom border line for the block
+                    sheet.Range[sheet.Cells[endRow, 5], sheet.Cells[endRow, 8]].Borders[Excel.XlBordersIndex.xlEdgeBottom].LineStyle = Excel.XlLineStyle.xlContinuous;
+                    sheet.Range[sheet.Cells[endRow, 5], sheet.Cells[endRow, 8]].Borders[Excel.XlBordersIndex.xlEdgeBottom].Weight = Excel.XlBorderWeight.xlMedium;
 
-                    sheet.Cells[startRow + 4, startPos].Value = "КОЛ-ВО";
-                    sheet.Cells[startRow + 4, startPos].Font.Size = 10;
-                    sheet.Cells[startRow + 4, startPos].Font.Bold = 1;
-                    sheet.Cells[startRow + 4, startPos + 1].Value = selectedRows[startRowList].Cells[5].Value;
-                    sheet.Cells[startRow + 4, startPos + 1].Font.Size = 9;
-                    sheet.Cells[startRow + 4, startPos + 1].Font.Bold = 0;
+                    // Draw the right border line for the block
+                    sheet.Range[sheet.Cells[startRow, 8], sheet.Cells[endRow, 8]].Borders[Excel.XlBordersIndex.xlEdgeRight].LineStyle = Excel.XlLineStyle.xlContinuous;
+                    sheet.Range[sheet.Cells[startRow, 8], sheet.Cells[endRow, 8]].Borders[Excel.XlBordersIndex.xlEdgeRight].Weight = Excel.XlBorderWeight.xlMedium;
+                    //**************************
 
-                    sheet.Cells[startRow + 5, startPos].Value = "ДАТА";
-                    sheet.Cells[startRow + 5, startPos].Font.Size = 10;
-                    sheet.Cells[startRow + 5, startPos].Font.Bold = 1;
-                    sheet.Cells[startRow + 5, startPos + 1].Value = selectedRows[startRowList].Cells[7].Value;
-                    sheet.Cells[startRow + 5, startPos + 1].Font.Size = 9;
-                    sheet.Cells[startRow + 5, startPos + 1].Font.Bold = 0;
+                    // Draw the top border line for the block
+                    sheet.Range[sheet.Cells[startRow, 9], sheet.Cells[startRow, 12]].Borders[Excel.XlBordersIndex.xlEdgeTop].LineStyle = Excel.XlLineStyle.xlContinuous;
+                    sheet.Range[sheet.Cells[startRow, 9], sheet.Cells[startRow, 12]].Borders[Excel.XlBordersIndex.xlEdgeTop].Weight = Excel.XlBorderWeight.xlMedium;
+                    // Draw the bottom border line for the block
+                    sheet.Range[sheet.Cells[endRow, 9], sheet.Cells[endRow, 12]].Borders[Excel.XlBordersIndex.xlEdgeBottom].LineStyle = Excel.XlLineStyle.xlContinuous;
+                    sheet.Range[sheet.Cells[endRow, 9], sheet.Cells[endRow, 12]].Borders[Excel.XlBordersIndex.xlEdgeBottom].Weight = Excel.XlBorderWeight.xlMedium;
 
-                    sheet.Cells[startRow + 6, startPos].Value = "ПОКРЫТИЕ";
-                    sheet.Cells[startRow + 6, startPos].Font.Size = 10;
-                    sheet.Cells[startRow + 6, startPos].Font.Bold = 1;
-                    sheet.Cells[startRow + 7, startPos].Value = selectedRows[startRowList].Cells[6].Value;
-                    sheet.Cells[startRow + 7, startPos].Font.Size = 9;
-                    sheet.Cells[startRow + 7, startPos].Font.Bold = 0;
-                    sheet.Cells[startRow + 7, startPos].Font.Underline = true;
-                    sheet.Cells[startRow + 7, startPos].HorizontalAlignment = Excel.Constants.xlCenter;
-                    sheet.Cells[startRow + 7, startPos].VerticalAlignment = Excel.Constants.xlCenter;
-                    sheet.Cells[startRow + 7, startPos].IndentLevel = 6;
-                    sheet.Cells[startRow + 7, startPos].WrapText = true;
+                    sheet.Range[sheet.Cells[startRow, 12], sheet.Cells[endRow, 12]].Borders[Excel.XlBordersIndex.xlEdgeRight].LineStyle = Excel.XlLineStyle.xlContinuous;
+                    sheet.Range[sheet.Cells[startRow, 12], sheet.Cells[endRow, 12]].Borders[Excel.XlBordersIndex.xlEdgeRight].Weight = Excel.XlBorderWeight.xlMedium;
+                    //***************************
 
-                    selectedRows[startRowList].DefaultCellStyle.BackColor = Color.Aquamarine;
-                    startPos += 4;
+                    // Draw the top border line for the block
+                    sheet.Range[sheet.Cells[startRow, 13], sheet.Cells[startRow, 16]].Borders[Excel.XlBordersIndex.xlEdgeTop].LineStyle = Excel.XlLineStyle.xlContinuous;
+                    sheet.Range[sheet.Cells[startRow, 13], sheet.Cells[startRow, 16]].Borders[Excel.XlBordersIndex.xlEdgeTop].Weight = Excel.XlBorderWeight.xlMedium;
+                    // Draw the bottom border line for the block
+                    sheet.Range[sheet.Cells[endRow, 13], sheet.Cells[endRow, 16]].Borders[Excel.XlBordersIndex.xlEdgeBottom].LineStyle = Excel.XlLineStyle.xlContinuous;
+                    sheet.Range[sheet.Cells[endRow, 13], sheet.Cells[endRow, 16]].Borders[Excel.XlBordersIndex.xlEdgeBottom].Weight = Excel.XlBorderWeight.xlMedium;
 
-                    startRowList++;
-                    if (startRowList > selectedRows.Count - 1)
+                    sheet.Range[sheet.Cells[startRow, 16], sheet.Cells[endRow, 16]].Borders[Excel.XlBordersIndex.xlEdgeRight].LineStyle = Excel.XlLineStyle.xlContinuous;
+                    sheet.Range[sheet.Cells[startRow, 16], sheet.Cells[endRow, 16]].Borders[Excel.XlBordersIndex.xlEdgeRight].Weight = Excel.XlBorderWeight.xlMedium;
+
+                    sheet.get_Range($"A{startRow + 7}:D{startRow + 9}").Merge();
+                    sheet.get_Range($"E{startRow + 7}:H{startRow + 9}").Merge();
+                    sheet.get_Range($"I{startRow + 7}:L{startRow + 9}").Merge();
+                    sheet.get_Range($"M{startRow + 7}:P{startRow + 9}").Merge();
+                    //sheet.get_Range($"A{startRow + 8}:D{startRow + 8}").Merge();
+                    //sheet.get_Range($"A{startRow + 8}:D{startRow + 9}").Merge();
+                    //sheet.get_Range($"A{startRow + 8}:D{startRow + 9}").Merge();
+
+
+
+                    int startPos = 1;
+                    for (int j = 0; j < 4; j++)
                     {
-                        selectedRows.Clear();
-                        return;
+                        sheet.Cells[startRow, startPos].Value = "ЗАКАЗ";
+                        sheet.Cells[startRow, startPos].Font.Size = 10;
+                        sheet.Cells[startRow, startPos].Font.Bold = 1;
+                        sheet.Cells[startRow, startPos + 1].Value = selectedRows[startRowList].Cells[1].Value;
+                        sheet.Cells[startRow, startPos + 1].Font.Size = 9;
+                        sheet.Cells[startRow, startPos + 1].Font.Bold = 0;
+
+                        sheet.Cells[startRow + 1, startPos].Value = "НАИМЕНОВАНИЕ";
+                        sheet.Cells[startRow + 1, startPos].Font.Size = 10;
+                        sheet.Cells[startRow + 1, startPos].Font.Bold = 1;
+
+                        sheet.Cells[startRow + 2, startPos].Value = selectedRows[startRowList].Cells[4].Value;
+                        sheet.Cells[startRow + 2, startPos].Font.Size = 9;
+                        sheet.Cells[startRow + 2, startPos].Font.Bold = 0;
+
+                        sheet.Cells[startRow + 3, startPos].Value = "ЩЦМ";
+                        sheet.Cells[startRow + 3, startPos].Font.Size = 10;
+                        sheet.Cells[startRow + 3, startPos].Font.Bold = 1;
+                        sheet.Cells[startRow + 3, startPos + 1].Value = selectedRows[startRowList].Cells[3].Value;
+                        sheet.Cells[startRow + 3, startPos + 1].Font.Size = 9;
+                        sheet.Cells[startRow + 3, startPos + 1].Font.Bold = 0;
+
+                        sheet.Cells[startRow + 4, startPos].Value = "КОЛ-ВО";
+                        sheet.Cells[startRow + 4, startPos].Font.Size = 10;
+                        sheet.Cells[startRow + 4, startPos].Font.Bold = 1;
+                        sheet.Cells[startRow + 4, startPos + 1].Value = selectedRows[startRowList].Cells[5].Value;
+                        sheet.Cells[startRow + 4, startPos + 1].Font.Size = 9;
+                        sheet.Cells[startRow + 4, startPos + 1].Font.Bold = 0;
+
+                        sheet.Cells[startRow + 5, startPos].Value = "ДАТА";
+                        sheet.Cells[startRow + 5, startPos].Font.Size = 10;
+                        sheet.Cells[startRow + 5, startPos].Font.Bold = 1;
+                        sheet.Cells[startRow + 5, startPos + 1].Value = selectedRows[startRowList].Cells[7].Value;
+                        sheet.Cells[startRow + 5, startPos + 1].Font.Size = 9;
+                        sheet.Cells[startRow + 5, startPos + 1].Font.Bold = 0;
+
+                        sheet.Cells[startRow + 6, startPos].Value = "ПОКРЫТИЕ";
+                        sheet.Cells[startRow + 6, startPos].Font.Size = 10;
+                        sheet.Cells[startRow + 6, startPos].Font.Bold = 1;
+                        sheet.Cells[startRow + 7, startPos].Value = selectedRows[startRowList].Cells[6].Value;
+                        sheet.Cells[startRow + 7, startPos].Font.Size = 9;
+                        sheet.Cells[startRow + 7, startPos].Font.Bold = 0;
+                        sheet.Cells[startRow + 7, startPos].Font.Underline = true;
+                        sheet.Cells[startRow + 7, startPos].HorizontalAlignment = Excel.Constants.xlCenter;
+                        sheet.Cells[startRow + 7, startPos].VerticalAlignment = Excel.Constants.xlCenter;
+                        sheet.Cells[startRow + 7, startPos].IndentLevel = 6;
+                        sheet.Cells[startRow + 7, startPos].WrapText = true;
+
+                        selectedRows[startRowList].DefaultCellStyle.BackColor = Color.Aquamarine;
+                        startPos += 4;
+
+                        startRowList++;
+                        if (startRowList > selectedRows.Count - 1)
+                        {
+                            selectedRows.Clear();
+                            return;
+                        }
                     }
+                    //**************************
+                    startRow += 10;
+                    endRow += 10;
+                    startPos += 4;
                 }
 
-                //**************************
-                startRow += 10;
-                endRow += 10;
-                startPos += 4;
+
+                countList--;
             }
         }
 
@@ -641,6 +743,11 @@ namespace Dispetcher2
                     selectedRows.Remove(dGVGalvan.Rows[e.RowIndex]);
                 }
             }
+        }
+
+        private async void btnAsync_Click(object sender, EventArgs e)
+        {
+            await excelGalvanClickAsync(sender, e);
         }
     }
 }
