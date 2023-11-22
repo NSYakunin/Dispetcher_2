@@ -121,7 +121,7 @@ namespace Dispetcher2
             this.galvanStart = new System.Windows.Forms.DateTimePicker();
             this.label14 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
+            this.panel8 = new System.Windows.Forms.Panel();
             this.myTabC_Reports.SuspendLayout();
             this.tPageRep3.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -152,6 +152,7 @@ namespace Dispetcher2
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.panel7.SuspendLayout();
+            this.panel8.SuspendLayout();
             this.SuspendLayout();
             // 
             // myTabC_Reports
@@ -883,15 +884,17 @@ namespace Dispetcher2
             // tableLayoutPanel5
             // 
             this.tableLayoutPanel5.ColumnCount = 1;
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel5.Controls.Add(this.dGVGalvan, 0, 1);
             this.tableLayoutPanel5.Controls.Add(this.panel6, 0, 0);
+            this.tableLayoutPanel5.Controls.Add(this.panel8, 0, 2);
             this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel5.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
-            this.tableLayoutPanel5.RowCount = 2;
+            this.tableLayoutPanel5.RowCount = 3;
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.91792F));
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 83.08208F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel5.Size = new System.Drawing.Size(981, 597);
             this.tableLayoutPanel5.TabIndex = 0;
             // 
@@ -914,10 +917,10 @@ namespace Dispetcher2
             this.Notes,
             this.birka});
             this.dGVGalvan.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dGVGalvan.Location = new System.Drawing.Point(3, 104);
+            this.dGVGalvan.Location = new System.Drawing.Point(3, 98);
             this.dGVGalvan.Name = "dGVGalvan";
             this.dGVGalvan.RowHeadersVisible = false;
-            this.dGVGalvan.Size = new System.Drawing.Size(975, 490);
+            this.dGVGalvan.Size = new System.Drawing.Size(975, 465);
             this.dGVGalvan.TabIndex = 0;
             this.dGVGalvan.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dGVGalvan_CellContentClick);
             // 
@@ -985,7 +988,6 @@ namespace Dispetcher2
             // 
             // panel6
             // 
-            this.panel6.Controls.Add(this.progressBar1);
             this.panel6.Controls.Add(this.splitContainer1);
             this.panel6.Controls.Add(this.exelGalvan);
             this.panel6.Controls.Add(this.button1);
@@ -993,16 +995,15 @@ namespace Dispetcher2
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel6.Location = new System.Drawing.Point(3, 3);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(975, 95);
+            this.panel6.Size = new System.Drawing.Size(975, 89);
             this.panel6.TabIndex = 1;
             // 
             // progressBar1
             // 
-            this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBar1.Location = new System.Drawing.Point(705, 56);
+            this.progressBar1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.progressBar1.Location = new System.Drawing.Point(0, 0);
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(267, 23);
+            this.progressBar1.Size = new System.Drawing.Size(884, 25);
             this.progressBar1.TabIndex = 10;
             // 
             // splitContainer1
@@ -1017,13 +1018,11 @@ namespace Dispetcher2
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.button2);
             this.splitContainer1.Panel2.Controls.Add(this.bTnAsync);
-            this.splitContainer1.Panel2.Controls.Add(this.bTNBirki);
             this.splitContainer1.Panel2.Controls.Add(this.dataNowLabel);
             this.splitContainer1.Panel2.Controls.Add(this.label16);
             this.splitContainer1.Panel2.Controls.Add(this.numActPeredachi);
-            this.splitContainer1.Size = new System.Drawing.Size(975, 50);
+            this.splitContainer1.Size = new System.Drawing.Size(975, 39);
             this.splitContainer1.SplitterDistance = 450;
             this.splitContainer1.TabIndex = 9;
             // 
@@ -1031,7 +1030,7 @@ namespace Dispetcher2
             // 
             this.nameOrd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.nameOrd.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.nameOrd.Location = new System.Drawing.Point(236, 12);
+            this.nameOrd.Location = new System.Drawing.Point(236, 1);
             this.nameOrd.Name = "nameOrd";
             this.nameOrd.Size = new System.Drawing.Size(211, 25);
             this.nameOrd.TabIndex = 0;
@@ -1040,21 +1039,27 @@ namespace Dispetcher2
             // 
             // bTnAsync
             // 
-            this.bTnAsync.Location = new System.Drawing.Point(207, 4);
+            this.bTnAsync.Location = new System.Drawing.Point(430, 5);
             this.bTnAsync.Name = "bTnAsync";
             this.bTnAsync.Size = new System.Drawing.Size(75, 32);
             this.bTnAsync.TabIndex = 0;
             this.bTnAsync.Text = "Async";
+            this.bTnAsync.Visible = false;
             this.bTnAsync.Click += new System.EventHandler(this.btnAsync_Click);
             // 
             // bTNBirki
             // 
-            this.bTNBirki.Location = new System.Drawing.Point(454, 3);
+            this.bTNBirki.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.bTNBirki.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.bTNBirki.Dock = System.Windows.Forms.DockStyle.Right;
+            this.bTNBirki.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.bTNBirki.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.bTNBirki.Location = new System.Drawing.Point(884, 0);
             this.bTNBirki.Name = "bTNBirki";
-            this.bTNBirki.Size = new System.Drawing.Size(64, 43);
+            this.bTNBirki.Size = new System.Drawing.Size(91, 25);
             this.bTNBirki.TabIndex = 12;
             this.bTNBirki.Text = "Бирки";
-            this.bTNBirki.UseVisualStyleBackColor = true;
+            this.bTNBirki.UseVisualStyleBackColor = false;
             this.bTNBirki.Click += new System.EventHandler(this.bTNBirki_Click);
             // 
             // dataNowLabel
@@ -1062,7 +1067,7 @@ namespace Dispetcher2
             this.dataNowLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.dataNowLabel.AutoSize = true;
             this.dataNowLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.dataNowLabel.Location = new System.Drawing.Point(88, 17);
+            this.dataNowLabel.Location = new System.Drawing.Point(88, 6);
             this.dataNowLabel.Name = "dataNowLabel";
             this.dataNowLabel.Size = new System.Drawing.Size(48, 20);
             this.dataNowLabel.TabIndex = 5;
@@ -1073,7 +1078,7 @@ namespace Dispetcher2
             this.label16.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label16.AutoSize = true;
             this.label16.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold);
-            this.label16.Location = new System.Drawing.Point(55, 16);
+            this.label16.Location = new System.Drawing.Point(55, 5);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(27, 21);
             this.label16.TabIndex = 7;
@@ -1083,7 +1088,7 @@ namespace Dispetcher2
             // 
             this.numActPeredachi.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.numActPeredachi.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.numActPeredachi.Location = new System.Drawing.Point(15, 14);
+            this.numActPeredachi.Location = new System.Drawing.Point(15, 3);
             this.numActPeredachi.MaximumSize = new System.Drawing.Size(46, 23);
             this.numActPeredachi.Name = "numActPeredachi";
             this.numActPeredachi.Size = new System.Drawing.Size(34, 23);
@@ -1092,7 +1097,7 @@ namespace Dispetcher2
             // exelGalvan
             // 
             this.exelGalvan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.exelGalvan.Location = new System.Drawing.Point(580, 56);
+            this.exelGalvan.Location = new System.Drawing.Point(580, 50);
             this.exelGalvan.Name = "exelGalvan";
             this.exelGalvan.Size = new System.Drawing.Size(119, 36);
             this.exelGalvan.TabIndex = 3;
@@ -1103,7 +1108,7 @@ namespace Dispetcher2
             // button1
             // 
             this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button1.Location = new System.Drawing.Point(465, 56);
+            this.button1.Location = new System.Drawing.Point(465, 50);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(109, 36);
             this.button1.TabIndex = 2;
@@ -1118,7 +1123,7 @@ namespace Dispetcher2
             this.panel7.Controls.Add(this.galvanStart);
             this.panel7.Controls.Add(this.label14);
             this.panel7.Controls.Add(this.label15);
-            this.panel7.Location = new System.Drawing.Point(4, 56);
+            this.panel7.Location = new System.Drawing.Point(4, 50);
             this.panel7.Name = "panel7";
             this.panel7.Size = new System.Drawing.Size(455, 36);
             this.panel7.TabIndex = 1;
@@ -1156,15 +1161,15 @@ namespace Dispetcher2
             this.label15.TabIndex = 1010;
             this.label15.Text = "по";
             // 
-            // button2
+            // panel8
             // 
-            this.button2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.button2.Location = new System.Drawing.Point(338, 3);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(110, 43);
-            this.button2.TabIndex = 13;
-            this.button2.Text = "Гальваника не закрытая";
-            this.button2.UseVisualStyleBackColor = true;
+            this.panel8.Controls.Add(this.progressBar1);
+            this.panel8.Controls.Add(this.bTNBirki);
+            this.panel8.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel8.Location = new System.Drawing.Point(3, 569);
+            this.panel8.Name = "panel8";
+            this.panel8.Size = new System.Drawing.Size(975, 25);
+            this.panel8.TabIndex = 2;
             // 
             // F_Reports
             // 
@@ -1220,6 +1225,7 @@ namespace Dispetcher2
             this.splitContainer1.ResumeLayout(false);
             this.panel7.ResumeLayout(false);
             this.panel7.PerformLayout();
+            this.panel8.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1317,6 +1323,6 @@ namespace Dispetcher2
         private System.Windows.Forms.DataGridViewTextBoxColumn Notes;
         private System.Windows.Forms.DataGridViewCheckBoxColumn birka;
         private System.Windows.Forms.Button bTnAsync;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Panel panel8;
     }
 }

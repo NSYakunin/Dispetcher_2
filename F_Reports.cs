@@ -401,15 +401,15 @@ namespace Dispetcher2
             ExcelWorkSheet.PageSetup.HeaderMargin = ExcelApp.CentimetersToPoints(0.3);
             ExcelWorkSheet.PageSetup.FooterMargin = ExcelApp.CentimetersToPoints(0.3);
 
-            ExcelWorkSheet.Columns[1].ColumnWidth = 3;
-            ExcelWorkSheet.Columns[2].ColumnWidth = 9;
+            ExcelWorkSheet.Columns[1].ColumnWidth = 4;
+            ExcelWorkSheet.Columns[2].ColumnWidth = 10;
             ExcelWorkSheet.Columns[3].ColumnWidth = 5;
             ExcelWorkSheet.Columns[4].ColumnWidth = 20;
             ExcelWorkSheet.Columns[5].ColumnWidth = 25;
             ExcelWorkSheet.Columns[6].ColumnWidth = 5;
             ExcelWorkSheet.Columns[7].ColumnWidth = 26;
-            ExcelWorkSheet.Columns[8].ColumnWidth = 12;
-            ExcelWorkSheet.Columns[9].ColumnWidth = 20;
+            ExcelWorkSheet.Columns[8].ColumnWidth = 13;
+            //ExcelWorkSheet.Columns[9].ColumnWidth = 20;
 
 
             ExcelWorkSheet.Cells[1, 1].Value2 = $"Акт приёма-передачи №{numActPeredachi.Text} от {dataNowLabel.Text}";
@@ -418,8 +418,8 @@ namespace Dispetcher2
             ExcelWorkSheet.Cells[1, 1].Font.Size = 11;
             ExcelWorkSheet.Cells[2, 1].Value2 = "с " + DateStart.ToShortDateString() + " по " + DateEnd.ToShortDateString();
             ExcelWorkSheet.Cells[2, 1].HorizontalAlignment = Excel.Constants.xlCenter;
-            ExcelWorkSheet.get_Range("A1:I1").Merge();
-            ExcelWorkSheet.get_Range("A2:I2").Merge();
+            ExcelWorkSheet.get_Range("A1:H1").Merge();
+            ExcelWorkSheet.get_Range("A2:H2").Merge();
             ExcelWorkSheet.Cells[4, 1] = "№";
             ExcelWorkSheet.Cells[4, 2] = "Заказ";
             ExcelWorkSheet.Cells[4, 3] = "Поз.";
@@ -428,12 +428,12 @@ namespace Dispetcher2
             ExcelWorkSheet.Cells[4, 6] = "Кол-во";
             ExcelWorkSheet.Cells[4, 7] = "Покрытие";
             ExcelWorkSheet.Cells[4, 8] = "Фактическая дата";
-            ExcelWorkSheet.Cells[4, 9] = "Примечание";
-            ExcelWorkSheet.get_Range("A4:I4").Font.Bold = 1;
-            ExcelWorkSheet.get_Range("A4:I4").WrapText = true;
-            ExcelWorkSheet.get_Range("A4:I4").Font.Size = 11;
-            ExcelWorkSheet.get_Range("A4:I4").HorizontalAlignment = Excel.Constants.xlCenter;
-            ExcelWorkSheet.get_Range("A4:I4").VerticalAlignment = Excel.Constants.xlCenter;
+            //ExcelWorkSheet.Cells[4, 9] = "Примечание";
+            ExcelWorkSheet.get_Range("A4:H4").Font.Bold = 1;
+            ExcelWorkSheet.get_Range("A4:H4").WrapText = true;
+            ExcelWorkSheet.get_Range("A4:H4").Font.Size = 11;
+            ExcelWorkSheet.get_Range("A4:H4").HorizontalAlignment = Excel.Constants.xlCenter;
+            ExcelWorkSheet.get_Range("A4:H4").VerticalAlignment = Excel.Constants.xlCenter;
 
 
 
@@ -446,7 +446,16 @@ namespace Dispetcher2
                     ExcelWorkSheet.Cells[row + 5, col + 1] = dGVGalvan.Rows[row].Cells[col].Value.ToString().Trim();                    
                     ExcelWorkSheet.Cells[row + 5, col + 1].WrapText = true;
                     ExcelWorkSheet.Cells[row + 5, col + 1].Font.Size = 11;
-                    if (col == 1 || col == 6) ExcelWorkSheet.Cells[row + 5, col + 1].HorizontalAlignment = Excel.Constants.xlLeft;
+                    if (col == 1 || col == 6)
+                    {
+
+                        ExcelWorkSheet.Cells[row + 5, col + 1].HorizontalAlignment = Excel.Constants.xlLeft;
+                        ExcelWorkSheet.Cells[row + 5, col + 1].VerticalAlignment = Excel.Constants.xlCenter;
+                        if (dGVGalvan.Rows[row].Cells[col].Value.ToString().Contains("/"))
+                        {
+                            ExcelWorkSheet.Cells[row + 5, col + 1] = dGVGalvan.Rows[row].Cells[col].Value.ToString().Replace("/", "/\n");
+                        }
+                    }
                     else
                     {
                         ExcelWorkSheet.Cells[row + 5, col + 1].HorizontalAlignment = Excel.Constants.xlCenter;
@@ -460,7 +469,7 @@ namespace Dispetcher2
 
 
 
-            ExcelWorkSheet.get_Range("A4", "I" + (dGVGalvan.Rows.Count + 4)).Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+            ExcelWorkSheet.get_Range("A4", "H" + (dGVGalvan.Rows.Count + 4)).Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
 
             ExcelApp.Visible = true;
             progressBar1.Value = 0;
@@ -583,6 +592,7 @@ namespace Dispetcher2
             sheet.PageSetup.BottomMargin = excelApp.CentimetersToPoints(0);
             sheet.PageSetup.HeaderMargin = excelApp.CentimetersToPoints(0);
             sheet.PageSetup.FooterMargin = excelApp.CentimetersToPoints(0);
+            sheet.StandardWidth = 9;
 
             int startRow = 1;
             int startRowList = 0;
@@ -645,6 +655,7 @@ namespace Dispetcher2
                     sheet.get_Range($"E{startRow + 7}:H{startRow + 9}").Merge();
                     sheet.get_Range($"I{startRow + 7}:L{startRow + 9}").Merge();
                     sheet.get_Range($"M{startRow + 7}:P{startRow + 9}").Merge();
+
                     //sheet.get_Range($"A{startRow + 8}:D{startRow + 8}").Merge();
                     //sheet.get_Range($"A{startRow + 8}:D{startRow + 9}").Merge();
                     //sheet.get_Range($"A{startRow + 8}:D{startRow + 9}").Merge();
@@ -656,46 +667,47 @@ namespace Dispetcher2
                     {
                         sheet.Cells[startRow, startPos].Value = "ЗАКАЗ";
                         sheet.Cells[startRow, startPos].Font.Size = 10;
-                        sheet.Cells[startRow, startPos].Font.Bold = 1;
+                        //sheet.Cells[startRow, startPos].Font.Bold = 1;
                         sheet.Cells[startRow, startPos + 1].Value = selectedRows[startRowList].Cells[1].Value;
-                        sheet.Cells[startRow, startPos + 1].Font.Size = 9;
-                        sheet.Cells[startRow, startPos + 1].Font.Bold = 0;
+                        sheet.Cells[startRow, startPos + 1].Font.Size = 11;
+                        sheet.Cells[startRow, startPos + 1].Font.Bold = 1;
 
                         sheet.Cells[startRow + 1, startPos].Value = "НАИМЕНОВАНИЕ";
                         sheet.Cells[startRow + 1, startPos].Font.Size = 10;
-                        sheet.Cells[startRow + 1, startPos].Font.Bold = 1;
+                        //sheet.Cells[startRow + 1, startPos].Font.Bold = 1;
 
-                        sheet.Cells[startRow + 2, startPos].Value = selectedRows[startRowList].Cells[4].Value;
-                        sheet.Cells[startRow + 2, startPos].Font.Size = 9;
-                        sheet.Cells[startRow + 2, startPos].Font.Bold = 0;
+                        sheet.Cells[startRow + 2, startPos + 1].Value = selectedRows[startRowList].Cells[4].Value;
+                        sheet.Cells[startRow + 2, startPos + 1].Font.Size = 11;
+                        sheet.Cells[startRow + 2, startPos + 1].Font.Bold = 1;
 
                         sheet.Cells[startRow + 3, startPos].Value = "ЩЦМ";
                         sheet.Cells[startRow + 3, startPos].Font.Size = 10;
-                        sheet.Cells[startRow + 3, startPos].Font.Bold = 1;
+                        //sheet.Cells[startRow + 3, startPos].Font.Bold = 1;
                         sheet.Cells[startRow + 3, startPos + 1].Value = selectedRows[startRowList].Cells[3].Value;
-                        sheet.Cells[startRow + 3, startPos + 1].Font.Size = 9;
-                        sheet.Cells[startRow + 3, startPos + 1].Font.Bold = 0;
+                        sheet.Cells[startRow + 3, startPos + 1].Font.Size = 11;
+                        sheet.Cells[startRow + 3, startPos + 1].Font.Bold = 1;
 
                         sheet.Cells[startRow + 4, startPos].Value = "КОЛ-ВО";
                         sheet.Cells[startRow + 4, startPos].Font.Size = 10;
-                        sheet.Cells[startRow + 4, startPos].Font.Bold = 1;
+                        //sheet.Cells[startRow + 4, startPos].Font.Bold = 1;
                         sheet.Cells[startRow + 4, startPos + 1].Value = selectedRows[startRowList].Cells[5].Value;
-                        sheet.Cells[startRow + 4, startPos + 1].Font.Size = 9;
-                        sheet.Cells[startRow + 4, startPos + 1].Font.Bold = 0;
+                        sheet.Cells[startRow + 4, startPos + 1].Font.Size = 11;
+                        sheet.Cells[startRow + 4, startPos + 1].Font.Bold = 1;
+                        sheet.Cells[startRow + 4, startPos + 1].HorizontalAlignment = Excel.Constants.xlLeft;
 
                         sheet.Cells[startRow + 5, startPos].Value = "ДАТА";
                         sheet.Cells[startRow + 5, startPos].Font.Size = 10;
-                        sheet.Cells[startRow + 5, startPos].Font.Bold = 1;
+                        //sheet.Cells[startRow + 5, startPos].Font.Bold = 1;
                         sheet.Cells[startRow + 5, startPos + 1].Value = selectedRows[startRowList].Cells[7].Value;
-                        sheet.Cells[startRow + 5, startPos + 1].Font.Size = 9;
-                        sheet.Cells[startRow + 5, startPos + 1].Font.Bold = 0;
+                        sheet.Cells[startRow + 5, startPos + 1].Font.Size = 11;
+                        sheet.Cells[startRow + 5, startPos + 1].Font.Bold = 1;
 
                         sheet.Cells[startRow + 6, startPos].Value = "ПОКРЫТИЕ";
                         sheet.Cells[startRow + 6, startPos].Font.Size = 10;
-                        sheet.Cells[startRow + 6, startPos].Font.Bold = 1;
+                       //sheet.Cells[startRow + 6, startPos].Font.Bold = 1;
                         sheet.Cells[startRow + 7, startPos].Value = selectedRows[startRowList].Cells[6].Value;
-                        sheet.Cells[startRow + 7, startPos].Font.Size = 9;
-                        sheet.Cells[startRow + 7, startPos].Font.Bold = 0;
+                        sheet.Cells[startRow + 7, startPos].Font.Size = 11;
+                        sheet.Cells[startRow + 7, startPos].Font.Bold = 1;
                         sheet.Cells[startRow + 7, startPos].Font.Underline = true;
                         sheet.Cells[startRow + 7, startPos].HorizontalAlignment = Excel.Constants.xlCenter;
                         sheet.Cells[startRow + 7, startPos].VerticalAlignment = Excel.Constants.xlCenter;
@@ -718,7 +730,7 @@ namespace Dispetcher2
                     startPos += 4;
                 }
 
-
+                //startRow += 3;
                 countList--;
             }
         }
