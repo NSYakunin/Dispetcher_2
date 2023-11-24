@@ -5,7 +5,7 @@
     <PublishUrlHistory>\\ascon\Dispetcher\UpdatesDisp2\Application Files\|\\filesrv\Производство\Программисты\DispPublic\|\\Ascon\Dispetcher\UpdatesDisp2\Application Files\|\\Ascon\Dispetcher\UpdatesDisp2\|C:\Users\NSYakunin\Desktop\testD\</PublishUrlHistory>
     <InstallUrlHistory>\\Ascon\Dispetcher\UpdatesDisp2\|\\Ascon\Dispetcher\|\\Ascon\Dispetcher\UpdatesDisp2\Application Files\|\\Users\NSYakunin\Desktop\testD\|\\ASCON\Dispetcher\UpdatesDisp2\Application Files\</InstallUrlHistory>
     <SupportUrlHistory />
-    <UpdateUrlHistory>\\Ascon\Dispetcher\UpdatesDisp2\Application Files\|\\Ascon\Dispetcher\|http://localhost/Dispetcher2/</UpdateUrlHistory>
+    <UpdateUrlHistory>\\ascon\Dispetcher\UpdatesDisp2\Application Files\|\\Ascon\Dispetcher\UpdatesDisp2\Application Files\|\\Ascon\Dispetcher\|http://localhost/Dispetcher2/</UpdateUrlHistory>
     <BootstrapperUrlHistory />
     <ErrorReportUrlHistory />
     <FallbackCulture>ru-RU</FallbackCulture>

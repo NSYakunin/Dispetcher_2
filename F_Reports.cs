@@ -695,6 +695,17 @@ namespace Dispetcher2
                         sheet.Cells[startRow + 4, startPos + 1].Font.Bold = 1;
                         sheet.Cells[startRow + 4, startPos + 1].HorizontalAlignment = Excel.Constants.xlLeft;
 
+                        sheet.Cells[startRow + 4, startPos + 2].Value = "ПОЗ.";
+                        sheet.Cells[startRow + 4, startPos + 2].Font.Size = 10;
+                        sheet.Cells[startRow + 4, startPos + 2].HorizontalAlignment = Excel.Constants.xlRight;
+                        //sheet.Cells[startRow + 4, startPos].Font.Bold = 1;
+                        sheet.Cells[startRow + 4, startPos + 3].Value = selectedRows[startRowList].Cells[2].Value;
+                        sheet.Cells[startRow + 4, startPos + 3].Font.Size = 11;
+                        sheet.Cells[startRow + 4, startPos + 3].Font.Bold = 1;
+                        sheet.Cells[startRow + 4, startPos + 3].HorizontalAlignment = Excel.Constants.xlLeft;
+                        sheet.Cells[startRow + 4, startPos + 3].HorizontalAlignment = Excel.Constants.xlCenter;
+
+
                         sheet.Cells[startRow + 5, startPos].Value = "ДАТА";
                         sheet.Cells[startRow + 5, startPos].Font.Size = 10;
                         //sheet.Cells[startRow + 5, startPos].Font.Bold = 1;
