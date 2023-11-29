@@ -78,6 +78,7 @@ namespace Dispetcher2
 
         private void F_Reports_Load(object sender, EventArgs e)
         {
+            //dGVGalvan.AutoGenerateColumns = false;
             if (config.SelectedReportMode == ReportMode.ОтчетНаряд)//Отчёт-наряд по выполненным операциям
             {
                 myTabC_Reports.SelectedTab = tPageRep3;
@@ -140,7 +141,6 @@ namespace Dispetcher2
                 myTabC_Reports.SelectedTab = tabPageGalvan;
                 loaddGVGalvan(galvanStart.Value.Date, galvanEnd.Value.Date);
             }
-
 
         }
 
@@ -333,7 +333,7 @@ namespace Dispetcher2
                                       $"INNER JOIN Sp_Details SD " +
                                       $"    ON OD.FK_IdDetail = SD.PK_IdDetail " +
                                       $"WHERE SO.NameOperation LIKE '%Гальв%' AND DateFactOper >= @DateStart AND DateFactOper <= @DateEnd " +
-                                      $"ORDER BY  OrderNum, ShcmDetail, DateFactOper";
+                                      $"ORDER BY ShcmDetail, DateFactOper";
 
                     cmd.Parameters.AddWithValue("@DateStart", DateStart);
                     cmd.Parameters.AddWithValue("@DateEnd", DateEnd);
@@ -364,6 +364,8 @@ namespace Dispetcher2
                     foreach (string[] s in data)
                         dGVGalvan.Rows.Add(s);
                 }
+
+
             }
             catch (Exception ex)
             {
@@ -771,6 +773,46 @@ namespace Dispetcher2
         private async void btnAsync_Click(object sender, EventArgs e)
         {
             await excelGalvanClickAsync(sender, e);
+        }
+
+        private void dGVGalvan_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+            e.AdvancedBorderStyle.Bottom = DataGridViewAdvancedCellBorderStyle.None;
+            if (e.RowIndex == dGVGalvan.RowCount - 1) e.AdvancedBorderStyle.Bottom = dGVGalvan.AdvancedCellBorderStyle.Bottom;
+            if (e.RowIndex == 0) e.AdvancedBorderStyle.Top = dGVGalvan.AdvancedCellBorderStyle.Top;
+            if (e.RowIndex < 1 || e.ColumnIndex < 0)
+                return;
+            if (IsTheSameCellValue(e.ColumnIndex, e.RowIndex))
+            {
+                e.AdvancedBorderStyle.Top = DataGridViewAdvancedCellBorderStyle.None;
+
+            }
+            else
+            {
+                e.AdvancedBorderStyle.Top = dGVGalvan.AdvancedCellBorderStyle.Top;
+            }
+        }
+
+        bool IsTheSameCellValue(int column, int row)
+        {
+            DataGridViewCell cell1 = dGVGalvan[column, row];
+            DataGridViewCell cell2 = dGVGalvan[column, row - 1];
+            if (cell1.Value == null || cell2.Value == null)
+            {
+                return false;
+            }
+            return cell1.Value.ToString() == cell2.Value.ToString();
+        }
+
+        private void dGVGalvan_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex == 0 || e.ColumnIndex == 1 || e.ColumnIndex == 5 || e.ColumnIndex == 2)
+                return;
+            if (IsTheSameCellValue(e.ColumnIndex, e.RowIndex))
+            {
+                e.Value = "";
+                e.FormattingApplied = true;
+            }
         }
     }
 }

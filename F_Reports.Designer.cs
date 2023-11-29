@@ -95,22 +95,10 @@ namespace Dispetcher2
             this.tabPageGalvan = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.dGVGalvan = new System.Windows.Forms.DataGridView();
-            this.OrderNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.OrderName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Pos = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ShcmName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.NameDetail = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Amount = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Galvanic = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dateFact = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Notes = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.birka = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.panel6 = new System.Windows.Forms.Panel();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.nameOrd = new System.Windows.Forms.Label();
             this.bTnAsync = new System.Windows.Forms.Button();
-            this.bTNBirki = new System.Windows.Forms.Button();
             this.dataNowLabel = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.numActPeredachi = new System.Windows.Forms.TextBox();
@@ -122,6 +110,18 @@ namespace Dispetcher2
             this.label14 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.panel8 = new System.Windows.Forms.Panel();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.bTNBirki = new System.Windows.Forms.Button();
+            this.OrderNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.OrderName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Pos = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ShcmName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.NameDetail = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Amount = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Galvanic = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dateFact = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Notes = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.birka = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.myTabC_Reports.SuspendLayout();
             this.tPageRep3.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -923,68 +923,8 @@ namespace Dispetcher2
             this.dGVGalvan.Size = new System.Drawing.Size(975, 465);
             this.dGVGalvan.TabIndex = 0;
             this.dGVGalvan.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dGVGalvan_CellContentClick);
-            // 
-            // OrderNumber
-            // 
-            this.OrderNumber.HeaderText = "№";
-            this.OrderNumber.Name = "OrderNumber";
-            this.OrderNumber.Width = 50;
-            // 
-            // OrderName
-            // 
-            this.OrderName.HeaderText = "Заказ";
-            this.OrderName.Name = "OrderName";
-            this.OrderName.Width = 120;
-            // 
-            // Pos
-            // 
-            this.Pos.HeaderText = "Поз.";
-            this.Pos.Name = "Pos";
-            this.Pos.Width = 40;
-            // 
-            // ShcmName
-            // 
-            this.ShcmName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.ShcmName.HeaderText = "Обозначение ЩЦМ";
-            this.ShcmName.Name = "ShcmName";
-            // 
-            // NameDetail
-            // 
-            this.NameDetail.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.NameDetail.HeaderText = "Наименование детали";
-            this.NameDetail.MinimumWidth = 100;
-            this.NameDetail.Name = "NameDetail";
-            // 
-            // Amount
-            // 
-            this.Amount.HeaderText = "Кол-во";
-            this.Amount.Name = "Amount";
-            this.Amount.Width = 60;
-            // 
-            // Galvanic
-            // 
-            this.Galvanic.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Galvanic.HeaderText = "Покрытие";
-            this.Galvanic.MinimumWidth = 250;
-            this.Galvanic.Name = "Galvanic";
-            // 
-            // dateFact
-            // 
-            this.dateFact.HeaderText = "Дата факт";
-            this.dateFact.Name = "dateFact";
-            // 
-            // Notes
-            // 
-            this.Notes.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Notes.HeaderText = "Примечания";
-            this.Notes.MinimumWidth = 50;
-            this.Notes.Name = "Notes";
-            // 
-            // birka
-            // 
-            this.birka.HeaderText = "";
-            this.birka.Name = "birka";
-            this.birka.Width = 30;
+            this.dGVGalvan.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dGVGalvan_CellFormatting);
+            this.dGVGalvan.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.dGVGalvan_CellPainting);
             // 
             // panel6
             // 
@@ -997,14 +937,6 @@ namespace Dispetcher2
             this.panel6.Name = "panel6";
             this.panel6.Size = new System.Drawing.Size(975, 89);
             this.panel6.TabIndex = 1;
-            // 
-            // progressBar1
-            // 
-            this.progressBar1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.progressBar1.Location = new System.Drawing.Point(0, 0);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(884, 25);
-            this.progressBar1.TabIndex = 10;
             // 
             // splitContainer1
             // 
@@ -1047,21 +979,6 @@ namespace Dispetcher2
             this.bTnAsync.Visible = false;
             this.bTnAsync.Click += new System.EventHandler(this.btnAsync_Click);
             // 
-            // bTNBirki
-            // 
-            this.bTNBirki.BackColor = System.Drawing.SystemColors.ScrollBar;
-            this.bTNBirki.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.bTNBirki.Dock = System.Windows.Forms.DockStyle.Right;
-            this.bTNBirki.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.bTNBirki.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.bTNBirki.Location = new System.Drawing.Point(884, 0);
-            this.bTNBirki.Name = "bTNBirki";
-            this.bTNBirki.Size = new System.Drawing.Size(91, 25);
-            this.bTNBirki.TabIndex = 12;
-            this.bTNBirki.Text = "Бирки";
-            this.bTNBirki.UseVisualStyleBackColor = false;
-            this.bTNBirki.Click += new System.EventHandler(this.bTNBirki_Click);
-            // 
             // dataNowLabel
             // 
             this.dataNowLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -1091,7 +1008,7 @@ namespace Dispetcher2
             this.numActPeredachi.Location = new System.Drawing.Point(15, 3);
             this.numActPeredachi.MaximumSize = new System.Drawing.Size(46, 23);
             this.numActPeredachi.Name = "numActPeredachi";
-            this.numActPeredachi.Size = new System.Drawing.Size(34, 23);
+            this.numActPeredachi.Size = new System.Drawing.Size(34, 26);
             this.numActPeredachi.TabIndex = 6;
             // 
             // exelGalvan
@@ -1170,6 +1087,91 @@ namespace Dispetcher2
             this.panel8.Name = "panel8";
             this.panel8.Size = new System.Drawing.Size(975, 25);
             this.panel8.TabIndex = 2;
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.progressBar1.Location = new System.Drawing.Point(0, 0);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(884, 25);
+            this.progressBar1.TabIndex = 10;
+            // 
+            // bTNBirki
+            // 
+            this.bTNBirki.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.bTNBirki.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.bTNBirki.Dock = System.Windows.Forms.DockStyle.Right;
+            this.bTNBirki.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.bTNBirki.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.bTNBirki.Location = new System.Drawing.Point(884, 0);
+            this.bTNBirki.Name = "bTNBirki";
+            this.bTNBirki.Size = new System.Drawing.Size(91, 25);
+            this.bTNBirki.TabIndex = 12;
+            this.bTNBirki.Text = "Бирки";
+            this.bTNBirki.UseVisualStyleBackColor = false;
+            this.bTNBirki.Click += new System.EventHandler(this.bTNBirki_Click);
+            // 
+            // OrderNumber
+            // 
+            this.OrderNumber.HeaderText = "№";
+            this.OrderNumber.Name = "OrderNumber";
+            this.OrderNumber.Width = 50;
+            // 
+            // OrderName
+            // 
+            this.OrderName.HeaderText = "Заказ";
+            this.OrderName.Name = "OrderName";
+            this.OrderName.Width = 120;
+            // 
+            // Pos
+            // 
+            this.Pos.HeaderText = "Поз.";
+            this.Pos.Name = "Pos";
+            this.Pos.Width = 60;
+            // 
+            // ShcmName
+            // 
+            this.ShcmName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ShcmName.HeaderText = "Обозначение ЩЦМ";
+            this.ShcmName.Name = "ShcmName";
+            // 
+            // NameDetail
+            // 
+            this.NameDetail.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.NameDetail.HeaderText = "Наименование детали";
+            this.NameDetail.MinimumWidth = 100;
+            this.NameDetail.Name = "NameDetail";
+            // 
+            // Amount
+            // 
+            this.Amount.HeaderText = "Кол-во";
+            this.Amount.Name = "Amount";
+            this.Amount.Width = 60;
+            // 
+            // Galvanic
+            // 
+            this.Galvanic.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Galvanic.HeaderText = "Покрытие";
+            this.Galvanic.MinimumWidth = 250;
+            this.Galvanic.Name = "Galvanic";
+            // 
+            // dateFact
+            // 
+            this.dateFact.HeaderText = "Дата факт";
+            this.dateFact.Name = "dateFact";
+            // 
+            // Notes
+            // 
+            this.Notes.HeaderText = "Примечания";
+            this.Notes.MinimumWidth = 50;
+            this.Notes.Name = "Notes";
+            this.Notes.Width = 101;
+            // 
+            // birka
+            // 
+            this.birka.HeaderText = "";
+            this.birka.Name = "birka";
+            this.birka.Width = 30;
             // 
             // F_Reports
             // 
@@ -1312,6 +1314,8 @@ namespace Dispetcher2
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Button bTNBirki;
+        private System.Windows.Forms.Button bTnAsync;
+        private System.Windows.Forms.Panel panel8;
         private System.Windows.Forms.DataGridViewTextBoxColumn OrderNumber;
         private System.Windows.Forms.DataGridViewTextBoxColumn OrderName;
         private System.Windows.Forms.DataGridViewTextBoxColumn Pos;
@@ -1322,7 +1326,5 @@ namespace Dispetcher2
         private System.Windows.Forms.DataGridViewTextBoxColumn dateFact;
         private System.Windows.Forms.DataGridViewTextBoxColumn Notes;
         private System.Windows.Forms.DataGridViewCheckBoxColumn birka;
-        private System.Windows.Forms.Button bTnAsync;
-        private System.Windows.Forms.Panel panel8;
     }
 }
