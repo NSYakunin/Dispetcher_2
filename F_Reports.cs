@@ -775,44 +775,238 @@ namespace Dispetcher2
             await excelGalvanClickAsync(sender, e);
         }
 
-        private void dGVGalvan_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        //private void dGVGalvan_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        //{
+        //    e.AdvancedBorderStyle.Bottom = DataGridViewAdvancedCellBorderStyle.None;
+        //    if (e.RowIndex == dGVGalvan.RowCount - 1) e.AdvancedBorderStyle.Bottom = dGVGalvan.AdvancedCellBorderStyle.Bottom;
+        //    if (e.RowIndex == 0) e.AdvancedBorderStyle.Top = dGVGalvan.AdvancedCellBorderStyle.Top;
+        //    if (e.RowIndex < 1 || e.ColumnIndex < 0)
+        //        return;
+        //    if (IsTheSameCellValue(e.ColumnIndex, e.RowIndex))
+        //    {
+        //        e.AdvancedBorderStyle.Top = DataGridViewAdvancedCellBorderStyle.None;
+
+        //    }
+        //    else
+        //    {
+        //        e.AdvancedBorderStyle.Top = dGVGalvan.AdvancedCellBorderStyle.Top;
+        //    }
+        //}
+
+        //bool IsTheSameCellValue(int column, int row)
+        //{
+        //    DataGridViewCell cell1 = dGVGalvan[column, row];
+        //    DataGridViewCell cell2 = dGVGalvan[column, row - 1];
+        //    if (cell1.Value == null || cell2.Value == null)
+        //    {
+        //        return false;
+        //    }
+        //    return cell1.Value.ToString() == cell2.Value.ToString();
+        //}
+
+        //private void dGVGalvan_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        //{
+        //    if (e.RowIndex == 0 || e.ColumnIndex == 1 || e.ColumnIndex == 5 || e.ColumnIndex == 2)
+        //        return;
+        //    if (IsTheSameCellValue(e.ColumnIndex, e.RowIndex))
+        //    {
+        //        e.Value = "";
+        //        e.FormattingApplied = true;
+        //    }
+        //}
+
+        private void exelGalvanNew_Click(object sender, EventArgs e)
         {
-            e.AdvancedBorderStyle.Bottom = DataGridViewAdvancedCellBorderStyle.None;
-            if (e.RowIndex == dGVGalvan.RowCount - 1) e.AdvancedBorderStyle.Bottom = dGVGalvan.AdvancedCellBorderStyle.Bottom;
-            if (e.RowIndex == 0) e.AdvancedBorderStyle.Top = dGVGalvan.AdvancedCellBorderStyle.Top;
-            if (e.RowIndex < 1 || e.ColumnIndex < 0)
+            if (dGVGalvan.Rows.Count < 1)
+            {
+                MessageBox.Show("Нет данных для выгрузки в Excel.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
-            if (IsTheSameCellValue(e.ColumnIndex, e.RowIndex))
-            {
-                e.AdvancedBorderStyle.Top = DataGridViewAdvancedCellBorderStyle.None;
+            }
 
-            }
-            else
-            {
-                e.AdvancedBorderStyle.Top = dGVGalvan.AdvancedCellBorderStyle.Top;
-            }
-        }
 
-        bool IsTheSameCellValue(int column, int row)
-        {
-            DataGridViewCell cell1 = dGVGalvan[column, row];
-            DataGridViewCell cell2 = dGVGalvan[column, row - 1];
-            if (cell1.Value == null || cell2.Value == null)
-            {
-                return false;
-            }
-            return cell1.Value.ToString() == cell2.Value.ToString();
-        }
+            DateTime DateStart = galvanStart.Value;
+            DateTime DateEnd = galvanEnd.Value;
+            Excel.Application ExcelApp = new Excel.Application() { Visible = false };
+            ExcelApp.Workbooks.Add(1);
+            Excel.Worksheet ExcelWorkSheet = (Excel.Worksheet)ExcelApp.Sheets.get_Item(1);
 
-        private void dGVGalvan_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
-        {
-            if (e.RowIndex == 0 || e.ColumnIndex == 1 || e.ColumnIndex == 5 || e.ColumnIndex == 2)
-                return;
-            if (IsTheSameCellValue(e.ColumnIndex, e.RowIndex))
+            //ExcelWorkSheet.PageSetup.Orientation = Excel.XlPageOrientation.xlLandscape;
+            ExcelWorkSheet.PageSetup.Orientation = Excel.XlPageOrientation.xlPortrait;
+            ExcelWorkSheet.PageSetup.LeftMargin = ExcelApp.CentimetersToPoints(0.25);
+            ExcelWorkSheet.PageSetup.RightMargin = ExcelApp.CentimetersToPoints(0.25);
+            ExcelWorkSheet.PageSetup.TopMargin = ExcelApp.CentimetersToPoints(0.75);
+            ExcelWorkSheet.PageSetup.BottomMargin = ExcelApp.CentimetersToPoints(0.75);
+            ExcelWorkSheet.PageSetup.HeaderMargin = ExcelApp.CentimetersToPoints(0.3);
+            ExcelWorkSheet.PageSetup.FooterMargin = ExcelApp.CentimetersToPoints(0.3);
+
+            ExcelWorkSheet.Columns[1].ColumnWidth = 4;
+            ExcelWorkSheet.Columns[2].ColumnWidth = 10;
+            ExcelWorkSheet.Columns[3].ColumnWidth = 5;
+            ExcelWorkSheet.Columns[4].ColumnWidth = 20;
+            ExcelWorkSheet.Columns[5].ColumnWidth = 25;
+            ExcelWorkSheet.Columns[6].ColumnWidth = 5;
+            ExcelWorkSheet.Columns[7].ColumnWidth = 26;
+            ExcelWorkSheet.Columns[8].ColumnWidth = 13;
+            //ExcelWorkSheet.Columns[9].ColumnWidth = 20;
+
+
+            ExcelWorkSheet.Cells[1, 1].Value2 = $"Акт приёма-передачи №{numActPeredachi.Text} от {dataNowLabel.Text}";
+            ExcelWorkSheet.Cells[1, 1].HorizontalAlignment = Excel.Constants.xlCenter;
+            ExcelWorkSheet.Cells[1, 1].Font.Bold = 1;
+            ExcelWorkSheet.Cells[1, 1].Font.Size = 11;
+            ExcelWorkSheet.Cells[2, 1].Value2 = "с " + DateStart.ToShortDateString() + " по " + DateEnd.ToShortDateString();
+            ExcelWorkSheet.Cells[2, 1].HorizontalAlignment = Excel.Constants.xlCenter;
+            ExcelWorkSheet.get_Range("A1:H1").Merge();
+            ExcelWorkSheet.get_Range("A2:H2").Merge();
+            ExcelWorkSheet.Cells[4, 1] = "№";
+            ExcelWorkSheet.Cells[4, 2] = "Заказ";
+            ExcelWorkSheet.Cells[4, 3] = "Поз.";
+            ExcelWorkSheet.Cells[4, 4] = "Обозначение ЩЦМ";
+            ExcelWorkSheet.Cells[4, 5] = "Наименование детали";
+            ExcelWorkSheet.Cells[4, 6] = "Кол-во";
+            ExcelWorkSheet.Cells[4, 7] = "Покрытие";
+            ExcelWorkSheet.Cells[4, 8] = "Фактическая дата";
+            //ExcelWorkSheet.Cells[4, 9] = "Примечание";
+            ExcelWorkSheet.get_Range("A4:H4").Font.Bold = 1;
+            ExcelWorkSheet.get_Range("A4:H4").WrapText = true;
+            ExcelWorkSheet.get_Range("A4:H4").Font.Size = 11;
+            ExcelWorkSheet.get_Range("A4:H4").HorizontalAlignment = Excel.Constants.xlCenter;
+            ExcelWorkSheet.get_Range("A4:H4").VerticalAlignment = Excel.Constants.xlCenter;
+
+
+
+            progressBar1.Maximum = dGVGalvan.Rows.Count * 8;
+
+            for (int row = 0; row < dGVGalvan.Rows.Count; row++)
             {
-                e.Value = "";
-                e.FormattingApplied = true;
+                for (int col = 0; col < dGVGalvan.Columns.Count - 2; col++)
+                {
+                    ExcelWorkSheet.Cells[row + 5, col + 1] = dGVGalvan.Rows[row].Cells[col].Value.ToString().Trim();
+                    ExcelWorkSheet.Cells[row + 5, col + 1].WrapText = true;
+                    ExcelWorkSheet.Cells[row + 5, col + 1].Font.Size = 11;
+                    if (col == 1 || col == 6)
+                    {
+
+                        ExcelWorkSheet.Cells[row + 5, col + 1].HorizontalAlignment = Excel.Constants.xlLeft;
+                        ExcelWorkSheet.Cells[row + 5, col + 1].VerticalAlignment = Excel.Constants.xlCenter;
+                        if (dGVGalvan.Rows[row].Cells[col].Value.ToString().Contains("/"))
+                        {
+                            ExcelWorkSheet.Cells[row + 5, col + 1] = dGVGalvan.Rows[row].Cells[col].Value.ToString().Replace("/", "/\n");
+                        }
+                    }
+                    else
+                    {
+                        ExcelWorkSheet.Cells[row + 5, col + 1].HorizontalAlignment = Excel.Constants.xlCenter;
+                        ExcelWorkSheet.Cells[row + 5, col + 1].VerticalAlignment = Excel.Constants.xlCenter;
+                    }
+
+                    progressBar1.Value++;
+                    //ExcelWorkSheet.Cells[row + 5, col + 1].Font.Bold = 1;
+                }
             }
+            ExcelApp.DisplayAlerts = false;
+
+            //int countDetail = 0;
+            //Console.WriteLine(dGVGalvan.Rows.Count);
+
+            //for (int row = 0; row < dGVGalvan.Rows.Count - 1; row++)
+            //{
+
+            //    countDetail += (countDetail == 0 ? Convert.ToInt32(dGVGalvan.Rows[row].Cells[5].Value) : 0);
+
+            //    if (dGVGalvan.Rows[row].Cells[3].Value.ToString().Trim() == dGVGalvan.Rows[row + 1].Cells[3].Value.ToString().Trim())
+            //    {
+            //        countDetail += Convert.ToInt32(dGVGalvan.Rows[row + 1].Cells[5].Value);
+            //        if (row == dGVGalvan.Rows.Count - 2)
+            //        {
+            //            ExcelWorkSheet.Cells[row + 5, 5] = countDetail;
+            //            Console.WriteLine(countDetail);
+            //        }
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine(countDetail);
+            //        ExcelWorkSheet.Cells[row + 5, 5] = countDetail;
+            //        countDetail = 0;
+            //        continue;
+            //    }
+
+            //    //if(dGVGalvan.Rows[row].Cells[3].Value.ToString().Trim() != dGVGalvan.Rows[row + 1].Cells[3].Value.ToString().Trim())
+            //    //{
+            //    //    Console.WriteLine(countDetail);
+            //    //    countDetail = 0;
+            //    //    continue;
+            //    //}
+            //    //Console.WriteLine(dGVGalvan.Rows[row].Cells[5].Value);
+            //    //Console.WriteLine(dGVGalvan.Rows[row].Cells[5].Value.GetType());
+
+
+            //}
+            int countStr = 0;
+            double sum = 0;
+            int summ = 0;
+            for (int row = 1; row < dGVGalvan.Rows.Count; row++)
+            {
+                
+                for (int col = 0; col < dGVGalvan.Columns.Count - 2; col++)
+                {
+
+                    if (dGVGalvan.Rows[row].Cells[col].Value.ToString().Trim() == dGVGalvan.Rows[row - 1].Cells[col].Value.ToString().Trim() && col == 3)
+                    {
+                        summ += (summ == 0 ? Convert.ToInt32(dGVGalvan.Rows[row - 1].Cells[5].Value) : 0);
+                        //Console.WriteLine($"колонка - {col} Строка{row} == строке{row - 1}");
+                        countStr += 1;
+                        //ExcelWorkSheet.get_Range($"D{row + 5}:D{row - 1 + 5}").Merge();
+                        //ExcelWorkSheet.get_Range($"E{row + 5}:E{row - 1 + 5}").Merge();
+                        //Excel.Range range = ExcelWorkSheet.Range[$"F{row + 5}:F{row - 1 + 5}"];
+                        //sum += ExcelWorkSheet.Evaluate("SUM(" + range.Address + ")");
+
+                        summ += Convert.ToInt32(dGVGalvan.Rows[row].Cells[5].Value);
+                        if (dGVGalvan.Rows.Count - 1 == row)
+                        {
+                            ExcelWorkSheet.Cells[row + 5 - countStr, 6] = summ;
+                            ExcelWorkSheet.get_Range($"F{row + 5 - countStr}:F{row + 5}").Merge();
+                        }
+
+                    }
+                    if (dGVGalvan.Rows[row].Cells[col].Value.ToString().Trim() != dGVGalvan.Rows[row - 1].Cells[col].Value.ToString().Trim() && col == 3)
+                    {
+                        summ = summ == 0 ? Convert.ToInt32(dGVGalvan.Rows[row - 1].Cells[5].Value) : summ;
+                        ExcelWorkSheet.Cells[row - 1 + 5 - countStr, 6] = summ;
+                        ExcelWorkSheet.get_Range($"F{row - 1 + 5 - countStr}:F{row - 1 + 5}").Merge();
+                        
+                        summ = 0;
+                        sum = 0;
+                        countStr = 0;
+                    }
+                }
+            }
+
+            for (int row = 1; row < dGVGalvan.Rows.Count; row++)
+            {
+
+                for (int col = 0; col < dGVGalvan.Columns.Count - 2; col++)
+                {
+
+                    if (dGVGalvan.Rows[row].Cells[col].Value.ToString().Trim() == dGVGalvan.Rows[row - 1].Cells[col].Value.ToString().Trim() && col == 3)
+                    {
+                        ExcelWorkSheet.get_Range($"D{row + 5}:D{row - 1 + 5}").Merge();
+                        ExcelWorkSheet.get_Range($"E{row + 5}:E{row - 1 + 5}").Merge();
+                    }
+                }
+            }
+
+
+
+            ExcelApp.DisplayAlerts = true;
+
+
+
+            ExcelWorkSheet.get_Range("A4", "H" + (dGVGalvan.Rows.Count + 4)).Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+            ExcelApp.Visible = true;
+            progressBar1.Value = 0;
+            MessageBox.Show("Формирование отчета завершено.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            ExcelApp.Quit();
         }
     }
 }
