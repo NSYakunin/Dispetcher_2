@@ -1219,6 +1219,7 @@ namespace Dispetcher2
                 //startRow += 3;
                 countList--;
             }
+            excelApp.Quit();
         }
     }
 }
