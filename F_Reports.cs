@@ -27,6 +27,8 @@ using System.IO;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 using System.Windows.Forms.VisualStyles;
 using Task = System.Threading.Tasks.Task;
+using System.Windows.Documents;
+using System.Windows.Media.Media3D;
 
 namespace Dispetcher2
 {
@@ -1007,6 +1009,216 @@ namespace Dispetcher2
             progressBar1.Value = 0;
             MessageBox.Show("Формирование отчета завершено.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
             ExcelApp.Quit();
+        }
+
+        private void bTNBirki_Click_1(object sender, EventArgs e)
+        {
+            if (selectedRows.Count == 0)
+            {
+                MessageBox.Show("Выберите хотя бы одну позицию!", "Внимание!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            List<string> listBirki = new List<string>();
+            int countBirki = 0;
+
+            for (int i = 0; i < selectedRows.Count; i++)
+            {
+                selectedRows[i].DefaultCellStyle.BackColor = Color.Aquamarine;
+                Console.WriteLine(selectedRows[i].Cells[3].Value.ToString());
+                listBirki.Add(selectedRows[i].Cells[3].Value.ToString());
+            }
+            var result = listBirki.Distinct();
+            var resultList = result.ToList();
+            var resultBirkiCount = resultList.ToList().Count;
+
+
+            // Create a new Excel application
+            Excel.Application excelApp = new Excel.Application();
+            excelApp.Visible = true;
+            // Add a new workbook
+            Excel.Workbook workbook = excelApp.Workbooks.Add();
+            // Get the active sheet
+            Excel.Worksheet sheet = workbook.ActiveSheet;
+            // Set the sheet orientation to landscape
+            sheet.PageSetup.Orientation = Excel.XlPageOrientation.xlLandscape;
+            // Set the sheet paper size to A4
+            sheet.PageSetup.PaperSize = Excel.XlPaperSize.xlPaperA4;
+            sheet.PageSetup.LeftMargin = excelApp.CentimetersToPoints(0);
+            sheet.PageSetup.RightMargin = excelApp.CentimetersToPoints(0);
+            sheet.PageSetup.TopMargin = excelApp.CentimetersToPoints(0);
+            sheet.PageSetup.BottomMargin = excelApp.CentimetersToPoints(0);
+            sheet.PageSetup.HeaderMargin = excelApp.CentimetersToPoints(0);
+            sheet.PageSetup.FooterMargin = excelApp.CentimetersToPoints(0);
+            sheet.StandardWidth = 9;
+
+            int startRow = 1;
+            int startRowList = 0;
+            int countList = (resultBirkiCount <= 16 ? 1 : resultBirkiCount <= 32 ? 2 : 3);
+
+            Dictionary<string, List<string>> mainDic = new Dictionary<string, List<string>>();
+            Dictionary<string, string> nameOrderDic = new Dictionary<string, string>();
+            Dictionary<string, int> countTotalDic = new Dictionary<string, int>();
+            Dictionary<string, List<string>> posDic = new Dictionary<string, List<string>>();
+            Dictionary<string, string> galvanDic = new Dictionary<string, string>();
+
+            for (int i = 0; i < selectedRows.Count; i++)
+            {
+                
+                if (mainDic.ContainsKey(selectedRows[i].Cells[3].Value.ToString()))
+                {
+                    mainDic[selectedRows[i].Cells[3].Value.ToString()].Add(selectedRows[i].Cells[1].Value.ToString());
+                    nameOrderDic[selectedRows[i].Cells[3].Value.ToString()] = selectedRows[i].Cells[4].Value.ToString();
+                    countTotalDic[selectedRows[i].Cells[3].Value.ToString()] += Convert.ToInt32(selectedRows[i].Cells[5].Value.ToString());
+                    posDic[selectedRows[i].Cells[3].Value.ToString()].Add(selectedRows[i].Cells[2].Value.ToString());
+                    galvanDic[selectedRows[i].Cells[3].Value.ToString()] = selectedRows[i].Cells[6].Value.ToString();
+                }
+                else
+                {
+                    mainDic[selectedRows[i].Cells[3].Value.ToString()] = new List<string>
+                    {
+                        selectedRows[i].Cells[1].Value.ToString()
+                    };
+
+                    nameOrderDic[selectedRows[i].Cells[3].Value.ToString()] = selectedRows[i].Cells[4].Value.ToString();
+
+                    countTotalDic[selectedRows[i].Cells[3].Value.ToString()] = Convert.ToInt32(selectedRows[i].Cells[5].Value.ToString());
+
+                    posDic[selectedRows[i].Cells[3].Value.ToString()] = new List<string>
+                    {
+                        selectedRows[i].Cells[2].Value.ToString()
+                    };
+                    galvanDic[selectedRows[i].Cells[3].Value.ToString()] = selectedRows[i].Cells[6].Value.ToString();
+                }
+            }
+
+            int totalCount = 0;
+            int z = 1, x = 4;
+            int four = 1;
+            int startPos = 1;
+
+            //while (totalCount < mainDic.Count)
+            foreach (var order in mainDic.Keys)
+            {
+                int endRow = startRow + 9;
+                // Рисуем верхнюю границу ячеек
+                sheet.Range[sheet.Cells[startRow, z], sheet.Cells[startRow, x]].Borders[Excel.XlBordersIndex.xlEdgeTop].LineStyle = Excel.XlLineStyle.xlContinuous;
+                sheet.Range[sheet.Cells[startRow, z], sheet.Cells[startRow, x]].Borders[Excel.XlBordersIndex.xlEdgeTop].Weight = Excel.XlBorderWeight.xlMedium;
+                // Рисуем нижнюю границу ячеек
+                sheet.Range[sheet.Cells[endRow, z], sheet.Cells[endRow, x]].Borders[Excel.XlBordersIndex.xlEdgeBottom].LineStyle = Excel.XlLineStyle.xlContinuous;
+                sheet.Range[sheet.Cells[endRow, z], sheet.Cells[endRow, x]].Borders[Excel.XlBordersIndex.xlEdgeBottom].Weight = Excel.XlBorderWeight.xlMedium;
+                // Рисуем левую границу ячеек
+                sheet.Range[sheet.Cells[startRow, z], sheet.Cells[endRow, z]].Borders[Excel.XlBordersIndex.xlEdgeLeft].LineStyle = Excel.XlLineStyle.xlContinuous;
+                sheet.Range[sheet.Cells[startRow, z], sheet.Cells[endRow, z]].Borders[Excel.XlBordersIndex.xlEdgeLeft].Weight = Excel.XlBorderWeight.xlMedium;
+                // Рисуем правую границу ячеек
+                sheet.Range[sheet.Cells[startRow, x], sheet.Cells[endRow, x]].Borders[Excel.XlBordersIndex.xlEdgeRight].LineStyle = Excel.XlLineStyle.xlContinuous;
+                sheet.Range[sheet.Cells[startRow, x], sheet.Cells[endRow, x]].Borders[Excel.XlBordersIndex.xlEdgeRight].Weight = Excel.XlBorderWeight.xlMedium;
+
+
+                z += 4;
+                x += 4;
+                four++;
+
+                sheet.get_Range($"A{startRow + 7}:D{startRow + 9}").Merge();
+                sheet.get_Range($"E{startRow + 7}:H{startRow + 9}").Merge();
+                sheet.get_Range($"I{startRow + 7}:L{startRow + 9}").Merge();
+                sheet.get_Range($"M{startRow + 7}:P{startRow + 9}").Merge();
+                //**********************************************************
+                //Наименование
+                sheet.Cells[startRow, startPos].Value = "НАИМЕНОВАНИЕ";
+                sheet.Cells[startRow, startPos].Font.Size = 10;
+
+                sheet.Cells[startRow, startPos + 2].Value = nameOrderDic[order];
+                sheet.Cells[startRow, startPos + 2].Font.Size = 11;
+                sheet.Cells[startRow, startPos + 2].Font.Bold = 1;
+
+                //Заказ
+                sheet.Cells[startRow + 1, startPos].Value = "ЗАКАЗ";
+                sheet.Cells[startRow + 1, startPos].Font.Size = 10;
+
+                var shiftRight = 0;
+                var shiftDown = 0;
+                foreach (var n in mainDic[order])
+                {
+                    if (shiftRight == 4)
+                    {
+                        shiftDown += 1;
+                        shiftRight = 0;
+                    }
+                    sheet.Cells[startRow + 2 + shiftDown, startPos + shiftRight].Value = n;
+                    sheet.Cells[startRow + 2 + shiftDown, startPos + shiftRight].Font.Size = 11;
+                    sheet.Cells[startRow + 2 + shiftDown, startPos + shiftRight].Font.Bold = 1;
+                    shiftRight += 1;
+                }
+
+                //ЩЦМ
+                sheet.Cells[startRow + 4, startPos].Value = "ЩЦМ";
+                sheet.Cells[startRow + 4, startPos].Font.Size = 10;
+                //sheet.Cells[startRow + 3, startPos].Font.Bold = 1;
+                sheet.Cells[startRow + 4, startPos + 1].Value = order;
+                sheet.Cells[startRow + 4, startPos + 1].Font.Size = 11;
+                sheet.Cells[startRow + 4, startPos + 1].Font.Bold = 1;
+
+                //Колличество
+                sheet.Cells[startRow + 5, startPos].Value = "КОЛ-ВО";
+                sheet.Cells[startRow + 5, startPos].Font.Size = 10;
+                //sheet.Cells[startRow + 4, startPos].Font.Bold = 1;
+                sheet.Cells[startRow + 5, startPos + 1].Value = countTotalDic[order].ToString();
+                sheet.Cells[startRow + 5, startPos + 1].Font.Size = 11;
+                sheet.Cells[startRow + 5, startPos + 1].Font.Bold = 1;
+                sheet.Cells[startRow + 5, startPos + 1].HorizontalAlignment = Excel.Constants.xlLeft;
+
+                //Позиция
+                sheet.Cells[startRow + 6, startPos].Value = "ПОЗ.";
+                sheet.Cells[startRow + 6, startPos].Font.Size = 10;
+                //sheet.Cells[startRow + 6, startPos].HorizontalAlignment = Excel.Constants.xlRight;
+                //sheet.Cells[startRow + 4, startPos].Font.Bold = 1;
+
+                sheet.Cells[startRow + 6, startPos + 2].NumberFormat = "@";
+                sheet.Cells[startRow + 6, startPos + 2].Value = String.Join(", ", posDic[order].ToArray());
+
+                //foreach (var pos in posDic[order])
+                //{
+                //    sheet.Cells[startRow + 6, startPos + 2].Value += pos.ToString();
+                //    sheet.Cells[startRow + 6, startPos + 2].Value += ", ";
+                //}
+                sheet.Cells[startRow + 6, startPos + 2].Font.Size = 11;
+                sheet.Cells[startRow + 6, startPos + 2].Font.Bold = 1;
+                sheet.Cells[startRow + 6, startPos + 2].HorizontalAlignment = Excel.Constants.xlLeft;
+                sheet.Cells[startRow + 6, startPos + 2].HorizontalAlignment = Excel.Constants.xlCenter;
+
+                //Операция
+                sheet.Cells[startRow + 7, startPos].Value = galvanDic[order];
+                sheet.Cells[startRow + 7, startPos].Font.Size = 11;
+                sheet.Cells[startRow + 7, startPos].Font.Bold = 1;
+                sheet.Cells[startRow + 7, startPos].Font.Underline = true;
+                sheet.Cells[startRow + 7, startPos].HorizontalAlignment = Excel.Constants.xlCenter;
+                sheet.Cells[startRow + 7, startPos].VerticalAlignment = Excel.Constants.xlCenter;
+                sheet.Cells[startRow + 7, startPos].IndentLevel = 6;
+                sheet.Cells[startRow + 7, startPos].WrapText = true;
+
+                startRowList++;
+                totalCount++;
+                if (startRowList > resultBirkiCount - 1)
+                {
+                    selectedRows.Clear();
+                    return;
+                }
+
+                if (four > 4)
+                {
+                    startRow += 10;
+                    endRow += 10;
+                    four = 1;
+                    startPos = 1;
+                    z = 1;
+                    x = 4;
+                }
+                else startPos += 4;
+
+                //startRow += 3;
+                countList--;
+            }
         }
     }
 }

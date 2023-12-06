@@ -121,8 +121,9 @@ namespace Dispetcher2
             this.label14 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.panel8 = new System.Windows.Forms.Panel();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.bTNBirki = new System.Windows.Forms.Button();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.bTNBirkiOld = new System.Windows.Forms.Button();
             this.myTabC_Reports.SuspendLayout();
             this.tPageRep3.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -924,7 +925,6 @@ namespace Dispetcher2
             this.dGVGalvan.Size = new System.Drawing.Size(975, 465);
             this.dGVGalvan.TabIndex = 0;
             this.dGVGalvan.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dGVGalvan_CellContentClick);
-
             // 
             // OrderNumber
             // 
@@ -1037,7 +1037,7 @@ namespace Dispetcher2
             // 
             this.nameOrd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.nameOrd.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.nameOrd.Location = new System.Drawing.Point(236, 1);
+            this.nameOrd.Location = new System.Drawing.Point(291, 1);
             this.nameOrd.Name = "nameOrd";
             this.nameOrd.Size = new System.Drawing.Size(211, 25);
             this.nameOrd.TabIndex = 0;
@@ -1088,7 +1088,7 @@ namespace Dispetcher2
             // 
             // exelGalvan
             // 
-            this.exelGalvan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.exelGalvan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.exelGalvan.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.exelGalvan.Location = new System.Drawing.Point(840, 51);
             this.exelGalvan.Name = "exelGalvan";
@@ -1156,21 +1156,14 @@ namespace Dispetcher2
             // 
             // panel8
             // 
-            this.panel8.Controls.Add(this.progressBar1);
             this.panel8.Controls.Add(this.bTNBirki);
+            this.panel8.Controls.Add(this.progressBar1);
+            this.panel8.Controls.Add(this.bTNBirkiOld);
             this.panel8.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel8.Location = new System.Drawing.Point(3, 569);
             this.panel8.Name = "panel8";
             this.panel8.Size = new System.Drawing.Size(975, 25);
             this.panel8.TabIndex = 2;
-            // 
-            // progressBar1
-            // 
-            this.progressBar1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.progressBar1.Location = new System.Drawing.Point(0, 0);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(884, 25);
-            this.progressBar1.TabIndex = 10;
             // 
             // bTNBirki
             // 
@@ -1179,13 +1172,38 @@ namespace Dispetcher2
             this.bTNBirki.Dock = System.Windows.Forms.DockStyle.Right;
             this.bTNBirki.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.bTNBirki.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.bTNBirki.Location = new System.Drawing.Point(884, 0);
+            this.bTNBirki.Location = new System.Drawing.Point(777, 0);
+            this.bTNBirki.MaximumSize = new System.Drawing.Size(73, 25);
             this.bTNBirki.Name = "bTNBirki";
-            this.bTNBirki.Size = new System.Drawing.Size(91, 25);
-            this.bTNBirki.TabIndex = 12;
+            this.bTNBirki.Size = new System.Drawing.Size(73, 25);
+            this.bTNBirki.TabIndex = 13;
             this.bTNBirki.Text = "Бирки";
             this.bTNBirki.UseVisualStyleBackColor = false;
-            this.bTNBirki.Click += new System.EventHandler(this.bTNBirki_Click);
+            this.bTNBirki.Click += new System.EventHandler(this.bTNBirki_Click_1);
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.progressBar1.Location = new System.Drawing.Point(0, 0);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(850, 25);
+            this.progressBar1.TabIndex = 10;
+            // 
+            // bTNBirkiOld
+            // 
+            this.bTNBirkiOld.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.bTNBirkiOld.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.bTNBirkiOld.Dock = System.Windows.Forms.DockStyle.Right;
+            this.bTNBirkiOld.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.bTNBirkiOld.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.bTNBirkiOld.Location = new System.Drawing.Point(850, 0);
+            this.bTNBirkiOld.MaximumSize = new System.Drawing.Size(125, 25);
+            this.bTNBirkiOld.Name = "bTNBirkiOld";
+            this.bTNBirkiOld.Size = new System.Drawing.Size(125, 25);
+            this.bTNBirkiOld.TabIndex = 12;
+            this.bTNBirkiOld.Text = "Бирки (Старые)";
+            this.bTNBirkiOld.UseVisualStyleBackColor = false;
+            this.bTNBirkiOld.Click += new System.EventHandler(this.bTNBirki_Click);
             // 
             // F_Reports
             // 
@@ -1327,7 +1345,7 @@ namespace Dispetcher2
         private System.Windows.Forms.TextBox numActPeredachi;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.ProgressBar progressBar1;
-        private System.Windows.Forms.Button bTNBirki;
+        private System.Windows.Forms.Button bTNBirkiOld;
         private System.Windows.Forms.Button bTnAsync;
         private System.Windows.Forms.Panel panel8;
         private System.Windows.Forms.DataGridViewTextBoxColumn OrderNumber;
@@ -1341,5 +1359,6 @@ namespace Dispetcher2
         private System.Windows.Forms.DataGridViewTextBoxColumn Notes;
         private System.Windows.Forms.DataGridViewCheckBoxColumn birka;
         private System.Windows.Forms.Button exelGalvanNew;
+        private System.Windows.Forms.Button bTNBirki;
     }
 }
