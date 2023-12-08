@@ -92,8 +92,6 @@ namespace Dispetcher2
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tB_OrderNumInfoRep7 = new System.Windows.Forms.TextBox();
             this.tB_OrderNameRep7 = new System.Windows.Forms.TextBox();
-            this.LaborTabPage = new System.Windows.Forms.TabPage();
-            this.LaborElementHost = new System.Windows.Forms.Integration.ElementHost();
             this.tabPageGalvan = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.dGVGalvan = new System.Windows.Forms.DataGridView();
@@ -106,11 +104,12 @@ namespace Dispetcher2
             this.Galvanic = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dateFact = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Notes = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.birka = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.panel6 = new System.Windows.Forms.Panel();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.exelGalvanNew = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.nameOrd = new System.Windows.Forms.Label();
-            this.button6 = new System.Windows.Forms.Button();
+            this.bTnAsync = new System.Windows.Forms.Button();
             this.dataNowLabel = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.numActPeredachi = new System.Windows.Forms.TextBox();
@@ -121,6 +120,10 @@ namespace Dispetcher2
             this.galvanStart = new System.Windows.Forms.DateTimePicker();
             this.label14 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
+            this.panel8 = new System.Windows.Forms.Panel();
+            this.bTNBirki = new System.Windows.Forms.Button();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.bTNBirkiOld = new System.Windows.Forms.Button();
             this.myTabC_Reports.SuspendLayout();
             this.tPageRep3.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -142,7 +145,6 @@ namespace Dispetcher2
             this.groupBox2.SuspendLayout();
             this.panel5.SuspendLayout();
             this.groupBox3.SuspendLayout();
-            this.LaborTabPage.SuspendLayout();
             this.tabPageGalvan.SuspendLayout();
             this.tableLayoutPanel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dGVGalvan)).BeginInit();
@@ -152,6 +154,7 @@ namespace Dispetcher2
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.panel7.SuspendLayout();
+            this.panel8.SuspendLayout();
             this.SuspendLayout();
             // 
             // myTabC_Reports
@@ -160,7 +163,6 @@ namespace Dispetcher2
             this.myTabC_Reports.Controls.Add(this.tPageRep6);
             this.myTabC_Reports.Controls.Add(this.tPageRep117);
             this.myTabC_Reports.Controls.Add(this.tPageRep7);
-            this.myTabC_Reports.Controls.Add(this.LaborTabPage);
             this.myTabC_Reports.Controls.Add(this.tabPageGalvan);
             this.myTabC_Reports.Dock = System.Windows.Forms.DockStyle.Fill;
             this.myTabC_Reports.Location = new System.Drawing.Point(0, 0);
@@ -870,26 +872,6 @@ namespace Dispetcher2
             this.tB_OrderNameRep7.TabIndex = 2;
             this.tB_OrderNameRep7.TabStop = false;
             // 
-            // LaborTabPage
-            // 
-            this.LaborTabPage.Controls.Add(this.LaborElementHost);
-            this.LaborTabPage.Location = new System.Drawing.Point(4, 25);
-            this.LaborTabPage.Name = "LaborTabPage";
-            this.LaborTabPage.Size = new System.Drawing.Size(987, 603);
-            this.LaborTabPage.TabIndex = 4;
-            this.LaborTabPage.Text = "Трудоемкость";
-            this.LaborTabPage.UseVisualStyleBackColor = true;
-            // 
-            // LaborElementHost
-            // 
-            this.LaborElementHost.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.LaborElementHost.Location = new System.Drawing.Point(0, 0);
-            this.LaborElementHost.Name = "LaborElementHost";
-            this.LaborElementHost.Size = new System.Drawing.Size(987, 603);
-            this.LaborElementHost.TabIndex = 0;
-            this.LaborElementHost.Text = "LaborElementHost";
-            this.LaborElementHost.Child = null;
-            // 
             // tabPageGalvan
             // 
             this.tabPageGalvan.Controls.Add(this.tableLayoutPanel5);
@@ -904,15 +886,17 @@ namespace Dispetcher2
             // tableLayoutPanel5
             // 
             this.tableLayoutPanel5.ColumnCount = 1;
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel5.Controls.Add(this.dGVGalvan, 0, 1);
             this.tableLayoutPanel5.Controls.Add(this.panel6, 0, 0);
+            this.tableLayoutPanel5.Controls.Add(this.panel8, 0, 2);
             this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel5.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
-            this.tableLayoutPanel5.RowCount = 2;
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 15.07538F));
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 84.92462F));
+            this.tableLayoutPanel5.RowCount = 3;
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.91792F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 83.08208F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel5.Size = new System.Drawing.Size(981, 597);
             this.tableLayoutPanel5.TabIndex = 0;
             // 
@@ -932,42 +916,40 @@ namespace Dispetcher2
             this.Amount,
             this.Galvanic,
             this.dateFact,
-            this.Notes});
+            this.Notes,
+            this.birka});
             this.dGVGalvan.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dGVGalvan.Location = new System.Drawing.Point(3, 93);
+            this.dGVGalvan.Location = new System.Drawing.Point(3, 98);
             this.dGVGalvan.Name = "dGVGalvan";
-            this.dGVGalvan.ReadOnly = true;
             this.dGVGalvan.RowHeadersVisible = false;
-            this.dGVGalvan.Size = new System.Drawing.Size(975, 501);
+            this.dGVGalvan.Size = new System.Drawing.Size(975, 465);
             this.dGVGalvan.TabIndex = 0;
+            this.dGVGalvan.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dGVGalvan_CellContentClick);
             // 
             // OrderNumber
             // 
             this.OrderNumber.HeaderText = "№";
             this.OrderNumber.Name = "OrderNumber";
-            this.OrderNumber.ReadOnly = true;
             this.OrderNumber.Width = 50;
             // 
             // OrderName
             // 
             this.OrderName.HeaderText = "Заказ";
             this.OrderName.Name = "OrderName";
-            this.OrderName.ReadOnly = true;
             this.OrderName.Width = 120;
             // 
             // Pos
             // 
             this.Pos.HeaderText = "Поз.";
             this.Pos.Name = "Pos";
-            this.Pos.ReadOnly = true;
-            this.Pos.Width = 40;
+            this.Pos.Width = 60;
             // 
             // ShcmName
             // 
             this.ShcmName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.ShcmName.HeaderText = "Обозначение ЩЦМ";
+            this.ShcmName.MinimumWidth = 70;
             this.ShcmName.Name = "ShcmName";
-            this.ShcmName.ReadOnly = true;
             // 
             // NameDetail
             // 
@@ -975,13 +957,11 @@ namespace Dispetcher2
             this.NameDetail.HeaderText = "Наименование детали";
             this.NameDetail.MinimumWidth = 100;
             this.NameDetail.Name = "NameDetail";
-            this.NameDetail.ReadOnly = true;
             // 
             // Amount
             // 
             this.Amount.HeaderText = "Кол-во";
             this.Amount.Name = "Amount";
-            this.Amount.ReadOnly = true;
             this.Amount.Width = 60;
             // 
             // Galvanic
@@ -990,25 +970,28 @@ namespace Dispetcher2
             this.Galvanic.HeaderText = "Покрытие";
             this.Galvanic.MinimumWidth = 250;
             this.Galvanic.Name = "Galvanic";
-            this.Galvanic.ReadOnly = true;
             // 
             // dateFact
             // 
             this.dateFact.HeaderText = "Дата факт";
             this.dateFact.Name = "dateFact";
-            this.dateFact.ReadOnly = true;
             // 
             // Notes
             // 
-            this.Notes.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.Notes.HeaderText = "Примечания";
             this.Notes.MinimumWidth = 50;
             this.Notes.Name = "Notes";
-            this.Notes.ReadOnly = true;
+            this.Notes.Width = 101;
+            // 
+            // birka
+            // 
+            this.birka.HeaderText = "";
+            this.birka.Name = "birka";
+            this.birka.Width = 30;
             // 
             // panel6
             // 
-            this.panel6.Controls.Add(this.progressBar1);
+            this.panel6.Controls.Add(this.exelGalvanNew);
             this.panel6.Controls.Add(this.splitContainer1);
             this.panel6.Controls.Add(this.exelGalvan);
             this.panel6.Controls.Add(this.button1);
@@ -1016,17 +999,19 @@ namespace Dispetcher2
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel6.Location = new System.Drawing.Point(3, 3);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(975, 84);
+            this.panel6.Size = new System.Drawing.Size(975, 89);
             this.panel6.TabIndex = 1;
             // 
-            // progressBar1
+            // exelGalvanNew
             // 
-            this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBar1.Location = new System.Drawing.Point(705, 45);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(267, 23);
-            this.progressBar1.TabIndex = 10;
+            this.exelGalvanNew.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.exelGalvanNew.Location = new System.Drawing.Point(580, 51);
+            this.exelGalvanNew.Name = "exelGalvanNew";
+            this.exelGalvanNew.Size = new System.Drawing.Size(119, 35);
+            this.exelGalvanNew.TabIndex = 10;
+            this.exelGalvanNew.Text = "В Excel";
+            this.exelGalvanNew.UseVisualStyleBackColor = true;
+            this.exelGalvanNew.Click += new System.EventHandler(this.exelGalvanNew_Click);
             // 
             // splitContainer1
             // 
@@ -1040,11 +1025,11 @@ namespace Dispetcher2
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.button6);
+            this.splitContainer1.Panel2.Controls.Add(this.bTnAsync);
             this.splitContainer1.Panel2.Controls.Add(this.dataNowLabel);
             this.splitContainer1.Panel2.Controls.Add(this.label16);
             this.splitContainer1.Panel2.Controls.Add(this.numActPeredachi);
-            this.splitContainer1.Size = new System.Drawing.Size(975, 34);
+            this.splitContainer1.Size = new System.Drawing.Size(975, 39);
             this.splitContainer1.SplitterDistance = 450;
             this.splitContainer1.TabIndex = 9;
             // 
@@ -1052,29 +1037,29 @@ namespace Dispetcher2
             // 
             this.nameOrd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.nameOrd.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.nameOrd.Location = new System.Drawing.Point(236, 9);
+            this.nameOrd.Location = new System.Drawing.Point(291, 1);
             this.nameOrd.Name = "nameOrd";
             this.nameOrd.Size = new System.Drawing.Size(211, 25);
             this.nameOrd.TabIndex = 0;
             this.nameOrd.Text = "Акт Приёма-передачи №";
             this.nameOrd.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // button6
+            // bTnAsync
             // 
-            this.button6.Location = new System.Drawing.Point(454, 3);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(64, 26);
-            this.button6.TabIndex = 12;
-            this.button6.Text = "Бирки";
-            this.button6.UseVisualStyleBackColor = true;
-            this.button6.Click += new System.EventHandler(this.button6_Click);
+            this.bTnAsync.Location = new System.Drawing.Point(430, 5);
+            this.bTnAsync.Name = "bTnAsync";
+            this.bTnAsync.Size = new System.Drawing.Size(75, 32);
+            this.bTnAsync.TabIndex = 0;
+            this.bTnAsync.Text = "Async";
+            this.bTnAsync.Visible = false;
+            this.bTnAsync.Click += new System.EventHandler(this.btnAsync_Click);
             // 
             // dataNowLabel
             // 
             this.dataNowLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.dataNowLabel.AutoSize = true;
             this.dataNowLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.dataNowLabel.Location = new System.Drawing.Point(88, 10);
+            this.dataNowLabel.Location = new System.Drawing.Point(88, 6);
             this.dataNowLabel.Name = "dataNowLabel";
             this.dataNowLabel.Size = new System.Drawing.Size(48, 20);
             this.dataNowLabel.TabIndex = 5;
@@ -1085,7 +1070,7 @@ namespace Dispetcher2
             this.label16.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label16.AutoSize = true;
             this.label16.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold);
-            this.label16.Location = new System.Drawing.Point(55, 9);
+            this.label16.Location = new System.Drawing.Point(55, 5);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(27, 21);
             this.label16.TabIndex = 7;
@@ -1095,29 +1080,30 @@ namespace Dispetcher2
             // 
             this.numActPeredachi.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.numActPeredachi.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.numActPeredachi.Location = new System.Drawing.Point(3, 7);
+            this.numActPeredachi.Location = new System.Drawing.Point(15, 3);
             this.numActPeredachi.MaximumSize = new System.Drawing.Size(46, 23);
             this.numActPeredachi.Name = "numActPeredachi";
-            this.numActPeredachi.Size = new System.Drawing.Size(46, 26);
+            this.numActPeredachi.Size = new System.Drawing.Size(34, 26);
             this.numActPeredachi.TabIndex = 6;
             // 
             // exelGalvan
             // 
-            this.exelGalvan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.exelGalvan.Location = new System.Drawing.Point(580, 36);
+            this.exelGalvan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.exelGalvan.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.exelGalvan.Location = new System.Drawing.Point(840, 51);
             this.exelGalvan.Name = "exelGalvan";
-            this.exelGalvan.Size = new System.Drawing.Size(119, 45);
+            this.exelGalvan.Size = new System.Drawing.Size(119, 35);
             this.exelGalvan.TabIndex = 3;
-            this.exelGalvan.Text = "Выгрузить в Excel";
+            this.exelGalvan.Text = "В Excel (старый)";
             this.exelGalvan.UseVisualStyleBackColor = true;
             this.exelGalvan.Click += new System.EventHandler(this.excelGalvan_Click);
             // 
             // button1
             // 
             this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button1.Location = new System.Drawing.Point(465, 36);
+            this.button1.Location = new System.Drawing.Point(465, 50);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(109, 45);
+            this.button1.Size = new System.Drawing.Size(109, 36);
             this.button1.TabIndex = 2;
             this.button1.Text = "Обновить";
             this.button1.UseVisualStyleBackColor = true;
@@ -1130,7 +1116,7 @@ namespace Dispetcher2
             this.panel7.Controls.Add(this.galvanStart);
             this.panel7.Controls.Add(this.label14);
             this.panel7.Controls.Add(this.label15);
-            this.panel7.Location = new System.Drawing.Point(4, 45);
+            this.panel7.Location = new System.Drawing.Point(4, 50);
             this.panel7.Name = "panel7";
             this.panel7.Size = new System.Drawing.Size(455, 36);
             this.panel7.TabIndex = 1;
@@ -1167,6 +1153,57 @@ namespace Dispetcher2
             this.label15.Size = new System.Drawing.Size(24, 17);
             this.label15.TabIndex = 1010;
             this.label15.Text = "по";
+            // 
+            // panel8
+            // 
+            this.panel8.Controls.Add(this.bTNBirki);
+            this.panel8.Controls.Add(this.progressBar1);
+            this.panel8.Controls.Add(this.bTNBirkiOld);
+            this.panel8.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel8.Location = new System.Drawing.Point(3, 569);
+            this.panel8.Name = "panel8";
+            this.panel8.Size = new System.Drawing.Size(975, 25);
+            this.panel8.TabIndex = 2;
+            // 
+            // bTNBirki
+            // 
+            this.bTNBirki.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.bTNBirki.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.bTNBirki.Dock = System.Windows.Forms.DockStyle.Right;
+            this.bTNBirki.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.bTNBirki.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.bTNBirki.Location = new System.Drawing.Point(777, 0);
+            this.bTNBirki.MaximumSize = new System.Drawing.Size(73, 25);
+            this.bTNBirki.Name = "bTNBirki";
+            this.bTNBirki.Size = new System.Drawing.Size(73, 25);
+            this.bTNBirki.TabIndex = 13;
+            this.bTNBirki.Text = "Бирки";
+            this.bTNBirki.UseVisualStyleBackColor = false;
+            this.bTNBirki.Click += new System.EventHandler(this.bTNBirki_Click_1);
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.progressBar1.Location = new System.Drawing.Point(0, 0);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(850, 25);
+            this.progressBar1.TabIndex = 10;
+            // 
+            // bTNBirkiOld
+            // 
+            this.bTNBirkiOld.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.bTNBirkiOld.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.bTNBirkiOld.Dock = System.Windows.Forms.DockStyle.Right;
+            this.bTNBirkiOld.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.bTNBirkiOld.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.bTNBirkiOld.Location = new System.Drawing.Point(850, 0);
+            this.bTNBirkiOld.MaximumSize = new System.Drawing.Size(125, 25);
+            this.bTNBirkiOld.Name = "bTNBirkiOld";
+            this.bTNBirkiOld.Size = new System.Drawing.Size(125, 25);
+            this.bTNBirkiOld.TabIndex = 12;
+            this.bTNBirkiOld.Text = "Бирки (Старые)";
+            this.bTNBirkiOld.UseVisualStyleBackColor = false;
+            this.bTNBirkiOld.Click += new System.EventHandler(this.bTNBirki_Click);
             // 
             // F_Reports
             // 
@@ -1211,7 +1248,6 @@ namespace Dispetcher2
             this.panel5.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
-            this.LaborTabPage.ResumeLayout(false);
             this.tabPageGalvan.ResumeLayout(false);
             this.tableLayoutPanel5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dGVGalvan)).EndInit();
@@ -1223,6 +1259,7 @@ namespace Dispetcher2
             this.splitContainer1.ResumeLayout(false);
             this.panel7.ResumeLayout(false);
             this.panel7.PerformLayout();
+            this.panel8.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1290,8 +1327,6 @@ namespace Dispetcher2
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.CheckBox chB_rep7AllOrders;
-        private System.Windows.Forms.TabPage LaborTabPage;
-        private System.Windows.Forms.Integration.ElementHost LaborElementHost;
         private System.Windows.Forms.TabPage tabPageGalvan;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
         private System.Windows.Forms.DataGridView dGVGalvan;
@@ -1302,6 +1337,17 @@ namespace Dispetcher2
         private System.Windows.Forms.DateTimePicker galvanStart;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.CheckBox cBKoop;
+        private System.Windows.Forms.Button exelGalvan;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label dataNowLabel;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.TextBox numActPeredachi;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.Button bTNBirkiOld;
+        private System.Windows.Forms.Button bTnAsync;
+        private System.Windows.Forms.Panel panel8;
         private System.Windows.Forms.DataGridViewTextBoxColumn OrderNumber;
         private System.Windows.Forms.DataGridViewTextBoxColumn OrderName;
         private System.Windows.Forms.DataGridViewTextBoxColumn Pos;
@@ -1311,14 +1357,8 @@ namespace Dispetcher2
         private System.Windows.Forms.DataGridViewTextBoxColumn Galvanic;
         private System.Windows.Forms.DataGridViewTextBoxColumn dateFact;
         private System.Windows.Forms.DataGridViewTextBoxColumn Notes;
-        private System.Windows.Forms.CheckBox cBKoop;
-        private System.Windows.Forms.Button exelGalvan;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Label dataNowLabel;
-        private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.TextBox numActPeredachi;
-        private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.ProgressBar progressBar1;
-        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn birka;
+        private System.Windows.Forms.Button exelGalvanNew;
+        private System.Windows.Forms.Button bTNBirki;
     }
 }

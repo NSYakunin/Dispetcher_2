@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Windows.Input;
 
 using Dispetcher2.Class;
+using System.Collections;
 
 namespace Dispetcher2.Models
 {
@@ -24,7 +25,24 @@ namespace Dispetcher2.Models
             return v;
         }
     }
-    public class OrderControlViewModel : OrderRepository
+    public class OrderViewRepository : OrderRepository
+    {
+        IEnumerable<Order> orderIterator;
+        public OrderViewRepository(IEnumerable<Order> orderIterator)
+        {
+            this.orderIterator = orderIterator;
+        }
+        public override IEnumerable GetList()
+        {
+            return orderIterator;
+        }
+        public override IEnumerable<Order> GetOrders()
+        {
+            return orderIterator;
+        }
+        public override void Load() { }
+    }
+    public class OrderControlViewModel
     {
         string filterValue;
         public string Filter
@@ -78,23 +96,22 @@ namespace Dispetcher2.Models
                 foreach (var x in l2) OrderList.Add(x);
             }
         }
-        // Реализация OrderRepository
-        public override void Load() { }
-        public override IEnumerable<Order> GetOrders()
+
+        public OrderRepository SelectedOrders
         {
-            var a = new List<Order>();
-            var e = allOrders.Where(o => o.Checked == true);
-            if (e.Any()) a.AddRange(e);
-            if (OrderList.Count == 1 && a.Count < 1)
+            get
             {
-                OrderView v = OrderList[0];
-                a.Add(v);
+                var a = new List<Order>();
+                var e = allOrders.Where(o => o.Checked == true);
+                if (e.Any()) a.AddRange(e);
+                if (OrderList.Count == 1 && a.Count < 1)
+                {
+                    OrderView v = OrderList[0];
+                    a.Add(v);
+                }
+                OrderViewRepository r = new OrderViewRepository(a);
+                return r;
             }
-            return a;
-        }
-        public override System.Collections.IEnumerable GetList()
-        {
-            return GetOrders();
         }
     }
 

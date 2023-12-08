@@ -365,15 +365,16 @@ namespace Dispetcher2.Class
             else
             {
                 where = $" and (u.DateEnd is null or (Year(u.DateEnd) >= {year} and MONTH(u.DateEnd) > {(month - 1)}))" +
-                $" and u.DateStart < '{year}-{month + 1}-17'";
+                $" and u.DateStart < '{(month + 1 == 13 ? year + 1 : year)}-{(month + 1 == 13 ? 1 : month)}-17'";
             }
-            
+
             sql = "Select Distinct(PK_Login) as PK_Login,(LastName+' '+Name+' '+ SecondName) as FullName,NameJob,TabNum,ITR" + "\n" +
                   "From TimeSheets as ts" + "\n" +
                    "Inner join Users as u On u.PK_Login = ts.FK_Login" + "\n" +
                    "LEFT join Sp_job as j On j.Pk_IdJob = u.FK_IdJob" + "\n" +
                    "Where TabNum is not Null" + where + "\n" +
                    "Order by ITR desc,FullName";
+            Console.WriteLine(sql.ToString());
 
             Select(sql, DT);
         }

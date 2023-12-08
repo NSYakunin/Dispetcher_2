@@ -3,16 +3,17 @@ using System.Windows.Controls;
 using Dispetcher2.Class;
 namespace Dispetcher2.Controls
 {
-    public partial class LaborControl : UserControl, IColumnUpdate
+    public partial class LaborControl : UserControl, IColumnsObserver
     {
+        IColumnsObserver observer;
         public LaborControl()
         {
             InitializeComponent();
+            observer = opc;
         }
-
-        public void Update(StringRepository names)
+        void IColumnsObserver.Update(IEnumerable<string> columns)
         {
-            opc.Update(names);
+            observer.Update(columns);
         }
     }
 }

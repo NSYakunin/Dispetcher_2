@@ -17,10 +17,33 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style TargetType="{x:Type DatePicker}" x:Key="datePickerGeneralStyle" BasedOn="{StaticResource {x:Type DatePicker}}">
+            <Setter Property="TextElement.FontSize" Value="18" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="DatePicker.CalendarStyle">
+                <Setter.Value>
+                    <Style TargetType="{x:Type Calendar}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Calendar}">
+                                    <Viewbox Width="300">
+                                        <CalendarItem x:Name="PART_CalendarItem"
+                      Background="{TemplateBinding Background}"
+                      BorderBrush="{TemplateBinding BorderBrush}"
+                      BorderThickness="{TemplateBinding BorderThickness}"/>
+                                    </Viewbox>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
     <Grid x:Name="mainGrid" ShowGridLines="False">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition MinWidth="200"/>
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="4*"/>
         </Grid.ColumnDefinitions>
 
@@ -37,13 +60,15 @@
                 <Button Content="Excel" HorizontalAlignment="Left"
                     Margin="5" VerticalAlignment="Center" Width="75" Command="{Binding Path=ExcelCommand}"/>
                 <DatePicker VerticalAlignment="Center" Margin="5" SelectedDate="{Binding Path=BeginDate}" 
-                            CalendarStyle="{StaticResource styleCalendar}" />
+                            Style="{StaticResource datePickerGeneralStyle}" />
                 <DatePicker VerticalAlignment="Center" Margin="5" SelectedDate="{Binding Path=EndDate}" 
-                            CalendarStyle="{StaticResource styleCalendar}" />
+                            Style="{StaticResource datePickerGeneralStyle}" />
                 <CheckBox Content="По деталям" IsChecked="{Binding Path=ShowDetailFlag}" 
                     VerticalAlignment="Center" Margin="5"/>
                 <CheckBox Content="По операциям" IsChecked="{Binding Path=ShowOperationFlag}" 
                     VerticalAlignment="Center" Margin="5" />
+                <CheckBox Content="Заказы по факту" IsChecked="{Binding Path=FactOrdersFlag}"
+                          VerticalAlignment="Center" Margin="5" />
             </StackPanel>
             
             <local:OperationControl x:Name="opc" Grid.Row="1" Visibility="{Binding Path=OperationVisibility}" />

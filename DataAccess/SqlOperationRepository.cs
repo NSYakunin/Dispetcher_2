@@ -14,13 +14,15 @@ namespace Dispetcher2.DataAccess
     {
         public void CalculateTime()
         {
+            int t;
             //В настоящее время, 24.08.2023 технологическая операция в Лоцмане
             //хранится так, что "время на деталь" содержит сумму основного и предварительно-заключительного.
             //Причина: работа связки Лоцман-Вертикаль.
             //Можно считать так: t = Quantity * (Tsh - Tpd) + Tpd;
             //Однако для "старых" деталей этой суммы нет
-
-            int t = Quantity * Tsh + Tpd;
+            //Пока считаем "правильно"
+            if (OnlyOncePay) t = Tsh + Tpd;
+            else t = Quantity * Tsh + Tpd;
             TimeSpan ts = TimeSpan.FromSeconds(t);
             this.Time = ts;
         }
@@ -85,8 +87,11 @@ namespace Dispetcher2.DataAccess
                             if (converter.CheckConvert<int>(r["Tsh"]))
                                 item.Tsh = converter.Convert<int>(r["Tsh"]);
 
-                            if (converter.CheckConvert<int>(r["fo_Amount"]))
-                                item.Quantity = converter.Convert<int>(r["fo_Amount"]);
+                            if (converter.CheckConvert<int>(r["AmountDetails"]))
+                                item.Quantity = converter.Convert<int>(r["AmountDetails"]);
+
+                            if (converter.CheckConvert<bool>(r["OnlyOncePay"]))
+                                item.OnlyOncePay = converter.Convert<bool>(r["OnlyOncePay"]);
 
                             if (converter.CheckConvert<string>(r["NumOper"]))
                                 item.Number = converter.Convert<string>(r["NumOper"]);
@@ -99,6 +104,12 @@ namespace Dispetcher2.DataAccess
 
                             if (converter.CheckConvert<string>(r["Login"]))
                                 item.Login = converter.Convert<string>(r["Login"]);
+
+                            if (converter.CheckConvert<DateTime>(r["FactDate"]))
+                                item.FactDate = converter.Convert<DateTime>(r["FactDate"]);
+
+                            if (converter.CheckConvert<int>(r["OrderId"]))
+                                item.OrderId = converter.Convert<int>(r["OrderId"]);
 
                             if (item.Tpd > 0 || item.Tsh > 0)
                             {

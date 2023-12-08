@@ -29,7 +29,7 @@
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>17</ApplicationRevision>
+    <ApplicationRevision>25</ApplicationRevision>
     <ApplicationVersion>2.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>true</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -82,7 +82,8 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>d2key.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup />
   <PropertyGroup />
@@ -174,6 +175,7 @@
     <Compile Include="Class\ErrorItem.cs" />
     <Compile Include="Class\FormFactory.cs" />
     <Compile Include="Class\ImportDataWorker.cs" />
+    <Compile Include="Class\IColumnsObserver.cs" />
     <Compile Include="Class\Job.cs" />
     <Compile Include="Class\KitUpdater.cs" />
     <Compile Include="Class\LaborReport.cs" />
@@ -187,23 +189,26 @@
     <Compile Include="Controls\CheckedOrderControl.xaml.cs">
       <DependentUpon>CheckedOrderControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\HostForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\HostForm.Designer.cs">
+      <DependentUpon>HostForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ImportDataControl.xaml.cs">
       <DependentUpon>ImportDataControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\JobControl.xaml.cs">
       <DependentUpon>JobControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\JobForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\JobForm.Designer.cs">
-      <DependentUpon>JobForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Controls\KitUpdaterControl.xaml.cs">
       <DependentUpon>KitUpdaterControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\LaborControl.xaml.cs">
       <DependentUpon>LaborControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\LaborDetailControl.xaml.cs">
+      <DependentUpon>LaborDetailControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\OperationControl.xaml.cs">
       <DependentUpon>OperationControl.xaml</DependentUpon>
@@ -365,6 +370,7 @@
       <DependentUpon>F_Workers.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\JobViewModel.cs" />
+    <Compile Include="Models\LaborDetailViewModel.cs" />
     <Compile Include="Models\LaborViewModel.cs" />
     <Compile Include="Models\OperationViewModel.cs" />
     <Compile Include="Models\OrderControlViewModel.cs" />
@@ -372,14 +378,15 @@
     <Compile Include="Models\WorkTimeViewModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Controls\JobForm.resx">
-      <DependentUpon>JobForm.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\HostForm.resx">
+      <DependentUpon>HostForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\ucProdCal.resx">
       <DependentUpon>ucProdCal.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="DialogsForms\dF_Brigade.resx">
       <DependentUpon>dF_Brigade.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="DialogsForms\dF_Tehnology.resx">
       <DependentUpon>dF_Tehnology.cs</DependentUpon>
@@ -416,6 +423,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="F_Reports.resx">
       <DependentUpon>F_Reports.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="F_ReportsPlan.resx">
       <DependentUpon>F_ReportsPlan.cs</DependentUpon>
@@ -450,7 +458,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
-    <None Include="d2key.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
@@ -523,6 +530,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\LaborControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\LaborDetailControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
