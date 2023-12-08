@@ -11,7 +11,7 @@ namespace Dispetcher2.Class
 {
     public abstract class LaborReportWriter
     {
-        public abstract void Write(IEnumerable<string> columns, IEnumerable<LaborReportRow> rows);
+        public abstract void Write(IEnumerable<string> columns, IEnumerable<LaborReportRow> rows, string H1, string H2);
     }
     public class LaborReportRow
     {

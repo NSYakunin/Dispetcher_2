@@ -277,7 +277,9 @@ namespace Dispetcher2.Models
             var rows = report.GetRows();
             if (rows == null) return;
 
-            writer.Write(columns, rows);
+            string H1 = "Трудоемкость работ";
+            string H2 = $"с {BeginDate.ToShortDateString()} по {EndDate.ToShortDateString()}";
+            writer.Write(columns, rows, H1, H2);
         }
         async Task ExcelCommandMainAsync()
         {
@@ -318,6 +320,8 @@ namespace Dispetcher2.Models
             {
                 detModel.Columns = NameList;
                 detModel.Rows = detRows;
+                detModel.H1 = SelectedColumnHeader;
+                detModel.H2 = SelectedLaborReportRow.Name;
                 f.ShowDialog();
             }
         }

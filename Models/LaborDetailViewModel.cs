@@ -62,6 +62,26 @@ namespace Dispetcher2.Models
                 OnPropertyChanged(nameof(MainVisibility));
             }
         }
+        string h1Value = String.Empty;
+        string h2Value = String.Empty;
+        public string H1
+        {
+            get { return h1Value; }
+            set
+            {
+                h1Value = value;
+                OnPropertyChanged(nameof(H1));
+            }
+        }
+        public string H2
+        {
+            get { return h2Value; }
+            set
+            {
+                h2Value = value;
+                OnPropertyChanged(nameof(H2));
+            }
+        }
         public LaborDetailViewModel(LaborReportWriter writer)
         {
             this.writer = writer;
@@ -92,7 +112,7 @@ namespace Dispetcher2.Models
         void ExcelCommandMain()
         {
             if (Columns != null && Rows != null)
-                writer.Write(Columns, Rows);
+                writer.Write(Columns, Rows, H1, H2);
         }
         void AfterExcelCommand()
         {
