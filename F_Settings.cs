@@ -548,5 +548,37 @@ namespace Dispetcher2
         {
 
         }
+
+        private void CheckShcMTbox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                try
+                {
+                    using (var con = new SqlConnection())
+                    {
+                        con.ConnectionString = config.ConnectionString;
+                        SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//seconds //using System.Data.SqlClient;
+                        cmd.CommandText = $"SELECT TOP 1 [IdLoodsman] FROM [Dispetcher2].[dbo].[Sp_Details] where ShcmDetail = '{CheckShcMTbox.Text}'";
+                        cmd.Connection = con;
+                        cmd.Connection.Open();
+                        object IdLoodsman = cmd.ExecuteScalar();
+
+                        cmd.CommandText = $"SELECT [version] FROM [НИИПМ].[dbo].[rvwVersions] WHERE id = {IdLoodsman}";
+                        object actualLoodsmanVersion = cmd.ExecuteScalar();
+
+                        cmd.CommandText = $"SELECT TOP 1 [version] FROM [НИИПМ].[dbo].[rvwVersions] where product = '{CheckShcMTbox.Text}' AND state = 'Утвержден' ORDER BY version DESC";
+                        object rigthtLoodsmanVersion = cmd.ExecuteScalar();
+
+                        lBLText.Text = $"Текущая версия {CheckShcMTbox.Text} в Диспетчере - {actualLoodsmanVersion}\nАктуальная же версия в ЛОЦМАН -  {rigthtLoodsmanVersion}";
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                    MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
     }
 }
