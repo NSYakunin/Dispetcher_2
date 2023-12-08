@@ -563,6 +563,7 @@ namespace Dispetcher2
                         cmd.Connection = con;
                         cmd.Connection.Open();
                         object IdLoodsman = cmd.ExecuteScalar();
+                        if (IdLoodsman == null) throw new Exception("Не верно ввели название детали!");
 
                         cmd.CommandText = $"SELECT [version] FROM [НИИПМ].[dbo].[rvwVersions] WHERE id = {IdLoodsman}";
                         object actualLoodsmanVersion = cmd.ExecuteScalar();
