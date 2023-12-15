@@ -64,7 +64,10 @@
             this.tabPage_OldDispetcher = new System.Windows.Forms.TabPage();
             this.groupBox22 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.CheckShcMTbox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.lBLText = new System.Windows.Forms.Label();
             this.tB_IP = new System.Windows.Forms.TextBox();
             this.tB_HostName = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
@@ -131,9 +134,6 @@
             this.tB_SHCMFolder = new System.Windows.Forms.TextBox();
             this.btn_InsertFolder = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
-            this.CheckShcMTbox = new System.Windows.Forms.TextBox();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.lBLText = new System.Windows.Forms.Label();
             this.gBoxSettingsMenu.SuspendLayout();
             this.flowLayoutPanel_UserAccess.SuspendLayout();
             this.myTabC_Settings.SuspendLayout();
@@ -148,6 +148,7 @@
             this.tabPage_OldDispetcher.SuspendLayout();
             this.groupBox22.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
+            this.panel3.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dGV_Loodsman)).BeginInit();
@@ -179,7 +180,6 @@
             this.tabPageAdd_L_Detail.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.panel4.SuspendLayout();
-            this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // gBoxSettingsMenu
@@ -599,6 +599,25 @@
             this.tableLayoutPanel3.Size = new System.Drawing.Size(520, 186);
             this.tableLayoutPanel3.TabIndex = 5;
             // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.CheckShcMTbox);
+            this.panel3.Controls.Add(this.label2);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel3.Location = new System.Drawing.Point(3, 3);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(514, 28);
+            this.panel3.TabIndex = 0;
+            // 
+            // CheckShcMTbox
+            // 
+            this.CheckShcMTbox.Dock = System.Windows.Forms.DockStyle.Right;
+            this.CheckShcMTbox.Location = new System.Drawing.Point(273, 0);
+            this.CheckShcMTbox.Name = "CheckShcMTbox";
+            this.CheckShcMTbox.Size = new System.Drawing.Size(241, 23);
+            this.CheckShcMTbox.TabIndex = 1;
+            this.CheckShcMTbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckShcMTbox_KeyDown);
+            // 
             // label2
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -610,6 +629,14 @@
             this.label2.TabIndex = 0;
             this.label2.Text = "Проверить версию ЩЦМ в Диспетчере";
             this.label2.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            // 
+            // lBLText
+            // 
+            this.lBLText.AutoSize = true;
+            this.lBLText.Location = new System.Drawing.Point(3, 34);
+            this.lBLText.Name = "lBLText";
+            this.lBLText.Size = new System.Drawing.Size(0, 17);
+            this.lBLText.TabIndex = 1;
             // 
             // tB_IP
             // 
@@ -1418,33 +1445,6 @@
             this.label4.TabIndex = 10;
             this.label4.Text = "ЩЦМ (Например: ЩЦМ 4.492.692КнР)";
             // 
-            // CheckShcMTbox
-            // 
-            this.CheckShcMTbox.Dock = System.Windows.Forms.DockStyle.Right;
-            this.CheckShcMTbox.Location = new System.Drawing.Point(273, 0);
-            this.CheckShcMTbox.Name = "CheckShcMTbox";
-            this.CheckShcMTbox.Size = new System.Drawing.Size(241, 23);
-            this.CheckShcMTbox.TabIndex = 1;
-            this.CheckShcMTbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckShcMTbox_KeyDown);
-            // 
-            // panel3
-            // 
-            this.panel3.Controls.Add(this.CheckShcMTbox);
-            this.panel3.Controls.Add(this.label2);
-            this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel3.Location = new System.Drawing.Point(3, 3);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(514, 28);
-            this.panel3.TabIndex = 0;
-            // 
-            // lBLText
-            // 
-            this.lBLText.AutoSize = true;
-            this.lBLText.Location = new System.Drawing.Point(3, 34);
-            this.lBLText.Name = "lBLText";
-            this.lBLText.Size = new System.Drawing.Size(0, 17);
-            this.lBLText.TabIndex = 1;
-            // 
             // F_Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1478,6 +1478,8 @@
             this.groupBox22.PerformLayout();
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dGV_Loodsman)).EndInit();
@@ -1516,8 +1518,6 @@
             this.groupBox5.PerformLayout();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
-            this.panel3.ResumeLayout(false);
-            this.panel3.PerformLayout();
             this.ResumeLayout(false);
 
         }
