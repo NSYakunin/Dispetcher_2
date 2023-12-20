@@ -34,6 +34,7 @@ namespace Dispetcher2
             this.tPageRep3 = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.cLB_rep3Workers = new System.Windows.Forms.CheckedListBox();
             this.cBKoop = new System.Windows.Forms.CheckBox();
             this.btn_rep3Create = new System.Windows.Forms.Button();
             this.chB_rep3Days = new System.Windows.Forms.CheckBox();
@@ -124,6 +125,7 @@ namespace Dispetcher2
             this.bTNBirki = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.bTNBirkiOld = new System.Windows.Forms.Button();
+            this.label17 = new System.Windows.Forms.Label();
             this.myTabC_Reports.SuspendLayout();
             this.tPageRep3.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -195,13 +197,15 @@ namespace Dispetcher2
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 3;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 224F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 321F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(981, 597);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label17);
+            this.groupBox1.Controls.Add(this.cLB_rep3Workers);
             this.groupBox1.Controls.Add(this.cBKoop);
             this.groupBox1.Controls.Add(this.btn_rep3Create);
             this.groupBox1.Controls.Add(this.chB_rep3Days);
@@ -216,11 +220,20 @@ namespace Dispetcher2
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.cB_rep3Department);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox1.Location = new System.Drawing.Point(258, 189);
+            this.groupBox1.Location = new System.Drawing.Point(258, 141);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(464, 218);
+            this.groupBox1.Size = new System.Drawing.Size(464, 315);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
+            // 
+            // cLB_rep3Workers
+            // 
+            this.cLB_rep3Workers.FormattingEnabled = true;
+            this.cLB_rep3Workers.Location = new System.Drawing.Point(275, 151);
+            this.cLB_rep3Workers.Name = "cLB_rep3Workers";
+            this.cLB_rep3Workers.Size = new System.Drawing.Size(180, 112);
+            this.cLB_rep3Workers.TabIndex = 14;
+            this.cLB_rep3Workers.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.cLB_rep3Workers_ItemCheck);
             // 
             // cBKoop
             // 
@@ -236,10 +249,10 @@ namespace Dispetcher2
             // 
             // btn_rep3Create
             // 
-            this.btn_rep3Create.Location = new System.Drawing.Point(7, 167);
+            this.btn_rep3Create.Location = new System.Drawing.Point(7, 267);
             this.btn_rep3Create.Margin = new System.Windows.Forms.Padding(4);
             this.btn_rep3Create.Name = "btn_rep3Create";
-            this.btn_rep3Create.Size = new System.Drawing.Size(448, 41);
+            this.btn_rep3Create.Size = new System.Drawing.Size(450, 41);
             this.btn_rep3Create.TabIndex = 12;
             this.btn_rep3Create.Text = "Сформировать";
             this.btn_rep3Create.UseVisualStyleBackColor = false;
@@ -358,7 +371,7 @@ namespace Dispetcher2
             this.label6.AutoSize = true;
             this.label6.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label6.Location = new System.Drawing.Point(258, 166);
+            this.label6.Location = new System.Drawing.Point(258, 118);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(464, 20);
             this.label6.TabIndex = 1003;
@@ -1205,6 +1218,15 @@ namespace Dispetcher2
             this.bTNBirkiOld.UseVisualStyleBackColor = false;
             this.bTNBirkiOld.Click += new System.EventHandler(this.bTNBirki_Click);
             // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(6, 189);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(267, 17);
+            this.label17.TabIndex = 15;
+            this.label17.Text = "Исключить из отчета исполнителей =>";
+            // 
             // F_Reports
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1360,5 +1382,7 @@ namespace Dispetcher2
         private System.Windows.Forms.DataGridViewCheckBoxColumn birka;
         private System.Windows.Forms.Button exelGalvanNew;
         private System.Windows.Forms.Button bTNBirki;
+        private System.Windows.Forms.CheckedListBox cLB_rep3Workers;
+        private System.Windows.Forms.Label label17;
     }
 }

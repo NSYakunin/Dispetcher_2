@@ -141,7 +141,7 @@ namespace Dispetcher2.Class
         /// <param name="IdUser">исполнитель</param>
         /// <param name="IdCeh">цех</param>
         /// <param name="FlagDays">Разбить по дням</param>
-        public void rep3(DateTime DateStart, DateTime DateEnd, string loginWorker, int IdCeh, bool FlagDays, int PlanHours,int cWorkDays, bool koop)
+        public void rep3(DateTime DateStart, DateTime DateEnd, string loginWorker, int IdCeh, bool FlagDays, int PlanHours,int cWorkDays, bool koop, string notWorker)
         {
             try
             {
@@ -149,26 +149,79 @@ namespace Dispetcher2.Class
                 using (SqlConnection con = new SqlConnection())
                 {
                     con.ConnectionString = config.ConnectionString;
+                    string sqlExpression;
+                    if (notWorker != "")
+                    {
+                        sqlExpression = $"SELECT Distinct(TS1.FK_Login) AS FK_LoginWorker, " +
+                            $"u.FK_IdDepartment AS PK_IdDepartment, " +
+                            $"d.Department, u.DateStart, u.RateWorker, AmountWorkers, NumBrigade, OrderNum, Position, NameDetail, ShcmDetail, AmountDetails, " +
+                            $" FactOper, DateFactOper, Tpd, Tsh, OnlyOncePay , sum((convert( decimal(4,1), TS1.Val_TimeFloat))) AS Val_Time, " +
+                            $"u.DateEnd " +
+                            $"FROM TimeSheets TS1 " +
+                            $"LEFT JOIN vwFactWorkers FW ON fw.FK_LoginWorker = TS1.FK_Login AND FW.DateFactOper >= '{DateStart}' " +
+                            $"AND FW.DateFactOper <= '{DateEnd}' AND FW.AmountDetails = null " +
+                            $"INNER JOIN Users u ON u.PK_Login = TS1.FK_Login AND u.ITR = 0 AND Fk_IdJob<>28 AND Fk_IdJob>5 " +
+                            $"AND u.PK_Login NOT IN ('Бобров С.А.','Воронцов А.А.') " +
+                            $"INNER JOIN Sp_Department d ON d.PK_IdDepartment = u.FK_IdDepartment " +
+                            $"WHERE TS1.PK_Date >= '{DateStart}' AND TS1.PK_Date <= '{DateEnd}' AND (u.DateEnd >= '{DateStart}' OR u.DateEnd is null) " +
+                            $"AND TS1.FK_Login NOT IN ({notWorker})  " +
+                            $"GROUP BY  u.FK_IdDepartment,d.Department,TS1.FK_Login,u.DateStart,u.RateWorker,AmountWorkers,NumBrigade,OrderNum,Position,NameDetail, " +
+                            $"ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay,TS1.FK_Login,u.DateEnd " +
+                            $"union all " +
+                            $"SELECT FK_LoginWorker, PK_IdDepartment, Department, DateStart, RateWorker, AmountWorkers, NumBrigade, OrderNum, Position, " +
+                            $"NameDetail, ShcmDetail, AmountDetails, FactOper, DateFactOper, Tpd, Tsh, OnlyOncePay, " +
+                            $"sum((convert( decimal(4,1), Val_TimeFloat))) AS Val_Time, " +
+                            $"DateEnd " +
+                            $"FROM vwFactWorkers " +
+                            $"LEFT JOIN TimeSheets TS ON TS.FK_Login = vwFactWorkers.FK_LoginWorker AND TS.PK_Date >= '{DateStart}' AND PK_Date <= '{DateEnd}' " +
+                            $"WHERE DateFactOper >= '{DateStart}' AND DateFactOper <= '{DateEnd}' " +
+                            $"AND FK_LoginWorker NOT IN ({notWorker})  " +
+                            $"GROUP BY  PK_IdDepartment,Department,FK_LoginWorker,DateStart,RateWorker,AmountWorkers,NumBrigade,OrderNum,Position,NameDetail, " +
+                            $"ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay, DateEnd " +
+                            $"union all " +
+                            $"SELECT FK_LoginWorker, PK_IdDepartment, Department, DateStart, RateWorker, AmountWorkers, NumBrigade, OrderNum, Position, " +
+                            $"NameDetail, ShcmDetail, AmountDetails, FactOper, DateFactOper, Tpd, Tsh, OnlyOncePay, " +
+                            $"sum((convert( decimal(4,1), Val_TimeFloat))) AS Val_Time, DateEnd " +
+                            $"FROM vwFactBrigades " +
+                            $"LEFT JOIN TimeSheets TS ON TS.FK_Login = vwFactBrigades.FK_LoginWorker AND TS.PK_Date >= '{DateStart}' " +
+                            $"AND PK_Date <= '{DateEnd}' " +
+                            $"WHERE DateFactOper >= '{DateStart}' AND DateFactOper <= '{DateEnd}' " +
+                            $"AND FK_LoginWorker NOT IN ({notWorker})  " +
+                            $"GROUP BY  PK_IdDepartment,Department,FK_LoginWorker,DateStart,RateWorker,AmountWorkers,NumBrigade,OrderNum,Position, " +
+                            $"NameDetail, ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay, DateEnd " +
+                            $"ORDER BY  PK_IdDepartment,FK_LoginWorker,OrderNum;";
 
+                        SqlCommand cmd = new SqlCommand(sqlExpression) { CommandTimeout = 120 };
+
+                        cmd.Connection = con;
+
+                        SqlDataAdapter adapter = new SqlDataAdapter();
+                        adapter.SelectCommand = cmd;
+                        adapter.Fill(_DT);
+                        adapter.Dispose();
+                        _DT.Rows.Add();
+                    }
+                    else
+                    {
+                        sqlExpression = (loginWorker == "" & IdCeh == -1) ? "rep3All" : loginWorker != "" ? "rep3Worker" : "rep3Ceh";
+
+                        SqlCommand cmd = new SqlCommand(sqlExpression) { CommandTimeout = 120 };
+                        cmd.Connection = con;
+                        cmd.Parameters.Clear();
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.AddWithValue("@DateStart", DateStart);
+                        cmd.Parameters.AddWithValue("@DateEnd", DateEnd);
+                        cmd.Parameters.AddWithValue("@FK_LoginWorker", loginWorker);
+                        cmd.Parameters.AddWithValue("@PK_IdDepartment", IdCeh);
+
+                        SqlDataAdapter adapter = new SqlDataAdapter();
+                        adapter.SelectCommand = cmd;
+                        adapter.Fill(_DT);
+                        adapter.Dispose();
+                        _DT.Rows.Add();
+                    }    
                     //Если не выбрано ничего, то процедура rep3All, если выбран логин rep3Worker, и наконец если выбран цех rep3Ceh
-                    string sqlExpression = (loginWorker == "" & IdCeh == -1) ? "rep3All" : loginWorker != "" ? "rep3Worker" : "rep3Ceh";
-
-                    SqlCommand cmd = new SqlCommand(sqlExpression) { CommandTimeout = 120 };
-
-                    cmd.Connection = con;
-                    cmd.Parameters.Clear();
-                    cmd.CommandType = CommandType.StoredProcedure;
-
-                    cmd.Parameters.AddWithValue("@DateStart", DateStart);
-                    cmd.Parameters.AddWithValue("@DateEnd", DateEnd);
-                    cmd.Parameters.AddWithValue("@FK_LoginWorker", loginWorker);
-                    cmd.Parameters.AddWithValue("@PK_IdDepartment", IdCeh);
-
-                    SqlDataAdapter adapter = new SqlDataAdapter();
-                    adapter.SelectCommand = cmd;
-                    adapter.Fill(_DT);
-                    adapter.Dispose();
-                    _DT.Rows.Add();
                 }
 
 
