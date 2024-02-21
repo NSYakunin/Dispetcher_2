@@ -74,9 +74,10 @@ namespace Dispetcher2.DataAccess
                     }
                     if (row.Operations.ContainsKey(c))
                     {
-                        Excel.Range r = worksheet.Cells[numRow, numCol];
-                        r.Value = row.Operations[c];
-                        r.HorizontalAlignment = Excel.Constants.xlLeft;
+                        //Excel.Range r = worksheet.Cells[numRow, numCol];
+                        //r.Value = row.Operations[c];
+                        //r.HorizontalAlignment = Excel.Constants.xlLeft;
+                        worksheet.Cells[numRow, numCol] = row.Operations[c];
                     }
                         
                     numRow++;
