@@ -72,14 +72,14 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>1A0EFEB73CAAE9149F0132497D4FBA3BD57B70EE</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>0CC58FA04C734EF628922392A96D4A586689CE36</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>
     </ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>
