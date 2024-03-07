@@ -1109,7 +1109,7 @@ namespace Dispetcher2.Class
                     cmd.Parameters.Add(new SqlParameter("@PK_IdOrder", SqlDbType.Int));
                     cmd.Parameters["@PK_IdOrder"].Value = PK_IdOrder;
                     cmd.Connection = con;
-                    SqlDataAdapter adapter = new SqlDataAdapter();
+					SqlDataAdapter adapter = new SqlDataAdapter();
                     adapter.SelectCommand = cmd;
                     adapter.Fill(_DT);
                     adapter.Dispose();
