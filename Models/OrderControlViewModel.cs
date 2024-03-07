@@ -2,10 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using System.ComponentModel;
-using System.Windows.Input;
 
 using Dispetcher2.Class;
 using System.Collections;

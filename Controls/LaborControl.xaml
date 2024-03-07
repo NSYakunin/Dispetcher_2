@@ -7,7 +7,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="1000" FontFamily="Calibri" FontSize="15">
     <UserControl.Resources>
-
         <Style TargetType="{x:Type DatePicker}" x:Key="datePickerGeneralStyle" BasedOn="{StaticResource {x:Type DatePicker}}">
             <Setter Property="TextElement.FontSize" Value="18" />
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -50,15 +49,15 @@
                     Margin="5" VerticalAlignment="Center" Width="75" Command="{Binding Path=RequestCommand}"/>
                 <Button Content="Excel" HorizontalAlignment="Left"
                     Margin="5" VerticalAlignment="Center" Width="75" Command="{Binding Path=ExcelCommand}"/>
-                <DatePicker VerticalAlignment="Center" Margin="5" SelectedDate="{Binding Path=BeginDate}" 
-                            Style="{StaticResource datePickerGeneralStyle}" />
+                <!--<DatePicker VerticalAlignment="Center" Margin="5" SelectedDate="{Binding Path=BeginDate}" 
+                            Style="{StaticResource datePickerGeneralStyle}" />-->
                 <DatePicker VerticalAlignment="Center" Margin="5" SelectedDate="{Binding Path=EndDate}" 
                             Style="{StaticResource datePickerGeneralStyle}" />
                 <CheckBox Content="По деталям" IsChecked="{Binding Path=ShowDetailFlag}" 
                     VerticalAlignment="Center" Margin="5"/>
                 <CheckBox Content="По операциям" IsChecked="{Binding Path=ShowOperationFlag}" 
                     VerticalAlignment="Center" Margin="5" />
-                <CheckBox Content="Заказы по факту" IsChecked="{Binding Path=FactOrdersFlag}"
+                <CheckBox Content="Все заказы" IsChecked="{Binding Path=AllOrdersFlag}"
                           VerticalAlignment="Center" Margin="5" />
             </StackPanel>
             

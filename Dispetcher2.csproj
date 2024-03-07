@@ -362,10 +362,8 @@
     <Compile Include="Models\JobViewModel.cs" />
     <Compile Include="Models\LaborDetailViewModel.cs" />
     <Compile Include="Models\LaborViewModel.cs" />
-    <Compile Include="Models\OperationViewModel.cs" />
     <Compile Include="Models\OrderControlViewModel.cs" />
     <Compile Include="Models\ProgressViewModel.cs" />
-    <Compile Include="Models\WorkTimeViewModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Controls\HostForm.resx">

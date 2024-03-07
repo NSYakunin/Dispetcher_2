@@ -13,7 +13,6 @@ using Dispetcher2.Controls;
 using System.Diagnostics;
 using System.Windows.Controls;
 
-
 namespace Dispetcher2.Models
 {
     public class LaborViewModel : INotifyPropertyChanged
@@ -92,14 +91,14 @@ namespace Dispetcher2.Models
         }
         public bool ShowDetailFlag { get; set; }
         public bool ShowOperationFlag { get; set; }
-        bool factOrdVal = true;
-        public bool FactOrdersFlag
+        bool allOrdersFlagValue = true;
+        public bool AllOrdersFlag
         {
-            get { return factOrdVal; }
+            get { return allOrdersFlagValue; }
             set
             {
-                factOrdVal = value;
-                if (factOrdVal)
+                allOrdersFlagValue = value;
+                if (allOrdersFlagValue)
                 {
                     DataVisibility = Visibility.Collapsed;
                 }
@@ -112,7 +111,8 @@ namespace Dispetcher2.Models
         public ICommand RequestCommand { get; set; }
         public ICommand ExcelCommand { get; set; }
         public ICommand DetailCommand { get; set; }
-        public DateTime BeginDate { get; set; }
+        // Дата начала не нужна. В отчете учитываются все фактические операции до EndDate
+        //public DateTime BeginDate { get; set; }
         public DateTime EndDate { get; set; }
         public ObservableCollection<LaborReportRow> RowsView { get; set; }
         
@@ -173,9 +173,10 @@ namespace Dispetcher2.Models
             RowsView = new ObservableCollection<LaborReportRow>();
 
             DateTime n = DateTime.Now.Date;
-            BeginDate = new DateTime(n.Year, 1, 1);
+            //BeginDate = new DateTime(n.Year, 1, 1);
             EndDate = new DateTime(n.Year, n.Month, 1);
-            FactOrdersFlag = true;
+            EndDate = EndDate.AddMonths(1);
+            AllOrdersFlag = true;
         }
         void OnPropertyChanged(string prop)
         {
@@ -203,7 +204,7 @@ namespace Dispetcher2.Models
         }
         void After()
         {
-            if (factOrdVal == false) DataVisibility = Visibility.Visible;
+            if (allOrdersFlagValue == false) DataVisibility = Visibility.Visible;
             WaitVisibility = Visibility.Collapsed;
             Filter = String.Empty;
             CommandVisibility = Visibility.Visible;
@@ -237,9 +238,9 @@ namespace Dispetcher2.Models
             report.SelectedOrders = ocvm.SelectedOrders;
             report.ShowDetailFlag = this.ShowDetailFlag;
             report.ShowOperationFlag = this.ShowOperationFlag;
-            report.BeginDate = this.BeginDate;
+            //report.BeginDate = this.BeginDate;
             report.EndDate = this.EndDate;
-            report.FactOrdersFlag = this.FactOrdersFlag;
+            report.AllOrdersFlag = this.AllOrdersFlag;
 
             Action a = report.Calculate;
             await Task.Run(a);
@@ -252,7 +253,7 @@ namespace Dispetcher2.Models
             var columns = report.GetColumns();
             if (observer != null) observer.Update(columns);
 
-            if (factOrdVal == false) DataVisibility = Visibility.Visible;
+            if (allOrdersFlagValue == false) DataVisibility = Visibility.Visible;
             WaitVisibility = Visibility.Collapsed;
             CommandVisibility = Visibility.Visible;
             OperationVisibility = Visibility.Visible;
@@ -278,7 +279,8 @@ namespace Dispetcher2.Models
             if (rows == null) return;
 
             string H1 = "Трудоемкость работ";
-            string H2 = $"с {BeginDate.ToShortDateString()} по {EndDate.ToShortDateString()}";
+            //string H2 = $"с {BeginDate.ToShortDateString()} по {EndDate.ToShortDateString()}";
+            string H2 = $"на {EndDate.ToShortDateString()}";
             writer.Write(columns, rows, H1, H2);
         }
         async Task ExcelCommandMainAsync()
@@ -289,7 +291,7 @@ namespace Dispetcher2.Models
         }
         void AfterExcelCommand()
         {
-            if (factOrdVal == false) DataVisibility = Visibility.Visible;
+            if (allOrdersFlagValue == false) DataVisibility = Visibility.Visible;
             WaitVisibility = Visibility.Collapsed;
             CommandVisibility = Visibility.Visible;
             OperationVisibility = Visibility.Visible;
