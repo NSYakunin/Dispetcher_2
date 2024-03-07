@@ -1,17 +1,12 @@
 ﻿using System;
-//using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Metadata.W3cXsd2001;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Dispetcher2.Class
 {
     public abstract class LaborReportWriter
     {
-        public abstract void Write(IEnumerable<string> columns, IEnumerable<LaborReportRow> rows);
+        public abstract void Write(IEnumerable<string> columns, IEnumerable<LaborReportRow> rows, string H1, string H2);
     }
     public class LaborReportRow
     {
@@ -56,21 +51,27 @@ namespace Dispetcher2.Class
 
     public class LaborReport
     {
-        private const string QuantityName = "Кол-во работников";
-        private const string TimeSheetName = "Табельное время";
-        private const string TotalName = "Всего";
-        private const string LimitName = "Лимит трудоемкости";
-        private const string LimitCoopName = "Лимит трудоемкости без кооперации";
-        private const string ItogoName = "Итого";
-        private const string ProductivityName = "Выработка, %";
-        private const string CoopName = "Кооперация";
-        private const string coopLogin = "кооп";
+        const string quantityName = "Кол-во работников за год";
+        const string timeSheetName = "Табельное время за год";
+        const string restName = "Остаток на указанную дату";
+        const string limitName = "Лимит трудоемкости";
+        const string limitCoopName = "Лимит трудоемкости без кооперации";
+        const string itogoName = "Итого";
+        const string productivityName = "Выработка, %";
+        const string coopName = "Кооперация";
+        const string coopLogin = "кооп";
+        const string factName = "Израсходовано";
         public OrderRepository SelectedOrders { get; set; }
         public bool ShowDetailFlag { get; set; }
         public bool ShowOperationFlag { get; set; }
-        public bool FactOrdersFlag { get; set; }
-        public DateTime BeginDate { get; set; }
+        public bool AllOrdersFlag { get; set; }
+        // Дата начала не нужна. В отчете учитываются все фактические операции до EndDate
+        //public DateTime BeginDate { get; set; }
         public DateTime EndDate { get; set; }
+        
+        DateTime yearBeginDate { get { return new DateTime(EndDate.Year, 1, 1); } }
+        DateTime yearEndDate { get { return new DateTime(EndDate.Year + 1, 1, 1); } }
+
         List<LaborReportRow> rows;
         // Внешние зависимости
         DetailRepository details;
@@ -83,6 +84,7 @@ namespace Dispetcher2.Class
 
         Dictionary<int, Order> allOrderDict;
         List<Order> factOrders;
+        //LaborReportRow factByOperation;
         public LaborReport(DetailRepository details, OperationRepository operations, OperationGroupRepository groups, 
             WorkDayRepository workDays, OrderRepository allOrders)
         {
@@ -105,6 +107,8 @@ namespace Dispetcher2.Class
             }
 
             rows = new List<LaborReportRow>();
+
+            //factByOperation = new LaborReportRow() { Name = "Фактическое время по операциям" };
         }
         string Format(TimeSpan ts)
         {
@@ -124,13 +128,10 @@ namespace Dispetcher2.Class
 
         private void ProcessEmployeeTime()
         {
-            
-            
-
             // фильтруем рабочие дни по дате
             // Группировать данные в словарь списков по коду группы операции
             // Группировать данные в словарь операция-сотрудники
-            var wdgroups = workDays.GetWorkDays(BeginDate, EndDate).GroupBy(item => item.OperationGroupId);
+            var wdgroups = workDays.GetWorkDays(yearBeginDate, yearEndDate).GroupBy(item => item.OperationGroupId);
             // Ключ: код операции, значение: список рабочих дней
             var wdDic = new Dictionary<int, List<WorkDay>>();
             // Ключ: код операции, значение: уникальный список сотрудников
@@ -157,7 +158,7 @@ namespace Dispetcher2.Class
                 }
             }
 
-            var dv = new LaborReportRow() { Name = QuantityName };
+            var dv = new LaborReportRow() { Name = quantityName };
             // Всего, количество работников
             int totalCount = 0;
 
@@ -170,10 +171,10 @@ namespace Dispetcher2.Class
                     totalCount = totalCount + empDic[op.Id].Count();
                 }
             }
-            dv.Operations[TotalName] = totalCount.ToString();
+            dv.Operations[restName] = totalCount.ToString();
             this.rows.Add(dv);
 
-            dv = new LaborReportRow() { Name = TimeSheetName };
+            dv = new LaborReportRow() { Name = timeSheetName };
             // Всего, табельное время
             TimeSpan totalTime = TimeSpan.Zero;
             
@@ -191,23 +192,26 @@ namespace Dispetcher2.Class
                         {
                             time = time.Add(day.Time);
                             dv.AddWorkTime(name, day);
-                            dv.AddWorkTime(TotalName, day);
+                            dv.AddWorkTime(restName, day);
                         }
                     }
                     dv.Operations[op.Name] = Format(time);
                     totalTime = totalTime.Add(time);
                 }
             }
-            dv.Operations[TotalName] = Format(totalTime);
+            dv.Operations[restName] = Format(totalTime);
             
             this.rows.Add(dv);
         }
         void ProcessDetailOperations()
         {
             var oe = SelectedOrders.GetOrders();
-            if (FactOrdersFlag)
+            if (AllOrdersFlag)
             {
-                CalculateFactOrders();
+                //CalculateFactOrders();
+                
+                factOrders = new List<Order>();
+                foreach (var p in allOrderDict) factOrders.Add(p.Value);
                 oe = factOrders;
             }
 
@@ -285,9 +289,10 @@ namespace Dispetcher2.Class
         }
         void ProcessRow(LaborReportRow dv, List<Operation> dvOperations)
         {
-            TimeSpan totalTime = TimeSpan.Zero;
+            TimeSpan totalFactTime = TimeSpan.Zero;
             TimeSpan totalPlanTime = TimeSpan.Zero;
-            TimeSpan coopTime = TimeSpan.Zero;
+            TimeSpan totalCoopTime = TimeSpan.Zero;
+            
 
             if (ShowOperationFlag == true)
             {
@@ -303,38 +308,55 @@ namespace Dispetcher2.Class
                     // В группу входят все операции с одним именем
                     TimeSpan planTime = TimeSpan.Zero;
                     TimeSpan factTime = TimeSpan.Zero;
+                    TimeSpan coopTime = TimeSpan.Zero;
                     
                     foreach (var op in g)
                     {
+                        // фактические операции
+                        if (op.TypeRow == "3fact" && op.Login != coopLogin)
+                        {
+                            //if (yearBeginDate <= op.FactDate && op.FactDate < yearEndDate)
+                            //{
+                            //    factByOperation.AddWorkTime(name, op);
+                            //}
+                            if (op.FactDate < EndDate)
+                            {
+                                factTime = factTime.Add(op.Time);
+                                dv.AddWorkTime(factName, op);
+                                //dv.AddWorkTime(restName, op);
+                            }
+                        }
                         // плановые операции
                         if (op.TypeRow == "1sp" || op.TypeRow == "2sp111")
                         {
                             planTime = planTime.Add(op.Time);
-                            dv.AddWorkTime(LimitName, op);
+                            dv.AddWorkTime(limitName, op);
                         }
-                        // фактические операции
-                        if (op.TypeRow == "3fact" && BeginDate <= op.FactDate && op.FactDate < EndDate)
+                        // кооперация, фактически, вне зависимости от даты
+                        if (op.TypeRow == "3fact" && op.Login == coopLogin)
                         {
-                            if (op.Login == coopLogin)
-                            {
-                                coopTime = coopTime.Add(op.Time);
-                                dv.AddWorkTime(CoopName, op);
-                            }
-                            else
-                            {
-                                factTime = factTime.Add(op.Time);
-                                dv.AddWorkTime(name, op);
-                                dv.AddWorkTime(TotalName, op);
-                            }
+                            coopTime = coopTime.Add(op.Time);
+                            dv.AddWorkTime(coopName, op);
                         }
                     }
-
-                    if (factTime > TimeSpan.Zero)
-                        dv.Operations[name] = Format(factTime);
-                    totalTime = totalTime.Add(factTime);
-                    totalPlanTime = totalPlanTime.Add(planTime);
-
+                    // это неправильно, смотри ТЗ
+                    //if (factTime > TimeSpan.Zero)
+                    //dv.Operations[name] = Format(factTime);
                     //dv.TimeDictionary[name] = factTime;
+
+                    // выводим остаток по операциям
+                    var ts = planTime.Subtract(factTime).Subtract(coopTime);
+                    if (ts > TimeSpan.Zero)
+                    {
+                        dv.Operations[name] = Format(ts);
+                        // Фиктивная "операция" для name, нужна для попадания в "Итого"
+                        Operation x = new Operation() { Name = name, Time = ts, };
+                        dv.AddWorkTime(name, x);
+                    }
+
+                    totalFactTime = totalFactTime.Add(factTime);
+                    totalPlanTime = totalPlanTime.Add(planTime);
+                    totalCoopTime = totalCoopTime.Add(coopTime);
                 }
             }
             else
@@ -353,68 +375,114 @@ namespace Dispetcher2.Class
                     // Если есть операции, считаем план и факт
                     TimeSpan planTime = TimeSpan.Zero;
                     TimeSpan factTime = TimeSpan.Zero;
+                    TimeSpan coopTime = TimeSpan.Zero;
+
                     foreach (var op in se)
                     {
+                        // фактические операции
+                        if (op.TypeRow == "3fact" && op.Login != coopLogin)
+                        {
+                            //if (yearBeginDate <= op.FactDate && op.FactDate < yearEndDate)
+                            //{
+                            //    factByOperation.AddWorkTime(name, op);
+                            //}
+                            if (op.FactDate < EndDate)
+                            {
+                                factTime = factTime.Add(op.Time);
+                                dv.AddWorkTime(factName, op);
+                                //dv.AddWorkTime(restName, op);
+                            }
+                        }
                         // плановые операции
                         if (op.TypeRow == "1sp" || op.TypeRow == "2sp111")
                         {
                             planTime = planTime.Add(op.Time);
-                            dv.AddWorkTime(LimitName, op);
+                            dv.AddWorkTime(limitName, op);
+                            continue;
                         }
-                        // фактические операции
-                        if (op.TypeRow == "3fact" && BeginDate <= op.FactDate && op.FactDate < EndDate)
+                        // кооперация, фактически, вне зависимости от даты
+                        if (op.TypeRow == "3fact" && op.Login == coopLogin)
                         {
-                            if (op.Login == coopLogin)
-                            {
-                                coopTime = coopTime.Add(op.Time);
-                                dv.AddWorkTime(CoopName, op);
-                            }
-                            else
-                            {
-                                factTime = factTime.Add(op.Time);
-                                dv.AddWorkTime(name, op);
-                                dv.AddWorkTime(TotalName, op);
-                            }
+                            coopTime = coopTime.Add(op.Time);
+                            dv.AddWorkTime(coopName, op);
+                            continue;
                         }
+                        
+
                     }
-                    
 
-                    if (factTime > TimeSpan.Zero)
-                        dv.Operations[name] = Format(factTime);
-                    totalTime = totalTime.Add(factTime);
-                    totalPlanTime = totalPlanTime.Add(planTime);
-
+                    // это неправильно, смотри ТЗ
+                    //if (factTime > TimeSpan.Zero)
+                    //dv.Operations[name] = Format(factTime);
                     //dv.TimeDictionary[name] = factTime;
+
+                    // выводим остаток по операциям
+                    var ts = planTime.Subtract(factTime).Subtract(coopTime);
+                    if (ts > TimeSpan.Zero)
+                    {
+                        dv.Operations[name] = Format(ts);
+                        // Фиктивная "операция" для name, нужна для попадания в "Итого"
+                        Operation x = new Operation() { Name = name, Time = ts, };
+                        dv.AddWorkTime(name, x);
+                    }
+
+                    totalFactTime = totalFactTime.Add(factTime);
+                    totalPlanTime = totalPlanTime.Add(planTime);
+                    totalCoopTime = totalCoopTime.Add(coopTime);
                 }
             }
-            if (totalTime > TimeSpan.Zero)
-                dv.Operations[TotalName] = Format(totalTime);
+            // цитата из ТЗ:
+            // 2.7 Лимит трудоемкости, н/час
             if (totalPlanTime > TimeSpan.Zero)
-                dv.Operations[LimitName] = Format(totalPlanTime);
-            if (coopTime > TimeSpan.Zero)
-                dv.Operations[CoopName] = Format(coopTime);
-            TimeSpan ts = totalPlanTime.Subtract(coopTime);
-            if (ts > TimeSpan.Zero)
             {
-                dv.Operations[LimitCoopName] = Format(ts);
-                // Фиктивная "операция" для LimitCoopName
-                Operation x = new Operation() { Name = LimitCoopName, Time = ts };
-                dv.AddWorkTime(LimitCoopName, x);
+                dv.Operations[limitName] = Format(totalPlanTime);
             }
-
-            // !!! Если нужно, подробности по итоговым ячейкам надо собирать выше в цикле
+            // 2.8 Трудоёмкость по кооперации, н/час
+            if (totalCoopTime > TimeSpan.Zero)
+            {
+                dv.Operations[coopName] = Format(totalCoopTime);
+            }
+            // 2.9 Лимит трудоёмкости с учетом кооперации (рассчитывается как разница п.2.7-п.2.8);
+            var planSubtractCoop = totalPlanTime.Subtract(totalCoopTime);
+            //if (planSubtractCoop > TimeSpan.Zero)
+            {
+                dv.Operations[limitCoopName] = Format(planSubtractCoop);
+                // Фиктивная "операция" для limitCoopName, нужна для попадания в "Итого"
+                Operation x = new Operation() { Name = limitCoopName, Time = planSubtractCoop };
+                dv.AddWorkTime(limitCoopName, x);
+            }
+            // 2.10 Израсходовано на 01 число месяца (на любую выбранную дату), следующего за отчетным
+            if (totalFactTime > TimeSpan.Zero)
+            {
+                dv.Operations[factName] = Format(totalFactTime);
+            }
+            // 2.11 Остаток на 01 число месяца и /или на любую выбранную дату (рассчитывается как разница п.2.9-п.2.10);
+            //ts = totalPlanTime.Subtract(totalFactTime);
+            var planRest = planSubtractCoop.Subtract(totalFactTime);
+            if (planRest >= TimeSpan.Zero)
+            {
+                dv.Operations[restName] = Format(planRest);
+                // Фиктивная "операция" для restName, нужна для попадания в "Итого"
+                Operation x = new Operation() { Name = restName, Time = planRest };
+                dv.AddWorkTime(restName, x);
+            }
             
-            //dv.TimeDictionary[LimitName] = totalPlanTime;
-            //dv.TimeDictionary[CoopName] = coopTime;
-            //dv.TimeDictionary[LimitCoopName] = ts;
         }
         public IEnumerable<string> GetColumns()
         {
             HashSet<string> NameList = new HashSet<string>();
-            NameList.Add(LimitName);
-            NameList.Add(CoopName);
-            NameList.Add(LimitCoopName);
-            NameList.Add(TotalName);
+            // цитата из ТЗ:
+            // 2.7 Лимит трудоемкости, н/час
+            NameList.Add(limitName);
+            // 2.8 Трудоёмкость по кооперации, н/час
+            NameList.Add(coopName);
+            // 2.9 Лимит трудоёмкости с учетом кооперации (рассчитывается как разница п.2.7-п.2.8);
+            NameList.Add(limitCoopName);
+            // 2.10 Израсходовано на 01 число месяца (на любую выбранную дату), следующего за отчетным
+            NameList.Add(factName);
+            // 2.11 Остаток на 01 число месяца и /или на любую выбранную дату (рассчитывается как разница п.2.9-п.2.10);
+            NameList.Add(restName);
+            // 2.12 Пооперационно расшифровать пункт 2.11
             foreach (var item in rows)
             {
                 foreach (var k in item.Operations.Keys)
@@ -435,15 +503,15 @@ namespace Dispetcher2.Class
         }
         void ProcessTotal()
         {
-
+            double t1, t2;
 
             LaborReportRow tsrow = null;
             // Считаем итого
-            LaborReportRow itog = new LaborReportRow() { Name = ItogoName };
+            LaborReportRow itog = new LaborReportRow() { Name = itogoName };
             foreach (var dv in rows)
             {
-                if (dv.Name.Equals(QuantityName)) continue;
-                if (dv.Name.Equals(TimeSheetName)) 
+                if (dv.Name.Equals(quantityName)) continue;
+                if (dv.Name.Equals(timeSheetName)) 
                 { 
                     tsrow = dv; 
                     continue; 
@@ -472,22 +540,38 @@ namespace Dispetcher2.Class
 
             rows.Add(itog);
             // Считаем выработку
-            LaborReportRow vrow = new LaborReportRow() { Name = ProductivityName };
+            //double total1 = 0;
+            //double total2 = 0;
+            LaborReportRow vrow = new LaborReportRow() { Name = productivityName };
             if (tsrow != null)
             {
                 foreach(var name in itog.TimeDictionary.Keys)
                 {
                     if (tsrow.TimeDictionary.ContainsKey(name))
                     {
-                        //double t1 = itog.TimeDictionary[name].TotalMinutes;
-                        double t1 = itog.GetTimeSpan(name).TotalMinutes;
-                        //double t2 = tsrow.TimeDictionary[name].TotalMinutes;
-                        double t2 = tsrow.GetTimeSpan(name).TotalMinutes;
+                        //double t1 = itog.GetTimeSpan(name).TotalHours;
+                        //double t1 = factByOperation.GetTimeSpan(name).TotalHours;
+
+                        //double t2 = tsrow.GetTimeSpan(name).TotalHours;
+                        //double v = 100.0 * t1 / t2;
+                        t1 = tsrow.GetTimeSpan(name).TotalHours;
+                        t2 = itog.GetTimeSpan(name).TotalHours;
+
+                        // ТЗ:
+                        // Выработка (%) определяется по формуле:
+                        // Выработка (%) = (100%) * (Годовая выработка) / (Итого)
+                        // Годовая выработка – годовая норма производительности труда работников цеха
+                        // Итого - фактическая производительность труда работников цеха
+
                         double v = 100.0 * t1 / t2;
                         vrow.Operations[name] = v.ToString("0.00") + "%";
+                        //total1 += t1;
+                        //total2 += t2;
                     }
                 }
             }
+            //double totalv = 100.0 * total1 / total2;
+            //vrow.Operations[factName] = totalv.ToString("0.00") + "%";
             rows.Add(vrow);
         }
         public IEnumerable<LaborReportRow> GetRows()
@@ -495,25 +579,25 @@ namespace Dispetcher2.Class
             return rows;
         }
         // Определяем в каких заказах есть факты для указанного диаппазона дат
-        void CalculateFactOrders()
-        {
-            HashSet<int> factOrderIdset = new HashSet<int>();
+        //void CalculateFactOrders()
+        //{
+        //    HashSet<int> factOrderIdset = new HashSet<int>();
 
-            foreach (var op in operations.GetOperations())
-            {
-                // фактические операции
-                if (op.TypeRow == "3fact" && BeginDate <= op.FactDate && op.FactDate < EndDate)
-                {
-                    factOrderIdset.Add(op.OrderId);
-                }
-            }
+        //    foreach (var op in operations.GetOperations())
+        //    {
+        //        // фактические операции
+        //        if (op.TypeRow == "3fact" && op.FactDate < EndDate)
+        //        {
+        //            factOrderIdset.Add(op.OrderId);
+        //        }
+        //    }
 
-            factOrders = new List<Order>();
-            foreach (var item in factOrderIdset)
-            {
-                if (allOrderDict.ContainsKey(item)) factOrders.Add(allOrderDict[item]);
-            }
-        }
+        //    factOrders = new List<Order>();
+        //    foreach (var item in factOrderIdset)
+        //    {
+        //        if (allOrderDict.ContainsKey(item)) factOrders.Add(allOrderDict[item]);
+        //    }
+        //}
         public LaborReportRow GetReportRow(WorkDay item)
         {
             LaborReportRow r = new LaborReportRow();

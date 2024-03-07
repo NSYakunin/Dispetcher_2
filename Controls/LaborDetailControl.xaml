@@ -14,6 +14,8 @@
         <StackPanel Grid.Row="0" Height="40" Orientation="Horizontal">
             <Button Content="Excel" Margin="5" Command="{Binding Path=ExcelCommand}" MinWidth="80" Visibility="{Binding Path=MainVisibility}" />
             <TextBlock Text="Загрузка..." Visibility="{Binding Path=LoadVisibility}" Margin="5" FontFamily="Segoe UI" FontSize="20"  />
+            <TextBlock Text="{Binding Path=H1}" Visibility="{Binding Path=MainVisibility}" Margin="5" />
+            <TextBlock Text="{Binding Path=H2}" Visibility="{Binding Path=MainVisibility}" Margin="5" />
         </StackPanel>
         <local:OperationControl x:Name="opc" Grid.Row="1" Visibility="{Binding Path=MainVisibility}" />
     </Grid>

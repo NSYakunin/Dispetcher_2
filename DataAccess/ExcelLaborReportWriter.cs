@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 using Excel = Microsoft.Office.Interop.Excel;
 
 using Dispetcher2.Class;
-using System.Diagnostics;
-using Microsoft.Office.Interop.Excel;
 
 namespace Dispetcher2.DataAccess
 {
@@ -16,15 +14,14 @@ namespace Dispetcher2.DataAccess
         bool errorFlag;
         string errorMessage;
         Excel.Application app;
-        
         Excel.Worksheet worksheet;
         
-        public override void Write(IEnumerable<string> columns, IEnumerable<LaborReportRow> rows)
+        public override void Write(IEnumerable<string> columns, IEnumerable<LaborReportRow> rows, string H1, string H2)
         {
             Initialize();
             if (app != null)
             {
-                Main(columns, rows);
+                Main(columns, rows, H1, H2);
                 Finish();
             }
         }
@@ -45,7 +42,7 @@ namespace Dispetcher2.DataAccess
             Excel.Workbook workbook = wbs.Add(1);
             Excel.Sheets sheets = app.Worksheets;
             worksheet = (Excel.Worksheet)sheets.get_Item(1);
-
+            // сборка мусора
             sheets = null;
             workbook = null;
             wbs = null;
@@ -54,12 +51,12 @@ namespace Dispetcher2.DataAccess
         {
             app.Visible = true;
         }
-        void Main(IEnumerable<string> columns, IEnumerable<LaborReportRow> rows)
+        void Main(IEnumerable<string> columns, IEnumerable<LaborReportRow> rows, string H1, string H2)
         {
             bool f = true;
             int firstCol = 1;
             int lastCol = 0;
-            int firstRow = 1;
+            int firstRow = 4;
             int lastRow = 0;
 
             int numCol = firstCol + 1;
@@ -67,17 +64,22 @@ namespace Dispetcher2.DataAccess
             {
 
                 worksheet.Columns[numCol].ColumnWidth = 12;
-                worksheet.Cells[firstCol, numCol] = c;
+                worksheet.Cells[firstRow, numCol] = c;
                 int numRow = firstRow + 1;
                 foreach (LaborReportRow row in rows)
                 {
                     if (f)
                     {
                         worksheet.Cells[numRow, firstCol] = row.Name;
-                        
                     }
-                    if (row.Operations.ContainsKey(c)) 
+                    if (row.Operations.ContainsKey(c))
+                    {
+                        //Excel.Range r = worksheet.Cells[numRow, numCol];
+                        //r.Value = row.Operations[c];
+                        //r.HorizontalAlignment = Excel.Constants.xlLeft;
                         worksheet.Cells[numRow, numCol] = row.Operations[c];
+                    }
+                        
                     numRow++;
                 }
                 f = false;
@@ -94,6 +96,9 @@ namespace Dispetcher2.DataAccess
 
             SetLineStyle(firstRow, firstCol + 1, firstRow, lastCol);
             SetLineStyle(firstRow+1, firstCol, lastRow, lastCol);
+
+            SetHeader(H1, 1, firstCol, lastCol, true);
+            SetHeader(H2, 2, firstCol, lastCol, false);
         }
 
         void SetLineStyle(int firstRow, int firstCol, int lastRow, int lastCol)
@@ -102,6 +107,16 @@ namespace Dispetcher2.DataAccess
             Excel.Range c2 = worksheet.Cells[lastRow, lastCol];
             Excel.Range r = worksheet.get_Range(c1, c2);
             r.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+        }
+        void SetHeader(string text, int row, int firstCol, int lastCol, bool bold)
+        {
+            Excel.Range c1 = worksheet.Cells[row, firstCol];
+            Excel.Range c2 = worksheet.Cells[row, lastCol];
+            Excel.Range r = worksheet.get_Range(c1, c2);
+            r.MergeCells = true;
+            if (bold) r.Font.Bold = 1;
+            r.Value = text;
+            r.HorizontalAlignment = Excel.Constants.xlCenter;
         }
     }
 }
