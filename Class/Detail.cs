@@ -15,37 +15,16 @@ namespace Dispetcher2.Class
         public int Amount { get; set; }
         public string AllPositionParent { get; set; }
         public long OrderDetailId { get; set; }
-        public long IdDetail { get; set; }
-        public long IdLoodsman { get; set; }
+
+
         public int PositionParent { get; set; }
     }
 
     public abstract class DetailRepository : Repository
     {
         public abstract IEnumerable<Detail> GetDetails();
-        //public abstract void Load();
 
-        public IEnumerable<Detail> GetTree(Detail d)
-        {
-            var DetailList = GetDetails();
-
-            List<Detail> result = new List<Detail>();
-            result.Add(d);
-
-            var e = from item in DetailList
-                    where item.PositionParent == d.Position && item.OrderId == d.OrderId && d.Position != 0
-                    select item;
-
-            foreach (var x in e)
-            {
-                var sr = GetTree(x);
-                result.AddRange(sr);
-            }
-
-            return result;
-        }
-
-
+        public abstract Detail[] GetArray();
     }
 
     public class TestDetailRepository : DetailRepository
@@ -64,6 +43,11 @@ namespace Dispetcher2.Class
             if (details == null) Load();
             return details;
         }
+        public override Detail[] GetArray()
+        {
+            if (details == null) Load();
+            return details.ToArray();
+        }
         public override IEnumerable<Detail> GetDetails()
         {
             if (details == null) Load();
@@ -73,10 +57,10 @@ namespace Dispetcher2.Class
         {
             details = new List<Detail>();
 
-            var d = new TestDetail() { IdDetail = 1, Name = "Ротор ЩЦМ 1.111.111", OrderDetailId = 1, OrderId = 6373 };
+            var d = new TestDetail() { Name = "Ротор ЩЦМ 1.111.111", OrderDetailId = 1, OrderId = 6373 };
             details.Add(d);
 
-            d = new TestDetail() { IdDetail = 2, Name = "Торот ЩЦМ 2.222.222", OrderDetailId = 2, OrderId = 6373 };
+            d = new TestDetail() { Name = "Торот ЩЦМ 2.222.222", OrderDetailId = 2, OrderId = 6373 };
             details.Add(d);
         }
     }

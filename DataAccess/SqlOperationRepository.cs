@@ -45,6 +45,10 @@ namespace Dispetcher2.DataAccess
             if (operations == null) Load();
             return operations;
         }
+        public override Operation[] GetArray()
+        {
+            return operations.ToArray();
+        }
         public override IEnumerable<Operation> GetOperations()
         {
             if (operations == null) Load();
@@ -64,7 +68,7 @@ namespace Dispetcher2.DataAccess
                 {
                     cmd.CommandText = "SELECT * FROM [dbo].[AllOperationView]";
                     cmd.CommandType = CommandType.Text;
-                    cmd.CommandTimeout = 100;
+                    cmd.CommandTimeout = 120;
 
                     cn.Open();
                     using (var r = cmd.ExecuteReader())
@@ -111,12 +115,9 @@ namespace Dispetcher2.DataAccess
                             if (converter.CheckConvert<int>(r["OrderId"]))
                                 item.OrderId = converter.Convert<int>(r["OrderId"]);
 
-                            if (item.Tpd > 0 || item.Tsh > 0)
-                            {
-                                item.CalculateTime();
-                                operations.Add(item);
-                            }
-                            
+                            item.CalculateTime();
+                            operations.Add(item);
+
                         }
                     }
                 }

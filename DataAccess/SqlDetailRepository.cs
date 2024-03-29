@@ -35,6 +35,10 @@ namespace Dispetcher2.DataAccess
             if (details == null) Load();
             return details;
         }
+        public override Detail[] GetArray()
+        {
+            return details.ToArray();
+        }
         public override void Load()
         {
             LoadAllDetailView();
@@ -80,12 +84,6 @@ namespace Dispetcher2.DataAccess
 
                             if (converter.CheckConvert<long>(r["PK_IdOrderDetail"]))
                                 item.OrderDetailId = converter.Convert<long>(r["PK_IdOrderDetail"]);
-
-                            if (converter.CheckConvert<long>(r["FK_IdDetail"]))
-                                item.IdDetail = converter.Convert<long>(r["FK_IdDetail"]);
-
-                            if (converter.CheckConvert<long>(r["IdLoodsman"]))
-                                item.IdLoodsman = converter.Convert<long>(r["IdLoodsman"]);
 
                             if (converter.CheckConvert<int>(r["PositionParent"]))
                                 item.PositionParent = converter.Convert<int>(r["PositionParent"]);
