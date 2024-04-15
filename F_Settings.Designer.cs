@@ -63,6 +63,8 @@
 			this.label6 = new System.Windows.Forms.Label();
 			this.tabPage_OldDispetcher = new System.Windows.Forms.TabPage();
 			this.groupBox22 = new System.Windows.Forms.GroupBox();
+			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.button4 = new System.Windows.Forms.Button();
 			this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
 			this.panel3 = new System.Windows.Forms.Panel();
 			this.CheckShcMTbox = new System.Windows.Forms.TextBox();
@@ -574,6 +576,8 @@
 			// 
 			// groupBox22
 			// 
+			this.groupBox22.Controls.Add(this.groupBox2);
+			this.groupBox22.Controls.Add(this.button4);
 			this.groupBox22.Controls.Add(this.tableLayoutPanel3);
 			this.groupBox22.Controls.Add(this.tB_IP);
 			this.groupBox22.Controls.Add(this.tB_HostName);
@@ -585,6 +589,24 @@
 			this.groupBox22.TabIndex = 22;
 			this.groupBox22.TabStop = false;
 			// 
+			// groupBox2
+			// 
+			this.groupBox2.Location = new System.Drawing.Point(286, 231);
+			this.groupBox2.Name = "groupBox2";
+			this.groupBox2.Size = new System.Drawing.Size(200, 100);
+			this.groupBox2.TabIndex = 7;
+			this.groupBox2.TabStop = false;
+			this.groupBox2.Text = "groupBox2";
+			// 
+			// button4
+			// 
+			this.button4.Location = new System.Drawing.Point(407, 266);
+			this.button4.Name = "button4";
+			this.button4.Size = new System.Drawing.Size(75, 23);
+			this.button4.TabIndex = 6;
+			this.button4.Text = "button4";
+			this.button4.UseVisualStyleBackColor = true;
+			// 
 			// tableLayoutPanel3
 			// 
 			this.tableLayoutPanel3.ColumnCount = 1;
@@ -593,9 +615,10 @@
 			this.tableLayoutPanel3.Controls.Add(this.lBLText, 0, 1);
 			this.tableLayoutPanel3.Location = new System.Drawing.Point(310, 18);
 			this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-			this.tableLayoutPanel3.RowCount = 2;
+			this.tableLayoutPanel3.RowCount = 3;
 			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 152F));
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 59F));
+			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 72F));
 			this.tableLayoutPanel3.Size = new System.Drawing.Size(520, 186);
 			this.tableLayoutPanel3.TabIndex = 5;
 			// 
@@ -606,7 +629,7 @@
 			this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panel3.Location = new System.Drawing.Point(3, 3);
 			this.panel3.Name = "panel3";
-			this.panel3.Size = new System.Drawing.Size(514, 28);
+			this.panel3.Size = new System.Drawing.Size(514, 49);
 			this.panel3.TabIndex = 0;
 			// 
 			// CheckShcMTbox
@@ -633,7 +656,7 @@
 			// lBLText
 			// 
 			this.lBLText.AutoSize = true;
-			this.lBLText.Location = new System.Drawing.Point(3, 34);
+			this.lBLText.Location = new System.Drawing.Point(3, 55);
 			this.lBLText.Name = "lBLText";
 			this.lBLText.Size = new System.Drawing.Size(0, 17);
 			this.lBLText.TabIndex = 1;
@@ -1629,5 +1652,7 @@
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.TextBox CheckShcMTbox;
         private System.Windows.Forms.Label lBLText;
-    }
+		private System.Windows.Forms.GroupBox groupBox2;
+		private System.Windows.Forms.Button button4;
+	}
 }

@@ -208,7 +208,8 @@ namespace Dispetcher2
                 {
                     CurrencyManager cmgr = (CurrencyManager)dGV_Details.BindingContext[dGV_Details.DataSource, dGV_Details.DataMember];
                     DataRow row = ((DataRowView)cmgr.Current).Row;
-                    Console.WriteLine(row["ShcmDetail"]);
+                    //------------------------------------------
+
                     object CurIdLoodsman = "";
                     object actualLoodsmanVersion = "";
                     object rigthtLoodsmanVersion = "";
@@ -227,17 +228,20 @@ namespace Dispetcher2
                         cmd.CommandText = $"SELECT [version] FROM [НИИПМ].[dbo].[rvwVersions] WHERE id = {CurIdLoodsman}";
                         actualLoodsmanVersion = cmd.ExecuteScalar();
 
+
                         cmd.CommandText = $"SELECT TOP 1 [version] FROM [НИИПМ].[dbo].[rvwVersions]" +
                             $" where product = '{row["ShcmDetail"]}' AND state = 'Утвержден' ORDER BY version DESC";
-                        rigthtLoodsmanVersion = cmd.ExecuteScalar();
+						rigthtLoodsmanVersion = cmd.ExecuteScalar();
 
                         infoText = $"Текущая версия {row["ShcmDetail"]} в Диспетчере - {actualLoodsmanVersion}\n" +
                             $"Актуальная же версия в ЛОЦМАН -  {rigthtLoodsmanVersion}";
                     }
+
                     if (actualLoodsmanVersion.ToString() != rigthtLoodsmanVersion.ToString())
                     {
                         MessageBox.Show($"{infoText}", "!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
+                    //---------------------------------------------
 
                     if (row["IdLoodsman"] == DBNull.Value) //inside order
                     {

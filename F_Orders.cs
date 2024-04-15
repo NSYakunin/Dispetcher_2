@@ -22,7 +22,9 @@ namespace Dispetcher2
         C_Excel ExcelFile;
 
         bool loadingFlag = false;
-        public F_Orders(IConfig config)
+
+		public static string orderDel { get; set; }
+		public F_Orders(IConfig config)
         {
             this.config = config;
             orders = new C_Orders(config);
@@ -1183,5 +1185,23 @@ namespace Dispetcher2
                 }
             }
         }
-    }
+
+		private void myChB_DeleteOrder_CheckedChanged(object sender, EventArgs e)
+		{
+			DialogResult result = MessageBox.Show(
+	            $"Удалить заказ № {dGV_Orders.SelectedCells[0].Value}?",
+	            "Внимание!",
+	            MessageBoxButtons.YesNo,
+	            MessageBoxIcon.Warning,
+	            MessageBoxDefaultButton.Button1,
+	            MessageBoxOptions.DefaultDesktopOnly);
+
+			if (result == DialogResult.Yes)
+            {
+				orderDel = dGV_Orders.SelectedCells[0].Value.ToString();
+				F_DeleteOrder newForm = new F_DeleteOrder();
+				newForm.Show();
+			}
+		}
+	}
 }

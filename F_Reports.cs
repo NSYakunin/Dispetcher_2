@@ -849,7 +849,6 @@ namespace Dispetcher2
                 return;
             }
 
-
             DateTime DateStart = galvanStart.Value;
             DateTime DateEnd = galvanEnd.Value;
             Excel.Application ExcelApp = new Excel.Application() { Visible = false };
@@ -1022,12 +1021,7 @@ namespace Dispetcher2
                 }
             }
 
-
-
             ExcelApp.DisplayAlerts = true;
-
-
-
             ExcelWorkSheet.get_Range("A4", "H" + (dGVGalvan.Rows.Count + 4)).Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
             ExcelApp.Visible = true;
             progressBar1.Value = 0;

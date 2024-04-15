@@ -72,11 +72,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>0CC58FA04C734EF628922392A96D4A586689CE36</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>A1CFDCC2C82E7A883A4BE5AC5276B0DEEE7EDCE6</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>
-    </ManifestKeyFile>
+    <ManifestKeyFile>d2k.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
@@ -267,6 +266,12 @@
     <Compile Include="DialogsForms\dF_Workers.Designer.cs">
       <DependentUpon>dF_Workers.cs</DependentUpon>
     </Compile>
+    <Compile Include="F_DeleteOrder.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="F_DeleteOrder.Designer.cs">
+      <DependentUpon>F_DeleteOrder.cs</DependentUpon>
+    </Compile>
     <Compile Include="F_Brigade.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -397,6 +402,9 @@
     <EmbeddedResource Include="F_Brigade.resx">
       <DependentUpon>F_Brigade.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="F_DeleteOrder.resx">
+      <DependentUpon>F_DeleteOrder.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="F_Fact.resx">
       <DependentUpon>F_Fact.cs</DependentUpon>
     </EmbeddedResource>
@@ -458,6 +466,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
+    <None Include="d2k.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
