@@ -260,6 +260,7 @@ namespace Dispetcher2.Class
                                       "LEFT JOIN Sp_TypeDetails ON OrdersFasteners.FK_IdTypeFasteners=Sp_TypeDetails.PK_IdTypeDetail" + "\n" +
                                       "Where FK_IdOrder=@FK_IdOrder" + "\n" +
                                       "Order by Position";
+
                     cmd.Parameters.Add(new SqlParameter("@FK_IdOrder", SqlDbType.Int));
                     cmd.Parameters["@FK_IdOrder"].Value = _FK_IdOrder;
                     SqlDataAdapter adapter = new SqlDataAdapter();

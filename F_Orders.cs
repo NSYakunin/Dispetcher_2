@@ -24,6 +24,7 @@ namespace Dispetcher2
         bool loadingFlag = false;
 
 		public static string orderDel { get; set; }
+		public static string orderUpdate { get; set; }
 		public F_Orders(IConfig config)
         {
             this.config = config;
@@ -1200,6 +1201,24 @@ namespace Dispetcher2
             {
 				orderDel = dGV_Orders.SelectedCells[0].Value.ToString();
 				F_DeleteOrder newForm = new F_DeleteOrder();
+				newForm.Show();
+			}
+		}
+
+		private void updateOrderBTN_Click(object sender, EventArgs e)
+		{
+			DialogResult result = MessageBox.Show(
+	            $"Обновить версии Лоцман в заказе № {dGV_Orders.SelectedCells[0].Value}?",
+	            "Внимание!",
+	            MessageBoxButtons.YesNo,
+	            MessageBoxIcon.Warning,
+	            MessageBoxDefaultButton.Button1,
+	            MessageBoxOptions.DefaultDesktopOnly);
+
+			if (result == DialogResult.Yes)
+			{
+				orderUpdate = dGV_Orders.SelectedCells[0].Value.ToString();
+				F_UpdateOrder newForm = new F_UpdateOrder(config);
 				newForm.Show();
 			}
 		}

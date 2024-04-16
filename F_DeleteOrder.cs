@@ -48,6 +48,13 @@ namespace Dispetcher2
 			//}
 		}
 
+		public F_DeleteOrder(string orderUpdate)
+		{
+			OrderUpdate = orderUpdate;
+		}
+
+		public string OrderUpdate { get; }
+
 		private void label1_Click(object sender, EventArgs e)
 		{
 

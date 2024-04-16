@@ -569,7 +569,8 @@ namespace Dispetcher2
                         object actualLoodsmanVersion = cmd.ExecuteScalar();
 
                         cmd.CommandText = $"SELECT TOP 1 [version] FROM [НИИПМ].[dbo].[rvwVersions]" +
-                            $" where product = '{CheckShcMTbox.Text}' AND state = 'Утвержден' ORDER BY version DESC";
+                            $" where product = '{CheckShcMTbox.Text}' AND state in ('Утвержден', 'Архив', 'Проектирование')" +
+                            $" ORDER BY version DESC";
                         object rigthtLoodsmanVersion = cmd.ExecuteScalar();
 
                         lBLText.Text = $"Текущая версия {CheckShcMTbox.Text} в Диспетчере - {actualLoodsmanVersion}\n" +
@@ -583,5 +584,62 @@ namespace Dispetcher2
                 }
             }
         }
-    }
+
+		private void updatePartsVersionsBTN_Click(object sender, EventArgs e)
+		{
+			List<string> lst = new List<string>();
+			try
+            {
+				using (var con = new SqlConnection())
+                {
+                    con.ConnectionString = config.ConnectionString;
+					SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };
+                    cmd.CommandText = $"SELECT [ShcmDetail] FROM [Dispetcher2].[dbo].[Sp_Details]";
+					cmd.Connection = con;
+					cmd.Connection.Open();
+					using (SqlDataReader reader = cmd.ExecuteReader())
+					{
+						while (reader.Read())
+						{
+							lst.Add(reader["ShcmDetail"].ToString());
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+
+				MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+
+			progressBar2.Maximum = lst.Count * 8;
+            int counter = 1;
+			foreach (string shcm in lst)
+            {
+				try
+				{
+                    Console.WriteLine($"{++counter} {shcm}");
+                    using (var con = new SqlConnection())
+					{
+						con.ConnectionString = config.ConnectionString;
+						SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };
+                        cmd.CommandText = $"UPDATE [dbo].[Sp_Details] SET IdLoodsman = " +
+                            $"(SELECT TOP 1 id FROM [НИИПМ].[dbo].[rvwVersions] where product = '{shcm}'" +
+                            $" AND state in ('Утвержден', 'Архив', 'Проектирование')" +
+                            $"AND type in ('Сборочная единица', 'Деталь') ORDER BY version DESC)" +
+                            $"WHERE ShcmDetail LIKE '{shcm}'";
+						cmd.Connection = con;
+						cmd.Connection.Open();
+						cmd.ExecuteNonQuery();
+						con.Close();
+					}
+				}
+				catch (Exception ex)
+				{
+
+					MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+			}
+		}
+	}
 }

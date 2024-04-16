@@ -63,13 +63,14 @@
 			this.label6 = new System.Windows.Forms.Label();
 			this.tabPage_OldDispetcher = new System.Windows.Forms.TabPage();
 			this.groupBox22 = new System.Windows.Forms.GroupBox();
-			this.groupBox2 = new System.Windows.Forms.GroupBox();
-			this.button4 = new System.Windows.Forms.Button();
 			this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
 			this.panel3 = new System.Windows.Forms.Panel();
+			this.lBLText = new System.Windows.Forms.Label();
 			this.CheckShcMTbox = new System.Windows.Forms.TextBox();
 			this.label2 = new System.Windows.Forms.Label();
-			this.lBLText = new System.Windows.Forms.Label();
+			this.panel9 = new System.Windows.Forms.Panel();
+			this.progressBar2 = new System.Windows.Forms.ProgressBar();
+			this.updatePartsVersionsBTN = new System.Windows.Forms.Button();
 			this.tB_IP = new System.Windows.Forms.TextBox();
 			this.tB_HostName = new System.Windows.Forms.TextBox();
 			this.button3 = new System.Windows.Forms.Button();
@@ -151,6 +152,7 @@
 			this.groupBox22.SuspendLayout();
 			this.tableLayoutPanel3.SuspendLayout();
 			this.panel3.SuspendLayout();
+			this.panel9.SuspendLayout();
 			this.groupBox1.SuspendLayout();
 			this.panel2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.dGV_Loodsman)).BeginInit();
@@ -576,8 +578,6 @@
 			// 
 			// groupBox22
 			// 
-			this.groupBox22.Controls.Add(this.groupBox2);
-			this.groupBox22.Controls.Add(this.button4);
 			this.groupBox22.Controls.Add(this.tableLayoutPanel3);
 			this.groupBox22.Controls.Add(this.tB_IP);
 			this.groupBox22.Controls.Add(this.tB_HostName);
@@ -589,55 +589,45 @@
 			this.groupBox22.TabIndex = 22;
 			this.groupBox22.TabStop = false;
 			// 
-			// groupBox2
-			// 
-			this.groupBox2.Location = new System.Drawing.Point(286, 231);
-			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(200, 100);
-			this.groupBox2.TabIndex = 7;
-			this.groupBox2.TabStop = false;
-			this.groupBox2.Text = "groupBox2";
-			// 
-			// button4
-			// 
-			this.button4.Location = new System.Drawing.Point(407, 266);
-			this.button4.Name = "button4";
-			this.button4.Size = new System.Drawing.Size(75, 23);
-			this.button4.TabIndex = 6;
-			this.button4.Text = "button4";
-			this.button4.UseVisualStyleBackColor = true;
-			// 
 			// tableLayoutPanel3
 			// 
 			this.tableLayoutPanel3.ColumnCount = 1;
-			this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 48.84615F));
+			this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.tableLayoutPanel3.Controls.Add(this.panel3, 0, 0);
-			this.tableLayoutPanel3.Controls.Add(this.lBLText, 0, 1);
+			this.tableLayoutPanel3.Controls.Add(this.panel9, 0, 1);
 			this.tableLayoutPanel3.Location = new System.Drawing.Point(310, 18);
 			this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-			this.tableLayoutPanel3.RowCount = 3;
+			this.tableLayoutPanel3.RowCount = 2;
 			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 59F));
-			this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 72F));
-			this.tableLayoutPanel3.Size = new System.Drawing.Size(520, 186);
-			this.tableLayoutPanel3.TabIndex = 5;
+			this.tableLayoutPanel3.Size = new System.Drawing.Size(523, 180);
+			this.tableLayoutPanel3.TabIndex = 8;
 			// 
 			// panel3
 			// 
+			this.panel3.Controls.Add(this.lBLText);
 			this.panel3.Controls.Add(this.CheckShcMTbox);
 			this.panel3.Controls.Add(this.label2);
 			this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panel3.Location = new System.Drawing.Point(3, 3);
 			this.panel3.Name = "panel3";
-			this.panel3.Size = new System.Drawing.Size(514, 49);
+			this.panel3.Size = new System.Drawing.Size(517, 115);
 			this.panel3.TabIndex = 0;
+			// 
+			// lBLText
+			// 
+			this.lBLText.AutoSize = true;
+			this.lBLText.Location = new System.Drawing.Point(3, 34);
+			this.lBLText.Name = "lBLText";
+			this.lBLText.Size = new System.Drawing.Size(0, 17);
+			this.lBLText.TabIndex = 2;
 			// 
 			// CheckShcMTbox
 			// 
 			this.CheckShcMTbox.Dock = System.Windows.Forms.DockStyle.Right;
 			this.CheckShcMTbox.Location = new System.Drawing.Point(273, 0);
 			this.CheckShcMTbox.Name = "CheckShcMTbox";
-			this.CheckShcMTbox.Size = new System.Drawing.Size(241, 23);
+			this.CheckShcMTbox.Size = new System.Drawing.Size(244, 23);
 			this.CheckShcMTbox.TabIndex = 1;
 			this.CheckShcMTbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CheckShcMTbox_KeyDown);
 			// 
@@ -653,13 +643,33 @@
 			this.label2.Text = "Проверить версию ЩЦМ в Диспетчере";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
-			// lBLText
+			// panel9
 			// 
-			this.lBLText.AutoSize = true;
-			this.lBLText.Location = new System.Drawing.Point(3, 55);
-			this.lBLText.Name = "lBLText";
-			this.lBLText.Size = new System.Drawing.Size(0, 17);
-			this.lBLText.TabIndex = 1;
+			this.panel9.Controls.Add(this.progressBar2);
+			this.panel9.Controls.Add(this.updatePartsVersionsBTN);
+			this.panel9.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panel9.Location = new System.Drawing.Point(3, 124);
+			this.panel9.Name = "panel9";
+			this.panel9.Size = new System.Drawing.Size(517, 53);
+			this.panel9.TabIndex = 7;
+			// 
+			// progressBar2
+			// 
+			this.progressBar2.Dock = System.Windows.Forms.DockStyle.Right;
+			this.progressBar2.Location = new System.Drawing.Point(191, 0);
+			this.progressBar2.Name = "progressBar2";
+			this.progressBar2.Size = new System.Drawing.Size(326, 53);
+			this.progressBar2.TabIndex = 11;
+			// 
+			// updatePartsVersionsBTN
+			// 
+			this.updatePartsVersionsBTN.Location = new System.Drawing.Point(6, 3);
+			this.updatePartsVersionsBTN.Name = "updatePartsVersionsBTN";
+			this.updatePartsVersionsBTN.Size = new System.Drawing.Size(179, 46);
+			this.updatePartsVersionsBTN.TabIndex = 6;
+			this.updatePartsVersionsBTN.Text = "Обновить все версии деталей в Диспетчере.";
+			this.updatePartsVersionsBTN.UseVisualStyleBackColor = true;
+			this.updatePartsVersionsBTN.Click += new System.EventHandler(this.updatePartsVersionsBTN_Click);
 			// 
 			// tB_IP
 			// 
@@ -1500,9 +1510,9 @@
 			this.groupBox22.ResumeLayout(false);
 			this.groupBox22.PerformLayout();
 			this.tableLayoutPanel3.ResumeLayout(false);
-			this.tableLayoutPanel3.PerformLayout();
 			this.panel3.ResumeLayout(false);
 			this.panel3.PerformLayout();
+			this.panel9.ResumeLayout(false);
 			this.groupBox1.ResumeLayout(false);
 			this.panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.dGV_Loodsman)).EndInit();
@@ -1647,12 +1657,13 @@
         private System.Windows.Forms.Button KitUpdaterButton;
         private System.Windows.Forms.Integration.ElementHost KitElementHost;
         private System.Windows.Forms.Button ImportData1CButton;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.TextBox CheckShcMTbox;
-        private System.Windows.Forms.Label lBLText;
-		private System.Windows.Forms.GroupBox groupBox2;
-		private System.Windows.Forms.Button button4;
+		private System.Windows.Forms.Button updatePartsVersionsBTN;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+		private System.Windows.Forms.Panel panel3;
+		private System.Windows.Forms.TextBox CheckShcMTbox;
+		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Panel panel9;
+		private System.Windows.Forms.Label lBLText;
+		private System.Windows.Forms.ProgressBar progressBar2;
 	}
 }
