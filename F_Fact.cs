@@ -234,7 +234,7 @@ namespace Dispetcher2
 						rigthtLoodsmanVersion = cmd.ExecuteScalar();
 
                         infoText = $"Текущая версия {row["ShcmDetail"]} в Диспетчере - {actualLoodsmanVersion}\n" +
-                            $"Актуальная же версия в ЛОЦМАН -  {rigthtLoodsmanVersion}";
+                            $"Актуальная же версия в ЛОЦМАН -  {rigthtLoodsmanVersion}\nОбновите заказ.";
                     }
 
                     if (actualLoodsmanVersion.ToString() != rigthtLoodsmanVersion.ToString())
