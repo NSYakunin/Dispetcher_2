@@ -1,5 +1,5 @@
 ﻿using System;
-//using System.Collections.Generic;
+using System.Collections.Generic;
 //using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -8,17 +8,40 @@ using System.Drawing;
 using System.Windows.Forms;
 //using System.Net;
 using System.Data.SqlClient;
+
 using Dispetcher2.Class;
+using Dispetcher2.Controls;
 
 namespace Dispetcher2
 {
     public partial class F_Settings : Form
     {
+        IConfig config;
+        // Внешняя зависимость!
         KitUpdaterControl kuc = null;
+        // Внешняя зависимость!
         ImportDataControl idc = null;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_Orders orders;
+
+        DataTable Dt_Sp = new DataTable();
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_UpdaterSP updater;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_TimeSheetsV1 TSHV1;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_Details Detail;
         public int SelectedOrderId { set; get; }
-        public F_Settings()
+        public F_Settings(IConfig config, IConverter converter)
         {
+            if (config == null) throw new ArgumentException("Пожалуйста укажите параметр: config");
+            if (converter == null) throw new ArgumentException("Пожалуйста укажите параметр converter");
+            this.config = config;
+            orders = new C_Orders(config);
+            updater = new C_UpdaterSP(config);
+            TSHV1 = new C_TimeSheetsV1(config, converter);
+            Detail = new C_Details(config);
+
             InitializeComponent();
             DT_Orders.Columns.Add("PK_IdOrder", typeof(int));
             DT_Orders.Columns.Add("OrderNum", typeof(string));
@@ -27,6 +50,8 @@ namespace Dispetcher2
             DT_Orders.Columns.Add("StartDate", typeof(DateTime));
             DT_Orders.Columns.Add("PlannedDate", typeof(DateTime));
             DT_Orders.Columns.Add("Amount", typeof(Int16));
+
+            
         }
 
         private void F_Settings_Load(object sender, EventArgs e)
@@ -80,13 +105,13 @@ namespace Dispetcher2
             else
                 if (tB_SHCMFolder.Text.Trim() == "") MessageBox.Show("Не указан ЩЦМ.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 else
-                    if (C_Orders.Check_IdLoodsman(IdLoodsman)) MessageBox.Show("Папка с таким Id Loodsman уже зарегистрирована.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    if (orders.Check_IdLoodsman(IdLoodsman)) MessageBox.Show("Папка с таким Id Loodsman уже зарегистрирована.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 else
-                if (C_Orders.Check_ShcmDetail(tB_SHCMFolder.Text.Trim())) MessageBox.Show("Папка с таким ЩЦМ уже зарегистрирована.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                if (orders.Check_ShcmDetail(tB_SHCMFolder.Text.Trim())) MessageBox.Show("Папка с таким ЩЦМ уже зарегистрирована.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 else
                     if (tB_NameFolder.Text.Trim() == "") MessageBox.Show("Не указано наименование папки.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     else
-                        if (C_UpdaterSP.InsertFolderInSp_Details(IdLoodsman,tB_SHCMFolder.Text.Trim(), tB_NameFolder.Text.Trim()))
+                        if (updater.InsertFolderInSp_Details(IdLoodsman,tB_SHCMFolder.Text.Trim(), tB_NameFolder.Text.Trim()))
                         {
                             MessageBox.Show("Запись прошла успешно.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             tB_SHCMFolder.Text = ""; tB_NameFolder.Text = ""; tB_IdLdsman.Text = "";
@@ -106,257 +131,36 @@ namespace Dispetcher2
             if (tB_ShCM.Text.Trim().Length == 0) MessageBox.Show("Заполните поле \"ЩЦМ детали\"", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             else
             {
-                C_Gper.con.ConnectionString = C_Gper.ConStr_Loodsman;
-                SqlCommand cmd = new SqlCommand();
-                cmd.CommandTimeout = 100;
-                /*cmd.CommandText = "select v.Product, a.value, v.dateofCreate,v.id,v.idtype from rvwVersions v " +
-                                  "inner join rvwAttributes a on a.idversion=v.id " +
-                                  "where a.idattr=235 and v.idtype in (232,233) and v.product like '" + tB_ShCM.Text.Trim() + "' and  v.idstate in (36,40)";
-                //"where a.idattr=235 and v.idtype in (232,233,278) and v.product like '" + tB_ShCM.Text.Trim() + "' and v.idstate=40 order by idstate desc"; //235 - Название ЩЦМ idstate(статус)=36-Проектирование,40-Утвержден*/
-
-                cmd.CommandText = "select v.Product, a.value, v.dateofCreate,v.id,v.idtype from rvwVersions v " +
-                  "inner join rvwAttributes a on a.idversion=v.id " +
-                  //"where a.idattr=235 and v.idtype in (232,233) and v.product like '" + tB_ShCM.Text.Trim() + "' and  v.idstate in (36,40)";
-                  "where v.product like '" + tB_ShCM.Text.Trim() + "'"; //235 - Название ЩЦМ idstate(статус)=36-Проектирование,40-Утвержден
-
-                cmd.Connection = C_Gper.con;
-                SqlDataAdapter adapter = new SqlDataAdapter();
-                adapter.SelectCommand = cmd;
-                DataSet dataSet = new DataSet();
-                adapter.Fill(dataSet, "DetailInfo");
-                adapter.Dispose();
-                C_Gper.con.Close();
-                dGV_Loodsman.DataSource = dataSet.Tables["DetailInfo"];
-            }
-        }
-
-        private void btn_UpdatePosL_Click(object sender, EventArgs e)
-        {
-            //Обновить posL таблицы Relations
-            try
-            {
-                DataSet Ds_oldDisp = new DataSet();
-                Ds_oldDisp.Tables.Add("Relations");
-                if (tB_posL_NumZakaz.Text.Trim().Length == 0) MessageBox.Show("Заполните поле \"Номер заказа:\"", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                int Rel_id = -1;
-                int Rel_position = -1;
-                int Rel_offset = 0;//Поправка в случае если position начинается не с 0
-                //Загрузка данных выбранного заказа
-                //***************************************************************
-                C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher;
-                //***************************************************************
-                SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
-                cmd.Connection = C_Gper.con;
-                cmd.CommandText = "Select r.id,r.idRelParent,r.position" + "\n" +
-                "FROM Relations r " + "\n" +
-                "inner join Zakaz z on r.idZakaz = z.id " + "\n" +
-                "where z.Dogovor = @Dogovor";
-                cmd.Parameters.Add(new SqlParameter("@Dogovor", SqlDbType.VarChar));
-                cmd.Parameters["@Dogovor"].Value = tB_posL_NumZakaz.Text.Trim();
-                SqlDataAdapter adapter = new SqlDataAdapter();
-                adapter.SelectCommand = cmd;
-                adapter.Fill(Ds_oldDisp, "Relations");
-                C_Gper.con.Close();
-                //для Update в цикле For
-                cmd.Parameters.Clear();
-                cmd.Parameters.Add(new SqlParameter("@Rel_id", SqlDbType.Int));
-                cmd.Parameters.Add(new SqlParameter("@Rel_position", SqlDbType.Int));
-                //----------------------------------------------------------------------------
-                //Делаем Update где r.id=Rel_id значение поля posL изменяем на значение r.position(т.е. на переменную Rel_position)
-                //for (int NumRow = 0; NumRow <= Ds_oldDisp.Tables[0].Rows.Count - 1; NumRow++)
-                for (int NumRow = 0; NumRow <= Ds_oldDisp.Tables["Relations"].Rows.Count - 1; NumRow++)
+                using (SqlConnection con = new SqlConnection())
                 {
-                    Rel_id = (int)Ds_oldDisp.Tables["Relations"].Rows[NumRow]["id"];
-                    Rel_position = (int)Ds_oldDisp.Tables["Relations"].Rows[NumRow]["position"];
-                    if (NumRow == 0)
-                        if ((int)Ds_oldDisp.Tables["Relations"].Rows[NumRow]["idRelParent"] == 0)
-                            if (Rel_position > 0) Rel_offset = Rel_position;
-                            //if (Rel_position > 1) Rel_offset = -1 * (1 - Rel_position);
-                    Rel_position -= Rel_offset;
-                    //MessageBox.Show(Rel_id.ToString() + " || " + C_Gper.Ds_oldDisp.Tables["Relations"].Rows[NumRow]["idRelParent"].ToString() + " || " + Rel_position.ToString());
-                    //-----------------------------------------------------------------------------
-                    cmd.CommandText = "Update Relations set posL=@Rel_position where id=@Rel_id";
-                    cmd.Parameters["@Rel_id"].Value = Rel_id;
-                    if (Rel_position == 0) cmd.Parameters["@Rel_position"].Value = DBNull.Value;
-                    else cmd.Parameters["@Rel_position"].Value = Rel_position;
-                    //cmd.Parameters["@Rel_position"].Value = DBNull.Value;
-                    C_Gper.con.Open();
-                    cmd.ExecuteNonQuery();
-                    C_Gper.con.Close();
+                    con.ConnectionString = config.LoodsmanConnectionString;
+                    SqlCommand cmd = new SqlCommand();
+                    cmd.CommandTimeout = 100;
+                    /*cmd.CommandText = "select v.Product, a.value, v.dateofCreate,v.id,v.idtype from rvwVersions v " +
+                                      "inner join rvwAttributes a on a.idversion=v.id " +
+                                      "where a.idattr=235 and v.idtype in (232,233) and v.product like '" + tB_ShCM.Text.Trim() + "' and  v.idstate in (36,40)";
+                    //"where a.idattr=235 and v.idtype in (232,233,278) and v.product like '" + tB_ShCM.Text.Trim() + "' and v.idstate=40 order by idstate desc"; //235 - Название ЩЦМ idstate(статус)=36-Проектирование,40-Утвержден*/
+
+                    cmd.CommandText = "select v.Product, a.value, v.dateofCreate,v.id,v.idtype from rvwVersions v " +
+                      "inner join rvwAttributes a on a.idversion=v.id " +
+                      //"where a.idattr=235 and v.idtype in (232,233) and v.product like '" + tB_ShCM.Text.Trim() + "' and  v.idstate in (36,40)";
+                      "where v.product like '" + tB_ShCM.Text.Trim() + "'"; //235 - Название ЩЦМ idstate(статус)=36-Проектирование,40-Утвержден
+
+                    cmd.Connection = con;
+                    SqlDataAdapter adapter = new SqlDataAdapter();
+                    adapter.SelectCommand = cmd;
+                    DataSet dataSet = new DataSet();
+                    adapter.Fill(dataSet, "DetailInfo");
+                    adapter.Dispose();
+                    con.Close();
+                    dGV_Loodsman.DataSource = dataSet.Tables["DetailInfo"];
                 }
-                MessageBox.Show("Завершено успешно. ", "Ура!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            catch (Exception ex)
-            {
-                C_Gper.con.Close();
-                MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void btn_UpdateAllDataDetails_Click(object sender, EventArgs e) //Обновляем нашу БД (наименование деталей и их технологию)
-        {
-            WorkWithDatabase WoWiDb = new WorkWithDatabase(C_Gper.ConnStrDispetcher);
-            //string SHCM_detail_updating = "ЩЦМ 8.367.169";
-            string SHCM_detail_updating = tB_ShCM_forUpdAllData.Text.Trim();
-            string str = "select  d.id, d.idLoodsman,d.Number from Details d order by d.id";
-            var dt = WoWiDb.ExecuteQueryInTable(str);
-            DataTable dtH = WoWiDb.ExecuteQueryInTable(str);
-            try
-            {
-                //Обновляем информацию по деталям
-
-                for (int i = 0; i < dt.Rows.Count; i++)
-                {
-                    //Олег if (dt.Rows[i].ItemArray[2].ToString().Contains("8.637.419"))
-                    if (dt.Rows[i].ItemArray[2].ToString().Contains(SHCM_detail_updating))
-                    {
-                        dtH.Rows.Clear();
-                        //Получаем информацию из Лоцмана
-                        str = "select v.Product, a.value, v.dateofCreate,v.id,v.idtype from [НИИПМ].[dbo].rvwVersions v " +
-                                   "inner join [НИИПМ].[dbo].rvwAttributes a on a.idversion=v.id " +
-                            //Олег "where a.idattr=235 and v.idtype in (232,233,278) and v.product like '" + dt.Rows[i].ItemArray[2] + "' and v.idstate=40 order by idstate desc"; //235 - Название ЩЦМ idstate -статус Утвержден
-                                        "where a.idattr=235 and v.idtype in (232,233) and v.product like '" + dt.Rows[i].ItemArray[2] + "' and  (v.idstate=36 or v.idstate=40)  order by idstate desc"; //235 - Название ЩЦМ idstate(статус)=36-Проектирование,40-Утвержден
-                        dtH = WoWiDb.ExecuteQueryInTable(str);
-                        //Обновляем 
-                        if (dtH.Rows.Count == 1)// && ((int)dt.Rows[i].ItemArray[1]==324016))
-                        {
-                            str = "update [Dispetcher].[dbo].Details set Number='" + dtH.Rows[0].ItemArray[0] + "',Name='" + dtH.Rows[0].ItemArray[1] +
-                                     "', dateCreate='" + ((DateTime)dtH.Rows[0].ItemArray[2]).ToString("d") + "', idLoodsman=" + dtH.Rows[0].ItemArray[3] + ",idtype=" + dtH.Rows[0].ItemArray[4] + " where id=" + dt.Rows[i].ItemArray[0];
-                            WoWiDb.ExecuteQuery(str);
-                        }
-                    }
-                }
-
-                //Обновляем информацию по тех. процессам
-                string strH = "";
-                //lblRefresh.Text = "Технологии";
-                for (int i = 0; i < dt.Rows.Count; i++)
-                {
-                    dtH.Rows.Clear();
-                    if (dt.Rows[i].ItemArray[2].ToString().Contains(SHCM_detail_updating))
-                    {
-                        str = "select * from [Dispetcher].[dbo].FactOperation fo where idOperation in(select id from [Dispetcher].[dbo].Operations op where op.idDetail=" + dt.Rows[i].ItemArray[0] + ") " +
-                                   " and dateFact is not null";
-                        //Если таблицу фактов еще не начали заполнять
-                        if (WoWiDb.ExecuteQueryInTable(str).Rows.Count == 0)
-                        {
-                            //MessageBox.Show("dt.Rows[i].ItemArray[2]");
-                            //string str1 = "select top 1 rs.product from [НИИПМ].[dbo].rvwVersions rs where rs.idtype=199  and rs.product like '%" + strShcm + "%' order by dateofcreate desc";
-                            strH = "select top 1 r.idParent from [НИИПМ].[dbo].rvwVersions rs " +
-                                           "inner join [НИИПМ].[dbo].rvwRelations r on r.idChild=rs.id " +
-                                               "where rs.idtype=199 and rs.product like '%" + dt.Rows[i].ItemArray[2] + "%' order by dateofcreate desc";
-                            //strH = "select a.idversion,v.product from [НИИПМ].[dbo].rvwAttributes a " +
-                            //                            "inner join [НИИПМ].[dbo].rvwVersions v on v.id=a.idversion " +
-                            //                                "where a.idattr=235 " + //Наименование операции
-                            //                                    "and v.id in (select r.idchild from [НИИПМ].[dbo].rvwRelations r where idlinktype=32 and " +
-                            //                                        "r.idParent =(select top 1 r.idParent from [НИИПМ].[dbo].rvwVersions rs " +
-                            //                                            "inner join [НИИПМ].[dbo].rvwRelations r on r.idChild=rs.id " +
-                            //                                                "where rs.idtype=199 and rs.product like '%" + dt.Rows[i].ItemArray[2] + "%' order by dateofcreate desc) order by Cast(Left(v.product,3) as int)";//Техоперация
-                            dtH = WoWiDb.ExecuteQueryInTable(strH);
-                            if (dtH.Rows.Count > 0) //Если есть какие-то операции
-                            {
-                                int idCh = (int)dtH.Rows[0].ItemArray[0];
-                                dtH.Rows.Clear();
-                                strH = "select a.idversion,v.product from [НИИПМ].[dbo].rvwAttributes a " +
-                                                    "inner join [НИИПМ].[dbo].rvwVersions v on v.id=a.idversion " +
-                                                        "where a.idattr=235 " + //Наименование операции
-                                                            "and v.id in (select r.idchild from [НИИПМ].[dbo].rvwRelations r where idlinktype=32 and " +
-                                                                "r.idParent =" + idCh + ") order by Cast(Left(v.product,3) as int)";//Техоперация
-                                dtH = WoWiDb.ExecuteQueryInTable(strH);
-
-                                //Удаляем все из нашей БД
-                                int[,] ArrOpertation = new int[100, 3];
-                                str = "delete from [Dispetcher].[dbo].FactOperation where idOperation in(select id from [Dispetcher].[dbo].Operations op where op.idDetail=" + dt.Rows[i].ItemArray[0] + ") " +
-                                        " delete from [Dispetcher].[dbo].Operations where idDetail=" + dt.Rows[i].ItemArray[0];
-                                WoWiDb.ExecuteQuery(str);
-                                var dtOp = new DataTable();
-
-                                for (int j = 0; j < dtH.Rows.Count; j++)//Олег здесь пишем тех процесс
-                                {
-                                    //Из-за сортировки 0-Время на деталь (Tsh 195), 1-Наименование (Name 235), 2-Подготовительное время (Tpd 321)
-                                    str = "select a.value from [НИИПМ].[dbo].rvwAttributes a where a.idversion=" + dtH.Rows[j].ItemArray[0] + " and a.idattr in (195,235,321) order by a.idattr";
-                                    dtOp.Clear();
-                                    dtOp = WoWiDb.ExecuteQueryInTable(str);
-
-                                    str = "insert into [Dispetcher].[dbo].Operations values (" + dt.Rows[i].ItemArray[0] + ",'" + dtH.Rows[j].ItemArray[1].ToString().Substring(0, 3) + " " + dtOp.Rows[1].ItemArray[0] + "'," + dtOp.Rows[2].ItemArray[0] + "," + dtOp.Rows[0].ItemArray[0] + ")";
-                                    WoWiDb.ExecuteQuery(str);
-                                }
-                                if (dtH.Rows.Count > 0)//Если есть какие-то операции все-таки
-                                {
-                                    str = "insert into [Dispetcher].[dbo].Operations values (" + dt.Rows[i].ItemArray[0] + ",'Передача детали на СГД',0,0)";
-                                    WoWiDb.ExecuteQuery(str);
-                                }
-
-                                //Получаем все родительские связи
-                                str = "select id from Dispetcher.dbo.Relations r where r.idChild=" + dt.Rows[i].ItemArray[0] +
-                                        " and r.id not in (select idRelations from Dispetcher.dbo.FactOperation where idOperation in(select id from [Dispetcher].[dbo].Operations op where op.idDetail=" + dt.Rows[i].ItemArray[0] + "))";
-                                var dtRel = WoWiDb.ExecuteQueryInTable(str);
-
-                                //Операции в технологии
-                                dtOp.Clear();
-                                str = "select o.id from Dispetcher.dbo.Operations o where idDetail=" + dt.Rows[i].ItemArray[0];
-                                dtOp = WoWiDb.ExecuteQueryInTable(str);
-
-                                for (int k = 0; k < dtOp.Rows.Count; k++) //Перебираем все операции
-                                    for (int j = 0; j < dtRel.Rows.Count; j++)
-                                        WoWiDb.ExecuteQuery("insert into Dispetcher.dbo.FactOperation values (" + dtRel.Rows[j].ItemArray[0] + "," + dtOp.Rows[k].ItemArray[0] + ",null,null,null,null,null,null,null,null,null,null,null)");
-                                MessageBox.Show("Обновление успешно завершено.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-
-                MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }    
-        }
-
-        private void FindDoublePositionsFromRelations()//Тестовая - пока не нужна
-        {
-            try
-            {
-                int ffff = -1; int nur = 0;
-                int Rel_position = -1;
-                //Загрузка данных выбранной записи
-                C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher;
-                SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
-                SqlDataReader reader;
-                cmd.Parameters.Clear();       //0
-                cmd.CommandText = "SELECT [id],[position],[idZakaz] " + "\n" +
-                "FROM [Dispetcher].[dbo].[Relations] " + "\n" +
-                "order by idZakaz,position ";
-                cmd.Connection = C_Gper.con;
-                C_Gper.con.Open();
-                reader = cmd.ExecuteReader();
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                        ++nur;
-                        if (reader.IsDBNull(0) == false) ffff = reader.GetInt32(0);
-                        if (reader.IsDBNull(1) == false)
-                        {
-                            if (Rel_position == reader.GetInt32(1))
-                                MessageBox.Show(nur.ToString() + "||" + ffff.ToString() + " || " + Rel_position.ToString());
-                            else Rel_position = reader.GetInt32(1);
-                        }
-                    }
-                }
-                reader.Dispose(); reader.Close(); C_Gper.con.Close();
-            }
-            catch (Exception ex)
-            {
-                C_Gper.con.Close();
-                MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         #endregion
 
         #region UpdatesSp_Details (Auto load data from Loodsman in Dispetcher2)
-        DataTable Dt_Sp = new DataTable();
-        C_UpdaterSP updater = new C_UpdaterSP();
+
 
         private void tB_IdLoodsman_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -388,8 +192,10 @@ namespace Dispetcher2
 
         private void btn_TehnologyUpdate_Click(object sender, EventArgs e)
         {
+            List<ErrorItem> errors = new List<ErrorItem>();
+            int eid = 1;
             //1.производим поиск деталей в работе
-            C_UpdaterSP.SelectDetailsInWork(ref DT_Details);
+            updater.SelectDetailsInWork(ref DT_Details);
             if (DT_Details.Rows.Count > 0)
             {
                 bool err = false;
@@ -402,8 +208,9 @@ namespace Dispetcher2
                 string Shcm = "";
                 foreach (DataRow row in DT_Details.Rows)
                 {
-                    C_Details Detail = new C_Details(Convert.ToInt64(row["IdLoodsman"]));
-                    Detail.GetTehnologyFromLoodsman(ref DT_Tehnology);
+                    //C_Details Detail = new C_Details(Convert.ToInt64(row["IdLoodsman"]));
+                    var id = Convert.ToInt64(row["IdLoodsman"]);
+                    Detail.GetTehnologyFromLoodsman(ref DT_Tehnology, id);
                     FK_IdDetails = Convert.ToInt64(row["PK_IdDetail"]);
                     IdLoodsman = Convert.ToInt64(row["IdLoodsman"]);
                     Shcm = row["ShcmDetail"].ToString();
@@ -411,35 +218,51 @@ namespace Dispetcher2
                     if (DT_Tehnology.Rows.Count > 0)
                     {
                         //Удаляем технологию для конкретной детали из справочника Sp_TechnologyDetails
-                        C_UpdaterSP.DeleteTechnologyDetails(FK_IdDetails);
+                        updater.DeleteTechnologyDetails(FK_IdDetails);
                         //Производим запись каждой операции в справочник Sp_TechnologyDetails
                         foreach (DataRow row_teh in DT_Tehnology.Rows)
                         {
                             NameOper = row_teh["Oper"].ToString();
                             NumOper = NameOper.Remove(3);
                             NameOper = NameOper.Remove(0, NameOper.IndexOf(' ', 2) + 1);
-                            FK_IdOperation = C_Details.Find_FK_IdOperationInSp_Operations(NameOper);
+                            FK_IdOperation = Detail.Find_FK_IdOperationInSp_Operations(NameOper);
                             if (FK_IdOperation == 0)
                             {
                                 err = true;
-                                MessageBox.Show("ID Детали:\"" + FK_IdDetails.ToString() + "; Операция:\"" + NameOper + "\" не найдена в справочнике операций ПО \"Диспетчеризация\".", "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                string error = "ID Детали:\"" + FK_IdDetails.ToString() + "; Операция:\"" + NameOper + "\" не найдена в справочнике операций ПО \"Диспетчеризация\".";
+                                //MessageBox.Show(error, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                ErrorItem item = new ErrorItem(eid++, error);
+                                errors.Add(item);
                             }
                             else//Saving
                             {
                                 int Tpd2 = Convert.ToInt32(row_teh["Tpd"] == DBNull.Value ? 0 : int.TryParse(row_teh["Tpd"].ToString(), out var number) == true ? Convert.ToInt32(row_teh["Tpd"]) : 0);
                                 int Tsh2 = Convert.ToInt32(row_teh["Tsh"] == DBNull.Value ? 0 : int.TryParse(row_teh["Tsh"].ToString(), out var number2) == true ? Convert.ToInt32(row_teh["Tsh"]) : 0);
-                                if (!C_UpdaterSP.InsertTechnologyDetails(FK_IdDetails, NumOper, FK_IdOperation, Tpd2, Tsh2))
+                                if (!updater.InsertTechnologyDetails(FK_IdDetails, NumOper, FK_IdOperation, Tpd2, Tsh2))
                                 {
                                     err = true;
-                                    MessageBox.Show("ID Детали:\"" + FK_IdDetails.ToString() + "\",IdLoodsman: \"" + IdLoodsman + "\", \"" + Shcm +
-                                        "\", операция:\"" + NameOper + "\" не найдена в справочнике операций ПО \"Диспетчеризация\".", "ОШИБКА сохранения!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    //MessageBox.Show("ID Детали:\"" + FK_IdDetails.ToString() + "\",IdLoodsman: \"" + IdLoodsman + "\", \"" + Shcm +
+                                    //    "\", операция:\"" + NameOper + "\" не найдена в справочнике операций ПО \"Диспетчеризация\".", "ОШИБКА сохранения!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    ErrorItem item = new ErrorItem(eid++, updater.LastError);
+                                    errors.Add(item);
                                 }
                             }
                         }
                     }
                 }
-                if (!err) MessageBox.Show("Технологии всех деталей находящихся в работе успешно обновлены.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                else MessageBox.Show("Обновление завершено с ошибками.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                if (err) 
+                {
+                    MessageBox.Show("Обновление завершено с ошибками.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    dataGridView1.DataSource = errors;
+                }
+                else
+                {
+                    MessageBox.Show("Технологии всех деталей находящихся в работе успешно обновлены.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                    
+                
+                    
+                
             }
 
         }
@@ -456,10 +279,22 @@ namespace Dispetcher2
             numUD_year3.Value = DateTime.Now.Year;
             //******************
             _Dt_Worker.Clear();
-            C_DataBase DB = new C_DataBase(C_Gper.ConnStrDispetcher2);
+            
             string sql = "Select PK_Login From Users Where OnlyUser = 0" + "\n" +
                 "Order by PK_Login";
-            DB.Select_DT(ref _Dt_Worker, sql);
+            
+
+            using (var con = new SqlConnection())
+            {
+                con.ConnectionString = config.ConnectionString;
+                SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//using System.Data.SqlClient;
+                cmd.CommandText = sql;
+                cmd.Connection = con;
+                SqlDataAdapter adapter = new SqlDataAdapter(cmd);//adapter.SelectCommand = cmd;
+                adapter.Fill(_Dt_Worker);
+                adapter.Dispose();
+            }
+
             //****************
             cB_WorkersTURV.DataSource = _Dt_Worker;
             cB_WorkersTURV.DisplayMember = "PK_Login";
@@ -480,8 +315,9 @@ namespace Dispetcher2
             else
             {
                 DateTime DateT = Convert.ToDateTime("01." + NumMonth + "." + NumYear);
-
-                C_TimeSheetsV1 TSHV1 = new C_TimeSheetsV1(NumMonth, NumYear) { LoginUs = cB_WorkersTURV.SelectedValue.ToString(), Val_Time = "8" };
+                
+                TSHV1.LoginUs = cB_WorkersTURV.SelectedValue.ToString();
+                TSHV1.Val_Time = "8";
                 DateTime DateLast;
                 if (NumMonth == 12) DateLast = Convert.ToDateTime("31.12." + NumYear);
                 else DateLast = Convert.ToDateTime("01." + (NumMonth + 1) + "." + NumYear);
@@ -506,13 +342,10 @@ namespace Dispetcher2
             if (NumMonth == 0) MessageBox.Show("Не указан месяц.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             else
             {
-                //DateTime DateT = Convert.ToDateTime("01." + NumMonth + "." + NumYear);
-                //DateTime DateT2 = Convert.ToDateTime("01." + (NumMonth +1) + "." + NumYear);
-
-                C_TimeSheetsV1 TSHV = new C_TimeSheetsV1(NumMonth, NumYear) { LoginUs = cB_WorkersTURV2.SelectedValue.ToString() };
-                TSHV.Delete_NoteData();//Удаляем примечание для выбранного сотрудника
-                TSHV.DeleteDataLogin();//Удаляем примечание для выбранного сотрудника
-                if (!TSHV.Err) MessageBox.Show("Данные сотрудника успешно удалены.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                TSHV1.LoginUs = cB_WorkersTURV2.SelectedValue.ToString();
+                TSHV1.Delete_NoteData(NumMonth, NumYear);//Удаляем примечание для выбранного сотрудника
+                TSHV1.DeleteDataLogin(NumMonth, NumYear);//Удаляем примечание для выбранного сотрудника
+                if (!TSHV1.Err) MessageBox.Show("Данные сотрудника успешно удалены.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
         //************************
@@ -522,9 +355,10 @@ namespace Dispetcher2
             else
             {
                 //Версия 1
-                C_TimeSheetsV1 TSHV1 = new C_TimeSheetsV1(cB_MonthTURV.SelectedIndex + 1, (int)numUD_year.Value);
-                TSHV1.DeleteData(chB_Fired.Checked);//Удаляем данные табеля
-                TSHV1.Delete_NoteDataBefore(chB_Fired.Checked);//Удаляем примечания. НЕ ТРОГАТЬ!!! Это необходимо для очистки таблицы TimeSheetsNote в случае возникновения ошибок при записи в таблицу TimeSheets
+                int month = cB_MonthTURV.SelectedIndex + 1;
+                int year = (int)numUD_year.Value;
+                TSHV1.DeleteData(month, year, chB_Fired.Checked);//Удаляем данные табеля
+                TSHV1.Delete_NoteDataBefore(month, year, chB_Fired.Checked);//Удаляем примечания. НЕ ТРОГАТЬ!!! Это необходимо для очистки таблицы TimeSheetsNote в случае возникновения ошибок при записи в таблицу TimeSheets
                 if (!TSHV1.Err) MessageBox.Show("Данные удалены.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
@@ -535,8 +369,9 @@ namespace Dispetcher2
             else
             {
                 //Версия 1
-                C_TimeSheetsV1 TSHV1 = new C_TimeSheetsV1(cB_MonthTURV.SelectedIndex + 1, (int)numUD_year.Value);
-                TSHV1.Delete_NoteDataBefore(chB_Fired.Checked);//Удаляем примечания. НЕ ТРОГАТЬ!!! Это необходимо для очистки таблицы TimeSheetsNote в случае возникновения ошибок при записи в таблицу TimeSheets
+                int month = cB_MonthTURV.SelectedIndex + 1;
+                int year = (int)numUD_year.Value;
+                TSHV1.Delete_NoteDataBefore(month, year, chB_Fired.Checked);//Удаляем примечания. НЕ ТРОГАТЬ!!! Это необходимо для очистки таблицы TimeSheetsNote в случае возникновения ошибок при записи в таблицу TimeSheets
                 if (!TSHV1.Err) MessageBox.Show("Данные удалены.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
@@ -556,7 +391,7 @@ namespace Dispetcher2
 
         private void tabPage_TURV_Enter(object sender, EventArgs e)
         {
-            C_Orders.SelectOrdersData(2, ref DT_Orders);//2-opened. LoadOrders
+            orders.SelectOrdersData(2, ref DT_Orders);//2-opened. LoadOrders
         }
 
         private void tB_OrderNum_TextChanged(object sender, EventArgs e)
@@ -596,53 +431,10 @@ namespace Dispetcher2
                 DateTime StartDate = dTP_StartOrdDate.Value;
                 DateTime PlannedDate = dTP_PlannedDate.Value;
                 Int16 Amount = Convert.ToInt16(numUD_Amount.Value);
-                if (C_Orders.UpdateOrder(PK_IdOrder, OrderName, OrderNum1C, StartDate, PlannedDate, Amount))
+                if (orders.UpdateOrder(PK_IdOrder, OrderName, OrderNum1C, StartDate, PlannedDate, Amount))
                     MessageBox.Show("Изменения в заказе успешно сохранены.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-
-
-
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         #endregion
 
@@ -651,24 +443,26 @@ namespace Dispetcher2
             if (tB_ShCM2.Text.Trim().Length == 0) MessageBox.Show("Заполните поле \"ЩЦМ детали\"", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             else
             {
-                C_Gper.con.ConnectionString = C_Gper.ConStr_Loodsman;
-                SqlCommand cmd = new SqlCommand();
-                cmd.CommandTimeout = 100;
-                cmd.CommandText = "select v.Product, a.value, v.dateofCreate,v.id,v.idtype from rvwVersions v " +
-                                  "inner join rvwAttributes a on a.idversion=v.id " +
-                                  "where a.idattr=235 and v.idtype in (232,233) and v.product like '%" + tB_ShCM2.Text.Trim().Replace("ЩЦМ", "").Replace("щцм", "") + "%' and  v.idstate in (36,40,30)";
-                //"where a.idattr=235 and v.idtype in (232,233,278) and v.product like '" + tB_ShCM.Text.Trim() + "' and v.idstate=40 order by idstate desc"; //235 - Название ЩЦМ idstate(статус)=36-Проектирование,40-Утвержден
+                using (SqlConnection con = new SqlConnection())
+                {
+                    con.ConnectionString = config.LoodsmanConnectionString;
+                    SqlCommand cmd = new SqlCommand();
+                    cmd.CommandTimeout = 100;
+                    cmd.CommandText = "select v.Product, a.value, v.dateofCreate,v.id,v.idtype from rvwVersions v " +
+                                      "inner join rvwAttributes a on a.idversion=v.id " +
+                                      "where a.idattr=235 and v.idtype in (232,233) and v.product like '%" + tB_ShCM2.Text.Trim().Replace("ЩЦМ", "").Replace("щцм", "") + "%' and  v.idstate in (36,40,30)";
+                    //"where a.idattr=235 and v.idtype in (232,233,278) and v.product like '" + tB_ShCM.Text.Trim() + "' and v.idstate=40 order by idstate desc"; //235 - Название ЩЦМ idstate(статус)=36-Проектирование,40-Утвержден
 
 
-                cmd.Connection = C_Gper.con;
-                SqlDataAdapter adapter = new SqlDataAdapter();
-                adapter.SelectCommand = cmd;
-                DataSet dataSet = new DataSet();
-                adapter.Fill(dataSet, "DetailInfo");
-                adapter.Dispose();
-                C_Gper.con.Close();
-                dataGridView1.DataSource = dataSet.Tables["DetailInfo"];
-
+                    cmd.Connection = con;
+                    SqlDataAdapter adapter = new SqlDataAdapter();
+                    adapter.SelectCommand = cmd;
+                    DataSet dataSet = new DataSet();
+                    adapter.Fill(dataSet, "DetailInfo");
+                    adapter.Dispose();
+                    
+                    dataGridView1.DataSource = dataSet.Tables["DetailInfo"];
+                }
 
             }
         }
@@ -706,7 +500,7 @@ namespace Dispetcher2
             ImportData1CButton.Enabled = false;
             if (kuc == null)
             {
-                kuc = new KitUpdaterControl();
+                kuc = new KitUpdaterControl(config);
                 kuc.FinishEvent += OnFinishEvent;
                 KitElementHost.Child = kuc;
             }
@@ -743,11 +537,109 @@ namespace Dispetcher2
             ImportData1CButton.Enabled = false;
             if (idc == null)
             {
-                idc = new ImportDataControl();
+                idc = new ImportDataControl(config);
                 idc.FinishEvent += OnFinishEvent;
                 KitElementHost.Child = idc;
             }
             
         }
-    }
+
+        private void btn_UpdateAllDataDetails_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void CheckShcMTbox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                try
+                {
+                    using (var con = new SqlConnection())
+                    {
+                        con.ConnectionString = config.ConnectionString;
+                        SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };
+                        cmd.CommandText = $"SELECT TOP 1 [IdLoodsman] FROM [Dispetcher2].[dbo].[Sp_Details] where ShcmDetail = '{CheckShcMTbox.Text}'";
+                        cmd.Connection = con;
+                        cmd.Connection.Open();
+                        object IdLoodsman = cmd.ExecuteScalar();
+                        if (IdLoodsman == null) throw new Exception("Неверно ввели название детали!");
+
+                        cmd.CommandText = $"SELECT [version] FROM [НИИПМ].[dbo].[rvwVersions] WHERE id = {IdLoodsman}";
+                        object actualLoodsmanVersion = cmd.ExecuteScalar();
+
+                        cmd.CommandText = $"SELECT TOP 1 [version] FROM [НИИПМ].[dbo].[rvwVersions]" +
+                            $" where product = '{CheckShcMTbox.Text}' AND state in ('Утвержден', 'Архив', 'Проектирование')" +
+                            $" ORDER BY version DESC";
+                        object rigthtLoodsmanVersion = cmd.ExecuteScalar();
+
+                        lBLText.Text = $"Текущая версия {CheckShcMTbox.Text} в Диспетчере - {actualLoodsmanVersion}\n" +
+                            $"Актуальная же версия в ЛОЦМАН -  {rigthtLoodsmanVersion}";
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                    MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+		private void updatePartsVersionsBTN_Click(object sender, EventArgs e)
+		{
+			List<string> lst = new List<string>();
+			try
+            {
+				using (var con = new SqlConnection())
+                {
+                    con.ConnectionString = config.ConnectionString;
+					SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };
+                    cmd.CommandText = $"SELECT [ShcmDetail] FROM [Dispetcher2].[dbo].[Sp_Details]";
+					cmd.Connection = con;
+					cmd.Connection.Open();
+					using (SqlDataReader reader = cmd.ExecuteReader())
+					{
+						while (reader.Read())
+						{
+							lst.Add(reader["ShcmDetail"].ToString());
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+
+				MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+
+			progressBar2.Maximum = lst.Count * 8;
+            int counter = 1;
+			foreach (string shcm in lst)
+            {
+				try
+				{
+                    Console.WriteLine($"{++counter} {shcm}");
+                    using (var con = new SqlConnection())
+					{
+						con.ConnectionString = config.ConnectionString;
+						SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };
+                        cmd.CommandText = $"UPDATE [dbo].[Sp_Details] SET IdLoodsman = " +
+                            $"(SELECT TOP 1 id FROM [НИИПМ].[dbo].[rvwVersions] where product = '{shcm}'" +
+                            $" AND state in ('Утвержден', 'Архив', 'Проектирование')" +
+                            $"AND type in ('Сборочная единица', 'Деталь') ORDER BY version DESC)" +
+                            $"WHERE ShcmDetail LIKE '{shcm}'";
+						cmd.Connection = con;
+						cmd.Connection.Open();
+						cmd.ExecuteNonQuery();
+						con.Close();
+					}
+				}
+				catch (Exception ex)
+				{
+
+					MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+			}
+		}
+	}
 }

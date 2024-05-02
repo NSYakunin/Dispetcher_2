@@ -1,4 +1,6 @@
-﻿namespace Dispetcher2
+﻿using System;
+
+namespace Dispetcher2
 {
     partial class F_Fact
     {
@@ -53,6 +55,8 @@
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.btn_CloseAllWorks = new System.Windows.Forms.Button();
             this.cB_InDetail = new System.Windows.Forms.CheckBox();
+            this.mBtnM_Brigade = new Dispetcher2.Controls.MyButtonMenu();
+            this.mBtnM_Worker = new Dispetcher2.Controls.MyButtonMenu();
             this.tB_Workers = new System.Windows.Forms.TextBox();
             this.btn_SaveTehnology = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
@@ -73,8 +77,7 @@
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.mBtnM_Brigade = new Dispetcher2.Controls.MyButtonMenu();
-            this.mBtnM_Worker = new Dispetcher2.Controls.MyButtonMenu();
+            this.btnkoop = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dGV_Orders)).BeginInit();
             this.gB_OrderName.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -341,6 +344,7 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.btnkoop);
             this.groupBox3.Controls.Add(this.btn_CloseAllWorks);
             this.groupBox3.Controls.Add(this.cB_InDetail);
             this.groupBox3.Controls.Add(this.mBtnM_Brigade);
@@ -357,7 +361,7 @@
             this.groupBox3.Size = new System.Drawing.Size(340, 251);
             this.groupBox3.TabIndex = 17;
             this.groupBox3.TabStop = false;
-            // 
+
             // btn_CloseAllWorks
             // 
             this.btn_CloseAllWorks.Location = new System.Drawing.Point(7, 143);
@@ -379,6 +383,32 @@
             this.cB_InDetail.Text = "Подробно";
             this.cB_InDetail.UseVisualStyleBackColor = true;
             this.cB_InDetail.CheckedChanged += new System.EventHandler(this.cB_InDetail_CheckedChanged);
+            // 
+            // mBtnM_Brigade
+            // 
+            this.mBtnM_Brigade.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
+            this.mBtnM_Brigade.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.mBtnM_Brigade.Location = new System.Drawing.Point(92, 85);
+            this.mBtnM_Brigade.Margin = new System.Windows.Forms.Padding(4);
+            this.mBtnM_Brigade.Name = "mBtnM_Brigade";
+            this.mBtnM_Brigade.Size = new System.Drawing.Size(81, 27);
+            this.mBtnM_Brigade.TabIndex = 1009;
+            this.mBtnM_Brigade.Text = "Бригада";
+            this.mBtnM_Brigade.UseVisualStyleBackColor = true;
+            this.mBtnM_Brigade.Click += new System.EventHandler(this.mBtnM_Brigade_Click);
+            // 
+            // mBtnM_Worker
+            // 
+            this.mBtnM_Worker.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
+            this.mBtnM_Worker.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.mBtnM_Worker.Location = new System.Drawing.Point(3, 85);
+            this.mBtnM_Worker.Margin = new System.Windows.Forms.Padding(4);
+            this.mBtnM_Worker.Name = "mBtnM_Worker";
+            this.mBtnM_Worker.Size = new System.Drawing.Size(81, 27);
+            this.mBtnM_Worker.TabIndex = 1008;
+            this.mBtnM_Worker.Text = "Рабочий";
+            this.mBtnM_Worker.UseVisualStyleBackColor = true;
+            this.mBtnM_Worker.Click += new System.EventHandler(this.mBtnM_Worker_Click);
             // 
             // tB_Workers
             // 
@@ -617,31 +647,15 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(984, 632);
             this.tableLayoutPanel1.TabIndex = 1001;
             // 
-            // mBtnM_Brigade
+            // btnkoop
             // 
-            this.mBtnM_Brigade.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
-            this.mBtnM_Brigade.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.mBtnM_Brigade.Location = new System.Drawing.Point(92, 85);
-            this.mBtnM_Brigade.Margin = new System.Windows.Forms.Padding(4);
-            this.mBtnM_Brigade.Name = "mBtnM_Brigade";
-            this.mBtnM_Brigade.Size = new System.Drawing.Size(81, 27);
-            this.mBtnM_Brigade.TabIndex = 1009;
-            this.mBtnM_Brigade.Text = "Бригада";
-            this.mBtnM_Brigade.UseVisualStyleBackColor = true;
-            this.mBtnM_Brigade.Click += new System.EventHandler(this.mBtnM_Brigade_Click);
-            // 
-            // mBtnM_Worker
-            // 
-            this.mBtnM_Worker.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
-            this.mBtnM_Worker.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.mBtnM_Worker.Location = new System.Drawing.Point(3, 85);
-            this.mBtnM_Worker.Margin = new System.Windows.Forms.Padding(4);
-            this.mBtnM_Worker.Name = "mBtnM_Worker";
-            this.mBtnM_Worker.Size = new System.Drawing.Size(81, 27);
-            this.mBtnM_Worker.TabIndex = 1008;
-            this.mBtnM_Worker.Text = "Рабочий";
-            this.mBtnM_Worker.UseVisualStyleBackColor = true;
-            this.mBtnM_Worker.Click += new System.EventHandler(this.mBtnM_Worker_Click);
+            this.btnkoop.Location = new System.Drawing.Point(145, 220);
+            this.btnkoop.Name = "btnkoop";
+            this.btnkoop.Size = new System.Drawing.Size(192, 24);
+            this.btnkoop.TabIndex = 1013;
+            this.btnkoop.Text = "Закрыть все на кооп";
+            this.btnkoop.UseVisualStyleBackColor = true;
+            this.btnkoop.Click += new System.EventHandler(this.btnkoop_Click);
             // 
             // F_Fact
             // 
@@ -726,5 +740,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Col_FactTpd;
         private System.Windows.Forms.DataGridViewTextBoxColumn Col_FactTsh;
         private System.Windows.Forms.Button btn_SearchSHCM_F;
+        private System.Windows.Forms.Button btnkoop;
     }
 }

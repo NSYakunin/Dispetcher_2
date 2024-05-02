@@ -13,8 +13,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using Dispetcher2.Class;
+using Dispetcher2.Models;
 
-namespace Dispetcher2
+namespace Dispetcher2.Controls
 {
     /// <summary>
     /// Логика взаимодействия для ImportDataControl.xaml
@@ -25,8 +26,10 @@ namespace Dispetcher2
         public event EventHandler FinishEvent;
 
         ProgressViewModel pvm = new ProgressViewModel();
-        public ImportDataControl()
+        IConfig config;
+        public ImportDataControl(IConfig config)
         {
+            this.config = config;
             InitializeComponent();
 
             pvm.SetDispatcher(this.Dispatcher);
@@ -44,7 +47,7 @@ namespace Dispetcher2
             pvm.Reset();
             if (idw == null)
             {
-                idw = new ImportDataWorker(pvm);
+                idw = new ImportDataWorker(config, pvm);
                 idw.FinishEvent += OnFinishEvent;
             }
 

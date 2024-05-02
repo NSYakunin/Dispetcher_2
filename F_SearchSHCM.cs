@@ -2,19 +2,26 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using Dispetcher2.Class;
 
 namespace Dispetcher2
 {
     public partial class F_SearchSHCM : Form
     {
-        DataTable DT_Search = new DataTable();
+        IConfig config;
 
-        public F_SearchSHCM()
+        DataTable DT_Search = new DataTable();
+        // Нарушение правила разделения ответственности!
+        // Требуется вынести работу с базой данных в шаблон Repository (Хранилище)
+        public F_SearchSHCM(IConfig config)
         {
+            this.config = config;
+
             InitializeComponent();
             DT_Search.Columns.Add("OrderNum", typeof(string));
             DT_Search.Columns.Add("Position", typeof(int));
@@ -43,14 +50,23 @@ namespace Dispetcher2
         {
             if (e.KeyCode == Keys.Enter & tB_ShcmDetail.Text.Trim().Length > 0)
             {
-                Class.C_DataBase DB = new Class.C_DataBase(Class.C_Gper.ConnStrDispetcher2);
+                
 
                 string sql = "Select OrderNum,Od.Position,spD.ShcmDetail,spD.NameDetail,Od.AmountDetails,spD.IdLoodsman From Sp_Details spD" + "\n" +
                              "inner join OrdersDetails Od On Od.FK_IdDetail = spD.PK_IdDetail" + "\n" +
                              "inner join Orders O On O.PK_IdOrder = Od.FK_IdOrder" + "\n" +
                              "Where spD.ShcmDetail like '%" + tB_ShcmDetail.Text.Trim() + "%'" + "\n" +
                              "Order by OrderNum";
-                DB.Select_DT(ref DT_Search, sql);
+                using (var con = new SqlConnection())
+                {
+                    con.ConnectionString = config.ConnectionString;
+                    SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//using System.Data.SqlClient;
+                    cmd.CommandText = sql;
+                    cmd.Connection = con;
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);//adapter.SelectCommand = cmd;
+                    adapter.Fill(DT_Search);
+                    adapter.Dispose();
+                }
             }
         }
 
@@ -63,8 +79,6 @@ namespace Dispetcher2
         {
             DT_Search.Clear();
         }
-
-
 
     }
 }

@@ -6,12 +6,17 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Data;
 
+using Dispetcher2.Models;
+
 namespace Dispetcher2.Class
 {
     public class ImportDataWorker
     {
-        C_DataBase db = new C_DataBase(C_Gper.ConnStrDispetcher2);
-        C_Excel ce = new C_Excel();
+        IConfig config;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_DataBase DB;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_Excel XL;
 
         DataTable orderDt = null;
 
@@ -22,9 +27,13 @@ namespace Dispetcher2.Class
 
         public event EventHandler FinishEvent;
 
-        public ImportDataWorker(ProgressViewModel value)
+        public ImportDataWorker(IConfig config, ProgressViewModel value)
         {
+            this.config = config;
             this.pvm = value;
+
+            DB = new C_DataBase(config);
+            XL = new C_Excel(config);
         }
 
         public void Start()
@@ -106,7 +115,7 @@ namespace Dispetcher2.Class
             ErrorItem ei;
             try
             {
-                Receipt rec = ce.ReadExcel_1C(name);
+                Receipt rec = XL.ReadExcel_1C(name);
                 if (rec.ErrorList.Count > 0)
                 {
                     //foreach (var e in rec.ErrorList) pvm.AddToList(e);
@@ -135,7 +144,7 @@ namespace Dispetcher2.Class
                 int year = rec.DateLimit.Year;
                 string num = rec.NumLimit;
 
-                db.DeleteRelationsKit(year, num);
+                DB.DeleteRelationsKit(year, num);
 
                 foreach(DataRow r in rec.ReceiptData.Rows)
                 {
@@ -145,8 +154,8 @@ namespace Dispetcher2.Class
                     string Name1CKit = r.Field<string>("Name1CKit").Trim();
                     double AmountKit = r.Field<double>("AmountKit");
 
-                    db.SetSpKit1C(PK_1С_IdKit, Name1CKit);
-                    db.InsertRelationsKit(year, num, Position, id.Value, IdLoodsman, PK_1С_IdKit, rec.DateLimit, AmountKit);
+                    DB.SetSpKit1C(PK_1С_IdKit, Name1CKit);
+                    DB.InsertRelationsKit(year, num, Position, id.Value, IdLoodsman, PK_1С_IdKit, rec.DateLimit, AmountKit);
                 }
 
                 string name2 = Path.GetFileName(name);
@@ -168,18 +177,18 @@ namespace Dispetcher2.Class
         //Делаем запрос к базе на наличие OrderNum1С в таблице Orders
         Nullable<int> GetOrderId(string orderNum1C)
         {
-            if (orderDt == null) orderDt = db.GetAllOrders();
+            if (orderDt == null) orderDt = DB.GetAllOrders();
 
             var ords = from dr in orderDt.AsEnumerable()
                        where dr.Field<string>("OrderNum1С") == orderNum1C
                        select dr;
 
-            if (ords.Any<DataRow>())
+            if (ords.Any())
                 foreach (var r in ords) return r.Field<int>("PK_IdOrder");
             return null;
         }
         /*
-                C_DataBase DB_Dispetcher = new C_DataBase(C_Gper.ConnStrDispetcher2);
+                C_DataBase DB_Dispetcher = new C_DataBase(connStrDispetcher2);
                 
                 string sql = "Select PK_IdOrder From Orders" + "\n" +
                              "Where OrderNum1С = '" + _OrderNum + "'";

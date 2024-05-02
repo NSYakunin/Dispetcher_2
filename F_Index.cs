@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using Dispetcher2.Class;
 using Microsoft.Office.Interop.Word;
@@ -13,10 +7,12 @@ namespace Dispetcher2
 {
     public partial class F_Index : Form
     {
-        public F_Index()
+        FormFactory factory;
+        public F_Index(FormFactory factory)
         {
+            this.factory = factory;
             InitializeComponent();
-            this.toolStripStatusLabel1.Text = C_Gper.GetServerName();
+            
         }
 
         #region Настройка поведения выпадающих списков пунктов меню
@@ -51,168 +47,174 @@ namespace Dispetcher2
 
         #endregion
 
-        #region MDI methods
-        private void CloseAllMDIchild()
-        {
-            //Получаем ссылку на активную дочернюю форму и закрываем её
-            //Form frmchild = this.ActiveMdiChild;
-            //frmchild.Close();
-            foreach (var form in this.MdiChildren) form.Close();//Закрытие всех дочерних форм
-        }
+//        #region MDI methods
+//        private void CloseAllMDIchild()
+//        {
+//            //Закрытие всех дочерних форм
+//            foreach (var form in this.MdiChildren) form.Close();
+//        }
 
-        //DoSomething<TSomeType>() where TSomeType : IMyInterface, new() {...}
-        private void CheckAndCreateMDI<TForm>(string NameForm) where TForm : Form, new()
+//        //DoSomething<TSomeType>() where TSomeType : IMyInterface, new() {...}
+//        //private void CheckAndCreateMDI<TForm>(string NameForm) where TForm : Form, new()
+//        private void CheckAndCreateMDI(Form f)
+//        {
+//            /*if (this.MdiChildren.Count() == 0) CreateMDI<TForm>();
+//            else
+//            {
+//                bool CheckForm = false;
+//                foreach (var form in this.MdiChildren)
+//                {
+//                    if (form.Name == NameForm)
+//                    {
+//                        if (NameForm != "F_Fact")
+//                        {
+//                            CheckForm = false;
+//                            form.Close();
+//                        }
+//                        else
+//                        {
+//                            CheckForm = true;
+//                            form.Select();
+//                        }
+//                        break;
+//                    }
+//                }
+//                if (!CheckForm) CreateMDI<TForm>();
+//            }*/
+//            CloseAllMDIchild();
+//            CreateMDI(f);
+//        }
+//        // private void CreateMDI<TForm>() where TForm : Form, new()
+//        private void CreateMDI(Form f)
+//        {
+//            var MDIChild = f;
+//            MDIChild.MdiParent = this;
+//            MDIChild.FormBorderStyle = FormBorderStyle.None;
+//            MDIChild.Dock = DockStyle.Fill;
+//            MDIChild.Show();
+//        }
+//#endregion
+        void Show(Form MDIChild)
         {
-            /*if (this.MdiChildren.Count() == 0) CreateMDI<TForm>();
-            else
+            //Закрытие всех дочерних форм
+            foreach (var form in this.MdiChildren)
             {
-                bool CheckForm = false;
-                foreach (var form in this.MdiChildren)
-                {
-                    if (form.Name == NameForm)
-                    {
-                        if (NameForm != "F_Fact")
-                        {
-                            CheckForm = false;
-                            form.Close();
-                        }
-                        else
-                        {
-                            CheckForm = true;
-                            form.Select();
-                        }
-                        break;
-                    }
-                }
-                if (!CheckForm) CreateMDI<TForm>();
-            }*/
-            CloseAllMDIchild();
-            CreateMDI<TForm>();
-        }
+                form.Close();
+                form.Dispose();
+            }
 
-        private void CreateMDI<TForm>() where TForm : Form, new()
-        {
-            TForm MDIChild = new TForm();
             MDIChild.MdiParent = this;
             MDIChild.FormBorderStyle = FormBorderStyle.None;
             MDIChild.Dock = DockStyle.Fill;
-            //this.MinimumSize = new Size(MDIChild.MinimumSize.Width+20, MDIChild.MinimumSize.Height + 100);
             MDIChild.Show();
         }
-#endregion
 
         #region Клики по пунктам меню
 
         private void рабочиеToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CheckAndCreateMDI<F_Workers>("F_Workers");
             this.Text = "ПО \"Диспетчер\"" + " - Рабочие";
-            //toolStripStatusLabel1.Text = this.MdiChildren.Count().ToString();
+            var f = factory.GetForm("Рабочие");
+            Show(f);
         }
 
         private void бригадыToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CheckAndCreateMDI<F_Brigade>("F_Brigade");
             this.Text = "ПО \"Диспетчер\"" + " - Бригады";
-            //toolStripStatusLabel1.Text = this.MdiChildren.Count().ToString();
+            var f = factory.GetForm("Бригады");
+            Show(f);
         }
 
         private void производственныйКалендарьToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CheckAndCreateMDI<F_ProductionCalendar>("F_ProductionCalendar");
             this.Text = "ПО \"Диспетчер\"" + " - Производственный календарь";
-            //toolStripStatusLabel1.Text = this.MdiChildren.Count().ToString();
+            var f = factory.GetForm("Производственный календарь");
+            Show(f);
         }
 
         private void табельToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CheckAndCreateMDI<F_TimeSheets>("F_TimeSheets");
             this.Text = "ПО \"Диспетчер\"" + " - Табель учёта рабочего времени";
-            //toolStripStatusLabel1.Text = this.MdiChildren.Count().ToString();
+            var f = factory.GetForm("Табель учёта рабочего времени");
+            Show(f);
         }
 
 
         private void toolStripMenuItemUsers_Click(object sender, EventArgs e)
         {
-            CheckAndCreateMDI<F_Users>("F_Users");
             this.Text = "ПО \"Диспетчер\"" + " - Пользователи";
-            //toolStripStatusLabel1.Text = this.MdiChildren.Count().ToString();
+            var f = factory.GetForm("Пользователи");
+            Show(f);
         }
 
         private void toolStripMenuItemOther_Click(object sender, EventArgs e)
         {
-            CheckAndCreateMDI<F_Settings>("F_Settings");
             this.Text = "ПО \"Диспетчер\"" + " - Настройки администратора";
-            //toolStripStatusLabel1.Text = this.MdiChildren.Count().ToString();
+            var f = factory.GetForm("Настройки администратора");
+            Show(f);
         }
 
         private void tSB_Orders_Click(object sender, EventArgs e)
         {
-            CheckAndCreateMDI<F_Orders>("F_Orders");
             this.Text = "ПО \"Диспетчер\"" + " - Заказы";
-            //toolStripStatusLabel1.Text = this.MdiChildren.Count().ToString();
+            var f = factory.GetForm("Заказы");
+            Show(f);
         }
 
         private void tSB_Facts_Click(object sender, EventArgs e)
         {
-            CheckAndCreateMDI<F_Fact>("F_Fact");
             this.Text = "ПО \"Диспетчер\"" + " - Фактически выполненные операции";
-            //toolStripStatusLabel1.Text = this.MdiChildren.Count().ToString();
+            var f = factory.GetForm("Фактически выполненные операции");
+            Show(f);
         }
 
         private void tSB_Kit_Click(object sender, EventArgs e)
         {
-            //Комплектация
-            CheckAndCreateMDI<F_Kit>("F_Kit");
             this.Text = "ПО \"Диспетчер\"" + " - Комплектация";
-            //toolStripStatusLabel1.Text = this.MdiChildren.Count().ToString();
+            var f = factory.GetForm("Комплектация");
+            Show(f);
         }
 
         private void отчётнарядПоВыполненнымОперациямToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            C_Gper.NameReport = 3;
-            CheckAndCreateMDI<F_Reports>("F_Reports");
             this.Text = "ПО \"Диспетчер\"" + " - Отчёт-наряд по выполненным операциям";
-            //toolStripStatusLabel1.Text = this.MdiChildren.Count().ToString();
+            var f = factory.GetForm("Отчёт-наряд по выполненным операциям");
+            Show(f);
         }
 
         private void операцииВыполненныеРабочимПоЗаказамформа17ToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            C_Gper.NameReport = 117;
-            CheckAndCreateMDI<F_Reports>("F_Reports");
             this.Text = "ПО \"Диспетчер\"" + " - Операции выполненные рабочим по заказам (форма №17)";
-            //toolStripStatusLabel1.Text = this.MdiChildren.Count().ToString();
+            var f = factory.GetForm("Операции выполненные рабочим по заказам");
+            Show(f);
         }
 
         private void движениеДеталейToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            C_Gper.NameReport = 6;
-            CheckAndCreateMDI<F_Reports>("F_Reports");
             this.Text = "ПО \"Диспетчер\"" + " - Движение деталей";
-            //toolStripStatusLabel1.Text = this.MdiChildren.Count().ToString();
+            var f = factory.GetForm("Движение деталей");
+            Show(f);
         }
 
         private void отчетПоВыполненнымОперациямразрToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            C_Gper.NameReport = 7;
-            CheckAndCreateMDI<F_Reports>("F_Reports");
             this.Text = "ПО \"Диспетчер\"" + " - Отчет по выполненным операциям";
-            //toolStripStatusLabel1.Text = this.MdiChildren.Count().ToString();
+            var f = factory.GetForm("Отчет по выполненным операциям");
+            Show(f);
         }
 
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            CheckAndCreateMDI<F_Planning>("F_Planning");
             this.Text = "ПО \"Диспетчер\"" + " - ПРОИЗВОДСТВО-ПЛАН";
-            //toolStripStatusLabel1.Text = this.MdiChildren.Count().ToString();
+            var f = factory.GetForm("ПРОИЗВОДСТВО-ПЛАН");
+            Show(f);
         }
 
         private void планграфикформа6ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            C_Gper.NameReport = 106;
-            CheckAndCreateMDI<F_ReportsPlan>("F_ReportsPlan");
             this.Text = "ПО \"Диспетчер\"" + " - План-график (форма №6)";
-            //toolStripStatusLabel1.Text = this.MdiChildren.Count().ToString();
+            var f = factory.GetForm("План-график");
+            Show(f);
         }
 
         private void toolStripMI_HelpUser_Click(object sender, EventArgs e)
@@ -272,8 +274,10 @@ namespace Dispetcher2
             if (C_Gper.Users_Set) tSSB_Users.Visible = true; else tSSB_Users.Visible = false;
             if (C_Gper.Settings_Set) tSSB_Settings.Visible = true; else tSSB_Settings.Visible = false;
             tSB_Technology.Visible = false;
-            //tSB_Settings.Visible = false;
-            CheckAndCreateMDI<F_IndexLogo>("F_IndexLogo");
+
+            var f = factory.GetForm("Лого");
+            Show(f);
+            toolStripStatusLabel1.Text = factory.GetInformation();
         }
 
         //Лишнее
@@ -284,9 +288,23 @@ namespace Dispetcher2
 
         private void laborToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            C_Gper.NameReport = 66;
-            CheckAndCreateMDI<F_Reports>("F_Reports");
-            this.Text = "ПО \"Диспетчер\"" + " — Трудоемкость";
+            this.Text = "ПО \"Диспетчер\" — Трудоемкость";
+            var f = factory.GetForm("Трудоемкость");
+            Show(f);
+        }
+
+        private void jobToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Text = "ПО \"Диспетчер\" — Специальности";
+            var f = factory.GetForm("Специальности");
+            Show(f);
+        }
+
+        private void актПриёмаПередачиГальваническоеПокрытиеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Text = "ПО \"Диспетчер\"" + " - Акт приёма-передачи. Гальваническое покрытие";
+            var f = factory.GetForm("Акт приёма-передачи. Гальваническое покрытие");
+            Show(f);
         }
     }
 }

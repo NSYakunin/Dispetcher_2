@@ -5,74 +5,79 @@ using System.Text;
 
 namespace Dispetcher2.Class
 {
-    public class Detail
+    public abstract class Detail
     {
+        public int OrderId { get; set; }
         public string NameType { get; set; }
         public int Position { get; set; }
         public string Shcm { get; set; }
         public string Name { get; set; }
         public int Amount { get; set; }
         public string AllPositionParent { get; set; }
-        public long IdOrderDetail { get; set; }
+        public long OrderDetailId { get; set; }
         public long IdDetail { get; set; }
+        public long IdLoodsman { get; set; }
         public int PositionParent { get; set; }
-        public string ShcmAndName { get { return Shcm + "\n" + Name; } }
-        public void SetNameType(object value)
+    }
+
+    public abstract class DetailRepository : Repository
+    {
+        public abstract IEnumerable<Detail> GetDetails();
+        //public abstract void Load();
+
+        public IEnumerable<Detail> GetTree(Detail d)
         {
-            // Не NULL
-            NameType = Convert.ToString(value);
-        }
-        public void SetPosition(object value)
-        {
-            // NULL
-            // тип данных SQL: INT
-            if (value is DBNull) Position = 0;
-            else Position = Convert.ToInt32(value);
-        }
-        public void SetShcm(object value)
-        {
-            // Не NULL
-            Shcm = Convert.ToString(value);
-        }
-        public void SetName(object value)
-        {
-            // NULL
-            // тип данных SQL: VARCHAR(MAX)
-            if (value is DBNull) Name = String.Empty;
-            else Name = Convert.ToString(value);
+            var DetailList = GetDetails();
+
+            List<Detail> result = new List<Detail>();
+            result.Add(d);
+
+            var e = from item in DetailList
+                    where item.PositionParent == d.Position && item.OrderId == d.OrderId && d.Position != 0
+                    select item;
+
+            foreach (var x in e)
+            {
+                var sr = GetTree(x);
+                result.AddRange(sr);
+            }
+
+            return result;
         }
 
-        public void SetAmount(object value)
-        {
-            // NULL
-            // тип данных SQL: INT
-            if (value is DBNull) Amount = 0;
-            else Amount = Convert.ToInt32(value);
-        }
 
-        public void SetAllPositionParent(object value)
+    }
+
+    public class TestDetailRepository : DetailRepository
+    {
+        private class TestDetail : Detail
         {
-            // NULL
-            // тип данных SQL: VARCHAR(MAX)
-            if (value is DBNull) AllPositionParent = String.Empty;
-            else AllPositionParent = Convert.ToString(value);
+
         }
-        public void SetIdOrderDetail(object value)
+        List<Detail> details;
+        public TestDetailRepository()
         {
-            // Не NULL
-            IdOrderDetail = Convert.ToInt64(value);
+            
         }
-        public void SetIdDetail(object value)
+        public override System.Collections.IEnumerable GetList()
         {
-            // Не NULL
-            IdDetail = Convert.ToInt64(value);
+            if (details == null) Load();
+            return details;
         }
-        public void SetPositionParent(object value)
+        public override IEnumerable<Detail> GetDetails()
         {
-            // NULL
-            // тип данных SQL: INT
-            if (value is DBNull) PositionParent = 0;
-            else PositionParent = Convert.ToInt32(value);
+            if (details == null) Load();
+            return details;
+        }
+        public override void Load()
+        {
+            details = new List<Detail>();
+
+            var d = new TestDetail() { IdDetail = 1, Name = "Ротор ЩЦМ 1.111.111", OrderDetailId = 1, OrderId = 6373 };
+            details.Add(d);
+
+            d = new TestDetail() { IdDetail = 2, Name = "Торот ЩЦМ 2.222.222", OrderDetailId = 2, OrderId = 6373 };
+            details.Add(d);
         }
     }
 }

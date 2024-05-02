@@ -13,20 +13,23 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using Dispetcher2.Class;
+using Dispetcher2.Models;
 
-namespace Dispetcher2
+namespace Dispetcher2.Controls
 {
     /// <summary>
     /// Логика взаимодействия для KitUpdaterControl.xaml
     /// </summary>
     public partial class KitUpdaterControl : UserControl
     {
+        IConfig config;
         public event EventHandler FinishEvent;
         KitUpdater ku = null;
         ProgressViewModel pvm = new ProgressViewModel();
 
-        public KitUpdaterControl()
+        public KitUpdaterControl(IConfig config)
         {
+            this.config = config;
             InitializeComponent();
             pvm.SetDispatcher(this.Dispatcher);
             this.DataContext = pvm;
@@ -38,7 +41,7 @@ namespace Dispetcher2
             pvm.Reset();
             if (ku == null)
             {
-                ku = new KitUpdater(pvm);
+                ku = new KitUpdater(config, pvm);
                 ku.FinishEvent += OnFinishEvent;
             }
             

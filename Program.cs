@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using Dispetcher2.Class;
 
 namespace Dispetcher2
 {
@@ -15,7 +16,8 @@ namespace Dispetcher2
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new F_Login());
+            var d = new DispetcherContainer();
+            Application.Run(d.ResolveStartForm());
         }
     }
 }

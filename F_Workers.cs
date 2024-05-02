@@ -15,14 +15,23 @@ namespace Dispetcher2
 {
     public partial class F_Workers : Form
     {
+        IConfig config;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_Departments departments;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_Users users;
+
         DataTable DT_SP_Department = new DataTable();
         DataTable _DT_SP_Job = new DataTable();
         DataTable _DT_Workers = new DataTable();
         BindingSource BindingSource_Workers = new BindingSource();
 
 
-        public F_Workers()
+        public F_Workers(IConfig config)
         {
+            this.config = config;
+            departments = new C_Departments(config);
+            users = new C_Users(config);
             InitializeComponent();
         }
 
@@ -30,22 +39,25 @@ namespace Dispetcher2
         {
             try
             {
-                _DT_SP_Job.Clear();
-                C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
-                SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//seconds //using System.Data.SqlClient;
-                cmd.CommandText = "Select Pk_IdJob,NameJob From Sp_Job" + "\n" +
-                "Where JobIsvalid = 1" + "\n" +
-                "Order by NameJob";
-                cmd.Connection = C_Gper.con;
-                SqlDataAdapter adapter = new SqlDataAdapter();
-                adapter.SelectCommand = cmd;
-                adapter.Fill(_DT_SP_Job);
-                adapter.Dispose();
-                C_Gper.con.Close();
+                using (SqlConnection con = new SqlConnection())
+                {
+                    _DT_SP_Job.Clear();
+                    con.ConnectionString = config.ConnectionString;
+                    SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//seconds //using System.Data.SqlClient;
+                    cmd.CommandText = "Select Pk_IdJob,NameJob From Sp_Job" + "\n" +
+                    "Where JobIsvalid = 1" + "\n" +
+                    "Order by NameJob";
+                    cmd.Connection = con;
+                    SqlDataAdapter adapter = new SqlDataAdapter();
+                    adapter.SelectCommand = cmd;
+                    adapter.Fill(_DT_SP_Job);
+                    adapter.Dispose();
+                    con.Close();
+                }
             }
             catch (Exception ex)
             {
-                C_Gper.con.Close();
+                
                 MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -57,7 +69,7 @@ namespace Dispetcher2
             cB_SpJob.DataSource = _DT_SP_Job;
             cB_SpJob.DisplayMember = "NameJob";
             cB_SpJob.ValueMember = "Pk_IdJob";
-            C_Departments.Select_Departments(ref DT_SP_Department);
+            departments.Select_Departments(ref DT_SP_Department);
             //Load Users List
             SelectAllWorkers();
             cB_Department.DataSource = DT_SP_Department;
@@ -81,23 +93,26 @@ namespace Dispetcher2
             _DT_Workers.Clear();
             try
             {
-                C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
-                SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
-                cmd.CommandText = "Select (LastName+' '+Name+' '+ SecondName) as FullName,PK_Login,LastName,Name,SecondName,FK_IdDepartment,IsValid,RateWorker,DateStart,Fk_IdJob,ITR,TabNum,DateEnd,ShowTimeSheets" + "\n" +
-                "From Users" + "\n" +
-                "Where OnlyUser = 0" + "\n" +
-                "Order by FullName";
-                cmd.Connection = C_Gper.con;
-                SqlDataAdapter adapter = new SqlDataAdapter();
-                adapter.SelectCommand = cmd;
-                adapter.Fill(_DT_Workers);
-                //adapter.Fill(C_Gper.DT);
-                adapter.Dispose();
-                C_Gper.con.Close();
+                using (SqlConnection con = new SqlConnection())
+                {
+                    con.ConnectionString = config.ConnectionString;
+                    SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
+                    cmd.CommandText = "Select (LastName+' '+Name+' '+ SecondName) as FullName,PK_Login,LastName,Name,SecondName,FK_IdDepartment,IsValid,RateWorker,DateStart,Fk_IdJob,ITR,TabNum,DateEnd,ShowTimeSheets" + "\n" +
+                    "From Users" + "\n" +
+                    "Where OnlyUser = 0" + "\n" +
+                    "Order by FullName";
+                    cmd.Connection = con;
+                    SqlDataAdapter adapter = new SqlDataAdapter();
+                    adapter.SelectCommand = cmd;
+                    adapter.Fill(_DT_Workers);
+                    //adapter.Fill(C_Gper.DT);
+                    adapter.Dispose();
+                    con.Close();
+                }
             }
             catch (Exception ex)
             {
-                C_Gper.con.Close();
+                
                 MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -246,7 +261,7 @@ namespace Dispetcher2
                         //else
                     {
                         int SelectedNumRow = BindingSource_Workers.Position;
-                        if (C_Users.Check_PK_Login(tB_Login.Text.Trim()))
+                        if (users.Check_PK_Login(tB_Login.Text.Trim()))
                         {
                             if (chB_NewWorker.Checked) MessageBox.Show("Сотрудник с таким логином уже зарегистрирован. Повторная регистрация невозможна.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                             else
@@ -268,60 +283,63 @@ namespace Dispetcher2
         {
             try
             {
-                C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
-                SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
-                //cmd.CommandType = CommandType.StoredProcedure;
-                //cmd.CommandText = "Delete From Editors_now Where IDRkk=@IDRkk and IDmmpRKK=@IDmmpRKK and YearRkk=@YearRkk and IdTypeRkk_FK=@IdTypeRkk_FK";
-                //cmd.CommandText = "[RKKeditor_out]";
-                if (Update)
-                    cmd.CommandText = "Update Users set LastName=@LastName,Name=@Name,SecondName=@SecondName,OnlyUser=@OnlyUser,FK_IdDepartment=@FK_IdDepartment,IsValid=@IsValid,RateWorker=@RateWorker,DateStart=@DateStart,DateEnd=@DateEnd,Fk_IdJob=@Fk_IdJob,ITR=@ITR,TabNum=@TabNum,ShowTimeSheets=@ShowTimeSheets" + "\n" +
-                "where PK_Login=@PK_Login";
-                else
-                    cmd.CommandText = "insert into Users (PK_Login,LastName,Name,SecondName,OnlyUser,FK_IdDepartment,IsValid,RateWorker,DateStart,DateEnd,Fk_IdJob,ITR,TabNum,ShowTimeSheets) " + "\n" +
-                    "values (@PK_Login,@LastName,@Name,@SecondName,@OnlyUser,@FK_IdDepartment,@IsValid,@RateWorker,@DateStart,@DateEnd,@Fk_IdJob,@ITR,@TabNum,@ShowTimeSheets)";
-                cmd.Connection = C_Gper.con;
-                cmd.Parameters.Add(new SqlParameter("@PK_Login", SqlDbType.VarChar));
-                cmd.Parameters["@PK_Login"].Value = tB_Login.Text.Trim();
-                cmd.Parameters.Add(new SqlParameter("@LastName", SqlDbType.VarChar));
-                cmd.Parameters["@LastName"].Value = tB_LastName.Text.Trim();
-                cmd.Parameters.Add(new SqlParameter("@Name", SqlDbType.VarChar));
-                cmd.Parameters["@Name"].Value = tB_Name.Text.Trim();
-                cmd.Parameters.Add(new SqlParameter("@SecondName", SqlDbType.VarChar));
-                cmd.Parameters["@SecondName"].Value = tB_SecondName.Text.Trim();
-                cmd.Parameters.Add(new SqlParameter("@OnlyUser", SqlDbType.Bit));
-                cmd.Parameters["@OnlyUser"].Value = false;
-                cmd.Parameters.Add(new SqlParameter("@FK_IdDepartment", SqlDbType.Int));
-                if (cB_Department.SelectedValue == null) cmd.Parameters["@FK_IdDepartment"].Value = DBNull.Value;
-                else cmd.Parameters["@FK_IdDepartment"].Value = cB_Department.SelectedValue;
-                cmd.Parameters.Add(new SqlParameter("@IsValid", SqlDbType.Bit));
-                cmd.Parameters["@IsValid"].Value = chB_IsValid.Checked;
-                cmd.Parameters.Add(new SqlParameter("@RateWorker", SqlDbType.Float));
-                if (chB_RateWorker.Checked) cmd.Parameters["@RateWorker"].Value = 0.5;
-                else cmd.Parameters["@RateWorker"].Value = 1;
-                cmd.Parameters.Add(new SqlParameter("@DateStart", SqlDbType.Date));
-                cmd.Parameters["@DateStart"].Value = DateStart;
-                DateTime DateEnd;
-                cmd.Parameters.Add(new SqlParameter("@DateEnd", SqlDbType.Date));
-                if (DateTime.TryParse(mTB_DateEnd.Text, out DateEnd))
-                    cmd.Parameters["@DateEnd"].Value = DateEnd;
-                else cmd.Parameters["@DateEnd"].Value = DBNull.Value;
-                cmd.Parameters.Add(new SqlParameter("@Fk_IdJob", SqlDbType.Int));
-                if (cB_SpJob.SelectedValue == null) cmd.Parameters["@Fk_IdJob"].Value = DBNull.Value;
-                else cmd.Parameters["@Fk_IdJob"].Value = cB_SpJob.SelectedValue;
-                cmd.Parameters.Add(new SqlParameter("@ITR", SqlDbType.Bit));
-                cmd.Parameters["@ITR"].Value = rBtn_ITR.Checked;
-                cmd.Parameters.Add(new SqlParameter("@TabNum", SqlDbType.VarChar));
-                if (tB_TabNum.Text.Trim() == "") cmd.Parameters["@TabNum"].Value = DBNull.Value;
-                else cmd.Parameters["@TabNum"].Value = tB_TabNum.Text.Trim();
-                cmd.Parameters.Add(new SqlParameter("@ShowTimeSheets", SqlDbType.Bit));
-                cmd.Parameters["@ShowTimeSheets"].Value = chB_TimeSheets.Checked;
-                C_Gper.con.Open();
-                cmd.ExecuteNonQuery();
-                C_Gper.con.Close();
+                using (SqlConnection con = new SqlConnection())
+                {
+                    con.ConnectionString = config.ConnectionString;
+                    SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
+                                                      //cmd.CommandType = CommandType.StoredProcedure;
+                                                      //cmd.CommandText = "Delete From Editors_now Where IDRkk=@IDRkk and IDmmpRKK=@IDmmpRKK and YearRkk=@YearRkk and IdTypeRkk_FK=@IdTypeRkk_FK";
+                                                      //cmd.CommandText = "[RKKeditor_out]";
+                    if (Update)
+                        cmd.CommandText = "Update Users set LastName=@LastName,Name=@Name,SecondName=@SecondName,OnlyUser=@OnlyUser,FK_IdDepartment=@FK_IdDepartment,IsValid=@IsValid,RateWorker=@RateWorker,DateStart=@DateStart,DateEnd=@DateEnd,Fk_IdJob=@Fk_IdJob,ITR=@ITR,TabNum=@TabNum,ShowTimeSheets=@ShowTimeSheets" + "\n" +
+                    "where PK_Login=@PK_Login";
+                    else
+                        cmd.CommandText = "insert into Users (PK_Login,LastName,Name,SecondName,OnlyUser,FK_IdDepartment,IsValid,RateWorker,DateStart,DateEnd,Fk_IdJob,ITR,TabNum,ShowTimeSheets) " + "\n" +
+                        "values (@PK_Login,@LastName,@Name,@SecondName,@OnlyUser,@FK_IdDepartment,@IsValid,@RateWorker,@DateStart,@DateEnd,@Fk_IdJob,@ITR,@TabNum,@ShowTimeSheets)";
+                    cmd.Connection = con;
+                    cmd.Parameters.Add(new SqlParameter("@PK_Login", SqlDbType.VarChar));
+                    cmd.Parameters["@PK_Login"].Value = tB_Login.Text.Trim();
+                    cmd.Parameters.Add(new SqlParameter("@LastName", SqlDbType.VarChar));
+                    cmd.Parameters["@LastName"].Value = tB_LastName.Text.Trim();
+                    cmd.Parameters.Add(new SqlParameter("@Name", SqlDbType.VarChar));
+                    cmd.Parameters["@Name"].Value = tB_Name.Text.Trim();
+                    cmd.Parameters.Add(new SqlParameter("@SecondName", SqlDbType.VarChar));
+                    cmd.Parameters["@SecondName"].Value = tB_SecondName.Text.Trim();
+                    cmd.Parameters.Add(new SqlParameter("@OnlyUser", SqlDbType.Bit));
+                    cmd.Parameters["@OnlyUser"].Value = false;
+                    cmd.Parameters.Add(new SqlParameter("@FK_IdDepartment", SqlDbType.Int));
+                    if (cB_Department.SelectedValue == null) cmd.Parameters["@FK_IdDepartment"].Value = DBNull.Value;
+                    else cmd.Parameters["@FK_IdDepartment"].Value = cB_Department.SelectedValue;
+                    cmd.Parameters.Add(new SqlParameter("@IsValid", SqlDbType.Bit));
+                    cmd.Parameters["@IsValid"].Value = chB_IsValid.Checked;
+                    cmd.Parameters.Add(new SqlParameter("@RateWorker", SqlDbType.Float));
+                    if (chB_RateWorker.Checked) cmd.Parameters["@RateWorker"].Value = 0.5;
+                    else cmd.Parameters["@RateWorker"].Value = 1;
+                    cmd.Parameters.Add(new SqlParameter("@DateStart", SqlDbType.Date));
+                    cmd.Parameters["@DateStart"].Value = DateStart;
+                    DateTime DateEnd;
+                    cmd.Parameters.Add(new SqlParameter("@DateEnd", SqlDbType.Date));
+                    if (DateTime.TryParse(mTB_DateEnd.Text, out DateEnd))
+                        cmd.Parameters["@DateEnd"].Value = DateEnd;
+                    else cmd.Parameters["@DateEnd"].Value = DBNull.Value;
+                    cmd.Parameters.Add(new SqlParameter("@Fk_IdJob", SqlDbType.Int));
+                    if (cB_SpJob.SelectedValue == null) cmd.Parameters["@Fk_IdJob"].Value = DBNull.Value;
+                    else cmd.Parameters["@Fk_IdJob"].Value = cB_SpJob.SelectedValue;
+                    cmd.Parameters.Add(new SqlParameter("@ITR", SqlDbType.Bit));
+                    cmd.Parameters["@ITR"].Value = rBtn_ITR.Checked;
+                    cmd.Parameters.Add(new SqlParameter("@TabNum", SqlDbType.VarChar));
+                    if (tB_TabNum.Text.Trim() == "") cmd.Parameters["@TabNum"].Value = DBNull.Value;
+                    else cmd.Parameters["@TabNum"].Value = tB_TabNum.Text.Trim();
+                    cmd.Parameters.Add(new SqlParameter("@ShowTimeSheets", SqlDbType.Bit));
+                    cmd.Parameters["@ShowTimeSheets"].Value = chB_TimeSheets.Checked;
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
             }
             catch (Exception ex)
             {
-                C_Gper.con.Close();
+                
                 MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

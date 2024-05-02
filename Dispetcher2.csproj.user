@@ -2,10 +2,10 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectView>ProjectFiles</ProjectView>
-    <PublishUrlHistory>\\Ascon\Dispetcher\UpdatesDisp2\Application Files\|\\Ascon\Dispetcher\UpdatesDisp2\|C:\Users\NSYakunin\Desktop\testD\|C:\Users\NSYakunin\Desktop\Release  - Версия c подписью и ключом\publish\|\\ASCON\Dispetcher\UpdatesDisp2\Application Files\</PublishUrlHistory>
+    <PublishUrlHistory>\\ascon\Dispetcher\UpdatesDisp2\Application Files\|\\filesrv\Производство\Программисты\DispPublic\|\\Ascon\Dispetcher\UpdatesDisp2\Application Files\|\\Ascon\Dispetcher\UpdatesDisp2\|C:\Users\NSYakunin\Desktop\testD\</PublishUrlHistory>
     <InstallUrlHistory>\\Ascon\Dispetcher\UpdatesDisp2\|\\Ascon\Dispetcher\|\\Ascon\Dispetcher\UpdatesDisp2\Application Files\|\\Users\NSYakunin\Desktop\testD\|\\ASCON\Dispetcher\UpdatesDisp2\Application Files\</InstallUrlHistory>
     <SupportUrlHistory />
-    <UpdateUrlHistory>\\Ascon\Dispetcher\UpdatesDisp2\Application Files\|\\Ascon\Dispetcher\|http://localhost/Dispetcher2/</UpdateUrlHistory>
+    <UpdateUrlHistory>\\ascon\Dispetcher\UpdatesDisp2\Application Files\|\\Ascon\Dispetcher\UpdatesDisp2\Application Files\|\\Ascon\Dispetcher\|http://localhost/Dispetcher2/</UpdateUrlHistory>
     <BootstrapperUrlHistory />
     <ErrorReportUrlHistory />
     <FallbackCulture>ru-RU</FallbackCulture>
@@ -16,6 +16,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <EnableSQLServerDebugging>false</EnableSQLServerDebugging>
+    <RemoteDebugEnabled>false</RemoteDebugEnabled>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <RemoteDebugEnabled>false</RemoteDebugEnabled>

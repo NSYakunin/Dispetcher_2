@@ -13,9 +13,27 @@ namespace Dispetcher2
 {
     public partial class F_Orders : Form
     {
-        public F_Orders()
+        IConfig config;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_Orders orders;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        С_TreeViewOrders treeViewOrders;
+        // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_Excel ExcelFile;
+
+        bool loadingFlag = false;
+
+		public static string orderDel { get; set; }
+		public static string orderUpdate { get; set; }
+		public F_Orders(IConfig config)
         {
+            this.config = config;
+            orders = new C_Orders(config);
+            treeViewOrders = new С_TreeViewOrders(config);
+            ExcelFile = new C_Excel(config);
+
             InitializeComponent();
+
         }
 
         BindingSource BindingSource_Orders = new BindingSource();//Заказы
@@ -76,8 +94,8 @@ namespace Dispetcher2
             }
 
             AddColumnsInDataTables();
-            C_F_Orders C_Orders = new C_F_Orders();
-            C_Orders.SelectAllOrders(ref DT_Orders);
+
+            orders.SelectAllOrders(ref DT_Orders);
             FilterOrders();
             //Bindings
             //****************************************************************************************
@@ -263,8 +281,8 @@ namespace Dispetcher2
                     btn_LoadFromExcel.Enabled = false;
                 else
                     btn_LoadFromExcel.Enabled = true;
-                C_F_Orders C_Orders = new C_F_Orders();//Load data in dGV_AddDetailsFromRas
-                C_Orders.Select_AllOrdersDetails(PK_IdOrder, ref DT_OrdersDetails);
+                //Load data in dGV_AddDetailsFromRas
+                orders.Select_AllOrdersDetails(PK_IdOrder, ref DT_OrdersDetails);
                 if (C_Gper.F_Orders_View)//Только просмотр
                 {
                     btn_LoadFromExcel.Enabled = false; btn_OpenOrders.Enabled = false;
@@ -299,33 +317,36 @@ namespace Dispetcher2
         {
             try
             {
-                C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
-                SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
-                SqlDataReader reader;
-                cmd.Parameters.Clear();
-                cmd.CommandText = "SELECT OrderNum" + "\n" +
-                "FROM Orders" + "\n" +
-                "Where OrderNum=@OrderNum";
-                cmd.Parameters.Add(new SqlParameter("@OrderNum", SqlDbType.VarChar));
-                cmd.Parameters["@OrderNum"].Value = tB_NewOrderNum.Text.Trim();
-                cmd.Connection = C_Gper.con;
-                C_Gper.con.Open();
-                reader = cmd.ExecuteReader();
-                if (reader.HasRows)
+                using (var con = new SqlConnection())
                 {
-                    reader.Dispose(); reader.Close(); C_Gper.con.Close();
-                    MessageBox.Show("Заказ с таким номером уже зарегестрирован.", "Сохранение заказа отменено!!!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                    return false;
-                }
-                else
-                {
-                    reader.Dispose(); reader.Close(); C_Gper.con.Close();
-                    return true;
+                    con.ConnectionString = config.ConnectionString;
+                    SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
+                    SqlDataReader reader;
+                    cmd.Parameters.Clear();
+                    cmd.CommandText = "SELECT OrderNum" + "\n" +
+                    "FROM Orders" + "\n" +
+                    "Where OrderNum=@OrderNum";
+                    cmd.Parameters.Add(new SqlParameter("@OrderNum", SqlDbType.VarChar));
+                    cmd.Parameters["@OrderNum"].Value = tB_NewOrderNum.Text.Trim();
+                    cmd.Connection = con;
+                    con.Open();
+                    reader = cmd.ExecuteReader();
+                    if (reader.HasRows)
+                    {
+                        reader.Dispose(); reader.Close(); con.Close();
+                        MessageBox.Show("Заказ с таким номером уже зарегестрирован.", "Сохранение заказа отменено!!!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                        return false;
+                    }
+                    else
+                    {
+                        reader.Dispose(); reader.Close(); con.Close();
+                        return true;
+                    }
                 }
             }
             catch (Exception ex)
             {
-                C_Gper.con.Close();
+                
                 MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
@@ -335,25 +356,28 @@ namespace Dispetcher2
         {
             try
             {
-                C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
-                SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
-                cmd.Connection = C_Gper.con;
-                cmd.CommandText = "insert into Orders (OrderNum,OrderName) " + "\n" +
-                                      "values (@OrderNum,@OrderName)";
-                //Parameters**************************************************
-                cmd.Parameters.Add(new SqlParameter("@OrderNum", SqlDbType.VarChar));
-                cmd.Parameters["@OrderNum"].Value = tB_NewOrderNum.Text.Trim();
-                cmd.Parameters.Add(new SqlParameter("@OrderName", SqlDbType.VarChar));
-                cmd.Parameters["@OrderName"].Value = tB_NewOrderName.Text.Trim();
-                //***********************************************************
-                C_Gper.con.Open();
-                cmd.ExecuteNonQuery();
-                C_Gper.con.Close();
-                return true;
+                using (var con = new SqlConnection())
+                {
+                    con.ConnectionString = config.ConnectionString;
+                    SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
+                    cmd.Connection = con;
+                    cmd.CommandText = "insert into Orders (OrderNum,OrderName) " + "\n" +
+                                          "values (@OrderNum,@OrderName)";
+                    //Parameters**************************************************
+                    cmd.Parameters.Add(new SqlParameter("@OrderNum", SqlDbType.VarChar));
+                    cmd.Parameters["@OrderNum"].Value = tB_NewOrderNum.Text.Trim();
+                    cmd.Parameters.Add(new SqlParameter("@OrderName", SqlDbType.VarChar));
+                    cmd.Parameters["@OrderName"].Value = tB_NewOrderName.Text.Trim();
+                    //***********************************************************
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                    return true;
+                }
             }
             catch (Exception ex)
             {
-                C_Gper.con.Close();
+                
                 MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
@@ -363,74 +387,50 @@ namespace Dispetcher2
         {
             try
             {
-                C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
-                SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
-                SqlDataReader reader;
-                cmd.CommandText = "Select PK_IdOrder,OrderNum,OrderName,DateCreateOrder,FK_IdStatusOrders,NameStatusOrders,ValidationOrder" + "\n" +
-                                  "From Orders" + "\n" +
-                                  "LEFT JOIN SP_StatusOrders ON FK_IdStatusOrders = PK_IdStatusOrders" + "\n" +
-                                  "WHERE   PK_IdOrder = (SELECT MAX(PK_IdOrder)  FROM Orders)";
-                cmd.Connection = C_Gper.con;
-                C_Gper.con.Open();
-                reader = cmd.ExecuteReader();
-                if (reader.HasRows)
+                using (var con = new SqlConnection())
                 {
-                    int PK_IdOrder = 1;
-                    string OrderNum = "",OrderName = "";
-                    DateTime DateCreateOrder = DateTime.Now;
-                    byte FK_IdStatusOrders = 1;
-                    string NameStatusOrders = "";
-                    bool ValidationOrder = false;
-                    while (reader.Read())
+                    con.ConnectionString = config.ConnectionString;
+                    SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
+                    SqlDataReader reader;
+                    cmd.CommandText = "Select PK_IdOrder,OrderNum,OrderName,DateCreateOrder,FK_IdStatusOrders,NameStatusOrders,ValidationOrder" + "\n" +
+                                      "From Orders" + "\n" +
+                                      "LEFT JOIN SP_StatusOrders ON FK_IdStatusOrders = PK_IdStatusOrders" + "\n" +
+                                      "WHERE   PK_IdOrder = (SELECT MAX(PK_IdOrder)  FROM Orders)";
+                    cmd.Connection = con;
+                    con.Open();
+                    reader = cmd.ExecuteReader();
+                    if (reader.HasRows)
                     {
-                        if (!reader.IsDBNull(0)) PK_IdOrder = reader.GetInt32(0); else PK_IdOrder = 1;
-                        if (!reader.IsDBNull(1)) OrderNum = reader.GetString(1); else OrderNum = "";
-                        if (!reader.IsDBNull(2)) OrderName = reader.GetString(2); else OrderName = "";
-                        if (!reader.IsDBNull(3)) DateCreateOrder = reader.GetDateTime(3); else DateCreateOrder = DateTime.Now;
-                        if (!reader.IsDBNull(4)) FK_IdStatusOrders = reader.GetByte(4); else FK_IdStatusOrders = 1;
-                        if (!reader.IsDBNull(5)) NameStatusOrders = reader.GetString(5); else NameStatusOrders = "";
-                        if (!reader.IsDBNull(6)) ValidationOrder = reader.GetBoolean(6); else ValidationOrder = false;
+                        int PK_IdOrder = 1;
+                        string OrderNum = "", OrderName = "";
+                        DateTime DateCreateOrder = DateTime.Now;
+                        byte FK_IdStatusOrders = 1;
+                        string NameStatusOrders = "";
+                        bool ValidationOrder = false;
+                        while (reader.Read())
+                        {
+                            if (!reader.IsDBNull(0)) PK_IdOrder = reader.GetInt32(0); else PK_IdOrder = 1;
+                            if (!reader.IsDBNull(1)) OrderNum = reader.GetString(1); else OrderNum = "";
+                            if (!reader.IsDBNull(2)) OrderName = reader.GetString(2); else OrderName = "";
+                            if (!reader.IsDBNull(3)) DateCreateOrder = reader.GetDateTime(3); else DateCreateOrder = DateTime.Now;
+                            if (!reader.IsDBNull(4)) FK_IdStatusOrders = reader.GetByte(4); else FK_IdStatusOrders = 1;
+                            if (!reader.IsDBNull(5)) NameStatusOrders = reader.GetString(5); else NameStatusOrders = "";
+                            if (!reader.IsDBNull(6)) ValidationOrder = reader.GetBoolean(6); else ValidationOrder = false;
+                        }
+                        //Add Rows in DataTable
+                        DT_Orders.Rows.Add(PK_IdOrder, OrderNum, OrderName, DateCreateOrder, FK_IdStatusOrders, NameStatusOrders, ValidationOrder);
+                        dGV_Orders.CurrentCell = dGV_Orders.Rows[dGV_Orders.RowCount - 1].Cells[0];
                     }
-                    //Add Rows in DataTable
-                    DT_Orders.Rows.Add(PK_IdOrder, OrderNum, OrderName, DateCreateOrder, FK_IdStatusOrders, NameStatusOrders, ValidationOrder);
-                    dGV_Orders.CurrentCell = dGV_Orders.Rows[dGV_Orders.RowCount - 1].Cells[0];
+                    reader.Dispose(); reader.Close(); con.Close();
                 }
-                reader.Dispose(); reader.Close(); C_Gper.con.Close();
             }
             catch (Exception ex)
             {
-                C_Gper.con.Close();
+                
                 MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        #region Import old data Orders in Dispetcher2
-        private bool SelectOrdersFromOldDispetcher()
-        {
-            DT_OrdersOldDispetcher.Clear();
-            try
-            {
-                C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher;
-                SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
-                cmd.CommandText = "SELECT Dogovor,Name,dateSetInSystem, idStatus,CheckR" + "\n" +
-                                  "FROM Zakaz" + "\n" +
-                                  "LEFT JOIN Details ON idDetail = Details.id" + "\n" +
-                                  "where Zakaz.id>246";//c 246 т.к. до - ручками вбил
-                cmd.Connection = C_Gper.con;
-                SqlDataAdapter adapter = new SqlDataAdapter();
-                adapter.SelectCommand = cmd;
-                adapter.Fill(DT_OrdersOldDispetcher);
-                adapter.Dispose();
-                C_Gper.con.Close();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                C_Gper.con.Close();
-                MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
-            }
-        }
 
         private void InsertOldOrders()
         {
@@ -440,17 +440,8 @@ namespace Dispetcher2
             int FK_IdStatusOrders = 3;//закрытый
             bool Validation = false;
             //*************************************************************
-            C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
-            SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
-            //cmd.Parameters.Clear();
-            cmd.CommandText = "insert into Orders (OrderNum,OrderName,DateCreateOrder,FK_IdStatusOrders,ValidationOrder) " + "\n" +
-                "values (@OrderNum,@OrderName,@DateCreateOrder,@FK_IdStatusOrders,@ValidationOrder)";
-            cmd.Connection = C_Gper.con;
-            cmd.Parameters.Add(new SqlParameter("@OrderNum", SqlDbType.VarChar));
-            cmd.Parameters.Add(new SqlParameter("@OrderName", SqlDbType.VarChar));
-            cmd.Parameters.Add(new SqlParameter("@DateCreateOrder", SqlDbType.Date));
-            cmd.Parameters.Add(new SqlParameter("@FK_IdStatusOrders", SqlDbType.TinyInt));
-            cmd.Parameters.Add(new SqlParameter("@ValidationOrder", SqlDbType.Bit));
+            
+
             //*************************************************************
             foreach (DataRow row in DT_OrdersOldDispetcher.Rows)
             {
@@ -473,28 +464,44 @@ namespace Dispetcher2
                 }
                 //Insert Data in Oredrs table from Dispetcher2 
                 try
+                {
+                    using (var con = new SqlConnection())
                     {
+                        con.ConnectionString = config.ConnectionString;
+                        SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
+                                                          //cmd.Parameters.Clear();
+                        cmd.CommandText = "insert into Orders (OrderNum,OrderName,DateCreateOrder,FK_IdStatusOrders,ValidationOrder) " + "\n" +
+                            "values (@OrderNum,@OrderName,@DateCreateOrder,@FK_IdStatusOrders,@ValidationOrder)";
+                        cmd.Connection = con;
+
+                        cmd.Parameters.Add(new SqlParameter("@OrderNum", SqlDbType.VarChar));
+                        cmd.Parameters.Add(new SqlParameter("@OrderName", SqlDbType.VarChar));
+                        cmd.Parameters.Add(new SqlParameter("@DateCreateOrder", SqlDbType.Date));
+                        cmd.Parameters.Add(new SqlParameter("@FK_IdStatusOrders", SqlDbType.TinyInt));
+                        cmd.Parameters.Add(new SqlParameter("@ValidationOrder", SqlDbType.Bit));
+                        
+                        
                         cmd.Parameters["@OrderNum"].Value = OrderNum;
                         if (OrderName == null) cmd.Parameters["@OrderName"].Value = DBNull.Value; else cmd.Parameters["@OrderName"].Value = OrderName;
                         cmd.Parameters["@DateCreateOrder"].Value = DateCreateOrder;
                         cmd.Parameters["@FK_IdStatusOrders"].Value = FK_IdStatusOrders;
                         cmd.Parameters["@ValidationOrder"].Value = Validation;
-                        C_Gper.con.Open();
+                        con.Open();
                         cmd.ExecuteNonQuery();
-                        C_Gper.con.Close();
+                        con.Close();
                     }
-                    catch (Exception ex)
-                    {
-                        C_Gper.con.Close();
-                        MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    
+                    MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
                 //MessageBox.Show(OrderNum + " | " + OrderName + " | " + DateCreateOrder.ToString() + " | " + FK_IdStatusOrders.ToString());
                 //break;
             }
         }
 #endregion
 
-        #endregion
 
         //**********************
         #region tPageOrdersDetails
@@ -568,10 +575,12 @@ namespace Dispetcher2
                 добавитьToolStripMenuItem.Enabled = true;
                 изменитьКолвоToolStripMenuItem.Enabled = true;
             }
-            С_TreeViewOrders C_TV_Orders = new С_TreeViewOrders();
-            C_TV_Orders.AddInTreeViewOrders(PK_IdOrder, OrderNum, OrderName, ref treeViewOrdersDetails, false);
+            
+            treeViewOrders.AddInTreeViewOrders(PK_IdOrder, OrderNum, OrderName, ref treeViewOrdersDetails, false);
             if (treeViewOrdersDetails.SelectedNode == null) treeViewOrdersDetails.SelectedNode = treeViewOrdersDetails.TopNode;
-            if (DT_AllDetails.Rows.Count == 0) C_F_Orders.SelectAllDetails(ref DT_AllDetails);
+            loadingFlag = true;
+            if (DT_AllDetails.Rows.Count == 0) orders.SelectAllDetails(ref DT_AllDetails);
+            loadingFlag = false;
         }
 
 
@@ -599,7 +608,7 @@ namespace Dispetcher2
                         //dGridViewGild.DataMember = "";
                         //btn_LoadDataXLS.Text = "Ждите";
                         DataTable DT_ExcelData = new DataTable();
-                        C_Excel ExcelFile = new C_Excel();
+                        
                         string ErrorsDataPos;
                         //Считываем данные из Excel
                         ExcelFile.ReadExcelRas(WayFile, PK_IdOrder, ref DT_ExcelData, out ErrorsDataPos);
@@ -616,8 +625,8 @@ namespace Dispetcher2
                                     {
                                         MessageBox.Show("Данные загружены.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                         //Load data in dGV_AddDetailsFromRas
-                                        C_F_Orders C_Orders = new C_F_Orders();
-                                        C_Orders.Select_AllOrdersDetails(PK_IdOrder, ref DT_OrdersDetails);
+                                        
+                                        orders.Select_AllOrdersDetails(PK_IdOrder, ref DT_OrdersDetails);
                                     }
                                 }
                             }
@@ -639,8 +648,8 @@ namespace Dispetcher2
             {
                 if (dGV_Orders.CurrentRow.Cells["Col_Status"].Value.ToString().Trim() != "закрыт")
                 {
-                    C_F_Orders C_Orders = new C_F_Orders();
-                    C_Orders.OpenOrders(PK_IdOrder, 2);//2-открыт
+                    
+                    orders.OpenOrders(PK_IdOrder, 2);//2-открыт
                 }
                 //C_Orders.Select_AllOrdersDetails(PK_IdOrder, ref DT_OrdersDetails);
                 MessageBox.Show("Заказ открыт.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -742,9 +751,9 @@ namespace Dispetcher2
                     //***********************
                     //Делаем запись в базу в OrdersDetails
                     long PK_IdOrderDetail;
-                    C_F_Orders C_Orders = new C_F_Orders();
+                    
                     //***********************
-                    if (C_Orders.InsertDetailInOrder(PK_IdOrder, PK_IdDetail, AmountDetails, PositionParent, out PK_IdOrderDetail))
+                    if (orders.InsertDetailInOrder(PK_IdOrder, PK_IdDetail, AmountDetails, PositionParent, out PK_IdOrderDetail))
                     {
                         TreeNode ChildNode = new TreeNode();
                         ChildNode.Text = ShcmDetail + " - " + NameDetail + " (" + numericUpD_SHCM_Add.Value.ToString() + ")";
@@ -767,7 +776,7 @@ namespace Dispetcher2
         private void btn_UpdateAmountDetail_Click(object sender, EventArgs e)
         {
             //Изменяем количество деталей в заказе
-            C_F_Orders C_Orders = new C_F_Orders();
+            
             //Крепёж
             bool Fasteners;
             string amount = "";
@@ -781,7 +790,7 @@ namespace Dispetcher2
                 Fasteners = false;
                 amount = ((int)numericUpDChange.Value).ToString();
             }
-            if (C_Orders.UpdateAmountDetailOrFasteners(Convert.ToInt64(treeViewOrdersDetails.SelectedNode.Tag), (double)numericUpDChange.Value, Fasteners))
+            if (orders.UpdateAmountDetailOrFasteners(Convert.ToInt64(treeViewOrdersDetails.SelectedNode.Tag), (double)numericUpDChange.Value, Fasteners))
             {
                 MessageBox.Show("Количество изменено.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 treeViewOrdersDetails.SelectedNode.Text = treeViewOrdersDetails.SelectedNode.Text.Remove(treeViewOrdersDetails.SelectedNode.Text.LastIndexOf("(")) + "(" + amount + ")";
@@ -810,50 +819,69 @@ namespace Dispetcher2
 
         private void dGV_AddDetails_SelectionChanged(object sender, EventArgs e)
         {
-            dGV_Tehnology.Rows.Clear();
-            if (dGV_AddDetails.CurrentRow != null && dGV_AddDetails.CurrentRow.Cells["Col_PK_IdDetail"].Value != null && C_Gper.con.State == ConnectionState.Closed) 
-                SelectTehnology(Convert.ToInt64(dGV_AddDetails.CurrentRow.Cells["Col_PK_IdDetail"].Value));
+            try
+            {
+                dGV_Tehnology.Rows.Clear();
+                if (dGV_AddDetails.CurrentRow != null)
+                {
+                    if (dGV_AddDetails.CurrentRow.Cells["Col_PK_IdDetail"].Value != null)
+                    {
+                        if (loadingFlag == false)
+                        {
+                            SelectTehnology(Convert.ToInt64(dGV_AddDetails.CurrentRow.Cells["Col_PK_IdDetail"].Value));
+                        }
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                this.Text = "Исключение в AddDetails_SelectionChanged: " + ex.Message;
+            }
+                
         }
 
         private void SelectTehnology(long FK_IdDetail)
         {
             try
             {
-                C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
-                SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
-                SqlDataReader reader;
-                cmd.Parameters.Clear();
-                cmd.CommandText = "SELECT FK_IdOperation,NumOperation +' ' + NameOperation as Operation,Tpd,Tsh " + "\n" +
-                "FROM Sp_OperationsType111 " + "\n" +
-                "INNER JOIN Sp_Operations on Sp_Operations.PK_IdOperation = Sp_OperationsType111.FK_IdOperation " + "\n" +
-                "WHERE FK_IdDetail=@FK_IdDetail";
-                cmd.Parameters.Add(new SqlParameter("@FK_IdDetail", SqlDbType.BigInt));
-                cmd.Parameters["@FK_IdDetail"].Value = FK_IdDetail;
-                cmd.Connection = C_Gper.con;
-                C_Gper.con.Open();
-                reader = cmd.ExecuteReader();
-                Int16 idoper = 0;
-                string oper = "";
-                int _Tpd = 0;
-                int _Tsh = 0;
-                if (reader.HasRows)
+                using (var con = new SqlConnection())
                 {
-                    while (reader.Read())
+                    con.ConnectionString = config.ConnectionString;
+                    SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
+                    SqlDataReader reader;
+                    cmd.Parameters.Clear();
+                    cmd.CommandText = "SELECT FK_IdOperation,NumOperation +' ' + NameOperation as Operation,Tpd,Tsh " + "\n" +
+                    "FROM Sp_OperationsType111 " + "\n" +
+                    "INNER JOIN Sp_Operations on Sp_Operations.PK_IdOperation = Sp_OperationsType111.FK_IdOperation " + "\n" +
+                    "WHERE FK_IdDetail=@FK_IdDetail";
+                    cmd.Parameters.Add(new SqlParameter("@FK_IdDetail", SqlDbType.BigInt));
+                    cmd.Parameters["@FK_IdDetail"].Value = FK_IdDetail;
+                    cmd.Connection = con;
+                    con.Open();
+                    reader = cmd.ExecuteReader();
+                    Int16 idoper = 0;
+                    string oper = "";
+                    int _Tpd = 0;
+                    int _Tsh = 0;
+                    if (reader.HasRows)
                     {
+                        while (reader.Read())
+                        {
 
-                        if (!reader.IsDBNull(0)) idoper = reader.GetInt16(0); else idoper = 0;
-                        if (!reader.IsDBNull(1)) oper = reader.GetString(1); else oper = "";
-                        if (!reader.IsDBNull(2)) _Tpd = reader.GetInt32(2); else _Tpd = 0;
-                        if (!reader.IsDBNull(3)) _Tsh = reader.GetInt32(3); else _Tsh = 0;
-                        dGV_Tehnology.Rows.Add(idoper, oper, _Tpd, _Tsh);
+                            if (!reader.IsDBNull(0)) idoper = reader.GetInt16(0); else idoper = 0;
+                            if (!reader.IsDBNull(1)) oper = reader.GetString(1); else oper = "";
+                            if (!reader.IsDBNull(2)) _Tpd = reader.GetInt32(2); else _Tpd = 0;
+                            if (!reader.IsDBNull(3)) _Tsh = reader.GetInt32(3); else _Tsh = 0;
+                            dGV_Tehnology.Rows.Add(idoper, oper, _Tpd, _Tsh);
+                        }
                     }
+                    reader.Dispose(); reader.Close(); con.Close();
+                    if (dGV_Tehnology.Rows.Count > 0) dGV_Tehnology.Rows.Add(32, "Передача детали на СГД", 0, 0);
                 }
-                reader.Dispose(); reader.Close(); C_Gper.con.Close();
-                if (dGV_Tehnology.Rows.Count > 0) dGV_Tehnology.Rows.Add(32, "Передача детали на СГД", 0, 0);
             }
             catch (Exception ex)
             {
-                C_Gper.con.Close();
+                
                 MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             
@@ -894,14 +922,14 @@ namespace Dispetcher2
 
         private void btn_AddNewDetail_InSp_Click(object sender, EventArgs e)
         {
-            if (C_Orders.Check_ShcmDetail(tB_SHCM_Add.Text.Trim()))
+            if (orders.Check_ShcmDetail(tB_SHCM_Add.Text.Trim()))
                 MessageBox.Show("Деталь с таким ЩЦМ уже существует. Повторная регистрация невозможна.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             else
             {
                 if (cB_SpOperations.Items.Count == 0)
                 {
-                    C_F_Orders CF_Orders = new C_F_Orders();
-                    CF_Orders.Select_SpOperations(ref DT_SpOperations);
+                    
+                    orders.Select_SpOperations(ref DT_SpOperations);
                     cB_SpOperations.DataSource = DT_SpOperations;
                     cB_SpOperations.DisplayMember = "NameOperation";
                     cB_SpOperations.ValueMember = "PK_IdOperation";
@@ -933,23 +961,25 @@ namespace Dispetcher2
                         if (dR == DialogResult.Yes)
                         {
                             long PK_IdDetail;
-                            C_F_Orders CF_Orders = new C_F_Orders();
+                            
                             //Записываем деталь в справочник деталей
-                            if (CF_Orders.InsertDetailInSp_Details(tB_SHCM_Add.Text.Trim(), tB_DetailName_Add.Text.Trim(), out PK_IdDetail))
+                            if (orders.InsertDetailInSp_Details(tB_SHCM_Add.Text.Trim(), tB_DetailName_Add.Text.Trim(), out PK_IdDetail))
                             {
                                 //Записываем техпроцесс в справочник техпроцессов для ВНУТРЕННИХ деталей Sp_OperationsType111
-                                if (CF_Orders.InsertDetailInSp_OperationsType111(PK_IdDetail, dGV_AddDetailsInSpOper))
+                                if (orders.InsertDetailInSp_OperationsType111(PK_IdDetail, dGV_AddDetailsInSpOper))
                                 {
                                     MessageBox.Show("Внутренняя сборка/деталь успешно добавлена в справочник.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                     pnl_Add_InsideDetails.Visible = false;
                                     gB_AddDetails.Visible = true;
                                     gB_Tehnology.Visible = true;
                                     numericUpD_SHCM_Add.Visible = true;
+                                    loadingFlag = true;
                                     //Add Row in DataTable//Select NameType,ShcmDetail,NameDetail,PK_IdDetail,IdLoodsman
                                     DT_AllDetails.Rows.Add("Внутренние детали", tB_SHCM_Add.Text.Trim(), tB_DetailName_Add.Text.Trim(), PK_IdDetail);//111 - внутренняя деталь
                                     myTabC_OrdersDetails.SelectedTab = tabPageAdd;
                                     tB_SHCM_Add.Focus();
                                     SHCM_Add_Filter(tB_SHCM_Add.Text.ToString().Trim());
+                                    loadingFlag = false;
                                 }
                                 else
                                     MessageBox.Show("Сохранение тех. процесса завершилось неудачей.", "Обратитесь за помощью к разработчику данного ПО!!!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
@@ -1156,5 +1186,41 @@ namespace Dispetcher2
                 }
             }
         }
-    }
+
+		private void myChB_DeleteOrder_CheckedChanged(object sender, EventArgs e)
+		{
+			DialogResult result = MessageBox.Show(
+	            $"Удалить заказ № {dGV_Orders.SelectedCells[0].Value}?",
+	            "Внимание!",
+	            MessageBoxButtons.YesNo,
+	            MessageBoxIcon.Warning,
+	            MessageBoxDefaultButton.Button1,
+	            MessageBoxOptions.DefaultDesktopOnly);
+
+			if (result == DialogResult.Yes)
+            {
+				orderDel = dGV_Orders.SelectedCells[0].Value.ToString();
+				F_DeleteOrder newForm = new F_DeleteOrder();
+				newForm.Show();
+			}
+		}
+
+		private void updateOrderBTN_Click(object sender, EventArgs e)
+		{
+			DialogResult result = MessageBox.Show(
+	            $"Обновить версии деталей в заказе № {dGV_Orders.SelectedCells[0].Value}?",
+	            "Внимание!",
+	            MessageBoxButtons.YesNo,
+	            MessageBoxIcon.Warning,
+	            MessageBoxDefaultButton.Button1,
+	            MessageBoxOptions.DefaultDesktopOnly);
+
+			if (result == DialogResult.Yes)
+			{
+				orderUpdate = dGV_Orders.SelectedCells[0].Value.ToString();
+				F_UpdateOrder newForm = new F_UpdateOrder(config);
+				newForm.Show();
+			}
+		}
+	}
 }

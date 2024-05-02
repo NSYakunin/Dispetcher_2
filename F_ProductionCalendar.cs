@@ -13,8 +13,11 @@ namespace Dispetcher2
 {
     public partial class F_ProductionCalendar : Form
     {
-        public F_ProductionCalendar()
+        IConfig config;
+
+        public F_ProductionCalendar(IConfig config)
         {
+            this.config = config;
             InitializeComponent();
         }
         const int _CmdTimeout = 60; //seconds SqlCommand cmd = new SqlCommand() { CommandTimeout = CmdTimeout};
@@ -131,9 +134,9 @@ namespace Dispetcher2
             try
             {
                 DT.Clear();
-                using (C_Gper.con)
+                using (SqlConnection con = new SqlConnection())
                 {
-                    C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
+                    con.ConnectionString = config.ConnectionString;
                     SqlCommand cmd = new SqlCommand() { CommandTimeout = _CmdTimeout };//using System.Data.SqlClient;
                     cmd.CommandText = "SELECT PK_Date, Dsec/60 as Dsec" + "\n" +
                                       "FROM Sp_ProductionCalendar" + "\n" +
@@ -142,7 +145,7 @@ namespace Dispetcher2
                     //params
                     cmd.Parameters.Add(new SqlParameter("@year", SqlDbType.Int));
                     cmd.Parameters["@year"].Value = year;
-                    cmd.Connection = C_Gper.con;
+                    cmd.Connection = con;
                     SqlDataAdapter adapter = new SqlDataAdapter();
                     adapter.SelectCommand = cmd;
                     adapter.Fill(DT);
@@ -180,45 +183,48 @@ namespace Dispetcher2
         {
             try
             {
-                C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
-                SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
-                cmd.CommandText = "delete from Sp_ProductionCalendar where Year(PK_Date)=@Del_year";
-                cmd.Connection = C_Gper.con;
-                //Parameters**************************************************
-                cmd.Parameters.Add(new SqlParameter("@Del_year", SqlDbType.Int));
-                cmd.Parameters["@Del_year"].Value = Del_year;
-                //***********************************************************
-                C_Gper.con.Open();
-                cmd.ExecuteNonQuery();
-                C_Gper.con.Close();
+                using (SqlConnection con = new SqlConnection())
+                {
+                    con.ConnectionString = config.ConnectionString;
+                    SqlCommand cmd = new SqlCommand();//using System.Data.SqlClient;
+                    cmd.CommandText = "delete from Sp_ProductionCalendar where Year(PK_Date)=@Del_year";
+                    cmd.Connection = con;
+                    //Parameters**************************************************
+                    cmd.Parameters.Add(new SqlParameter("@Del_year", SqlDbType.Int));
+                    cmd.Parameters["@Del_year"].Value = Del_year;
+                    //***********************************************************
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    
+                }
             }
             catch (Exception ex)
             {
-                C_Gper.con.Close();
+                
                 MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        public static bool InsertProdCal(DateTime PK_Date, int Dsec)
+        public bool InsertProdCal(DateTime PK_Date, int Dsec)
         {
             try
             {
-                using (C_Gper.con)
+                using (var con = new SqlConnection())
                 {
-                    C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
+                    con.ConnectionString = config.ConnectionString;
                     SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//seconds //using System.Data.SqlClient;
                     cmd.CommandText = "insert into Sp_ProductionCalendar (PK_Date,Dsec) " + "\n" +
                                   "values (@PK_Date,@Dsec)";
-                    cmd.Connection = C_Gper.con;
+                    cmd.Connection = con;
                     //Parameters**************************************************
                     cmd.Parameters.Add(new SqlParameter("@PK_Date", SqlDbType.Date));
                     cmd.Parameters["@PK_Date"].Value = PK_Date;
                     cmd.Parameters.Add(new SqlParameter("@Dsec", SqlDbType.Int));
                     cmd.Parameters["@Dsec"].Value = Dsec;
                     //***********************************************************
-                    C_Gper.con.Open();
+                    con.Open();
                     cmd.ExecuteNonQuery();
-                    C_Gper.con.Close();
+                    con.Close();
                 }
                 return true;
             }

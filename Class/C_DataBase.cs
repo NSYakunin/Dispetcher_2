@@ -6,40 +6,21 @@ using System.Data;
 using System.Windows.Forms;
 using System.Data.SqlClient;
 
+using Dispetcher2.DataAccess;
+
 namespace Dispetcher2.Class
 {
     class C_DataBase
     {
 
-        string _ConnectionString;
+        IConfig config;
 
-        public C_DataBase(string ConnectionString)
+        public C_DataBase(IConfig config)
         {
-            _ConnectionString = ConnectionString;
+            this.config = config;
         }
 
-        public void Select_DT(ref DataTable DT,string SQLtext)
-        {
-            DT.Clear();
-            try
-            {
-                using (C_Gper.con)
-                {
-                    C_Gper.con.ConnectionString = _ConnectionString;
-                    SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//using System.Data.SqlClient;
-                    cmd.CommandText = SQLtext;
-                    cmd.Connection = C_Gper.con;
-                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);//adapter.SelectCommand = cmd;
-                    adapter.Fill(DT);
-                    adapter.Dispose();
-                    C_Gper.con.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
+
 
         /// <summary>
         /// Получение списка сборок заказа
@@ -52,7 +33,7 @@ namespace Dispetcher2.Class
             DataTable dt = new DataTable();
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = C_Gper.ConnStrDispetcher2;
+                cn.ConnectionString = config.ConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -77,7 +58,7 @@ namespace Dispetcher2.Class
             DataTable dt = new DataTable();
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = C_Gper.ConStr_Loodsman;
+                cn.ConnectionString = config.LoodsmanConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -114,7 +95,7 @@ namespace Dispetcher2.Class
             DataTable dt = new DataTable();
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = C_Gper.ConStr_Loodsman;
+                cn.ConnectionString = config.LoodsmanConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -139,7 +120,7 @@ namespace Dispetcher2.Class
             DataTable dt = new DataTable();
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = C_Gper.ConnStrDispetcher2;
+                cn.ConnectionString = config.ConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -164,7 +145,7 @@ namespace Dispetcher2.Class
         {
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = C_Gper.ConnStrDispetcher2;
+                cn.ConnectionString = config.ConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -183,7 +164,7 @@ namespace Dispetcher2.Class
         {
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = C_Gper.ConnStrDispetcher2;
+                cn.ConnectionString = config.ConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -210,7 +191,7 @@ namespace Dispetcher2.Class
         {
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = C_Gper.ConnStrDispetcher2;
+                cn.ConnectionString = config.ConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -233,7 +214,7 @@ namespace Dispetcher2.Class
         {
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = C_Gper.ConnStrDispetcher2;
+                cn.ConnectionString = config.ConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -253,7 +234,7 @@ namespace Dispetcher2.Class
         {
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = C_Gper.ConnStrDispetcher2;
+                cn.ConnectionString = config.ConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -279,7 +260,7 @@ namespace Dispetcher2.Class
             DataTable dt = new DataTable();
             using (SqlConnection cn = new SqlConnection())
             {
-                cn.ConnectionString = C_Gper.ConnStrDispetcher2;
+                cn.ConnectionString = config.ConnectionString;
                 using (SqlCommand cmd = new SqlCommand())
                 {
                     cmd.Connection = cn;
@@ -300,71 +281,12 @@ namespace Dispetcher2.Class
             return dt;
         }
 
-        public List<Order> GetOrderByStatus(int status)
-        {
-            List<Order> orderList = new List<Order>();
-            using (SqlConnection cn = new SqlConnection())
-            {
-                cn.ConnectionString = C_Gper.ConnStrDispetcher2;
-                using (SqlCommand cmd = new SqlCommand() { Connection = cn })
-                {
-                    cmd.CommandType = CommandType.Text;
-                    cmd.CommandText = "Select * From Orders Where FK_IdStatusOrders = @S";
-                    cmd.Parameters.AddWithValue("@S", status);
-                    cn.Open();
-                    using (SqlDataReader r = cmd.ExecuteReader())
-                    {
-                        while(r.Read())
-                        {
-                            Order item = new Order();
-                            orderList.Add(item);
-                            item.SetId(r["PK_IdOrder"]);
-                            item.SetNumber(r["OrderNum"]);
-                            item.SetName(r["OrderName"]);
-                            item.SetCreateDate(r["DateCreateOrder"]);
-                            item.SetStatus(r["FK_IdStatusOrders"]);
-                            item.SetValidationOrder(r["ValidationOrder"]);
-                            item.SetNum1С(r["OrderNum1С"]);
-                            item.SetStartDate(r["StartDate"]);
-                            item.SetPlannedDate(r["PlannedDate"]);
-                            item.SetAmount(r["Amount"]);
-                        }
-                    }
-                }
-            }
-            return orderList;
-        }
-        public List<Detail> GetOrderDetailAndFastener(int orderId)
-        {
-            List<Detail> detList = new List<Detail>();
-            using (SqlConnection cn = new SqlConnection() { ConnectionString = C_Gper.ConnStrDispetcher2 })
-            {
-                using (SqlCommand cmd = new SqlCommand() { Connection = cn })
-                {
-                    cmd.CommandText = "[dbo].[GetOrderDetailAndFastener]";
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@OrderId", orderId);
-                    cn.Open();
-                    using (SqlDataReader r = cmd.ExecuteReader())
-                    {
-                        while (r.Read())
-                        {
-                            Detail item = new Detail();
-                            detList.Add(item);
-                            item.SetNameType(r["NameType"]);
-                            item.SetPosition(r["Position"]);
-                            item.SetShcm(r["ShcmDetail"]);
-                            item.SetName(r["NameDetail"]);
-                            item.SetAmount(r["AmountDetails"]);
-                            item.SetAllPositionParent(r["AllPositionParent"]);
-                            item.SetIdOrderDetail(r["PK_IdOrderDetail"]);
-                            item.SetIdDetail(r["FK_IdDetail"]);
-                            item.SetPositionParent(r["PositionParent"]);
-                        }
-                    }
-                }
-            }
-            return detList;
-        }
+        
+        
+        
+
+        
+
+
     }
 }

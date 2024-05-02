@@ -7,7 +7,9 @@ using System.Data.SqlClient;
 using System.Data;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Drawing;
-
+using SourceGrid;
+using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace Dispetcher2.Class
 {
@@ -18,25 +20,21 @@ namespace Dispetcher2.Class
         private int[] _OperGroupFactTime;// Только для "План-график (форма №6)"
         private int[] _FactTime; // Только для "План-график (форма №6)
         private bool _err = false;//Наличие ошибок при формировании отчёта
+        IConfig config;
 
-        public C_Reports()
+        public C_Reports(IConfig config)
         {
+            if (config == null) throw new ArgumentException("Пожалуйста укажите параметр config");
+            this.config = config;
             _DT = new DataTable();
+
+            _OperGroupFactTime = new int[12];
+            _FactTime = new int[12];
         }
 
         public bool RepErrors
         {
             get { return _err; }
-        }
-
-        public C_Reports(bool PlanSheduleForm6)// Только для "План-график (форма №6)"
-        {
-            _DT = new DataTable();
-            if (PlanSheduleForm6)
-            {
-                _OperGroupFactTime = new int[12];
-                _FactTime = new int[12];
-            } 
         }
 
         public int[] GetGroupTimeForm6()
@@ -49,6 +47,12 @@ namespace Dispetcher2.Class
             return _FactTime;
         }
 
+        float DecimalToSec(decimal time)
+        {
+            string[] temp = time.ToString(CultureInfo.InvariantCulture).Split('.');
+            if (time.ToString().IndexOf(".") > 0) temp = time.ToString().Split('.');
+            return (Convert.ToInt32(temp[0]) * 3600) + Convert.ToInt32(temp[1]) * 60;
+        }
 
         // Только для "План-график (форма №6)"
         private int NormTimeFabrication(bool OnlyOncePay, int Tpd, int Tsh, int Amount)
@@ -137,114 +141,90 @@ namespace Dispetcher2.Class
         /// <param name="IdUser">исполнитель</param>
         /// <param name="IdCeh">цех</param>
         /// <param name="FlagDays">Разбить по дням</param>
-        public void rep3(DateTime DateStart, DateTime DateEnd, string loginWorker, int IdCeh, bool FlagDays, int PlanHours,int cWorkDays)
-        { 
+        public void rep3(DateTime DateStart, DateTime DateEnd, string loginWorker, int IdCeh, bool FlagDays, int PlanHours,int cWorkDays, bool koop, string notWorker)
+        {
             try
             {
                 _DT.Clear();
-                string WhereLogin = "", WhereIdCeh = "", WhereIdCeh2 = "";
-                if (loginWorker !="") WhereLogin = " and FK_LoginWorker=@FK_LoginWorker" + "\n";
-                if (IdCeh != -1)
+                using (SqlConnection con = new SqlConnection())
                 {
-                    WhereIdCeh2 = " and d.PK_IdDepartment=@PK_IdDepartment" + "\n";
-                    WhereIdCeh = " and PK_IdDepartment=@PK_IdDepartment" + "\n";
-                }
-                using (C_Gper.con)
-                {
-                    C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
-                    SqlCommand cmd = new SqlCommand() { CommandTimeout = 500 };//using System.Data.SqlClient;
-                    #region SQL - запросы
-                    //ТОЖЕ РАБОЧИЙ ВАРИАНТ
-                    /*cmd.CommandText = "Select PK_IdDepartment,Department,FK_LoginWorker,DateStart,RateWorker,AmountWorkers,NumBrigade," + "\n" +
-                                      "OrderNum,Position,NameDetail,ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay " + "\n" +
-                                      "From vwFactWorkers" + "\n" +
-                                      "Where DateFactOper>=@DateStart and DateFactOper<=@DateEnd" + "\n" +
-                                      WhereLogin + WhereIdCeh +
-                                      "union all" + "\n" +
-                                      "Select PK_IdDepartment,Department,FK_LoginWorker,DateStart,RateWorker,AmountWorkers,NumBrigade," + "\n" +
-                                      "OrderNum,Position,NameDetail,ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay " + "\n" +
-                                      "From vwFactBrigades" + "\n" +
-                                      "Where DateFactOper>=@DateStart and DateFactOper<=@DateEnd" + "\n" +
-                                      WhereLogin + WhereIdCeh +
-                                      "Order by PK_IdDepartment,FK_LoginWorker,OrderNum";*/
-                    //ТОЖЕ РАБОЧИЙ ВАРИАНТ (+Val_Time в 1 запросе)
-                    /*cmd.CommandText = "Select PK_IdDepartment,Department,FK_LoginWorker,DateStart,RateWorker,AmountWorkers,NumBrigade," + "\n" +
-                                      "OrderNum,Position,NameDetail,ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay, sum((convert( decimal(4,1), Val_Time))) as Val_Time " + "\n" +
-                                      "From vwFactWorkers" + "\n" +
-                                      "left join TimeSheets TS on  TS.FK_Login = vwFactWorkers.FK_LoginWorker and TS.Val_Time != '' and TS.Val_Time <='8' and TS.PK_Date>=@DateStart and PK_Date<=@DateEnd" + "\n" +
-                                      "Where DateFactOper>=@DateStart and DateFactOper<=@DateEnd" + "\n" +
-                                      WhereLogin + WhereIdCeh +
-                                      "Group by PK_IdDepartment,Department,FK_LoginWorker,DateStart,RateWorker,AmountWorkers,NumBrigade,OrderNum,Position,NameDetail," + "\n" +
-                                      "ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay" + "\n" +
-                                      "union all" + "\n" +
-                                      "Select PK_IdDepartment,Department,FK_LoginWorker,DateStart,RateWorker,AmountWorkers,NumBrigade," + "\n" +
-                                      "OrderNum,Position,NameDetail,ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay, sum((convert( decimal(4,1), Val_Time))) as Val_Time " + "\n" +
-                                      "From vwFactBrigades" + "\n" +
-                                      "left join TimeSheets TS on  TS.FK_Login = vwFactBrigades.FK_LoginWorker and TS.Val_Time != '' and TS.Val_Time <='8' and TS.PK_Date>=@DateStart and PK_Date<=@DateEnd" + "\n" +
-                                      "Where DateFactOper>=@DateStart and DateFactOper<=@DateEnd" + "\n" +
-                                      WhereLogin + WhereIdCeh +
-                                      "Group by PK_IdDepartment,Department,FK_LoginWorker,DateStart,RateWorker,AmountWorkers,NumBrigade,OrderNum,Position,NameDetail," + "\n" +
-                                      "ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay" + "\n" +
-                                      "Order by PK_IdDepartment,FK_LoginWorker,OrderNum";*/
-                    //Вариант где присутствуют все сотрудники табеля
-                    string Off_Workers = "";
-                    //if (WhereLogin == "" & WhereIdCeh == "")
-                    if (WhereLogin == "")
-                        Off_Workers = "Select Distinct(TS1.FK_Login) as FK_LoginWorker," + "\n" +
-                                      "u.FK_IdDepartment as PK_IdDepartment,d.Department,u.DateStart,u.RateWorker,AmountWorkers,NumBrigade," + "\n" +
-                                      "OrderNum,Position,NameDetail,ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay" + "\n" +
-                                      ", sum((convert( decimal(4,1), TS1.Val_TimeFloat))) as Val_Time,u.DateEnd" + "\n" +
-                                      "From TimeSheets TS1" + "\n" +
-                                      "left join vwFactWorkers FW on fw.FK_LoginWorker = TS1.FK_Login and FW.DateFactOper>=@DateStart and FW.DateFactOper<=@DateEnd and FW.AmountDetails = null" + "\n" +
-                                      "inner join Users u on u.PK_Login = TS1.FK_Login and u.ITR = 0 and Fk_IdJob<>28 and Fk_IdJob>5 and u.PK_Login NOT IN ('Бобров С.А.','Воронцов А.А.')" + "\n" +//('Бобров С.А.','Воронцов А.А.')
-                                      "inner join Sp_Department d on d.PK_IdDepartment = u.FK_IdDepartment" + "\n" +
-                                      "Where TS1.PK_Date>=@DateStart and TS1.PK_Date<=@DateEnd  and (u.DateEnd>=@DateStart or u.DateEnd is null)" + "\n" +
-                                      WhereLogin + WhereIdCeh2 +
-                                      "Group by u.FK_IdDepartment,d.Department,TS1.FK_Login,u.DateStart,u.RateWorker,AmountWorkers,NumBrigade,OrderNum,Position,NameDetail," + "\n" +
-                                      "ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay,TS1.FK_Login,u.DateEnd" + "\n" +
-                                      "union all" + "\n";
-                    cmd.CommandText = Off_Workers +
-                                      "Select FK_LoginWorker,PK_IdDepartment,Department,DateStart,RateWorker,AmountWorkers,NumBrigade," + "\n" +
-                                      "OrderNum,Position,NameDetail,ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay, sum((convert( decimal(4,1), Val_TimeFloat))) as Val_Time, DateEnd" + "\n" +
-                                      "From vwFactWorkers" + "\n" +
-                                      "left join TimeSheets TS on  TS.FK_Login = vwFactWorkers.FK_LoginWorker and TS.PK_Date>=@DateStart and PK_Date<=@DateEnd" + "\n" +
-                                      "Where DateFactOper>=@DateStart and DateFactOper<=@DateEnd" + "\n" +
-                                      WhereLogin + WhereIdCeh +
-                                      "Group by PK_IdDepartment,Department,FK_LoginWorker,DateStart,RateWorker,AmountWorkers,NumBrigade,OrderNum,Position,NameDetail," + "\n" +
-                                      "ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay, DateEnd" + "\n" +
-                                      "union all" + "\n" +
-                                      "Select FK_LoginWorker,PK_IdDepartment,Department,DateStart,RateWorker,AmountWorkers,NumBrigade," + "\n" +
-                                      "OrderNum,Position,NameDetail,ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay, sum((convert( decimal(4,1), Val_TimeFloat))) as Val_Time, DateEnd" + "\n" +
-                                      "From vwFactBrigades" + "\n" +
-                                      "left join TimeSheets TS on  TS.FK_Login = vwFactBrigades.FK_LoginWorker and TS.PK_Date>=@DateStart and PK_Date<=@DateEnd" + "\n" +
-                                      "Where DateFactOper>=@DateStart and DateFactOper<=@DateEnd" + "\n" +
-                                      WhereLogin + WhereIdCeh +
-                                      "Group by PK_IdDepartment,Department,FK_LoginWorker,DateStart,RateWorker,AmountWorkers,NumBrigade,OrderNum,Position,NameDetail," + "\n" +
-                                      "ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay, DateEnd" + "\n" +
-                                      "Order by PK_IdDepartment,FK_LoginWorker,OrderNum";
-                    #endregion
-                    //params
-                    cmd.Parameters.Add(new SqlParameter("@DateStart", SqlDbType.Date));
-                    cmd.Parameters["@DateStart"].Value = DateStart;
-                    cmd.Parameters.Add(new SqlParameter("@DateEnd", SqlDbType.Date));
-                    cmd.Parameters["@DateEnd"].Value = DateEnd;
-                    if (loginWorker !="")
+                    con.ConnectionString = config.ConnectionString;
+                    string sqlExpression;
+                    if (notWorker != "")
                     {
-                        cmd.Parameters.Add(new SqlParameter("@FK_LoginWorker", SqlDbType.VarChar));
-                        cmd.Parameters["@FK_LoginWorker"].Value = loginWorker;
+                        sqlExpression = $"SELECT Distinct(TS1.FK_Login) AS FK_LoginWorker, " +
+                            $"u.FK_IdDepartment AS PK_IdDepartment, " +
+                            $"d.Department, u.DateStart, u.RateWorker, AmountWorkers, NumBrigade, OrderNum, Position, NameDetail, ShcmDetail, AmountDetails, " +
+                            $" FactOper, DateFactOper, Tpd, Tsh, OnlyOncePay , sum((convert( decimal(4,1), TS1.Val_TimeFloat))) AS Val_Time, " +
+                            $"u.DateEnd " +
+                            $"FROM TimeSheets TS1 " +
+                            $"LEFT JOIN vwFactWorkers FW ON fw.FK_LoginWorker = TS1.FK_Login AND FW.DateFactOper >= '{DateStart}' " +
+                            $"AND FW.DateFactOper <= '{DateEnd}' AND FW.AmountDetails = null " +
+                            $"INNER JOIN Users u ON u.PK_Login = TS1.FK_Login AND u.ITR = 0 AND Fk_IdJob<>28 AND Fk_IdJob>5 " +
+                            $"AND u.PK_Login NOT IN ('Бобров С.А.','Воронцов А.А.') " +
+                            $"INNER JOIN Sp_Department d ON d.PK_IdDepartment = u.FK_IdDepartment " +
+                            $"WHERE TS1.PK_Date >= '{DateStart}' AND TS1.PK_Date <= '{DateEnd}' AND (u.DateEnd >= '{DateStart}' OR u.DateEnd is null) " +
+                            $"AND TS1.FK_Login NOT IN ({notWorker})  " +
+                            $"GROUP BY  u.FK_IdDepartment,d.Department,TS1.FK_Login,u.DateStart,u.RateWorker,AmountWorkers,NumBrigade,OrderNum,Position,NameDetail, " +
+                            $"ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay,TS1.FK_Login,u.DateEnd " +
+                            $"union all " +
+                            $"SELECT FK_LoginWorker, PK_IdDepartment, Department, DateStart, RateWorker, AmountWorkers, NumBrigade, OrderNum, Position, " +
+                            $"NameDetail, ShcmDetail, AmountDetails, FactOper, DateFactOper, Tpd, Tsh, OnlyOncePay, " +
+                            $"sum((convert( decimal(4,1), Val_TimeFloat))) AS Val_Time, " +
+                            $"DateEnd " +
+                            $"FROM vwFactWorkers " +
+                            $"LEFT JOIN TimeSheets TS ON TS.FK_Login = vwFactWorkers.FK_LoginWorker AND TS.PK_Date >= '{DateStart}' AND PK_Date <= '{DateEnd}' " +
+                            $"WHERE DateFactOper >= '{DateStart}' AND DateFactOper <= '{DateEnd}' " +
+                            $"AND FK_LoginWorker NOT IN ({notWorker})  " +
+                            $"GROUP BY  PK_IdDepartment,Department,FK_LoginWorker,DateStart,RateWorker,AmountWorkers,NumBrigade,OrderNum,Position,NameDetail, " +
+                            $"ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay, DateEnd " +
+                            $"union all " +
+                            $"SELECT FK_LoginWorker, PK_IdDepartment, Department, DateStart, RateWorker, AmountWorkers, NumBrigade, OrderNum, Position, " +
+                            $"NameDetail, ShcmDetail, AmountDetails, FactOper, DateFactOper, Tpd, Tsh, OnlyOncePay, " +
+                            $"sum((convert( decimal(4,1), Val_TimeFloat))) AS Val_Time, DateEnd " +
+                            $"FROM vwFactBrigades " +
+                            $"LEFT JOIN TimeSheets TS ON TS.FK_Login = vwFactBrigades.FK_LoginWorker AND TS.PK_Date >= '{DateStart}' " +
+                            $"AND PK_Date <= '{DateEnd}' " +
+                            $"WHERE DateFactOper >= '{DateStart}' AND DateFactOper <= '{DateEnd}' " +
+                            $"AND FK_LoginWorker NOT IN ({notWorker})  " +
+                            $"GROUP BY  PK_IdDepartment,Department,FK_LoginWorker,DateStart,RateWorker,AmountWorkers,NumBrigade,OrderNum,Position, " +
+                            $"NameDetail, ShcmDetail,AmountDetails,FactOper,DateFactOper,Tpd,Tsh,OnlyOncePay, DateEnd " +
+                            $"ORDER BY  PK_IdDepartment,FK_LoginWorker,OrderNum;";
+
+                        SqlCommand cmd = new SqlCommand(sqlExpression) { CommandTimeout = 120 };
+
+                        cmd.Connection = con;
+
+                        SqlDataAdapter adapter = new SqlDataAdapter();
+                        adapter.SelectCommand = cmd;
+                        adapter.Fill(_DT);
+                        adapter.Dispose();
+                        _DT.Rows.Add();
                     }
-                    if (IdCeh != -1) 
+                    else
                     {
-                        cmd.Parameters.Add(new SqlParameter("@PK_IdDepartment", SqlDbType.Int));
-                        cmd.Parameters["@PK_IdDepartment"].Value = IdCeh;
-                    }
-                    cmd.Connection = C_Gper.con;
-                    SqlDataAdapter adapter = new SqlDataAdapter();
-                    adapter.SelectCommand = cmd;
-                    adapter.Fill(_DT);
-                    adapter.Dispose();
-                    _DT.Rows.Add();
+                        sqlExpression = (loginWorker == "" & IdCeh == -1) ? "rep3All" : loginWorker != "" ? "rep3Worker" : "rep3Ceh";
+
+                        SqlCommand cmd = new SqlCommand(sqlExpression) { CommandTimeout = 120 };
+                        cmd.Connection = con;
+                        cmd.Parameters.Clear();
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.AddWithValue("@DateStart", DateStart);
+                        cmd.Parameters.AddWithValue("@DateEnd", DateEnd);
+                        cmd.Parameters.AddWithValue("@FK_LoginWorker", loginWorker);
+                        cmd.Parameters.AddWithValue("@PK_IdDepartment", IdCeh);
+
+                        SqlDataAdapter adapter = new SqlDataAdapter();
+                        adapter.SelectCommand = cmd;
+                        adapter.Fill(_DT);
+                        adapter.Dispose();
+                        _DT.Rows.Add();
+                    }    
+                    //Если не выбрано ничего, то процедура rep3All, если выбран логин rep3Worker, и наконец если выбран цех rep3Ceh
                 }
+
+
                 if (_DT.Rows.Count == 0) MessageBox.Show("Нет данных для формирования отчёта.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 else//Export data to Excel
                 {
@@ -283,24 +263,24 @@ namespace Dispetcher2.Class
                     ((Excel.Range)ExcelWorkSheet.Cells[2, 1]).HorizontalAlignment = Excel.Constants.xlCenter;
                     ((Excel.Range)ExcelWorkSheet.get_Range("A1:M1")).Merge();
                     ((Excel.Range)ExcelWorkSheet.get_Range("A2:M2")).Merge();
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 1]).Value2 = "№";
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 2]).Value2 = "ФИО исполнителя";
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 3]).Value2 = "Заказ";
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 4]).Value2 = "Поз.";
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 5]).Value2 = "Наименование";
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 6]).Value2 = "Обозначение";
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 7]).Value2 = "Кол-во";
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 8]).Value2 = "Операция";
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 9]).Value2 = "Дата";
+                    ExcelWorkSheet.Cells[4, 1] = "№";
+                    ExcelWorkSheet.Cells[4, 2] = "ФИО исполнителя";
+                    ExcelWorkSheet.Cells[4, 3] = "Заказ";
+                    ExcelWorkSheet.Cells[4, 4] = "Поз.";
+                    ExcelWorkSheet.Cells[4, 5] = "Наименование";
+                    ExcelWorkSheet.Cells[4, 6] = "Обозначение";
+                    ExcelWorkSheet.Cells[4, 7] = "Кол-во";
+                    ExcelWorkSheet.Cells[4, 8] = "Операция";
+                    ExcelWorkSheet.Cells[4, 9] = "Дата";
                     ((Excel.Range)ExcelWorkSheet.Columns[9]).NumberFormat = "m/d/yyyy";
                     ((Excel.Range)ExcelWorkSheet.Cells[4, 10]).Value2 = "н/ч за период (план)";
                     ((Excel.Range)ExcelWorkSheet.Columns[10]).NumberFormat = "[h]:mm:ss";
                     ((Excel.Range)ExcelWorkSheet.Columns[10]).HorizontalAlignment = Excel.Constants.xlCenter;
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 11]).Value2 = "Табельное время";
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 12]).Value2 = "Н/ч за период (факт)";
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 13]).Value2 = "% вып. от пл. вр.";
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 14]).Value2 = "% вып. от таб.вр.";
-                    ((Excel.Range)ExcelWorkSheet.Cells[4, 15]).Value2 = "Н/ч за день";
+                    ExcelWorkSheet.Cells[4, 11] = "Табельное время";
+                    ExcelWorkSheet.Cells[4, 12] = "Н/ч за период (факт)";
+                    ExcelWorkSheet.Cells[4, 13] = "% вып. от пл. вр.";
+                    ExcelWorkSheet.Cells[4, 14] = "% вып. от таб.вр.";
+                    ExcelWorkSheet.Cells[4, 15] = "Н/ч за день";
                     string LastRep3Column = "";//NameColumn
                     TimeSpan tsAll = DateEnd - DateStart;
                     if (FlagDays) //Достраиваем если нужно таблицу справа
@@ -319,7 +299,7 @@ namespace Dispetcher2.Class
                         LastRep3Column = ((Excel.Range)ExcelWorkSheet.Cells[4, tsAll.Days + 16]).Address;//NameColumn
                         LastRep3Column = LastRep3Column.Remove(0, 1);//NameColumn
                         LastRep3Column = LastRep3Column.Remove(LastRep3Column.IndexOf('$'));//NameColumn
-                        ((Excel.Range)ExcelWorkSheet.get_Range("A4", LastRep3Column + "4")).Font.Bold = 1;
+                        (ExcelWorkSheet.get_Range("A4", LastRep3Column + "4")).Font.Bold = 1;
                         //MessageBox.Show(LastRep3Column);
                     }
                     else
@@ -345,13 +325,14 @@ namespace Dispetcher2.Class
                     int[] AllWorkerForDay = new int[tsAll.Days+1];//"Всего" по дням
                     int[] AllDepartmentForDay = new int[tsAll.Days + 1];//"Итого по участку" по дням
                     int[] AllForDay = new int[tsAll.Days + 1];//"Итого" по дням
+                    ulong FactTimeDepartmentWithOutKoop = 0; //Всего по Участку без кооп
                     //int[] RowsAllDepartment = new int[10]; ;//Номера строк "Итого по участку" 10 - с запасом взял // пока есть 4 участка
                     //int RowsAllDep = 0; //Номер элемента в массиве RowsAllDepartment
                     for (int i = 0; i < _DT.Rows.Count-1; i++)
                     {
                         if (Department == "" || Department != _DT.Rows[i].ItemArray[2].ToString())//заголовок
                         {
-                            ((Excel.Range)ExcelWorkSheet.get_Range("A" + NumRow.ToString(), "O" + NumRow.ToString())).Merge();
+                            (ExcelWorkSheet.get_Range("A" + NumRow.ToString(), "O" + NumRow.ToString())).Merge();
                             ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 1]).Font.Bold = 1;
                             ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 1]).Value2 = _DT.Rows[i].ItemArray[2].ToString();//Department
                             NumRow++;
@@ -360,27 +341,27 @@ namespace Dispetcher2.Class
                         
                         if (FIO == _DT.Rows[i].ItemArray[0].ToString())
                         {
-                            ((Excel.Range)ExcelWorkSheet.get_Range("A" + (NumRow - 1).ToString(), "A" + (NumRow).ToString())).Merge();
-                            ((Excel.Range)ExcelWorkSheet.get_Range("B" + (NumRow - 1).ToString(), "B" + (NumRow).ToString())).Merge();
-                            ((Excel.Range)ExcelWorkSheet.get_Range((NumRow - 1) + ":" + (NumRow - 1))).Group();
+                            (ExcelWorkSheet.get_Range("A" + (NumRow - 1).ToString(), "A" + (NumRow).ToString())).Merge();
+                            (ExcelWorkSheet.get_Range("B" + (NumRow - 1).ToString(), "B" + (NumRow).ToString())).Merge();
+                            (ExcelWorkSheet.get_Range((NumRow - 1) + ":" + (NumRow - 1))).Group();
                         }
                         else 
                         {
                             num++;
-                            ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 1]).Value2 = num;//№
-                            ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 2]).Value2 = _DT.Rows[i].ItemArray[0].ToString();//ФИО исполнителя - FK_LoginWorker
+                            ExcelWorkSheet.Cells[NumRow, 1] = num;//№
+                            ExcelWorkSheet.Cells[NumRow, 2] = _DT.Rows[i].ItemArray[0].ToString();//ФИО исполнителя - FK_LoginWorker
                         }
                         FIO = _DT.Rows[i].ItemArray[0].ToString();
                         //*********************************************************
-                        ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 3]).Value2 = _DT.Rows[i].ItemArray[7].ToString();//Заказ
-                        ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 4]).Value2 = _DT.Rows[i].ItemArray[8].ToString();//Позиция
-                        ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 5]).Value2 = _DT.Rows[i].ItemArray[9].ToString();//Наименование
-                        ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 6]).Value2 = _DT.Rows[i].ItemArray[10].ToString();//Обозначение
-                        ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 7]).Value2 = _DT.Rows[i].ItemArray[11].ToString();//Кол - во
-                        ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 8]).Value2 = _DT.Rows[i].ItemArray[12].ToString();//Операция
+                        ExcelWorkSheet.Cells[NumRow, 3] = _DT.Rows[i].ItemArray[7].ToString();//Заказ
+                        ExcelWorkSheet.Cells[NumRow, 4] = _DT.Rows[i].ItemArray[8].ToString();//Позиция
+                        ExcelWorkSheet.Cells[NumRow, 5] = _DT.Rows[i].ItemArray[9].ToString();//Наименование
+                        ExcelWorkSheet.Cells[NumRow, 6] = _DT.Rows[i].ItemArray[10].ToString();//Обозначение
+                        ExcelWorkSheet.Cells[NumRow, 7] = _DT.Rows[i].ItemArray[11].ToString();//Кол - во
+                        ExcelWorkSheet.Cells[NumRow, 8] = _DT.Rows[i].ItemArray[12].ToString();//Операция
                         if (_DT.Rows[i].ItemArray[13].ToString() != "")//Дата
-                            ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 9]).Value2 = Convert.ToDateTime(_DT.Rows[i].ItemArray[13]);//Дата - DateFactOper
-                        else ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 9]).Value2 = "";
+                            ExcelWorkSheet.Cells[NumRow, 9] = Convert.ToDateTime(_DT.Rows[i].ItemArray[13]);//Дата - DateFactOper
+                        else ExcelWorkSheet.Cells[NumRow, 9] = "";
                         if (_DT.Rows[i].ItemArray[7].ToString() != "")//OrderNum = null, т.е. сотрудник ничего не делал и данные по нему есть только из табеля
                         {
                             //Tpd                                   //Tsh
@@ -391,13 +372,13 @@ namespace Dispetcher2.Class
                             FactTime = FactTime / (int)_DT.Rows[i].ItemArray[5];//Кол-во человек в бригаде
                         }
                         else FactTime = 0;
-                        ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 12]).Value2 = IntToTime(FactTime);
+                        ExcelWorkSheet.Cells[NumRow, 12] = IntToTime(FactTime);
                         FactTimeWorker += FactTime;
                         //**************************Подсчёт по дням**************************
                         if (FlagDays & FactTime>0 & _DT.Rows[i].ItemArray[13].ToString() != "")
                         {
                             TimeSpan tsRow = Convert.ToDateTime(_DT.Rows[i].ItemArray[13]) - DateStart;
-                            ((Excel.Range)ExcelWorkSheet.Cells[NumRow, tsRow.Days + 16]).Value2 = IntToTime(FactTime);
+                            ExcelWorkSheet.Cells[NumRow, tsRow.Days + 16] = IntToTime(FactTime);
                             AllWorkerForDay[tsRow.Days] += FactTime;
                             //((Excel.Range)ExcelWorkSheet.Cells[NumRow, tsRow.Days + 16]).Value2 = IntToTime(AllForDay[tsRow.Days]);
                         }
@@ -408,7 +389,7 @@ namespace Dispetcher2.Class
                         {
                             int _PlanHours = 0;
                             decimal TimeSheets = 0;//Время по табелю за 1 деь на 1 рабочего
-                            ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 8]).Value2 = "Всего";
+                            ExcelWorkSheet.Cells[NumRow, 8] = "Всего";
                             //Н/ч за период (факт)
                             if (Convert.ToInt32(_DT.Rows[i].ItemArray[1]) != 1)//if not "ИТР, специалисты, служащий персонал цеха"
                             {
@@ -451,13 +432,13 @@ namespace Dispetcher2.Class
                                         else
                                             _PlanHours = Convert.ToInt32(PlanHours * RateWorker * 1.08);//Добавляем коэффициент 1.08
 
-                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 10]).Value2 = IntToTime(_PlanHours);//н/ч за период (план)
+                                ExcelWorkSheet.Cells[NumRow, 10] = IntToTime(_PlanHours);//н/ч за период (план)
                                 //TimeSheets = TimeSheetsFromOneWorker(FIO,DateStart,DateEnd);
                                 // Тут я пофиксил время до простой и работающей формулы
                                 if (decimal.TryParse(_DT.Rows[i].ItemArray[17].ToString(), out TimeSheets))
                                 {
                                     double time = Convert.ToDouble(TimeSheets) * 3600;
-                                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 11]).Value2 = IntToTime(Convert.ToInt32(time)); //// ТУТ!!!!
+                                    ExcelWorkSheet.Cells[NumRow, 11] = IntToTime(Convert.ToInt32(time)); //// ТУТ!!!!
                                     TimeSheetsSecDepartment += Convert.ToInt32(time);
                                 }
                                 else TimeSheets = 0;
@@ -466,27 +447,28 @@ namespace Dispetcher2.Class
                             else
                             {
                                 ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 10]).NumberFormat = "";
-                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 10]).Value2 = 0;
+                                ExcelWorkSheet.Cells[NumRow, 10] = 0;
                                 _PlanHours = 0;
                                 ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 11]).NumberFormat = "";
-                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 11]).Value2 = 0;
+                                ExcelWorkSheet.Cells[NumRow, 11] = 0;
                                 TimeSheets = 0;
                             }
                             PlanHoursDepartment += (ulong)_PlanHours;
                             //Н/ч за период (факт)
-                            ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 12]).Value2 = IntToTime(FactTimeWorker);
+                            ExcelWorkSheet.Cells[NumRow, 12] = IntToTime(FactTimeWorker);
                             FactTimeDepartment += (ulong)FactTimeWorker;
+                            FactTimeDepartmentWithOutKoop += _DT.Rows[i].ItemArray[0].ToString() == "кооп" ? 0 :(ulong)FactTimeWorker;
                             //% выполнения
                             if (_PlanHours > 0 & TimeSheets>0)
                             {
                                 ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 13]).Value2 = Math.Round(((float)FactTimeWorker / _PlanHours) * 100,2);
                                 if (decimal.TryParse(_DT.Rows[i].ItemArray[17].ToString(), out TimeSheets))
-                                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 14]).Value2 = Math.Round((FactTimeWorker / (float)C_Gper.DecimalToSec(TimeSheets)) * 100, 2);
+                                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 14]).Value2 = Math.Round((FactTimeWorker / DecimalToSec(TimeSheets)) * 100, 2);
                             }
                             else
                             {
-                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 13]).Value2 = 0;
-                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 14]).Value2 = 0;
+                                ExcelWorkSheet.Cells[NumRow, 13] = 0;
+                                ExcelWorkSheet.Cells[NumRow, 14] = 0;
                             }
                             FactTimeWorker = 0;
                             //Подсчёт по дням****************************************************
@@ -501,10 +483,10 @@ namespace Dispetcher2.Class
                                 }
                             }
                             //Подсчёт по дням(END)***********************************************
-                            ((Excel.Range)ExcelWorkSheet.get_Range("A" + (NumRow - 1).ToString(), "A" + (NumRow).ToString())).Merge();
-                            ((Excel.Range)ExcelWorkSheet.get_Range("B" + (NumRow - 1).ToString(), "B" + (NumRow).ToString())).Merge();
-                            ((Excel.Range)ExcelWorkSheet.get_Range((NumRow - 1) + ":" + (NumRow - 1))).Group();
-                            ((Excel.Range)ExcelWorkSheet.get_Range("A" + (NumRow).ToString(), LastRep3Column + (NumRow).ToString())).Font.Bold = 1;
+                            (ExcelWorkSheet.get_Range("A" + (NumRow - 1).ToString(), "A" + (NumRow).ToString())).Merge();
+                            (ExcelWorkSheet.get_Range("B" + (NumRow - 1).ToString(), "B" + (NumRow).ToString())).Merge();
+                            (ExcelWorkSheet.get_Range((NumRow - 1) + ":" + (NumRow - 1))).Group();
+                            (ExcelWorkSheet.get_Range("A" + (NumRow).ToString(), LastRep3Column + (NumRow).ToString())).Font.Bold = 1;
                             NumRow++;
                         }
                         //Всего(END)*********************************************************
@@ -516,11 +498,11 @@ namespace Dispetcher2.Class
                         if (Department != "" & Department != _DT.Rows[i+1].ItemArray[2].ToString())
                             {
                                 if (PlanHoursDepartment == 0) ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 10]).NumberFormat = "";
-                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 2]).Value2 = "Итого по участку";
-                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 8]).Value2 = "Итого по участку";
-                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 10]).Value2 = IntToTime(PlanHoursDepartment);//н/ч за период (план)
-                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 11]).Value2 = IntToTime(TimeSheetsSecDepartment);//Часы по табелю
-                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 12]).Value2 = IntToTime(FactTimeDepartment);//Н/ч за период (факт)
+                                ExcelWorkSheet.Cells[NumRow, 2] = "Итого по участку";
+                                ExcelWorkSheet.Cells[NumRow, 8] = "Итого по участку";
+                                ExcelWorkSheet.Cells[NumRow, 10] = IntToTime(PlanHoursDepartment);//н/ч за период (план)
+                                ExcelWorkSheet.Cells[NumRow, 11] = IntToTime(TimeSheetsSecDepartment);//Часы по табелю
+                                ExcelWorkSheet.Cells[NumRow, 12] = IntToTime(FactTimeDepartment);//Н/ч за период (факт)
                                 //% выполнения
                                 if (PlanHoursDepartment > 0)
                                 {
@@ -530,15 +512,16 @@ namespace Dispetcher2.Class
                             }
                                 else
                                 {
-                                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 13]).Value2 = 0;
-                                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 14]).Value2 = 0;
+                                    ExcelWorkSheet.Cells[NumRow, 13] = 0;
+                                    ExcelWorkSheet.Cells[NumRow, 14] = 0;
                                 }
                                 AllPlanHours += PlanHoursDepartment;//н/ч за период (план)
-                                AllFactTime += FactTimeDepartment;//Н/ч за период (факт)
+                                AllFactTime += (koop == false ? FactTimeDepartment : FactTimeDepartmentWithOutKoop);//Н/ч за период (факт)
                                 AllTimeSheetsSec += TimeSheetsSecDepartment;//Время по табелю
                                 PlanHoursDepartment = 0;
                                 FactTimeDepartment = 0;
                                 TimeSheetsSecDepartment = 0;
+                                FactTimeDepartmentWithOutKoop = 0;
                                 //Подсчёт по дням****************************************************
                                 if (FlagDays)
                                 {
@@ -548,7 +531,7 @@ namespace Dispetcher2.Class
                                     {
                                         if (AllDepartmentForDay[m] > 0)
                                         {
-                                            ((Excel.Range)ExcelWorkSheet.Cells[NumRow, m + 16]).Value2 = IntToTime(AllDepartmentForDay[m]);//Итого по участку за каждый день
+                                            ExcelWorkSheet.Cells[NumRow, m + 16] = IntToTime(AllDepartmentForDay[m]);//Итого по участку за каждый день
                                             //"Вып. по участку";
                                             SundayOrSaturday = Convert.ToDateTime(((Excel.Range)ExcelWorkSheet.Cells[4, m + 16]).Value2);
                                             if (SundayOrSaturday.DayOfWeek.ToString() != "Saturday" & SundayOrSaturday.DayOfWeek.ToString() != "Sunday")
@@ -562,14 +545,19 @@ namespace Dispetcher2.Class
                                                 //((Excel.Range)ExcelWorkSheet.Cells[NumRow + 1, m + 16]).Value2 = "=(" + adrcell + "/(" + "L" + (NumRow) + "/" + cWorkDays + "))";//где L это - Н/ч за период (факт)
                                                 //((Excel.Range)ExcelWorkSheet.Cells[NumRow + 1, m + 16]).Value2 = "=(" + adrcell + "/(" + (double)AmountWorkers * 8.64 + "))";//где L это - Н/ч за период (факт)
                                                 double Proc = (double)AllDepartmentForDay[m] / ((double)Workers1 * 28800 * 1.08 + (double)Workers05 * 14400 * 1.08);
-                                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow + 1, m + 16]).Value2 = Proc;//где L это - Н/ч за период (факт)
+                                                ExcelWorkSheet.Cells[NumRow + 1, m + 16] = Proc;//где L это - Н/ч за период (факт)
                                             }
-                                            //else
-                                                //((Excel.Range)ExcelWorkSheet.Cells[4, m + 14]).Interior.Color = System.Drawing.Color.PaleGreen;
-                                                //((Excel.Range)ExcelWorkSheet.get_Range("A" + (4).ToString(), LastRep3Column + (NumRow - 1).ToString())).Interior.Color = System.Drawing.Color.PaleGreen;
-                                            //Выполнение по цеху (END)
-                                            AllForDay[m] += AllDepartmentForDay[m];
-                                            AllDepartmentForDay[m] = 0;
+
+                                            if (_DT.Rows[i].ItemArray[0].ToString() == "кооп" & koop == true)
+                                            {
+                                                AllForDay[m] += 0;
+                                                AllDepartmentForDay[m] = 0;
+                                            }
+                                            else
+                                            {
+                                                AllForDay[m] += AllDepartmentForDay[m];
+                                                AllDepartmentForDay[m] = 0;
+                                            }
                                         }
                                     }
                                     Workers1 = 0; Workers05 = 0;
@@ -579,14 +567,14 @@ namespace Dispetcher2.Class
                                 NumRow++;
                                 //Строка для выработки******************************
                                 //if (FlagDays && IdCeh == -1 && loginWorker == "" && cWorkDays > 0 && (ExcelWorkSheet.Cells[NumRow - 1, 10] as Excel.Range).Value2 != 0)
-                                if (FlagDays && IdCeh == -1 && loginWorker == "" && cWorkDays > 0) ;
+                                if (FlagDays && IdCeh == -1 && loginWorker == "" && cWorkDays > 0)
                                 {
                                     string x = Convert.ToString((ExcelWorkSheet.Cells[NumRow - 1, 10] as Excel.Range).Value2);
                                 if (x != null)
                                 {
                                     //RowsAllDepartment[RowsAllDep] = NumRow;//int[] RowsAllDepartment = new int[10]; ;//Номера строк "Итого по участку" 10 - с запасом взял // пока есть 4 участка
                                     //RowsAllDep++;//int RowsAllDep = 0; //Номер элемента в массиве RowsAllDepartment
-                                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 2]).Value2 = "Вып. по участку";
+                                    ExcelWorkSheet.Cells[NumRow, 2] = "Вып. по участку";
                                     NumRow++;//String for %
                                 }
                                 }
@@ -603,11 +591,11 @@ namespace Dispetcher2.Class
                     //Сетка(END)********************************************
                     //ИТОГО*******************************************************
                     NumRow++;
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 2]).Value2 = "Всего по цеху";
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 8]).Value2 = "Итого";
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 10]).Value2 = IntToTime(AllPlanHours);//н/ч за период (план)
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 11]).Value2 = IntToTime(AllTimeSheetsSec);//Табельное время
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 12]).Value2 = IntToTime(AllFactTime);//Н/ч за период (факт)
+                    ExcelWorkSheet.Cells[NumRow, 2] = "Всего по цеху";
+                    ExcelWorkSheet.Cells[NumRow, 8] = "Итого";
+                    ExcelWorkSheet.Cells[NumRow, 10] = IntToTime(AllPlanHours);//н/ч за период (план)
+                    ExcelWorkSheet.Cells[NumRow, 11] = IntToTime(AllTimeSheetsSec);//Табельное время
+                    ExcelWorkSheet.Cells[NumRow, 12] = IntToTime(AllFactTime);//Н/ч за период (факт)
                     
                     
                     //% выполнения
@@ -618,8 +606,8 @@ namespace Dispetcher2.Class
                     }
                     else
                     {
-                        ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 13]).Value2 = 0;
-                        ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 14]).Value2 = 0;
+                        ExcelWorkSheet.Cells[NumRow, 13] = 0;
+                        ExcelWorkSheet.Cells[NumRow, 14] = 0;
                     }
                     //Подсчёт по дням ИТОГО****************************************************
                     if (FlagDays)
@@ -627,7 +615,7 @@ namespace Dispetcher2.Class
                         {
                             if (AllForDay[m] > 0)
                             {
-                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow, m + 16]).Value2 = IntToTime(AllForDay[m]);
+                                ExcelWorkSheet.Cells[NumRow, m + 16] = IntToTime(AllForDay[m]);
                                 //AllForDay[m] = 0;
                             }
                         }
@@ -659,7 +647,7 @@ namespace Dispetcher2.Class
                     if (FlagDays & IdCeh == -1 & loginWorker == "" & cWorkDays > 0 & (ExcelWorkSheet.Cells[NumRow - 1, 10] as Excel.Range).Value2 != 0)
                     {
                         NumRow++;
-                        ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 2]).Value2 = "Выполнение по цеху";
+                        ExcelWorkSheet.Cells[NumRow, 2] = "Выполнение по цеху";
                         DateTime SundayOrSaturday;
                         for (int m = 0; m < AllForDay.Length; m++)
                         {
@@ -673,7 +661,7 @@ namespace Dispetcher2.Class
                                 //((Excel.Range)ExcelWorkSheet.Cells[NumRow, m + 16]).Value2 = "=(" + adrcell + "/(" + "L" + (NumRow - 1) + "/" + cWorkDays + "))";//где L это - Н/ч за период (факт)
                                 //((Excel.Range)ExcelWorkSheet.Cells[NumRow, m + 16]).Value2 = "=(" + adrcell + "/J" + (NumRow - 1) + ")";//где L это - Н/ч за период (факт)
                                 double Proc = (double)AllForDay[m] / ((double)All_Workers1 * 28800 * 1.08 + (double)All_Workers05 * 14400 * 1.08);
-                                ((Excel.Range)ExcelWorkSheet.Cells[NumRow, m + 16]).Value2 = Proc;//где L это - Н/ч за период (факт)
+                                ExcelWorkSheet.Cells[NumRow, m + 16] = Proc;//где L это - Н/ч за период (факт)
                             }
                             AllForDay[m] = 0;
                         }
@@ -682,13 +670,13 @@ namespace Dispetcher2.Class
                     //Строка для выработки(END)******************************
                     
 
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow + 2, 2]).Value2 = "Сдал:";
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow + 3, 2]).Value2 = "   Оператор ИАЦ _______________________ /Тычинина Е.С./";
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow + 4, 2]).Value2 = "Принял:";
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow + 5, 2]).Value2 = "   Начальник мех. участка   _______________________ /Уткин В.В./";
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow + 7, 2]).Value2 = "   Начальник слес. участка _______________________ /Сотников Ю.И./";
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow + 9, 2]).Value2 = "   Начальник цеха              _______________________ /___________________/";
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow + 11, 2]).Value2 = "   Начальник производства _______________________ /Казьмин А.В./";
+                    ExcelWorkSheet.Cells[NumRow + 2, 2] = "Сдал:";
+                    ExcelWorkSheet.Cells[NumRow + 3, 2] = "   Оператор ИАЦ _______________________ /Тычинина Е.С./";
+                    ExcelWorkSheet.Cells[NumRow + 4, 2] = "Принял:";
+                    ExcelWorkSheet.Cells[NumRow + 5, 2] = "   Начальник мех. участка   _______________________ /Уткин В.В./";
+                    ExcelWorkSheet.Cells[NumRow + 7, 2] = "   Начальник слес. участка _______________________ /Сотников Ю.И./";
+                    ExcelWorkSheet.Cells[NumRow + 9, 2] = "   Начальник цеха              _______________________ /___________________/";
+                    ExcelWorkSheet.Cells[NumRow + 11, 2] = "   Начальник производства _______________________ /Казьмин А.В./";
 
                     
                     MessageBox.Show("Формирование отчета завершено.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -705,9 +693,9 @@ namespace Dispetcher2.Class
             try
             {
                 int sec = 0;
-                using (C_Gper.con)
+                using (SqlConnection con = new SqlConnection())
                 {
-                    C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
+                    con.ConnectionString = config.ConnectionString;
                     SqlCommand cmd = new SqlCommand() { CommandTimeout = _CmdTimeout };//using System.Data.SqlClient;
                     SqlDataReader reader;
                     cmd.Parameters.Clear();
@@ -718,8 +706,8 @@ namespace Dispetcher2.Class
                     cmd.Parameters["@DateStart"].Value = DateStart;
                     cmd.Parameters.Add(new SqlParameter("@DateEnd", SqlDbType.Date));
                     cmd.Parameters["@DateEnd"].Value = DateEnd;
-                    cmd.Connection = C_Gper.con;
-                    C_Gper.con.Open();
+                    cmd.Connection = con;
+                    con.Open();
                     reader = cmd.ExecuteReader();
                     if (reader.HasRows)
                     {
@@ -729,7 +717,7 @@ namespace Dispetcher2.Class
                             if (!reader.IsDBNull(1)) cWorkDays = reader.GetInt32(1); else cWorkDays = 0;
                         }
                     }
-                    reader.Dispose(); reader.Close(); C_Gper.con.Close();
+                    reader.Dispose(); reader.Close(); con.Close();
                 }
                 return sec;
             }
@@ -742,23 +730,27 @@ namespace Dispetcher2.Class
 
         public int NormHoursPlanFromOneWorker(DateTime DateStart, DateTime DateEnd)
         {
+            int PlanHours = 0;
             try
             {
-                int PlanHours = 0;
-                C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
-                SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//seconds //using System.Data.SqlClient;
-                cmd.Connection = C_Gper.con;
-                cmd.Parameters.Clear();
-                cmd.CommandText = "SELECT SUM(Dsec) as AllSec" + "\n" +
-                        "FROM Sp_ProductionCalendar" + "\n" +
-                        "Where Dsec>0 and PK_Date >= @DateStart and PK_Date < @DateEnd";
-                cmd.Parameters.Add(new SqlParameter("@DateStart", SqlDbType.Date));
-                cmd.Parameters["@DateStart"].Value = DateStart;
-                cmd.Parameters.Add(new SqlParameter("@DateEnd", SqlDbType.Date));
-                cmd.Parameters["@DateEnd"].Value = DateEnd;
-                using (C_Gper.con)
+
+
+                using (SqlConnection con = new SqlConnection())
                 {
-                    C_Gper.con.Open();
+
+                    con.ConnectionString = config.ConnectionString;
+
+                    string sqlExpression = "NormHoursPlanFromOneWorker";
+
+                    SqlCommand cmd = new SqlCommand(sqlExpression) { CommandTimeout = 60 };
+
+                    cmd.Connection = con;
+                    cmd.Parameters.Clear();
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@DateStart", DateStart);
+                    cmd.Parameters.AddWithValue("@DateEnd", DateEnd);
+                    con.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         if (reader.HasRows)
@@ -784,22 +776,24 @@ namespace Dispetcher2.Class
             try
             {
                 decimal PlanHours = 0;
-                C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
-                SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//seconds //using System.Data.SqlClient;
-                cmd.Connection = C_Gper.con;
-                cmd.Parameters.Clear();
-                cmd.CommandText = "SELECT sum((convert( decimal(4,1), Val_Time))) as Val_Time" + "\n" +
-                                  "FROM TimeSheets" + "\n" +
-                                  "Where FK_Login = @FK_Login and Val_Time != '' and Val_Time <='8' and PK_Date>=@DateStart and PK_Date<=@DateEnd";
-                cmd.Parameters.Add(new SqlParameter("@FK_Login", SqlDbType.VarChar));
-                cmd.Parameters["@FK_Login"].Value = FIO;
-                cmd.Parameters.Add(new SqlParameter("@DateStart", SqlDbType.Date));
-                cmd.Parameters["@DateStart"].Value = DateStart;
-                cmd.Parameters.Add(new SqlParameter("@DateEnd", SqlDbType.Date));
-                cmd.Parameters["@DateEnd"].Value = DateEnd;
-                using (C_Gper.con)
+
+                
+                using (SqlConnection con = new SqlConnection())
                 {
-                    C_Gper.con.Open();
+                    con.ConnectionString = config.ConnectionString;
+                    SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//seconds //using System.Data.SqlClient;
+                    cmd.Connection = con;
+                    cmd.Parameters.Clear();
+                    cmd.CommandText = "SELECT sum((convert( decimal(4,1), Val_Time))) as Val_Time" + "\n" +
+                                      "FROM TimeSheets" + "\n" +
+                                      "Where FK_Login = @FK_Login and Val_Time != '' and Val_Time <='8' and PK_Date>=@DateStart and PK_Date<=@DateEnd";
+                    cmd.Parameters.Add(new SqlParameter("@FK_Login", SqlDbType.VarChar));
+                    cmd.Parameters["@FK_Login"].Value = FIO;
+                    cmd.Parameters.Add(new SqlParameter("@DateStart", SqlDbType.Date));
+                    cmd.Parameters["@DateStart"].Value = DateStart;
+                    cmd.Parameters.Add(new SqlParameter("@DateEnd", SqlDbType.Date));
+                    cmd.Parameters["@DateEnd"].Value = DateEnd;
+                    con.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         if (reader.HasRows)
@@ -829,9 +823,9 @@ namespace Dispetcher2.Class
             try
             {
                 /*_DT.Clear();
-                using (C_Gper.con)
+                using (con)
                 {
-                    C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
+                    con.ConnectionString = config.ConnectionString;
                     SqlCommand cmd = new SqlCommand() { CommandTimeout = _CmdTimeout };//using System.Data.SqlClient;
                     cmd.Parameters.Clear();
                     cmd.CommandText = "Select PK_IdOrderDetail,FK_IdDetail,ShcmDetail,NameDetail,AmountDetails,Position,PositionParent" + "\n" +
@@ -842,7 +836,7 @@ namespace Dispetcher2.Class
                                       "Order by ShcmDetail";
                     cmd.Parameters.Add(new SqlParameter("@PK_IdOrder", SqlDbType.Int));
                     cmd.Parameters["@PK_IdOrder"].Value = PK_IdOrder;
-                    cmd.Connection = C_Gper.con;
+                    cmd.Connection = con;
                     SqlDataAdapter adapter = new SqlDataAdapter();
                     adapter.SelectCommand = cmd;
                     adapter.Fill(_DT);
@@ -936,35 +930,36 @@ namespace Dispetcher2.Class
         {
             try
             {
-                C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
-                SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//seconds //using System.Data.SqlClient;
-                cmd.Connection = C_Gper.con;
-                cmd.Parameters.Clear();
-                cmd.CommandText = "Select NumOper+'999' as NumOper,NameOperation,NumSpOper,Tpd,Tsh,sum(AmountDetails) as AmountDetailsFact, 'f' as FactOrSp, OnlyOncePay, max(DateFactOper) as DateFactOper " + "\n" +
-                                    "From FactOperation " + "\n" +
-                                    "inner join Sp_Operations on PK_IdOperation = FK_IdOperation " + "\n" +
-                                    "where FK_IdOrderDetail = @FK_IdOrderDetail " + "\n" +
-                                    "group by NumOper,NameOperation,NumSpOper,Tpd,Tsh,OnlyOncePay " + "\n" +
-                                    "union all" + "\n" +
-                                    "Select NumOper+'999' as NumOper,NameOperation,NumSpOper,Tpd,Tsh,0 as AmountDetails, 's' as FactOrSp, OnlyOncePay, '1983.04.01' as DateFactOper " + "\n" +
-                                    "From Sp_TechnologyDetails " + "\n" +
-                                    "inner join Sp_Operations on PK_IdOperation = FK_IdOperation " + "\n" +
-                                    "Where FK_IdDetails = @FK_IdDetails " + "\n" +
-                                    "union all" + "\n" +
-                                    "Select NumOperation+'999' as NumOper,NameOperation,NumSpOper,Tpd,Tsh,0 as AmountDetails, 's' as FactOrSp, OnlyOncePay, '1983.04.01' as DateFactOper " + "\n" +
-                                    "From Sp_OperationsType111" + "\n" +
-                                    "inner join Sp_Operations on PK_IdOperation = FK_IdOperation" + "\n" +
-                                    "Where FK_IdDetail = @FK_IdDetails" + "\n" +
-                                    "union all" + "\n" +
-                                    "Select '999','Передача детали на СГД',32,0,0,0 as AmountDetails, 's' as FactOrSp, 1 as OnlyOncePay, '1983.04.01' as DateFactOper " + "\n" +
-                                    "Order by NumOper,FactOrSp";
-                cmd.Parameters.Add(new SqlParameter("@FK_IdOrderDetail", SqlDbType.BigInt));
-                cmd.Parameters["@FK_IdOrderDetail"].Value = FK_IdOrderDetail;
-                cmd.Parameters.Add(new SqlParameter("@FK_IdDetails", SqlDbType.BigInt));
-                cmd.Parameters["@FK_IdDetails"].Value = FK_IdDetails;
-                using (C_Gper.con)
+                
+                using (SqlConnection con = new SqlConnection())
                 {
-                    C_Gper.con.Open();
+                    con.ConnectionString = config.ConnectionString;
+                    SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//seconds //using System.Data.SqlClient;
+                    cmd.Connection = con;
+                    cmd.Parameters.Clear();
+                    cmd.CommandText = "Select NumOper+'999' as NumOper,NameOperation,NumSpOper,Tpd,Tsh,sum(AmountDetails) as AmountDetailsFact, 'f' as FactOrSp, OnlyOncePay, max(DateFactOper) as DateFactOper " + "\n" +
+                                        "From FactOperation " + "\n" +
+                                        "inner join Sp_Operations on PK_IdOperation = FK_IdOperation " + "\n" +
+                                        "where FK_IdOrderDetail = @FK_IdOrderDetail " + "\n" +
+                                        "group by NumOper,NameOperation,NumSpOper,Tpd,Tsh,OnlyOncePay " + "\n" +
+                                        "union all" + "\n" +
+                                        "Select NumOper+'999' as NumOper,NameOperation,NumSpOper,Tpd,Tsh,0 as AmountDetails, 's' as FactOrSp, OnlyOncePay, '1983.04.01' as DateFactOper " + "\n" +
+                                        "From Sp_TechnologyDetails " + "\n" +
+                                        "inner join Sp_Operations on PK_IdOperation = FK_IdOperation " + "\n" +
+                                        "Where FK_IdDetails = @FK_IdDetails " + "\n" +
+                                        "union all" + "\n" +
+                                        "Select NumOperation+'999' as NumOper,NameOperation,NumSpOper,Tpd,Tsh,0 as AmountDetails, 's' as FactOrSp, OnlyOncePay, '1983.04.01' as DateFactOper " + "\n" +
+                                        "From Sp_OperationsType111" + "\n" +
+                                        "inner join Sp_Operations on PK_IdOperation = FK_IdOperation" + "\n" +
+                                        "Where FK_IdDetail = @FK_IdDetails" + "\n" +
+                                        "union all" + "\n" +
+                                        "Select '999','Передача детали на СГД',32,0,0,0 as AmountDetails, 's' as FactOrSp, 1 as OnlyOncePay, '1983.04.01' as DateFactOper " + "\n" +
+                                        "Order by NumOper,FactOrSp";
+                    cmd.Parameters.Add(new SqlParameter("@FK_IdOrderDetail", SqlDbType.BigInt));
+                    cmd.Parameters["@FK_IdOrderDetail"].Value = FK_IdOrderDetail;
+                    cmd.Parameters.Add(new SqlParameter("@FK_IdDetails", SqlDbType.BigInt));
+                    cmd.Parameters["@FK_IdDetails"].Value = FK_IdDetails;
+                    con.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         if (reader.HasRows)
@@ -1087,9 +1082,9 @@ namespace Dispetcher2.Class
             try
             {
                 _DT.Clear();
-                using (C_Gper.con)
+                using (SqlConnection con = new SqlConnection())
                 {
-                    C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
+                    con.ConnectionString = config.ConnectionString;
                     SqlCommand cmd = new SqlCommand() { CommandTimeout = _CmdTimeout };//using System.Data.SqlClient;
                     cmd.Parameters.Clear();
                     if (NameRep == "rep6")
@@ -1113,8 +1108,8 @@ namespace Dispetcher2.Class
                     }
                     cmd.Parameters.Add(new SqlParameter("@PK_IdOrder", SqlDbType.Int));
                     cmd.Parameters["@PK_IdOrder"].Value = PK_IdOrder;
-                    cmd.Connection = C_Gper.con;
-                    SqlDataAdapter adapter = new SqlDataAdapter();
+                    cmd.Connection = con;
+					SqlDataAdapter adapter = new SqlDataAdapter();
                     adapter.SelectCommand = cmd;
                     adapter.Fill(_DT);
                     adapter.Dispose();
@@ -1368,6 +1363,8 @@ namespace Dispetcher2.Class
                     ((Excel.Range)ExcelWorkSheet.get_Range((NumRow - 1) + ":" + (NumRow - 1))).Group();*/
 
                     //************************************
+
+
                     MessageBox.Show("Формирование отчета завершено.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
@@ -1375,50 +1372,40 @@ namespace Dispetcher2.Class
             {
                 MessageBox.Show("Не работает. " + ex.Message, "Внимание!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
+            finally
+            {
+                for (int i = 0; i < 12; i++)
+                {
+                    _OperGroupFactTime[i] = 0;
+                    _FactTime[i] = 0;
+                }
+            }
         }
 
         private void Load_Plan_TehDetails(Int64 FK_IdOrderDetail, int AmountDetails, int row, Excel.Worksheet exW)
         {
             try//string[] arrOper = { "Заготов","Токарн","Заточ","Координатн","лифоваль","Свар","ЧПУ","Фрезер","Слесарн","Комплект","Испытания","Малярная","струйная","Разметка","Промывка","Прессование","свар"};
             {
-                C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
-                SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//seconds //using System.Data.SqlClient;
-                cmd.Connection = C_Gper.con;
-                cmd.Parameters.Clear();
-                cmd.CommandText = "SELECT spo.FK_IdOperGroup, spt.Tpd, spt.Tsh, SUM(od.AmountDetails) AS fo_Amount, spo.OnlyOncePay, spt.NumOper,spo.NameOperation,'1sp' as TypeRow" + "\n" +
-"From OrdersDetails od" + "\n" +
-"left JOIN Sp_TechnologyDetails as spt ON spt.FK_IdDetails = od.FK_IdDetail" + "\n" +
-"left JOIN Sp_Operations as spo ON spo.PK_IdOperation = spt.FK_IdOperation" + "\n" +
-"WHERE od.PK_IdOrderDetail = @FK_IdOrderDetail and FK_IdOperGroup<13" + "\n" +
-"GROUP BY spo.FK_IdOperGroup, spt.Tpd, spt.Tsh, spo.OnlyOncePay,spt.NumOper,spo.NameOperation" + "\n" +
-"union" + "\n" +
-"SELECT spo.FK_IdOperGroup, spo111.Tpd, spo111.Tsh , SUM(od.AmountDetails) AS fo_Amount, spo.OnlyOncePay, spo111.NumOperation,spo.NameOperation,'2sp111' as TypeRow" + "\n" +
-"From OrdersDetails od" + "\n" +
-"left JOIN Sp_OperationsType111 AS spo111 ON spo111.FK_IdDetail = od.FK_IdDetail" + "\n" +
-"left JOIN Sp_Operations as spo ON spo.PK_IdOperation = spo111.FK_IdOperation" + "\n" +
-"WHERE od.PK_IdOrderDetail = @FK_IdOrderDetail and FK_IdOperGroup<13" + "\n" +
-"GROUP BY spo.FK_IdOperGroup, spo111.Tpd, spo111.Tsh, spo.OnlyOncePay,spo111.NumOperation,spo.NameOperation" + "\n" +
-"union" + "\n" +
-"SELECT spo.FK_IdOperGroup, fo.Tpd, fo.Tsh, SUM(fo.AmountDetails) AS fo_Amount, spo.OnlyOncePay, fo.NumOper,spo.NameOperation,'3fact' as TypeRow" + "\n" +
-"From OrdersDetails od" + "\n" +
-"left JOIN FactOperation AS fo ON fo.FK_IdOrderDetail = od.PK_IdOrderDetail" + "\n" +
-"left JOIN Sp_Operations as spo ON spo.PK_IdOperation = fo.FK_IdOperation" + "\n" +
-"WHERE od.PK_IdOrderDetail = @FK_IdOrderDetail and spo.FK_IdOperGroup<13" + "\n" +
-"GROUP BY spo.FK_IdOperGroup, fo.Tpd, fo.Tsh, spo.OnlyOncePay,fo.NumOper,spo.NameOperation" + "\n" +
-"Order by TypeRow, FK_IdOperGroup";
-
-
-                cmd.Parameters.Add(new SqlParameter("@FK_IdOrderDetail", SqlDbType.BigInt));
-                cmd.Parameters["@FK_IdOrderDetail"].Value = FK_IdOrderDetail;
-                using (C_Gper.con)
+                
+                using (SqlConnection con = new SqlConnection())
                 {
-                    C_Gper.con.Open();
+                    con.ConnectionString = config.ConnectionString;
+                    string sqlExpression = "LoadPlanTehDetails";
+                    SqlCommand cmd = new SqlCommand(sqlExpression) { CommandTimeout = 60 };//seconds //using System.Data.SqlClient;
+                    cmd.Connection = con;
+                    cmd.Parameters.Clear();
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    SqlParameter nameParam = new SqlParameter
+                    {
+                        ParameterName = "@FK_IdOrderDetail",
+                        Value = FK_IdOrderDetail
+                    };
+                    cmd.Parameters.Add(nameParam);
+                    con.Open();
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         if (reader.HasRows)//Color.LightGreen;
                         {
-
                             Int16 IdOperGroup = 0;
                             int Tpd = 0, Tsh = 0, Amount = 0;//по факту
                             int OperTime = 0;//Общее время 1 операции
@@ -1427,10 +1414,11 @@ namespace Dispetcher2.Class
                             //int
                             int AllSptTime = 0;//Всего времени по справочнику технологий изготовления
                             int AllFactTime = 0;
-                            int OstatokIzgotov = 0; // Остаток к изготовлению
+                            int g_f_10 = 0;
 
-                            int g1 = 0, g2 = 0, g3 = 0, g4 = 0, g5 = 0, g6 = 0, g7 = 0, g8 = 0, g9 = 0, g12 = 0;//подсчёт общего времени по группам по данным справочника
-                            int g_f_1 = 0, g_f_2 = 0, g_f_3 = 0, g_f_4 = 0, g_f_5 = 0, g_f_6 = 0, g_f_7 = 0, g_f_8 = 0, g_f_9 = 0, g_f_10 = 0, g_f_12 = 0;//подсчёт общего времени по группам по факту
+                            int[] totalTime = new int[10]; //подсчёт общего времени по группам по данным справочника
+                            int[] totalFactTime = new int[10]; //подсчёт общего времени по группам по факту
+                            int[] numberRow = { 8, 9, 10, 11, 12, 13, 14, 15, 18, 16 };
 
                             //int 
                             while (reader.Read())//IntToTime  NormTimeFabrication(bool OnlyOncePay, int Tpd, int Tsh, int Amount)
@@ -1450,37 +1438,37 @@ namespace Dispetcher2.Class
                                     switch (IdOperGroup)
                                     {
                                         case 1://Загот
-                                            if (TypeRow == "3fact") g_f_1 += OperTime; else g1 += OperTime;
+                                            if (TypeRow == "3fact") totalFactTime[0] += OperTime; else totalTime[0] += OperTime;
                                             break;
                                         case 2://Токар
-                                            if (TypeRow == "3fact") g_f_2 += OperTime; else g2 += OperTime;
+                                            if (TypeRow == "3fact") totalFactTime[1] += OperTime; else totalTime[1] += OperTime;
                                             break;
                                         case 3://Фрезер
-                                            if (TypeRow == "3fact") g_f_3 += OperTime; else g3 += OperTime;
+                                            if (TypeRow == "3fact") totalFactTime[2] += OperTime; else totalTime[2] += OperTime;
                                             break;
                                         case 4://Шлиф
-                                            if (TypeRow == "3fact") g_f_4 += OperTime; else g4 += OperTime;
+                                            if (TypeRow == "3fact") totalFactTime[3] += OperTime; else totalTime[3] += OperTime;
                                             break;
                                         case 5://ЧПУ
-                                            if (TypeRow == "3fact") g_f_5 += OperTime; else g5 += OperTime;
+                                            if (TypeRow == "3fact") totalFactTime[4] += OperTime; else totalTime[4] += OperTime;
                                             break;
                                         case 6://Расточ
-                                            if (TypeRow == "3fact") g_f_6 += OperTime; else g6 += OperTime;
+                                            if (TypeRow == "3fact") totalFactTime[5] += OperTime; else totalTime[5] += OperTime;
                                             break;
                                         case 7://Свароч
-                                            if (TypeRow == "3fact") g_f_7 += OperTime; else g7 += OperTime;
+                                            if (TypeRow == "3fact") totalFactTime[6] += OperTime; else totalTime[6] += OperTime;
                                             break;
                                         case 8://Слесарн и малярная
-                                            if (TypeRow == "3fact") g_f_8 += OperTime; else g8 += OperTime;
+                                            if (TypeRow == "3fact") totalFactTime[7] += OperTime; else totalTime[7] += OperTime;
                                             break;
                                         case 9://ОТК
-                                            if (TypeRow == "3fact") g_f_9 += OperTime; else g9 += OperTime;//т.к. Контроль ОТК может повторятся несколько раз
+                                            if (TypeRow == "3fact") totalFactTime[8] += OperTime; else totalTime[8] += OperTime;//т.к. Контроль ОТК может повторятся несколько раз
                                             break;
                                         case 10://Склад
                                             if (TypeRow == "3fact") g_f_10 += Amount; //т.к. Склад может повторятся несколько раз
                                             break;
                                         case 12://Заточная (технол.)
-                                            if (TypeRow == "3fact") g_f_12 += OperTime; else g12 += OperTime;
+                                            if (TypeRow == "3fact") totalFactTime[9] += OperTime; else totalTime[9] += OperTime;
                                             break;
                                         default:
                                             //Console.WriteLine("Default case");
@@ -1490,304 +1478,60 @@ namespace Dispetcher2.Class
                             }
 
 
-                            // Заполнение массива с итоговым временем "Всего: "
-                            if (g_f_1 >= g1) _OperGroupFactTime[0] += g_f_1;
-                            else _OperGroupFactTime[0] += g1;
-
-                            if (g_f_2 >= g2) _OperGroupFactTime[1] += g_f_2;
-                            else _OperGroupFactTime[1] += g2;
-
-                            if (g_f_3 >= g3) _OperGroupFactTime[2] += g_f_3;
-                            else _OperGroupFactTime[2] += g3;
-
-                            if (g_f_4 >= g4) _OperGroupFactTime[3] += g_f_4;
-                            else _OperGroupFactTime[3] += g4;
-
-                            if (g_f_5 >= g5) _OperGroupFactTime[4] += g_f_5;
-                            else _OperGroupFactTime[4] += g5;
-
-                            if (g_f_6 >= g6) _OperGroupFactTime[5] += g_f_6;
-                            else _OperGroupFactTime[5] += g6;
-
-                            if (g_f_7 >= g7) _OperGroupFactTime[6] += g_f_7;
-                            else _OperGroupFactTime[6] += g7;
-
-                            if (g_f_8 >= g8) _OperGroupFactTime[7] += g_f_8;
-                            else _OperGroupFactTime[7] += g8;
-
-                            if (g_f_9 >= g9) _OperGroupFactTime[8] += g_f_9;
-                            else _OperGroupFactTime[8] += g9;
-
-                            if (g_f_12 >= g12) _OperGroupFactTime[9] += g_f_12;
-                            else _OperGroupFactTime[9] += g12;
-
-
-                            if (g1 > 0)
+                            for (int i = 0; i < 10; i++)
                             {
-                                ((Excel.Range)exW.Cells[row, 8]).Value2 = IntToTime(g1);
-                                AllSptTime += g1;
+                                if (totalFactTime[i] >= totalTime[i]) _OperGroupFactTime[i] += totalFactTime[i];
+                                else _OperGroupFactTime[i] += totalTime[i];
+
+                                if (totalTime[i] > 0)
+                                {
+                                    ((Excel.Range)exW.Cells[row, numberRow[i]]).Value2 = IntToTime(totalTime[i]);
+                                    AllSptTime += totalTime[i];
+                                }
+
+                                if (totalFactTime[i] > 0)
+                                {
+                                    ((Excel.Range)exW.Cells[row, numberRow[i]]).Value2 = IntToTime(totalFactTime[i]);
+                                    AllFactTime += totalFactTime[i];
+                                    AllSptTime -= totalTime[i];
+
+                                    _FactTime[i] += totalFactTime[i]; // Добавляем фактическую заготовку
+                                }
+
+                                if (totalFactTime[i] > 0)
+                                {
+                                    if (totalFactTime[i] >= totalTime[i])
+                                        ((Excel.Range)exW.Cells[row, numberRow[i]]).Interior.Color = Color.LightGreen;
+                                    else
+                                        ((Excel.Range)exW.Cells[row, numberRow[i]]).Interior.Color = Color.LightPink;
+                                }
                             }
-                            if (g2 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 9]).Value2 = IntToTime(g2);
-                                AllSptTime += g2;
-                            }
-                            if (g3 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 10]).Value2 = IntToTime(g3);
-                                AllSptTime += g3;
-                            }
-                            if (g4 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 11]).Value2 = IntToTime(g4);
-                                AllSptTime += g4;
-                            }
-                            if (g5 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 12]).Value2 = IntToTime(g5);
-                                AllSptTime += g5;
-                            }
-                            if (g6 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 13]).Value2 = IntToTime(g6);
-                                AllSptTime += g6;
-                            }
-                            if (g7 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 14]).Value2 = IntToTime(g7);
-                                AllSptTime += g7;
-                            }
-                            if (g8 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 15]).Value2 = IntToTime(g8);
-                                AllSptTime += g8;
-                            }
-
-                            if (g9 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 18]).Value2 = IntToTime(g9);
-                                AllSptTime += g9;
-                            }
-
-                            if (g12 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 16]).Value2 = IntToTime(g12);
-                                AllSptTime += g12;
-                            }
-
-                            if (AllSptTime > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 19]).Value2 = IntToTime(AllSptTime);
-
-                            }
-
-
-
-
-                            // Заполняем фактические оперции
-                            if (g_f_1 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 8]).Value2 = IntToTime(g_f_1);
-                                AllFactTime += g_f_1;
-                                AllSptTime -= g1;
-
-                                _FactTime[0] += g_f_1; // Добавляем фактическую заготовку
-                            }
-
-                            if (g_f_2 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 9]).Value2 = IntToTime(g_f_2);
-                                AllFactTime += g_f_2;
-                                AllSptTime -= g2;
-
-                                _FactTime[1] += g_f_2; // Добавляем фактическую токарку
-                            }
-
-                            if (g_f_3 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 10]).Value2 = IntToTime(g_f_3);
-                                AllFactTime += g_f_3;
-                                AllSptTime -= g3;
-
-                                _FactTime[2] += g_f_3; // Добавляем фактическую фрезерку
-                            }
-
-                            if (g_f_4 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 11]).Value2 = IntToTime(g_f_4);
-                                AllFactTime += g_f_4;
-                                AllSptTime -= g4;
-
-                                _FactTime[3] += g_f_4; // Добавляем фактическую шлифофку
-                            }
-
-                            if (g_f_5 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 12]).Value2 = IntToTime(g_f_5);
-                                AllFactTime += g_f_5;
-                                AllSptTime -= g5;
-
-                                _FactTime[4] += g_f_5; // Добавляем фактический фрезер ЧПУ
-                            }
-
-                            if (g_f_6 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 13]).Value2 = IntToTime(g_f_6);
-                                AllFactTime += g_f_6;
-                                AllSptTime -= g6;
-
-                                _FactTime[5] += g_f_6; // Добавляем фактический Расточ
-                            }
-
-                            if (g_f_7 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 14]).Value2 = IntToTime(g_f_7);
-                                AllFactTime += g_f_7;
-                                AllSptTime -= g7;
-
-                                _FactTime[6] += g_f_7; // Добавляем фактический Сворочн
-                            }
-
-                            if (g_f_8 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 15]).Value2 = IntToTime(g_f_8);
-                                AllFactTime += g_f_8;
-                                AllSptTime -= g8;
-
-                                _FactTime[7] += g_f_8; // Добавляем фактический Слесарн
-                            }
-
-                            if (g_f_9 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 18]).Value2 = IntToTime(g_f_8);
-                                AllFactTime += g_f_9;
-                                AllSptTime -= g9;
-
-                                _FactTime[8] += g_f_9; // Добавляем фактический ОТК
-                            }
-
-                            if (g_f_12 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 16]).Value2 = IntToTime(g_f_12);
-                                AllFactTime += g_f_12;
-                                AllSptTime -= g12;
-
-                                _FactTime[9] += g_f_12; // Добавляем фактический Заточная (технол.)
-                            }
-
-
-                            if (g_f_10 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 17]).Value2 = g_f_10;
-
-                            }
+                  
+                            if (AllSptTime > 0) ((Excel.Range)exW.Cells[row, 19]).Value2 = IntToTime(AllSptTime);
+                            if (g_f_10 > 0) ((Excel.Range)exW.Cells[row, 17]).Value2 = g_f_10;
                             if (AllFactTime > 0)
                             {
                                 ((Excel.Range)exW.Cells[row, 19]).Value2 = IntToTime(AllFactTime + AllSptTime);
                                 _FactTime[11] += AllFactTime;
                             }
-
-
                             _OperGroupFactTime[11] += AllFactTime;
-
                             _OperGroupFactTime[11] += AllSptTime;
-
-
-
-
 
                             //Полностью закрашиваем строку
                             if (g_f_10 > 0)
                             {
                                 ((Excel.Range)exW.Cells[row, 17]).Value2 = g_f_10 + "|" + AmountDetails;
 
-                                if (g_f_10 == AmountDetails)
-                                    //((Excel.Range)exW.Cells[row, 17]).Interior.Color = Color.LightGreen;
-                                    ((Excel.Range)exW.get_Range("A" + row, "R" + row)).Interior.Color = Color.LightGreen;//Полностью закрашиваем строку
-                                else
-                                    ((Excel.Range)exW.Cells[row, 17]).Interior.Color = Color.LightPink;
-                            }
-                            //Делаем проверку поаперационно и если есть необходимость перекрашиваем в Color.LightPink;
-                            if (g_f_1 > 0)
-                            {
-                                if (g_f_1 >= g1)
-                                    ((Excel.Range)exW.Cells[row, 8]).Interior.Color = Color.LightGreen;
-                                else
-                                    ((Excel.Range)exW.Cells[row, 8]).Interior.Color = Color.LightPink;
-                            }
-                            if (g_f_2 > 0)
-                            {
-                                if (g_f_2 >= g2)
-                                    ((Excel.Range)exW.Cells[row, 9]).Interior.Color = Color.LightGreen;
-                                else
-                                    ((Excel.Range)exW.Cells[row, 9]).Interior.Color = Color.LightPink;
-                            }
-                            if (g_f_3 > 0)
-                            {
-                                if (g_f_3 >= g3)
-                                    ((Excel.Range)exW.Cells[row, 10]).Interior.Color = Color.LightGreen;
-                                else
-                                    ((Excel.Range)exW.Cells[row, 10]).Interior.Color = Color.LightPink;
-                            }
-                            if (g_f_4 > 0)
-                            {
-                                if (g_f_4 >= g4)
-                                    ((Excel.Range)exW.Cells[row, 11]).Interior.Color = Color.LightGreen;
-                                else
-                                    ((Excel.Range)exW.Cells[row, 11]).Interior.Color = Color.LightPink;
-                            }
-                            if (g_f_5 > 0)
-                            {
-                                if (g_f_5 >= g5)
-                                    ((Excel.Range)exW.Cells[row, 12]).Interior.Color = Color.LightGreen;
-                                else
-                                    ((Excel.Range)exW.Cells[row, 12]).Interior.Color = Color.LightPink;
-                            }
-                            if (g_f_6 > 0)
-                            {
-                                if (g_f_6 >= g6)
-                                    ((Excel.Range)exW.Cells[row, 13]).Interior.Color = Color.LightGreen;
-                                else
-                                    ((Excel.Range)exW.Cells[row, 13]).Interior.Color = Color.LightPink;
-                            }
-                            if (g_f_7 > 0)
-                            {
-                                if (g_f_7 >= g7)
-                                    ((Excel.Range)exW.Cells[row, 14]).Interior.Color = Color.LightGreen;
-                                else
-                                    ((Excel.Range)exW.Cells[row, 14]).Interior.Color = Color.LightPink;
-                            }
-                            if (g_f_8 > 0)
-                            {
-                                if (g_f_8 >= g8)
-                                    ((Excel.Range)exW.Cells[row, 15]).Interior.Color = Color.LightGreen;
-                                else
-                                    ((Excel.Range)exW.Cells[row, 15]).Interior.Color = Color.LightPink;
-                            }
-                            if (g_f_9 > 0)
-                            {
-                                ((Excel.Range)exW.Cells[row, 18]).Value2 = g_f_9 + "|" + g9;
-                                if (g_f_9 >= g9)
-                                    ((Excel.Range)exW.Cells[row, 18]).Interior.Color = Color.LightGreen;
-                                else
-                                    ((Excel.Range)exW.Cells[row, 18]).Interior.Color = Color.LightPink;
-                            }
-
-                            if (g_f_12 > 0)
-                            {
-                                if (g_f_12 >= g12)
-                                    ((Excel.Range)exW.Cells[row, 16]).Interior.Color = Color.LightGreen;
-                                else
-                                    ((Excel.Range)exW.Cells[row, 16]).Interior.Color = Color.LightPink;
-
+                                if (g_f_10 == AmountDetails) ((Excel.Range)exW.get_Range("A" + row, "R" + row)).Interior.Color = Color.LightGreen;//Полностью закрашиваем строку
+                                else ((Excel.Range)exW.Cells[row, 17]).Interior.Color = Color.LightPink;
                             }
 
                             if (reader.HasRows == false)   // Если в БД Диспетчера мы не находим ничего, то идем в Лотсман
                             {
-                                C_Gper.con.Close();
-                                C_Gper.con.ConnectionString = C_Gper.ConStr_Loodsman;
+                                con.Close();
+                                con.ConnectionString = config.LoodsmanConnectionString;
                                 SqlCommand cmd_2 = new SqlCommand() { CommandTimeout = 60 };
-                                cmd_2.Connection = C_Gper.con;
+                                cmd_2.Connection = con;
                                 cmd_2.Parameters.Clear();
                                 cmd_2.CommandText = "Select att.value AS Oper, Tpd.value AS Tpd,Tsh.asfloat AS Tsh" + "\n" +
                                       "FROM [НИИПМ].[dbo].[rvwRelations] r" + "\n" +
@@ -1800,13 +1544,12 @@ namespace Dispetcher2.Class
                                       "ORDER BY oper";
                                 cmd_2.Parameters.Add(new SqlParameter("@FK_IdOrderDetail", SqlDbType.BigInt));
                                 cmd_2.Parameters["@FK_IdOrderDetail"].Value = FK_IdOrderDetail;
-                                using (C_Gper.con)
+                                using (con)
                                 {
-                                    C_Gper.con.Open();
+                                    con.Open();
                                     using (SqlDataReader reader2 = cmd_2.ExecuteReader())
                                     {
                                         int slesarn = 0, zagotov = 0, tokar = 0, frezer = 0, shlif = 0, frezer_chu = 0, rastoch = 0, svaroch = 0, otk = 0;
-
 
                                         while (reader2.Read())
                                         {
@@ -1857,7 +1600,6 @@ namespace Dispetcher2.Class
                                                 default:
                                                     //Console.WriteLine("Default case");
                                                     break;
-
                                             }
                                         }
 
@@ -1874,7 +1616,6 @@ namespace Dispetcher2.Class
                                         if (AllTime > 0) ((Excel.Range)exW.Cells[row, 18]).Value2 = IntToTime(AllTime);
 
                                         _OperGroupFactTime[8] += AllTime;
-
                                     }
                                 }
                             }
@@ -1886,7 +1627,6 @@ namespace Dispetcher2.Class
             {
                 MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        
         }
 
 
@@ -1901,9 +1641,9 @@ namespace Dispetcher2.Class
             try
             {
                 _DT.Clear();
-                using (C_Gper.con)
+                using (SqlConnection con = new SqlConnection())
                 {
-                    C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
+                    con.ConnectionString = config.ConnectionString;
                     SqlCommand cmd = new SqlCommand() { CommandTimeout = _CmdTimeout };//using System.Data.SqlClient;
                     cmd.Parameters.Clear();
                     cmd.CommandText = "SELECT DateFactOper,OrderNum,Position,ShcmDetail,NameDetail,NameOperation,OnlyOncePay," + "\n" +
@@ -1922,7 +1662,7 @@ namespace Dispetcher2.Class
                     cmd.Parameters["@DateEnd"].Value = DateEnd;
                     cmd.Parameters.Add(new SqlParameter("@FK_LoginWorker", SqlDbType.VarChar));
                     cmd.Parameters["@FK_LoginWorker"].Value = loginWorker;
-                    cmd.Connection = C_Gper.con;
+                    cmd.Connection = con;
                     SqlDataAdapter adapter = new SqlDataAdapter();
                     adapter.SelectCommand = cmd;
                     adapter.Fill(_DT);
@@ -2289,9 +2029,9 @@ namespace Dispetcher2.Class
             try
             {
                 _DT.Clear();
-                using (C_Gper.con)
+                using (SqlConnection con = new SqlConnection())
                 {
-                    C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
+                    con.ConnectionString = config.ConnectionString;
                     SqlCommand cmd = new SqlCommand() { CommandTimeout = _CmdTimeout };//using System.Data.SqlClient;
                     cmd.Parameters.Clear();
                     string Where = "";
@@ -2329,7 +2069,7 @@ namespace Dispetcher2.Class
                                       "Where od.Position IS NULL and FK_IdStatusOrders = 2" + Where + "\n" +
                         //"Where od.Position IS NULL and o.OrderNum = '20544304' and fo111.DateFactOper >= @DateStart and fo111.DateFactOper <= @DateEnd" + "\n" +
                                       "Order by OrderNum,Position,FK_IdOrderDetail,NumOper";
-                    cmd.Connection = C_Gper.con;
+                    cmd.Connection = con;
                     SqlDataAdapter adapter = new SqlDataAdapter();
                     adapter.SelectCommand = cmd;
                     adapter.Fill(_DT);
@@ -2356,9 +2096,9 @@ namespace Dispetcher2.Class
             try
             {
                 DT.Clear();
-                using (C_Gper.con)
+                using (SqlConnection con = new SqlConnection())
                 {
-                    C_Gper.con.ConnectionString = C_Gper.ConnStrDispetcher2;
+                    con.ConnectionString = config.ConnectionString;
                     SqlCommand cmd = new SqlCommand() { CommandTimeout = _CmdTimeout };//using System.Data.SqlClient;
                     cmd.Parameters.Clear();
                     string Where = "";
@@ -2380,7 +2120,7 @@ namespace Dispetcher2.Class
                     cmd.Parameters["@FK_IdOrderDetail"].Value = FK_IdOrderDetail;
                     cmd.Parameters.Add(new SqlParameter("@NumOper", SqlDbType.VarChar));
                     cmd.Parameters["@NumOper"].Value = NumOper;
-                    cmd.Connection = C_Gper.con;
+                    cmd.Connection = con;
                     SqlDataAdapter adapter = new SqlDataAdapter();
                     adapter.SelectCommand = cmd;
                     adapter.Fill(DT);
