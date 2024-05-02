@@ -227,7 +227,7 @@ namespace Dispetcher2
                 //Вызываем файл
                 try
                 {
-                    string WayFile = @"\\Loodsman\Dispetcher\UpdatesDisp2\Helps\Диспетчеризация_Рук_во_опер.docx";
+                    string WayFile = @"\\Ascon\Dispetcher\Диспетчеризация_Рук_во_опер.docx";
                     System.Diagnostics.Process.Start(WayFile);
 
                 }
@@ -248,7 +248,7 @@ namespace Dispetcher2
                 //Вызываем файл
                 try
                 {
-                    string WayFile = @"\\Loodsman\Dispetcher\UpdatesDisp2\Helps\Диспетчеризация_Рук_во_администратора.docx";
+                    string WayFile = @"\\Ascon\Dispetcher\Диспетчеризация_Рук_во_администратора.docx";
                     System.Diagnostics.Process.Start(WayFile);
                 }
                 catch (Exception ex)
