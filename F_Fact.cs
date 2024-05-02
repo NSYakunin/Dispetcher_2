@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Xml;
 using Dispetcher2.Class;
 using Dispetcher2.DialogsForms;
 
@@ -24,6 +26,8 @@ namespace Dispetcher2
         dF_Workers dFWorkers;
         // Внешняя зависимость! Требуется заменить на шаблон Абстрактная Фабрика
         F_SearchSHCM searchForm;
+        private IConfig config;
+
         public F_Fact(IConfig config)
         {
             Detail = new C_Details(config);
@@ -31,6 +35,8 @@ namespace Dispetcher2
             dFBrigade = new dF_Brigade(config);
             dFWorkers = new dF_Workers(config);
             searchForm = new F_SearchSHCM(config);
+            this.config = config;
+
 
             InitializeComponent();
             DT_Workers.Columns.Add("PK_Login", typeof(string));
@@ -202,6 +208,41 @@ namespace Dispetcher2
                 {
                     CurrencyManager cmgr = (CurrencyManager)dGV_Details.BindingContext[dGV_Details.DataSource, dGV_Details.DataMember];
                     DataRow row = ((DataRowView)cmgr.Current).Row;
+                    //------------------------------------------
+
+                    object CurIdLoodsman = "";
+                    object actualLoodsmanVersion = "";
+                    object rigthtLoodsmanVersion = "";
+                    string infoText = "";
+
+                    using (var con = new SqlConnection())
+                    {
+                        con.ConnectionString = config.ConnectionString;
+                        SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };
+                        cmd.CommandText = $"SELECT TOP 1 [IdLoodsman] FROM [Dispetcher2].[dbo].[Sp_Details] where ShcmDetail = '{row["ShcmDetail"]}'";
+                        cmd.Connection = con;
+                        cmd.Connection.Open();
+                        CurIdLoodsman = cmd.ExecuteScalar();
+                        if (CurIdLoodsman == null) throw new Exception("Неверно ввели название детали!");
+
+                        cmd.CommandText = $"SELECT [version] FROM [НИИПМ].[dbo].[rvwVersions] WHERE id = {CurIdLoodsman}";
+                        actualLoodsmanVersion = cmd.ExecuteScalar();
+
+
+                        cmd.CommandText = $"SELECT TOP 1 [version] FROM [НИИПМ].[dbo].[rvwVersions]" +
+                            $" where product = '{row["ShcmDetail"]}' AND state = 'Утвержден' ORDER BY version DESC";
+						rigthtLoodsmanVersion = cmd.ExecuteScalar();
+
+                        infoText = $"Текущая версия {row["ShcmDetail"]} в Диспетчере - {actualLoodsmanVersion}\n" +
+                            $"Актуальная же версия в ЛОЦМАН -  {rigthtLoodsmanVersion}\nОбновите заказ.";
+                    }
+
+                    if (actualLoodsmanVersion.ToString() != rigthtLoodsmanVersion.ToString())
+                    {
+                        MessageBox.Show($"{infoText}", "!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    //---------------------------------------------
+
                     if (row["IdLoodsman"] == DBNull.Value) //inside order
                     {
                         Detail.SelectTehnologyForType111(Convert.ToInt64(row["FK_IdDetail"]), ref DT_Tehnology);

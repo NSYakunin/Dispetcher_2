@@ -97,7 +97,7 @@ namespace Dispetcher2.Class
                 {
                     string Where = "";
                     if (idloodsman == 0) Where = "where a.idattr=235 and v.idtype in (232,233) and  v.idstate in (36,40,30) and v.id>" + _MaxID;
-                    else Where = "where a.idattr=235 and v.idtype in (232,233) and  v.idstate in (36,40,30) and v.id=" + idloodsman;
+                    else Where = "where a.idattr=235 and v.idtype in (232,233,234) and  v.idstate in (36,40,30) and v.id=" + idloodsman;
                     con.ConnectionString = config.LoodsmanConnectionString;
                     SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };//seconds //using System.Data.SqlClient;
                     cmd.Connection = con;

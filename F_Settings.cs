@@ -548,5 +548,98 @@ namespace Dispetcher2
         {
 
         }
-    }
+
+        private void CheckShcMTbox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                try
+                {
+                    using (var con = new SqlConnection())
+                    {
+                        con.ConnectionString = config.ConnectionString;
+                        SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };
+                        cmd.CommandText = $"SELECT TOP 1 [IdLoodsman] FROM [Dispetcher2].[dbo].[Sp_Details] where ShcmDetail = '{CheckShcMTbox.Text}'";
+                        cmd.Connection = con;
+                        cmd.Connection.Open();
+                        object IdLoodsman = cmd.ExecuteScalar();
+                        if (IdLoodsman == null) throw new Exception("Неверно ввели название детали!");
+
+                        cmd.CommandText = $"SELECT [version] FROM [НИИПМ].[dbo].[rvwVersions] WHERE id = {IdLoodsman}";
+                        object actualLoodsmanVersion = cmd.ExecuteScalar();
+
+                        cmd.CommandText = $"SELECT TOP 1 [version] FROM [НИИПМ].[dbo].[rvwVersions]" +
+                            $" where product = '{CheckShcMTbox.Text}' AND state in ('Утвержден', 'Архив', 'Проектирование')" +
+                            $" ORDER BY version DESC";
+                        object rigthtLoodsmanVersion = cmd.ExecuteScalar();
+
+                        lBLText.Text = $"Текущая версия {CheckShcMTbox.Text} в Диспетчере - {actualLoodsmanVersion}\n" +
+                            $"Актуальная же версия в ЛОЦМАН -  {rigthtLoodsmanVersion}";
+                    }
+                }
+                catch (Exception ex)
+                {
+
+                    MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+		private void updatePartsVersionsBTN_Click(object sender, EventArgs e)
+		{
+			List<string> lst = new List<string>();
+			try
+            {
+				using (var con = new SqlConnection())
+                {
+                    con.ConnectionString = config.ConnectionString;
+					SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };
+                    cmd.CommandText = $"SELECT [ShcmDetail] FROM [Dispetcher2].[dbo].[Sp_Details]";
+					cmd.Connection = con;
+					cmd.Connection.Open();
+					using (SqlDataReader reader = cmd.ExecuteReader())
+					{
+						while (reader.Read())
+						{
+							lst.Add(reader["ShcmDetail"].ToString());
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+
+				MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+
+			progressBar2.Maximum = lst.Count * 8;
+            int counter = 1;
+			foreach (string shcm in lst)
+            {
+				try
+				{
+                    Console.WriteLine($"{++counter} {shcm}");
+                    using (var con = new SqlConnection())
+					{
+						con.ConnectionString = config.ConnectionString;
+						SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };
+                        cmd.CommandText = $"UPDATE [dbo].[Sp_Details] SET IdLoodsman = " +
+                            $"(SELECT TOP 1 id FROM [НИИПМ].[dbo].[rvwVersions] where product = '{shcm}'" +
+                            $" AND state in ('Утвержден', 'Архив', 'Проектирование')" +
+                            $"AND type in ('Сборочная единица', 'Деталь') ORDER BY version DESC)" +
+                            $"WHERE ShcmDetail LIKE '{shcm}'";
+						cmd.Connection = con;
+						cmd.Connection.Open();
+						cmd.ExecuteNonQuery();
+						con.Close();
+					}
+				}
+				catch (Exception ex)
+				{
+
+					MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+			}
+		}
+	}
 }

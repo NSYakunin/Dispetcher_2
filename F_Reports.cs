@@ -29,6 +29,7 @@ using System.Windows.Forms.VisualStyles;
 using Task = System.Threading.Tasks.Task;
 using System.Windows.Documents;
 using System.Windows.Media.Media3D;
+using System.Windows.Controls;
 
 namespace Dispetcher2
 {
@@ -41,6 +42,7 @@ namespace Dispetcher2
         // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
         C_Users users;
         // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
+        C_Users usersOut;
         // Надо перенести функциональность в OrderRepository
         C_Orders orders;
         // Внешняя зависимость! Надо заменить на шаблон Repository (Хранилище)
@@ -48,10 +50,18 @@ namespace Dispetcher2
 
         DataTable Dt_SpDepartment = new DataTable();
         DataTable Dt_SpWorkers = new DataTable();
+        DataTable Dt_SpWorkersOut = new DataTable();
         DataTable DT_Orders = new DataTable();
         BindingSource BS_Orders = new BindingSource();
 
         private List<DataGridViewRow> selectedRows = new List<DataGridViewRow>();
+        List<string> selectedItems = new List<string>();
+
+        public class ListItem
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+        }
 
 
         public F_Reports(IConfig config, IConverter converter)
@@ -63,6 +73,7 @@ namespace Dispetcher2
 
             departments = new C_Departments(config);
             users = new C_Users(config);
+            usersOut = new C_Users(config);
             orders = new C_Orders(config);
             reports = new C_Reports(config);
 
@@ -89,11 +100,23 @@ namespace Dispetcher2
                 cB_rep3Department.DisplayMember = "Department";
                 cB_rep3Department.ValueMember = "PK_IdDepartment";
                 cB_rep3Department.SelectedIndex = -1;
+
                 users.Select_PkLoginOnlyWorker(ref Dt_SpWorkers);
                 cB_rep3Workers.DataSource = Dt_SpWorkers;
                 cB_rep3Workers.DisplayMember = "PK_Login";
                 cB_rep3Workers.ValueMember = "PK_Login";
                 cB_rep3Workers.SelectedIndex = -1;
+
+
+                usersOut.Select_PkLoginOnlyWorker(ref Dt_SpWorkersOut);
+
+                for (int i = 0; i < Dt_SpWorkersOut.Rows.Count; i++)
+                {
+                    cLB_rep3Workers.Items.Add(Dt_SpWorkersOut.Rows[i][0]);
+                }
+                cLB_rep3Workers.DisplayMember = "Name";
+                cLB_rep3Workers.ValueMember = "ID";
+                cLB_rep3Workers.CheckOnClick = true;
             }
             if (config.SelectedReportMode == ReportMode.ДвижениеДеталей)//Движение деталей
             {
@@ -181,6 +204,7 @@ namespace Dispetcher2
 
         private void btn_rep3Create_Click(object sender, EventArgs e)//C_Gper.NameReport == 3) Отчёт-наряд по выполненным операциям
         {
+            string parameterValue = string.Join(",", selectedItems);
             string loginWorker;
             int IdCeh;
             bool flagDays;
@@ -195,7 +219,7 @@ namespace Dispetcher2
             if (PlanHours == 0)
                 MessageBox.Show("Не указаны данные производственного календаря.", "Внимание!!!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             else
-                reports.rep3(dTP_rep3Start.Value.Date, dTP_rep3End.Value.Date, loginWorker, IdCeh, flagDays, PlanHours, cWorkDays, koop);
+                reports.rep3(dTP_rep3Start.Value.Date, dTP_rep3End.Value.Date, loginWorker, IdCeh, flagDays, PlanHours, cWorkDays, koop, parameterValue);
         }
         #endregion
 
@@ -825,7 +849,6 @@ namespace Dispetcher2
                 return;
             }
 
-
             DateTime DateStart = galvanStart.Value;
             DateTime DateEnd = galvanEnd.Value;
             Excel.Application ExcelApp = new Excel.Application() { Visible = false };
@@ -998,12 +1021,7 @@ namespace Dispetcher2
                 }
             }
 
-
-
             ExcelApp.DisplayAlerts = true;
-
-
-
             ExcelWorkSheet.get_Range("A4", "H" + (dGVGalvan.Rows.Count + 4)).Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
             ExcelApp.Visible = true;
             progressBar1.Value = 0;
@@ -1220,6 +1238,22 @@ namespace Dispetcher2
                 countList--;
             }
             excelApp.Quit();
+        }
+
+        private void cLB_rep3Workers_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            
+
+            if (e.NewValue == CheckState.Checked)
+            {
+                string selectedItem = "'" + cLB_rep3Workers.SelectedItem.ToString() + "'";
+                selectedItems.Add(selectedItem);
+            }
+            else if (e.NewValue == CheckState.Unchecked)
+            {
+                string selectedItem = "'" + cLB_rep3Workers.SelectedItem.ToString() + "'";
+                selectedItems.Remove(selectedItem);
+            }
         }
     }
 }

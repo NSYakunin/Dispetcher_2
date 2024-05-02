@@ -72,14 +72,13 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>1A0EFEB73CAAE9149F0132497D4FBA3BD57B70EE</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>A1CFDCC2C82E7A883A4BE5AC5276B0DEEE7EDCE6</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>
-    </ManifestKeyFile>
+    <ManifestKeyFile>d2k.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>
@@ -267,6 +266,12 @@
     <Compile Include="DialogsForms\dF_Workers.Designer.cs">
       <DependentUpon>dF_Workers.cs</DependentUpon>
     </Compile>
+    <Compile Include="F_DeleteOrder.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="F_DeleteOrder.Designer.cs">
+      <DependentUpon>F_DeleteOrder.cs</DependentUpon>
+    </Compile>
     <Compile Include="F_Brigade.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -357,6 +362,12 @@
     <Compile Include="F_TimeSheets.Designer.cs">
       <DependentUpon>F_TimeSheets.cs</DependentUpon>
     </Compile>
+    <Compile Include="F_UpdateOrder.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="F_UpdateOrder.Designer.cs">
+      <DependentUpon>F_UpdateOrder.cs</DependentUpon>
+    </Compile>
     <Compile Include="F_Users.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -395,6 +406,9 @@
     <EmbeddedResource Include="F_Brigade.resx">
       <DependentUpon>F_Brigade.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="F_DeleteOrder.resx">
+      <DependentUpon>F_DeleteOrder.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="F_Fact.resx">
       <DependentUpon>F_Fact.cs</DependentUpon>
     </EmbeddedResource>
@@ -412,6 +426,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="F_Orders.resx">
       <DependentUpon>F_Orders.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="F_Planning.resx">
       <DependentUpon>F_Planning.cs</DependentUpon>
@@ -439,6 +454,9 @@
     <EmbeddedResource Include="F_TimeSheets.resx">
       <DependentUpon>F_TimeSheets.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="F_UpdateOrder.resx">
+      <DependentUpon>F_UpdateOrder.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="F_Users.resx">
       <DependentUpon>F_Users.cs</DependentUpon>
     </EmbeddedResource>
@@ -456,6 +474,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
+    <None Include="d2k.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
