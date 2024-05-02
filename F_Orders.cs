@@ -1208,7 +1208,7 @@ namespace Dispetcher2
 		private void updateOrderBTN_Click(object sender, EventArgs e)
 		{
 			DialogResult result = MessageBox.Show(
-	            $"Обновить версии Лоцман в заказе № {dGV_Orders.SelectedCells[0].Value}?",
+	            $"Обновить версии деталей в заказе № {dGV_Orders.SelectedCells[0].Value}?",
 	            "Внимание!",
 	            MessageBoxButtons.YesNo,
 	            MessageBoxIcon.Warning,

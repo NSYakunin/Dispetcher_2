@@ -40,7 +40,7 @@
 			this.button1.Name = "button1";
 			this.button1.Size = new System.Drawing.Size(138, 23);
 			this.button1.TabIndex = 0;
-			this.button1.Text = "button1";
+			this.button1.Text = "Кнопка";
 			this.button1.UseVisualStyleBackColor = true;
 			// 
 			// label1
@@ -51,7 +51,7 @@
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(79, 29);
 			this.label1.TabIndex = 1;
-			this.label1.Text = "label1";
+			this.label1.Text = "Пусто";
 			this.label1.Click += new System.EventHandler(this.label1_Click);
 			// 
 			// dataGridView1
@@ -72,7 +72,7 @@
 			this.Controls.Add(this.button1);
 			this.Name = "F_DeleteOrder";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "Form1";
+			this.Text = "Удаление заказа";
 			((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();

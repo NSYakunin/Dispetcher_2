@@ -73,7 +73,24 @@ namespace Dispetcher2
 				orderDetailsDGV.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 				// Задаем фиксированную высоту строки с заголовком столбцов
 				orderDetailsDGV.ColumnHeadersHeight = 100; // Задаем высоту в пикселях
+				orderDetailsDGV.Columns[0].HeaderText = "ЩЦМ";
+				orderDetailsDGV.Columns[1].HeaderText = "Позиция";
+				orderDetailsDGV.Columns[1].Width = 60;
+				orderDetailsDGV.Columns[2].HeaderText = "Имя";
+				orderDetailsDGV.Columns[3].HeaderText = "Версия в диспетчере";
+				orderDetailsDGV.Columns[3].Width = 70;
+				orderDetailsDGV.Columns[4].HeaderText = "id в диспетчере";
+				orderDetailsDGV.Columns[4].Width = 70;
+				orderDetailsDGV.Columns[5].HeaderText = "Версия в Лоцман";
+				orderDetailsDGV.Columns[5].Width = 70;
+				orderDetailsDGV.Columns[6].HeaderText = "id в Лоцман";
+				orderDetailsDGV.Columns[6].Width = 70;
+
+
 				orderDetailsDGV.Update();
+
+				this.BringToFront();
+				this.CenterToScreen();
 
 			}
 			catch (Exception ex)
@@ -101,12 +118,6 @@ namespace Dispetcher2
 				{
 					dictOrder.Add((string)row.Cells[0].Value, (int)row.Cells[6].Value);
 				}
-			}
-
-
-			foreach (var key in dictOrder.Keys)
-			{
-				Console.WriteLine($"{key} - {dictOrder[key]}");
 			}
 
 
