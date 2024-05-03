@@ -6,10 +6,12 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Windows.Controls.Primitives;
 using System.Windows.Forms;
 using System.Xml;
 using Dispetcher2.Class;
 using Dispetcher2.DialogsForms;
+using Microsoft.Office.Interop.Word;
 
 
 namespace Dispetcher2
@@ -69,13 +71,13 @@ namespace Dispetcher2
             DT_FactOper.Columns.Add("FactTsh", typeof(int));
         }
         //***************************************************************
-        DataTable DT_Workers = new DataTable();
-        DataTable DT_Orders = new DataTable();
+        System.Data.DataTable DT_Workers = new System.Data.DataTable();
+        System.Data.DataTable DT_Orders = new System.Data.DataTable();
         BindingSource BS_Orders = new BindingSource();
-        DataTable DT_Details = new DataTable();
+        System.Data.DataTable DT_Details = new System.Data.DataTable();
         BindingSource BS_Details = new BindingSource();
-        DataTable DT_Tehnology = new DataTable();
-        DataTable DT_FactOper = new DataTable();
+        System.Data.DataTable DT_Tehnology = new System.Data.DataTable();
+        System.Data.DataTable DT_FactOper = new System.Data.DataTable();
         BindingSource BS_FactOper = new BindingSource();
         //***************************************************************
         int _PK_IdBrigade = 0;//non target brigade
@@ -210,37 +212,41 @@ namespace Dispetcher2
                     DataRow row = ((DataRowView)cmgr.Current).Row;
                     //------------------------------------------
 
-                    object CurIdLoodsman = "";
-                    object actualLoodsmanVersion = "";
-                    object rigthtLoodsmanVersion = "";
-                    string infoText = "";
+      //              object CurIdLoodsman = "";
+      //              object actualLoodsmanVersion = "";
+      //              object rigthtLoodsmanVersion = "";
+      //              string infoText = "";
 
-                    using (var con = new SqlConnection())
-                    {
-                        con.ConnectionString = config.ConnectionString;
-                        SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };
-                        cmd.CommandText = $"SELECT TOP 1 [IdLoodsman] FROM [Dispetcher2].[dbo].[Sp_Details] where ShcmDetail = '{row["ShcmDetail"]}'";
-                        cmd.Connection = con;
-                        cmd.Connection.Open();
-                        CurIdLoodsman = cmd.ExecuteScalar();
-                        if (CurIdLoodsman == null) throw new Exception("Неверно ввели название детали!");
+      //              using (var con = new SqlConnection())
+      //              {
+      //                  con.ConnectionString = config.ConnectionString;
+      //                  SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };
+      //                  cmd.CommandText = $"SELECT TOP 1 [IdLoodsman] FROM [Dispetcher2].[dbo].[Sp_Details] where ShcmDetail = '{row["ShcmDetail"]}'";
+      //                  cmd.Connection = con;
+      //                  cmd.Connection.Open();
+      //                  CurIdLoodsman = cmd.ExecuteScalar();
+      //                  if (CurIdLoodsman == null) throw new Exception("Неверно ввели название детали!");
 
-                        cmd.CommandText = $"SELECT [version] FROM [НИИПМ].[dbo].[rvwVersions] WHERE id = {CurIdLoodsman}";
-                        actualLoodsmanVersion = cmd.ExecuteScalar();
+      //                  cmd.CommandText = $"SELECT [version] FROM [НИИПМ].[dbo].[rvwVersions] WHERE id = {CurIdLoodsman}";
+      //                  actualLoodsmanVersion = cmd.ExecuteScalar();
 
 
-                        cmd.CommandText = $"SELECT TOP 1 [version] FROM [НИИПМ].[dbo].[rvwVersions]" +
-                            $" where product = '{row["ShcmDetail"]}' AND state = 'Утвержден' ORDER BY version DESC";
-						rigthtLoodsmanVersion = cmd.ExecuteScalar();
+      //                  //cmd.CommandText = $"SELECT TOP 1 [version] FROM [НИИПМ].[dbo].[rvwVersions]" +
+      //                  //    $" where product = '{row["ShcmDetail"]}' AND state = 'Утвержден' ORDER BY version DESC";
+      //                  cmd.CommandText = "SELECT TOP 1[version] FROM[НИИПМ].[dbo].[rvwVersions] where product = ShcmDetail AND state in ('Утвержден', 'Архив', 'Проектирование') " +
+      //                                  $"AND type in ('Сборочная единица', 'Деталь') ORDER BY version DESC";
 
-                        infoText = $"Текущая версия {row["ShcmDetail"]} в Диспетчере - {actualLoodsmanVersion}\n" +
-                            $"Актуальная же версия в ЛОЦМАН -  {rigthtLoodsmanVersion}\nОбновите заказ.";
-                    }
 
-                    if (actualLoodsmanVersion.ToString() != rigthtLoodsmanVersion.ToString())
-                    {
-                        MessageBox.Show($"{infoText}", "!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
+						//rigthtLoodsmanVersion = cmd.ExecuteScalar();
+
+      //                  infoText = $"Текущая версия {row["ShcmDetail"]} в Диспетчере - {actualLoodsmanVersion}\n" +
+      //                      $"Актуальная же версия в ЛОЦМАН -  {rigthtLoodsmanVersion}\nОбновите заказ.";
+      //              }
+
+      //              if (actualLoodsmanVersion.ToString() != rigthtLoodsmanVersion.ToString())
+      //              {
+      //                  MessageBox.Show($"{infoText}", "!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+      //              }
                     //---------------------------------------------
 
                     if (row["IdLoodsman"] == DBNull.Value) //inside order
