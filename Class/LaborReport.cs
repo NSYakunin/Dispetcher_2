@@ -299,9 +299,9 @@ namespace Dispetcher2.Class
         public const string coopLogin = "кооп";
         public const string factName = "Израсходовано";
         public OrderRepository SelectedOrders { get; set; }
-        public bool ShowDetailFlag { get; set; }
-        public bool ShowOperationFlag { get; set; }
-        public bool AllOrdersFlag { get; set; }
+
+
+
         // Дата начала не нужна. В отчете учитываются все фактические операции до EndDate
         //public DateTime BeginDate { get; set; }
         public DateTime EndDate { get; set; }
@@ -324,8 +324,6 @@ namespace Dispetcher2.Class
 
         Dictionary<int, Order> allOrderDict;
         List<Order> factOrders;
-
-
 
         public LaborReport(DetailRepository detrep, OperationRepository oprep, OperationGroupRepository groups, 
             WorkDayRepository workDays, OrderRepository allOrders)
@@ -364,7 +362,6 @@ namespace Dispetcher2.Class
 
             oprep.Load();
             operations = oprep.GetArray();
-            Debug.WriteLine("operations.Length: " + operations.Length);
 
             groups.Load();
             opgDict = new Dictionary<int, OperationGroup>();
@@ -451,54 +448,54 @@ namespace Dispetcher2.Class
         void ProcessDetailOperations()
         {
             var oe = SelectedOrders.GetOrders();
-            if (AllOrdersFlag)
-            {
-                //CalculateFactOrders();
+            //if (AllOrdersFlag)
+            //{
+            //    //CalculateFactOrders();
 
-                //factOrders = new List<Order>();
-                //foreach (var p in allOrderDict) factOrders.Add(p.Value);
-                //oe = factOrders;
-                oe = allOrderDict.Values;
-            }
+            //    //factOrders = new List<Order>();
+            //    //foreach (var p in allOrderDict) factOrders.Add(p.Value);
+            //    //oe = factOrders;
+            //    oe = allOrderDict.Values;
+            //}
             // массив идентификаторов заказов
             var orderIdArray = oe.Select(x => x.Id).ToArray();
 
             // список заданий формирования строк заказов
             List<LaborRowJob> jobs = new List<LaborRowJob>();
 
-            if (ShowDetailFlag == true)
-            {
-                /*
-                // Операции по деталям
-                // Список деталей, относящихся к указанным заказам
-                List<Detail> e = new List<Detail>();
-                foreach (var o in oe)
-                {
-                    // было:
-                    // from item in details.GetDetails()
-                    var od = from item in detailDict.Values
-                             where item.OrderId == o.Id
-                             select item;
-                    foreach (var d in od) e.Add(d);
-                }
-                */
-                // новая версия алгоритма получения списка деталей заказов
-                var e = from item in details
-                        where orderIdArray.Contains(item.OrderId)
-                        select item;
+            //if (ShowDetailFlag == true)
+            //{
+                
+            //    //// Операции по деталям
+            //    //// Список деталей, относящихся к указанным заказам
+            //    //List<Detail> e = new List<Detail>();
+            //    //foreach (var o in oe)
+            //    //{
+            //    //    // было:
+            //    //    // from item in details.GetDetails()
+            //    //    var od = from item in detailDict.Values
+            //    //             where item.OrderId == o.Id
+            //    //             select item;
+            //    //    foreach (var d in od) e.Add(d);
+            //    //}
+                
+            //    // новая версия алгоритма получения списка деталей заказов
+            //    var e = from item in details
+            //            where orderIdArray.Contains(item.OrderId)
+            //            select item;
 
-                foreach (var d in e)
-                {
-                    // количество "родителей" по атрибуту "входит в..."
-                    int parents = e.Where(item => item.Position == d.PositionParent && item.OrderId == d.OrderId).Count();
-                    if (d.PositionParent == 0 || parents == 0)
-                    {
-                        var job = ProcessMainDetail(d);
-                        jobs.Add(job);
-                    }
-                }
-            }
-            else
+            //    foreach (var d in e)
+            //    {
+            //        // количество "родителей" по атрибуту "входит в..."
+            //        int parents = e.Where(item => item.Position == d.PositionParent && item.OrderId == d.OrderId).Count();
+            //        if (d.PositionParent == 0 || parents == 0)
+            //        {
+            //            var job = ProcessMainDetail(d);
+            //            jobs.Add(job);
+            //        }
+            //    }
+            //}
+            //else
             {
                 // Операции по заказам
                 foreach (var o in oe)
@@ -534,7 +531,7 @@ namespace Dispetcher2.Class
                 ReportRowDetail = detailItem,
                 ReportRowOrder = null,
                 OperationGroupDictionary = this.opgDict,
-                ShowOperationFlag = ShowOperationFlag,
+                //ShowOperationFlag = ShowOperationFlag,
                 EndDate = EndDate,
             };
 
@@ -542,17 +539,17 @@ namespace Dispetcher2.Class
         }
         LaborRowJob ProcessOrder(Order orderItem)
         {
-            
+            string name = $"{orderItem.Number} {orderItem.Name}";
 
             var job = new LaborRowJob()
             {
-                Row = new LaborReportRow() { Name = orderItem.Number },
+                Row = new LaborReportRow() { Name = name },
                 operations = operations,
                 details = details,
                 ReportRowDetail = null,
                 ReportRowOrder = orderItem,
                 OperationGroupDictionary = this.opgDict,
-                ShowOperationFlag = ShowOperationFlag,
+                //ShowOperationFlag = ShowOperationFlag,
                 EndDate = EndDate,
             };
 
@@ -586,7 +583,10 @@ namespace Dispetcher2.Class
         public void Calculate()
         {
             rows.Clear();
-            if (ShowOperationFlag == false)
+
+            if (details == null || operations == null || opgDict == null) Load();
+
+            //if (ShowOperationFlag == false)
             {
                 ProcessEmployeeTime();
             }

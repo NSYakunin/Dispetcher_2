@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HostForm));
             this.MainElementHost = new System.Windows.Forms.Integration.ElementHost();
             this.SuspendLayout();
             // 
@@ -47,8 +48,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.MainElementHost);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "HostForm";
-            this.Text = "HostForm";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.HostForm_FormClosed);
             this.ResumeLayout(false);
 
