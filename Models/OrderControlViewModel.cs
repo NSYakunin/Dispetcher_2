@@ -5,6 +5,7 @@ using System.Linq;
 
 using Dispetcher2.Class;
 using System.Collections;
+using System.Windows.Input;
 
 namespace Dispetcher2.Models
 {
@@ -50,7 +51,9 @@ namespace Dispetcher2.Models
                 FilterData();
             }
         }
-        public Order SelectedOrder { set; get; }
+
+        public ICommand SelectAllCommand { get; set; }
+        public ICommand ClearAllCommand { get; set; }
 
         ObservableCollection<OrderView> orderlist = new ObservableCollection<OrderView>();
 
@@ -61,6 +64,16 @@ namespace Dispetcher2.Models
         {
             if (rep == null) throw new ArgumentException("Нужно предоставить хранилище заказов");
             this.rep = rep;
+                        
+            SelectAllCommand = new LaborCommand()
+            {
+                ExecuteAction = this.ProcessSelectAllCommand
+            };
+
+            ClearAllCommand = new LaborCommand()
+            {
+                ExecuteAction = this.ProcessClearAllCommand
+            };
         }
 
         public ObservableCollection<OrderView> OrderList
@@ -83,10 +96,9 @@ namespace Dispetcher2.Models
             string num = Filter.Trim();
 
             var l2 = from x in allOrders
-                     where x.Number.Contains(num)
+                     where x.Number.Contains(num) || x.Checked == true
                      select x;
 
-            
             if (l2.Any())
             {
                 foreach (var x in l2) OrderList.Add(x);
@@ -108,6 +120,16 @@ namespace Dispetcher2.Models
                 OrderViewRepository r = new OrderViewRepository(a);
                 return r;
             }
+        }
+        void ProcessClearAllCommand()
+        {
+            foreach (var item in allOrders) item.Checked = false;
+            FilterData();
+        }
+        void ProcessSelectAllCommand()
+        {
+            foreach (var item in allOrders) item.Checked = true;
+            FilterData();
         }
     }
 

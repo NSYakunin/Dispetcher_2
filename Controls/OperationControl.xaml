@@ -6,31 +6,44 @@
              xmlns:local="clr-namespace:Dispetcher2.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Button Content="&lt; Назад" FontSize="18" Margin="5" Width="100" Command="{Binding Path=BackCommand}" />
+            <Button Grid.Row="0" Content="Передать в Excel" HorizontalAlignment="Left" FontSize="18" Width="200"
+                Margin="5" VerticalAlignment="Center" Command="{Binding Path=ExcelCommand}"/>
+        </StackPanel>
+        <DataGrid x:Name="mainGrid" Grid.Row="1" ItemsSource="{Binding Path=RowsView}" AutoGenerateColumns="False" IsReadOnly="True" 
+          SelectionMode="Single" SelectionUnit="Cell" CurrentCell="{Binding CellInfo, Mode=OneWayToSource}">
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="ContentTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <TextBlock MaxWidth="200" TextWrapping="Wrap" Text="{Binding}"></TextBlock>
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+            <DataGrid.RowHeaderTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding DataContext.Name, 
+                            RelativeSource={RelativeSource AncestorType=DataGridRow}}" 
+                       TextWrapping="Wrap" MaxWidth="200" />
+                </DataTemplate>
+            </DataGrid.RowHeaderTemplate>
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Подробно..." Command="{Binding Path=DetailCommand}" Visibility="{Binding Path=DetailCommandVisibility}" />
+                    <MenuItem Header="Копировать текст" Command="{Binding Path=CopyCommand}" Visibility="{Binding Path=CopyCommandVisibility}" />
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+        </DataGrid>
+        
+    </Grid>
 
-    <DataGrid x:Name="mainGrid" ItemsSource="{Binding Path=RowsView}" AutoGenerateColumns="False" IsReadOnly="True" 
-              SelectionMode="Single" SelectionUnit="Cell" CurrentCell="{Binding CellInfo, Mode=OneWayToSource}">
-        <DataGrid.ColumnHeaderStyle>
-            <Style TargetType="DataGridColumnHeader">
-                <Setter Property="ContentTemplate">
-                    <Setter.Value>
-                        <DataTemplate>
-                            <TextBlock MaxWidth="200" TextWrapping="Wrap" Text="{Binding}"></TextBlock>
-                        </DataTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-        </DataGrid.ColumnHeaderStyle>
-        <DataGrid.RowHeaderTemplate>
-            <DataTemplate>
-                <TextBlock Text="{Binding DataContext.Name, 
-                                RelativeSource={RelativeSource AncestorType=DataGridRow}}" 
-                           TextWrapping="Wrap" MaxWidth="200" />
-            </DataTemplate>
-        </DataGrid.RowHeaderTemplate>
-        <DataGrid.ContextMenu>
-            <ContextMenu>
-                <MenuItem Header="Подробно..." Command="{Binding Path=DetailCommand}" />
-            </ContextMenu>
-        </DataGrid.ContextMenu>
-    </DataGrid>
 </UserControl>
