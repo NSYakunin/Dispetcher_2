@@ -10,6 +10,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <TextBox Grid.Row="0" x:Name="filterTextBox" Margin="5"
                  Text="{Binding Path=Filter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
@@ -17,10 +18,13 @@
                  ItemsSource="{Binding OrderList}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <!--<TextBlock Text="{Binding Path=Number}" />-->
                     <CheckBox Content="{Binding Path=Number}" IsChecked="{Binding Path=Checked}"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+        <StackPanel Orientation="Vertical" Grid.Row="2">
+            <Button Content="Выбрать все" Margin="5,0,5,5" Command="{Binding Path=SelectAllCommand}" />
+            <Button Content="Сбросить все" Margin="5,0,5,5" Command="{Binding Path=ClearAllCommand}" />
+        </StackPanel>
     </Grid>
 </UserControl>

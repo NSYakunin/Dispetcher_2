@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Dispetcher2.Models
@@ -24,6 +25,15 @@ namespace Dispetcher2.Models
         IEnumerable<string> columnsValue;
         public ObservableCollection<LaborReportRow> RowsView { get; set; }
         public ICommand ExcelCommand { get; set; }
+        public ICommand CopyCommand { get; set; }
+        public Visibility DetailCommandVisibility
+        {
+            get { return Visibility.Collapsed; }
+        }
+        public Visibility CopyCommandVisibility
+        {
+            get { return Visibility.Visible; }
+        }
         public IEnumerable<string> Columns
         {
             get { return columnsValue; }
@@ -82,6 +92,20 @@ namespace Dispetcher2.Models
                 OnPropertyChanged(nameof(H2));
             }
         }
+        LaborReportRow SelectedLaborReportRow = null;
+        string SelectedColumnHeader = null;
+        public DataGridCellInfo CellInfo
+        {
+            set
+            {
+                DataGridCellInfo info = value;
+                if (info != null)
+                {
+                    SelectedLaborReportRow = info.Item as LaborReportRow;
+                    if (info.Column != null) SelectedColumnHeader = Convert.ToString(info.Column.Header);
+                }
+            }
+        }
         public LaborDetailViewModel(LaborReportWriter writer)
         {
             this.writer = writer;
@@ -91,8 +115,21 @@ namespace Dispetcher2.Models
             c.ExecuteAction = this.ProcessExcelCommand;
             ExcelCommand = c;
 
+            c = new LaborCommand();
+            c.ExecuteAction = this.ProcessCopyCommand;
+            CopyCommand = c;
+
             LoadVisibility = Visibility.Collapsed;
             MainVisibility = Visibility.Visible;
+        }
+        void ProcessCopyCommand()
+        {
+            if (SelectedLaborReportRow == null) return;
+            if (SelectedColumnHeader == null) return;
+
+            var v = SelectedLaborReportRow.Operations[SelectedColumnHeader];
+            string s = Convert.ToString(v);
+            Clipboard.SetText(s);
         }
         void ProcessExcelCommand()
         {

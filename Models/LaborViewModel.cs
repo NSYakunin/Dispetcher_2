@@ -31,14 +31,14 @@ namespace Dispetcher2.Models
         LaborDetailViewModel detModel;
         FormFactory factory;
 
-        public Visibility DataVisibility
+        public Visibility OrderVisibility
         {
             get
             { return dvValue; }
             set
             {
                 dvValue = value;
-                OnPropertyChanged(nameof(DataVisibility));
+                OnPropertyChanged(nameof(OrderVisibility));
             }
         }
         Visibility wtVis;
@@ -89,28 +89,22 @@ namespace Dispetcher2.Models
             get { return ocvm.Filter; }
             set { ocvm.Filter = value; }
         }
-        public bool ShowDetailFlag { get; set; }
-        public bool ShowOperationFlag { get; set; }
-        bool allOrdersFlagValue = true;
-        public bool AllOrdersFlag
-        {
-            get { return allOrdersFlagValue; }
-            set
-            {
-                allOrdersFlagValue = value;
-                if (allOrdersFlagValue)
-                {
-                    DataVisibility = Visibility.Collapsed;
-                }
-                else
-                {
-                    DataVisibility = Visibility.Visible;
-                }
-            }
-        }
+
         public ICommand RequestCommand { get; set; }
         public ICommand ExcelCommand { get; set; }
         public ICommand DetailCommand { get; set; }
+        public ICommand SelectAllCommand { get; set; }
+        public ICommand ClearAllCommand { get; set; }
+        public ICommand BackCommand { get; set; }
+
+        public Visibility DetailCommandVisibility
+        {
+            get { return Visibility.Visible; }
+        }
+        public Visibility CopyCommandVisibility
+        {
+            get { return Visibility.Collapsed; }
+        }
         // Дата начала не нужна. В отчете учитываются все фактические операции до EndDate
         //public DateTime BeginDate { get; set; }
         public DateTime EndDate { get; set; }
@@ -153,20 +147,31 @@ namespace Dispetcher2.Models
             this.factory = factory;
             this.detModel = detModel;
 
-            var c = new LaborCommand();
-            c.ExecuteAction = this.ProcessRequestCommand;
-            RequestCommand = c;
+            RequestCommand = new LaborCommand()
+            {
+                ExecuteAction = this.ProcessRequestCommand,
+            };
 
-            c = new LaborCommand();
-            c.ExecuteAction = this.ProcessExcelCommand;
-            ExcelCommand = c;
+            ExcelCommand = new LaborCommand()
+            {
+                ExecuteAction = this.ProcessExcelCommand,
+            };
 
-            c = new LaborCommand();
-            c.ExecuteAction = this.ProcessDetailCommand;
-            DetailCommand = c;
+            DetailCommand = new LaborCommand()
+            {
+                ExecuteAction = this.ProcessDetailCommand,
+            };
+
+            BackCommand = new LaborCommand()
+            {
+                ExecuteAction = this.ProcessBackCommand,
+            };
+
+            SelectAllCommand = ocvm.SelectAllCommand;
+            ClearAllCommand = ocvm.ClearAllCommand;
 
             WaitVisibility = Visibility.Visible;
-            DataVisibility = Visibility.Collapsed;
+            OrderVisibility = Visibility.Collapsed;
             CommandVisibility = Visibility.Collapsed;
             OperationVisibility = Visibility.Collapsed;
             
@@ -176,7 +181,7 @@ namespace Dispetcher2.Models
             //BeginDate = new DateTime(n.Year, 1, 1);
             EndDate = new DateTime(n.Year, n.Month, 1);
             EndDate = EndDate.AddMonths(1);
-            AllOrdersFlag = true;
+
         }
         void OnPropertyChanged(string prop)
         {
@@ -195,16 +200,17 @@ namespace Dispetcher2.Models
         void Before()
         {
             WaitMessage = "Загрузка...";
-            DataVisibility = Visibility.Collapsed;
+            OrderVisibility = Visibility.Collapsed;
         }
         void Load()
         {
             orders.Load();
-            report.Load();
+            //report.Load();
         }
         void After()
         {
-            if (allOrdersFlagValue == false) DataVisibility = Visibility.Visible;
+            
+            OrderVisibility = Visibility.Visible;
             WaitVisibility = Visibility.Collapsed;
             Filter = String.Empty;
             CommandVisibility = Visibility.Visible;
@@ -222,7 +228,7 @@ namespace Dispetcher2.Models
                 }*/
 
                 WaitVisibility = Visibility.Visible;
-                DataVisibility = Visibility.Collapsed;
+                OrderVisibility = Visibility.Collapsed;
                 CommandVisibility = Visibility.Collapsed;
                 OperationVisibility = Visibility.Collapsed;
 
@@ -236,11 +242,11 @@ namespace Dispetcher2.Models
         async Task LoadOperationsAsync()
         {
             report.SelectedOrders = ocvm.SelectedOrders;
-            report.ShowDetailFlag = this.ShowDetailFlag;
-            report.ShowOperationFlag = this.ShowOperationFlag;
+            //report.ShowDetailFlag = this.ShowDetailFlag;
+            //report.ShowOperationFlag = this.ShowOperationFlag;
             //report.BeginDate = this.BeginDate;
             report.EndDate = this.EndDate;
-            report.AllOrdersFlag = this.AllOrdersFlag;
+            //report.AllOrdersFlag = this.AllOrdersFlag;
 
             Action a = report.Calculate;
             await Task.Run(a);
@@ -253,10 +259,10 @@ namespace Dispetcher2.Models
             var columns = report.GetColumns();
             if (observer != null) observer.Update(columns);
 
-            if (allOrdersFlagValue == false) DataVisibility = Visibility.Visible;
             WaitVisibility = Visibility.Collapsed;
-            CommandVisibility = Visibility.Visible;
+            CommandVisibility = Visibility.Collapsed;
             OperationVisibility = Visibility.Visible;
+            OrderVisibility = Visibility.Collapsed;
 
             var rows = report.GetRows();
             RowsView.Clear();
@@ -265,7 +271,7 @@ namespace Dispetcher2.Models
         void ProcessExcelCommand()
         {
             WaitVisibility = Visibility.Visible;
-            DataVisibility = Visibility.Collapsed;
+            OrderVisibility = Visibility.Collapsed;
             CommandVisibility = Visibility.Collapsed;
             OperationVisibility = Visibility.Collapsed;
 
@@ -291,9 +297,9 @@ namespace Dispetcher2.Models
         }
         void AfterExcelCommand()
         {
-            if (allOrdersFlagValue == false) DataVisibility = Visibility.Visible;
+
             WaitVisibility = Visibility.Collapsed;
-            CommandVisibility = Visibility.Visible;
+            CommandVisibility = Visibility.Collapsed;
             OperationVisibility = Visibility.Visible;
         }
         void ProcessDetailCommand()
@@ -327,7 +333,15 @@ namespace Dispetcher2.Models
                 f.ShowDialog();
             }
         }
-        
+        void ProcessBackCommand()
+        {
+            WaitVisibility = Visibility.Collapsed;
+            OperationVisibility = Visibility.Collapsed;
+
+            OrderVisibility = Visibility.Visible;
+            CommandVisibility = Visibility.Visible;
+
+        }
     }
     public class LaborCommand : ICommand
     {
