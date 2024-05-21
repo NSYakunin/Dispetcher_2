@@ -508,7 +508,7 @@ namespace Dispetcher2.Class
                                 {
                                     ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 13]).Value2 = Math.Round(((float)FactTimeDepartment / PlanHoursDepartment) * 100, 2);
                                     ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 14]).Value2 = Math.Round(((float)FactTimeDepartment / (float)TimeSheetsSecDepartment) * 100, 2);
-                                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow - 1, 14]).Value2 = Math.Round(((float)FactTimeDepartment / (float)TimeSheetsSecDepartment) * 100, 2);
+                                    //((Excel.Range)ExcelWorkSheet.Cells[NumRow - 1, 14]).Value2 = Math.Round(((float)FactTimeDepartment / (float)TimeSheetsSecDepartment) * 100, 2);
                             }
                                 else
                                 {

@@ -35,6 +35,7 @@
 			this.mBtnM_InsertFolder = new Dispetcher2.Controls.MyButtonMenu();
 			this.mBtnM_OldDispetcher = new Dispetcher2.Controls.MyButtonMenu();
 			this.mBtnM_IP = new Dispetcher2.Controls.MyButtonMenu();
+			this.workWithOrders = new Dispetcher2.Controls.MyButtonMenu();
 			this.myTabC_Settings = new Dispetcher2.MyTabControl();
 			this.tabPage_Sp = new System.Windows.Forms.TabPage();
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -137,6 +138,11 @@
 			this.tB_SHCMFolder = new System.Windows.Forms.TextBox();
 			this.btn_InsertFolder = new System.Windows.Forms.Button();
 			this.label4 = new System.Windows.Forms.Label();
+			this.tabPageOrders = new System.Windows.Forms.TabPage();
+			this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+			this.panel10 = new System.Windows.Forms.Panel();
+			this.panel11 = new System.Windows.Forms.Panel();
+			this.ChangeOfOrderStatusBTN = new System.Windows.Forms.Button();
 			this.gBoxSettingsMenu.SuspendLayout();
 			this.flowLayoutPanel_UserAccess.SuspendLayout();
 			this.myTabC_Settings.SuspendLayout();
@@ -184,6 +190,10 @@
 			this.tabPageAdd_L_Detail.SuspendLayout();
 			this.groupBox5.SuspendLayout();
 			this.panel4.SuspendLayout();
+			this.tabPageOrders.SuspendLayout();
+			this.tableLayoutPanel4.SuspendLayout();
+			this.panel10.SuspendLayout();
+			this.panel11.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// gBoxSettingsMenu
@@ -205,6 +215,7 @@
 			this.flowLayoutPanel_UserAccess.Controls.Add(this.mBtnM_InsertFolder);
 			this.flowLayoutPanel_UserAccess.Controls.Add(this.mBtnM_OldDispetcher);
 			this.flowLayoutPanel_UserAccess.Controls.Add(this.mBtnM_IP);
+			this.flowLayoutPanel_UserAccess.Controls.Add(this.workWithOrders);
 			this.flowLayoutPanel_UserAccess.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.flowLayoutPanel_UserAccess.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
 			this.flowLayoutPanel_UserAccess.Location = new System.Drawing.Point(5, 21);
@@ -266,12 +277,26 @@
 			this.mBtnM_IP.UseVisualStyleBackColor = true;
 			this.mBtnM_IP.Click += new System.EventHandler(this.mBtnM_IP_Click);
 			// 
+			// workWithOrders
+			// 
+			this.workWithOrders.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
+			this.workWithOrders.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.workWithOrders.Location = new System.Drawing.Point(4, 244);
+			this.workWithOrders.Margin = new System.Windows.Forms.Padding(4);
+			this.workWithOrders.Name = "workWithOrders";
+			this.workWithOrders.Size = new System.Drawing.Size(212, 52);
+			this.workWithOrders.TabIndex = 4;
+			this.workWithOrders.Text = "Работа с заказами";
+			this.workWithOrders.UseVisualStyleBackColor = true;
+			this.workWithOrders.Click += new System.EventHandler(this.workWithOrders_Click);
+			// 
 			// myTabC_Settings
 			// 
 			this.myTabC_Settings.Controls.Add(this.tabPage_Sp);
 			this.myTabC_Settings.Controls.Add(this.tabPage_OldDispetcher);
 			this.myTabC_Settings.Controls.Add(this.tabPage_TURV);
 			this.myTabC_Settings.Controls.Add(this.tabPageAdd_L_Detail);
+			this.myTabC_Settings.Controls.Add(this.tabPageOrders);
 			this.myTabC_Settings.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.myTabC_Settings.Location = new System.Drawing.Point(232, 0);
 			this.myTabC_Settings.Margin = new System.Windows.Forms.Padding(4);
@@ -1478,6 +1503,60 @@
 			this.label4.TabIndex = 10;
 			this.label4.Text = "ЩЦМ (Например: ЩЦМ 4.492.692КнР)";
 			// 
+			// tabPageOrders
+			// 
+			this.tabPageOrders.Controls.Add(this.tableLayoutPanel4);
+			this.tabPageOrders.Location = new System.Drawing.Point(4, 25);
+			this.tabPageOrders.Name = "tabPageOrders";
+			this.tabPageOrders.Padding = new System.Windows.Forms.Padding(3);
+			this.tabPageOrders.Size = new System.Drawing.Size(844, 766);
+			this.tabPageOrders.TabIndex = 4;
+			this.tabPageOrders.Text = "tabPageOrders";
+			this.tabPageOrders.UseVisualStyleBackColor = true;
+			// 
+			// tableLayoutPanel4
+			// 
+			this.tableLayoutPanel4.ColumnCount = 1;
+			this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+			this.tableLayoutPanel4.Controls.Add(this.panel10, 0, 0);
+			this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 3);
+			this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+			this.tableLayoutPanel4.RowCount = 2;
+			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 8.289474F));
+			this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 91.71053F));
+			this.tableLayoutPanel4.Size = new System.Drawing.Size(838, 760);
+			this.tableLayoutPanel4.TabIndex = 0;
+			// 
+			// panel10
+			// 
+			this.panel10.Controls.Add(this.panel11);
+			this.panel10.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panel10.Location = new System.Drawing.Point(3, 3);
+			this.panel10.Name = "panel10";
+			this.panel10.Size = new System.Drawing.Size(832, 57);
+			this.panel10.TabIndex = 0;
+			// 
+			// panel11
+			// 
+			this.panel11.Controls.Add(this.ChangeOfOrderStatusBTN);
+			this.panel11.Dock = System.Windows.Forms.DockStyle.Right;
+			this.panel11.Location = new System.Drawing.Point(704, 0);
+			this.panel11.Name = "panel11";
+			this.panel11.Size = new System.Drawing.Size(128, 57);
+			this.panel11.TabIndex = 22;
+			// 
+			// ChangeOfOrderStatusBTN
+			// 
+			this.ChangeOfOrderStatusBTN.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.ChangeOfOrderStatusBTN.Location = new System.Drawing.Point(0, 0);
+			this.ChangeOfOrderStatusBTN.Name = "ChangeOfOrderStatusBTN";
+			this.ChangeOfOrderStatusBTN.Size = new System.Drawing.Size(128, 57);
+			this.ChangeOfOrderStatusBTN.TabIndex = 0;
+			this.ChangeOfOrderStatusBTN.Text = "Изменение статуса заказа";
+			this.ChangeOfOrderStatusBTN.UseVisualStyleBackColor = true;
+			this.ChangeOfOrderStatusBTN.Click += new System.EventHandler(this.ChangeOfOrderStatusBTN_Click);
+			// 
 			// F_Settings
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1551,6 +1630,10 @@
 			this.groupBox5.PerformLayout();
 			this.panel4.ResumeLayout(false);
 			this.panel4.PerformLayout();
+			this.tabPageOrders.ResumeLayout(false);
+			this.tableLayoutPanel4.ResumeLayout(false);
+			this.panel10.ResumeLayout(false);
+			this.panel11.ResumeLayout(false);
 			this.ResumeLayout(false);
 
         }
@@ -1665,5 +1748,11 @@
 		private System.Windows.Forms.Panel panel9;
 		private System.Windows.Forms.Label lBLText;
 		private System.Windows.Forms.ProgressBar progressBar2;
+		private Controls.MyButtonMenu workWithOrders;
+		private System.Windows.Forms.TabPage tabPageOrders;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+		private System.Windows.Forms.Panel panel10;
+		private System.Windows.Forms.Panel panel11;
+		private System.Windows.Forms.Button ChangeOfOrderStatusBTN;
 	}
 }

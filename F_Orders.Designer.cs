@@ -51,8 +51,10 @@
 			this.label1 = new System.Windows.Forms.Label();
 			this.tB_NewOrderNum = new System.Windows.Forms.TextBox();
 			this.gBox_Menu = new System.Windows.Forms.GroupBox();
-			this.panel8 = new System.Windows.Forms.Panel();
-			this.myChB_DeleteOrder = new Dispetcher2.Controls.MyCheckBox();
+			this.panel9 = new System.Windows.Forms.Panel();
+			this.updateOrderBTN = new System.Windows.Forms.Button();
+			this.orderLBL = new System.Windows.Forms.Label();
+			this.textBoxOrder = new System.Windows.Forms.TextBox();
 			this.panel3 = new System.Windows.Forms.Panel();
 			this.chB_Orders_OnlyClose = new System.Windows.Forms.CheckBox();
 			this.pnl__NewOrder = new System.Windows.Forms.Panel();
@@ -142,10 +144,6 @@
 			this.numericUpDChange = new System.Windows.Forms.NumericUpDown();
 			this.groupBox8 = new System.Windows.Forms.GroupBox();
 			this.tB_PK_IdDetailChange = new System.Windows.Forms.TextBox();
-			this.panel9 = new System.Windows.Forms.Panel();
-			this.updateOrderBTN = new System.Windows.Forms.Button();
-			this.orderLBL = new System.Windows.Forms.Label();
-			this.textBoxOrder = new System.Windows.Forms.TextBox();
 			this.cMStrip_TreeOrder.SuspendLayout();
 			this.myTabC_Orders.SuspendLayout();
 			this.tPageOrders.SuspendLayout();
@@ -153,7 +151,7 @@
 			this.dGV_OrdersContextMenuStrip.SuspendLayout();
 			this.gB_NewOrder.SuspendLayout();
 			this.gBox_Menu.SuspendLayout();
-			this.panel8.SuspendLayout();
+			this.panel9.SuspendLayout();
 			this.panel3.SuspendLayout();
 			this.pnl__NewOrder.SuspendLayout();
 			this.gB_OrderName_Search.SuspendLayout();
@@ -200,7 +198,6 @@
 			this.groupBox6.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDChange)).BeginInit();
 			this.groupBox8.SuspendLayout();
-			this.panel9.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// cMStrip_TreeOrder
@@ -416,7 +413,6 @@
 			// gBox_Menu
 			// 
 			this.gBox_Menu.Controls.Add(this.panel9);
-			this.gBox_Menu.Controls.Add(this.panel8);
 			this.gBox_Menu.Controls.Add(this.panel3);
 			this.gBox_Menu.Controls.Add(this.pnl__NewOrder);
 			this.gBox_Menu.Controls.Add(this.gB_OrderName_Search);
@@ -430,29 +426,46 @@
 			this.gBox_Menu.TabIndex = 0;
 			this.gBox_Menu.TabStop = false;
 			// 
-			// panel8
+			// panel9
 			// 
-			this.panel8.Controls.Add(this.myChB_DeleteOrder);
-			this.panel8.Location = new System.Drawing.Point(529, 15);
-			this.panel8.Name = "panel8";
-			this.panel8.Size = new System.Drawing.Size(81, 52);
-			this.panel8.TabIndex = 21;
+			this.panel9.Controls.Add(this.updateOrderBTN);
+			this.panel9.Controls.Add(this.orderLBL);
+			this.panel9.Controls.Add(this.textBoxOrder);
+			this.panel9.Location = new System.Drawing.Point(616, 15);
+			this.panel9.Name = "panel9";
+			this.panel9.Size = new System.Drawing.Size(111, 52);
+			this.panel9.TabIndex = 22;
 			// 
-			// myChB_DeleteOrder
+			// updateOrderBTN
 			// 
-			this.myChB_DeleteOrder.Appearance = System.Windows.Forms.Appearance.Button;
-			this.myChB_DeleteOrder.AutoSize = true;
-			this.myChB_DeleteOrder.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.myChB_DeleteOrder.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
-			this.myChB_DeleteOrder.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.myChB_DeleteOrder.Location = new System.Drawing.Point(0, 0);
-			this.myChB_DeleteOrder.Name = "myChB_DeleteOrder";
-			this.myChB_DeleteOrder.Size = new System.Drawing.Size(81, 52);
-			this.myChB_DeleteOrder.TabIndex = 5;
-			this.myChB_DeleteOrder.Text = "Удалить заказ";
-			this.myChB_DeleteOrder.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.myChB_DeleteOrder.UseVisualStyleBackColor = true;
-			this.myChB_DeleteOrder.CheckedChanged += new System.EventHandler(this.myChB_DeleteOrder_CheckedChanged);
+			this.updateOrderBTN.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.updateOrderBTN.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.updateOrderBTN.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.updateOrderBTN.Location = new System.Drawing.Point(0, 0);
+			this.updateOrderBTN.Name = "updateOrderBTN";
+			this.updateOrderBTN.Size = new System.Drawing.Size(111, 52);
+			this.updateOrderBTN.TabIndex = 0;
+			this.updateOrderBTN.Text = "Обновить заказ";
+			this.updateOrderBTN.UseVisualStyleBackColor = true;
+			this.updateOrderBTN.Click += new System.EventHandler(this.updateOrderBTN_Click);
+			// 
+			// orderLBL
+			// 
+			this.orderLBL.AutoSize = true;
+			this.orderLBL.Location = new System.Drawing.Point(3, 5);
+			this.orderLBL.Name = "orderLBL";
+			this.orderLBL.Size = new System.Drawing.Size(104, 17);
+			this.orderLBL.TabIndex = 1;
+			this.orderLBL.Text = "Введите заказ";
+			this.orderLBL.Visible = false;
+			// 
+			// textBoxOrder
+			// 
+			this.textBoxOrder.Location = new System.Drawing.Point(3, 27);
+			this.textBoxOrder.Name = "textBoxOrder";
+			this.textBoxOrder.Size = new System.Drawing.Size(104, 23);
+			this.textBoxOrder.TabIndex = 2;
+			this.textBoxOrder.Visible = false;
 			// 
 			// panel3
 			// 
@@ -1478,47 +1491,6 @@
 			this.tB_PK_IdDetailChange.TabIndex = 999;
 			this.tB_PK_IdDetailChange.TabStop = false;
 			// 
-			// panel9
-			// 
-			this.panel9.Controls.Add(this.updateOrderBTN);
-			this.panel9.Controls.Add(this.orderLBL);
-			this.panel9.Controls.Add(this.textBoxOrder);
-			this.panel9.Location = new System.Drawing.Point(616, 15);
-			this.panel9.Name = "panel9";
-			this.panel9.Size = new System.Drawing.Size(111, 52);
-			this.panel9.TabIndex = 22;
-			// 
-			// updateOrderBTN
-			// 
-			this.updateOrderBTN.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.updateOrderBTN.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.updateOrderBTN.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-			this.updateOrderBTN.Location = new System.Drawing.Point(0, 0);
-			this.updateOrderBTN.Name = "updateOrderBTN";
-			this.updateOrderBTN.Size = new System.Drawing.Size(111, 52);
-			this.updateOrderBTN.TabIndex = 0;
-			this.updateOrderBTN.Text = "Обновить заказ";
-			this.updateOrderBTN.UseVisualStyleBackColor = true;
-			this.updateOrderBTN.Click += new System.EventHandler(this.updateOrderBTN_Click);
-			// 
-			// orderLBL
-			// 
-			this.orderLBL.AutoSize = true;
-			this.orderLBL.Location = new System.Drawing.Point(3, 5);
-			this.orderLBL.Name = "orderLBL";
-			this.orderLBL.Size = new System.Drawing.Size(104, 17);
-			this.orderLBL.TabIndex = 1;
-			this.orderLBL.Text = "Введите заказ";
-			this.orderLBL.Visible = false;
-			// 
-			// textBoxOrder
-			// 
-			this.textBoxOrder.Location = new System.Drawing.Point(3, 27);
-			this.textBoxOrder.Name = "textBoxOrder";
-			this.textBoxOrder.Size = new System.Drawing.Size(104, 23);
-			this.textBoxOrder.TabIndex = 2;
-			this.textBoxOrder.Visible = false;
-			// 
 			// F_Orders
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1539,8 +1511,8 @@
 			this.gB_NewOrder.ResumeLayout(false);
 			this.gB_NewOrder.PerformLayout();
 			this.gBox_Menu.ResumeLayout(false);
-			this.panel8.ResumeLayout(false);
-			this.panel8.PerformLayout();
+			this.panel9.ResumeLayout(false);
+			this.panel9.PerformLayout();
 			this.panel3.ResumeLayout(false);
 			this.panel3.PerformLayout();
 			this.pnl__NewOrder.ResumeLayout(false);
@@ -1601,8 +1573,6 @@
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDChange)).EndInit();
 			this.groupBox8.ResumeLayout(false);
 			this.groupBox8.PerformLayout();
-			this.panel9.ResumeLayout(false);
-			this.panel9.PerformLayout();
 			this.ResumeLayout(false);
 
         }
@@ -1720,8 +1690,6 @@
         private System.Windows.Forms.ToolStripMenuItem копироватьВБуферToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip dGV_AddDetailsFromRasConMenuSrt;
         private System.Windows.Forms.ToolStripMenuItem копироватьВБуферToolStripMenuItem1;
-		private System.Windows.Forms.Panel panel8;
-		private Controls.MyCheckBox myChB_DeleteOrder;
 		private System.Windows.Forms.Panel panel9;
 		private System.Windows.Forms.Button updateOrderBTN;
 		private System.Windows.Forms.Label orderLBL;

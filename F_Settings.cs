@@ -641,5 +641,16 @@ namespace Dispetcher2
 				}
 			}
 		}
+
+		private void workWithOrders_Click(object sender, EventArgs e)
+		{
+			myTabC_Settings.SelectedTab = tabPageOrders;
+		}
+
+		private void ChangeOfOrderStatusBTN_Click(object sender, EventArgs e)
+		{
+			F_DeleteOrder newForm = new F_DeleteOrder(config);
+			newForm.Show();
+		}
 	}
 }
