@@ -10,6 +10,7 @@ namespace Dispetcher2
 {
 	public partial class F_DeleteOrder : Form
 	{
+		BindingSource BindingSource_Orders = new BindingSource();
 		public string OrderUpdate { get; }
 		IConfig config;
 		DataSet ds;
@@ -62,7 +63,8 @@ namespace Dispetcher2
 					}
                 }
 
-				orderListDGV.DataSource = dt;
+				BindingSource_Orders.DataSource = dt;
+				orderListDGV.DataSource = BindingSource_Orders;
 
 				orderListDGV.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 				orderListDGV.ColumnHeadersHeight = 100;
@@ -160,6 +162,12 @@ namespace Dispetcher2
 					MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
 			}
+		}
+
+		private void tB_OrderNum_Search_TextChanged(object sender, EventArgs e)
+		{
+			string Orders = "Заказ like '%" + tB_OrderNum_Search.Text.ToString().Trim() + "%'";
+            BindingSource_Orders.Filter = Orders;
 		}
 	}
 }

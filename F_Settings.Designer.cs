@@ -1534,7 +1534,7 @@
 			this.panel10.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panel10.Location = new System.Drawing.Point(3, 3);
 			this.panel10.Name = "panel10";
-			this.panel10.Size = new System.Drawing.Size(832, 57);
+			this.panel10.Size = new System.Drawing.Size(832, 56);
 			this.panel10.TabIndex = 0;
 			// 
 			// panel11
@@ -1543,7 +1543,7 @@
 			this.panel11.Dock = System.Windows.Forms.DockStyle.Right;
 			this.panel11.Location = new System.Drawing.Point(704, 0);
 			this.panel11.Name = "panel11";
-			this.panel11.Size = new System.Drawing.Size(128, 57);
+			this.panel11.Size = new System.Drawing.Size(128, 56);
 			this.panel11.TabIndex = 22;
 			// 
 			// ChangeOfOrderStatusBTN
@@ -1551,7 +1551,7 @@
 			this.ChangeOfOrderStatusBTN.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.ChangeOfOrderStatusBTN.Location = new System.Drawing.Point(0, 0);
 			this.ChangeOfOrderStatusBTN.Name = "ChangeOfOrderStatusBTN";
-			this.ChangeOfOrderStatusBTN.Size = new System.Drawing.Size(128, 57);
+			this.ChangeOfOrderStatusBTN.Size = new System.Drawing.Size(128, 56);
 			this.ChangeOfOrderStatusBTN.TabIndex = 0;
 			this.ChangeOfOrderStatusBTN.Text = "Изменение статуса заказа";
 			this.ChangeOfOrderStatusBTN.UseVisualStyleBackColor = true;

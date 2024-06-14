@@ -33,8 +33,8 @@ namespace Dispetcher2.Class
                 //****************************
                 long MaxID = 0;
                 //1)делаем запрос к базе и ищем макс IdLoodsman в таблице Sp_Details и грузим из ЛОЦМАНА всё где v.id>макс IdLoodsman
-                SelectMaxPk_IdFromSp_Details(ref MaxID);
-                Select_SpDetails_From_Loodsman(MaxID, ref Dt_Sp, idloodsman);
+                //SelectMaxPk_IdFromSp_Details(ref MaxID);
+                Select_SpDetails_From_Loodsman(900000, ref Dt_Sp, idloodsman);
                 //****************************
                 if (Dt_Sp.Rows.Count > 0)
                 {
@@ -123,6 +123,7 @@ namespace Dispetcher2.Class
         private void InsertDataInSpDetails(ref DataTable Dt_Sp)
         {
             int NumRow = 0;
+            int counter = 0;
             try
             {
             
@@ -131,8 +132,8 @@ namespace Dispetcher2.Class
             //Dt_Sp.Rows[i].ItemArray[4].ToString().Trim()
             foreach (DataRow row in Dt_Sp.Rows)
             {
-                if (orders.Check_ShcmDetail(row.ItemArray[1].ToString().Trim()))
-                    MessageBox.Show(row.ItemArray[1].ToString().Trim() + " - был загружен ранее", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (orders.Check_ShcmDetail(row.ItemArray[1].ToString().Trim())) Console.WriteLine(counter++);
+                    //MessageBox.Show(row.ItemArray[1].ToString().Trim() + " - был загружен ранее", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 else
                 {
                         using (SqlConnection con = new SqlConnection())

@@ -646,7 +646,7 @@ namespace Dispetcher2
             //Load data in dGV_AddDetailsFromRas
             if (PK_IdOrder > 0)
             {
-                if (dGV_Orders.CurrentRow.Cells["Col_Status"].Value.ToString().Trim() != "закрыт")
+                //if (dGV_Orders.CurrentRow.Cells["Col_Status"].Value.ToString().Trim() != "закрыт")
                 {
                     
                     orders.OpenOrders(PK_IdOrder, 2);//2-открыт
