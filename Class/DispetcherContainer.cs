@@ -184,6 +184,7 @@ namespace Dispetcher2.Class
                         ldControl.DataContext = detModel;
                         detModel.Observer = ldControl;
                         HostForm detHostForm = new HostForm(ldControl);
+                        detModel.CloseAction = detHostForm.Close;
                         return detHostForm;
 
                     default:
