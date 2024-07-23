@@ -1204,5 +1204,27 @@ namespace Dispetcher2
 				newForm.Show();
 			}
 		}
+
+		private void changeQuantitytoolStripMenu_Click(object sender, EventArgs e)
+		{
+			DataGridViewCell currentCell = dGV_AddDetailsFromRas.CurrentCell;
+			if (currentCell != null)
+			{
+
+			}
+		}
+
+		private void btnSaveData_Click(object sender, EventArgs e)
+		{
+
+		}
+
+		private void dGV_AddDetailsFromRas_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+		{
+
+		}
 	}
 }
+
+
+

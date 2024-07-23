@@ -84,6 +84,7 @@
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.tB_PositionRas = new System.Windows.Forms.TextBox();
 			this.panel5 = new System.Windows.Forms.Panel();
+			this.btnSaveData = new System.Windows.Forms.Button();
 			this.panel7 = new System.Windows.Forms.Panel();
 			this.btn_BackInOrder = new System.Windows.Forms.Button();
 			this.btn_OrderTree = new System.Windows.Forms.Button();
@@ -597,6 +598,7 @@
 			this.dGV_AddDetailsFromRas.TabIndex = 5;
 			this.dGV_AddDetailsFromRas.TabStop = false;
 			this.dGV_AddDetailsFromRas.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dGV_AddDetailsFromRas_CellMouseDown);
+			this.dGV_AddDetailsFromRas.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dGV_AddDetailsFromRas_CellValueChanged);
 			// 
 			// С_NameType
 			// 
@@ -677,7 +679,7 @@
 			// 
 			this.копироватьВБуферToolStripMenuItem1.Image = global::Dispetcher2.Properties.Resources.icons8_скопировать_30;
 			this.копироватьВБуферToolStripMenuItem1.Name = "копироватьВБуферToolStripMenuItem1";
-			this.копироватьВБуферToolStripMenuItem1.Size = new System.Drawing.Size(186, 22);
+			this.копироватьВБуферToolStripMenuItem1.Size = new System.Drawing.Size(202, 22);
 			this.копироватьВБуферToolStripMenuItem1.Text = "Копировать в буфер";
 			this.копироватьВБуферToolStripMenuItem1.Click += new System.EventHandler(this.копироватьВБуферToolStripMenuItem1_Click);
 			// 
@@ -759,6 +761,7 @@
 			// 
 			// panel5
 			// 
+			this.panel5.Controls.Add(this.btnSaveData);
 			this.panel5.Controls.Add(this.panel7);
 			this.panel5.Controls.Add(this.btn_OpenOrders);
 			this.panel5.Controls.Add(this.btn_LoadFromExcel);
@@ -767,6 +770,19 @@
 			this.panel5.Name = "panel5";
 			this.panel5.Size = new System.Drawing.Size(990, 48);
 			this.panel5.TabIndex = 2;
+			// 
+			// btnSaveData
+			// 
+			this.btnSaveData.Anchor = System.Windows.Forms.AnchorStyles.Right;
+			this.btnSaveData.Location = new System.Drawing.Point(597, 4);
+			this.btnSaveData.Margin = new System.Windows.Forms.Padding(4);
+			this.btnSaveData.Name = "btnSaveData";
+			this.btnSaveData.Size = new System.Drawing.Size(102, 39);
+			this.btnSaveData.TabIndex = 9;
+			this.btnSaveData.Text = "Сохранить";
+			this.btnSaveData.UseVisualStyleBackColor = false;
+			this.btnSaveData.Visible = false;
+			this.btnSaveData.Click += new System.EventHandler(this.btnSaveData_Click);
 			// 
 			// panel7
 			// 
@@ -1694,5 +1710,6 @@
 		private System.Windows.Forms.Button updateOrderBTN;
 		private System.Windows.Forms.Label orderLBL;
 		private System.Windows.Forms.TextBox textBoxOrder;
+		private System.Windows.Forms.Button btnSaveData;
 	}
 }

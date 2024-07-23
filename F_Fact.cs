@@ -619,6 +619,86 @@ namespace Dispetcher2
             }
 
         }
-        
-    }
+
+		private void OrdersContextMenuStrip_Click(object sender, EventArgs e)
+		{
+
+			if (dGV_Orders.GetCellCount(DataGridViewElementStates.Selected) > 0)
+			{
+				try
+				{
+					Clipboard.SetDataObject(dGV_Orders.CurrentCell.Value.ToString().Trim());
+				}
+				catch (System.Runtime.InteropServices.ExternalException)
+				{
+					MessageBox.Show("Копирование невозможно");
+				}
+				finally
+				{
+					dGV_Orders.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+					dGV_Orders.CurrentCell.Selected = true;
+				}
+			}
+		}
+
+		private void dGV_Orders_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+		{
+			if (e.RowIndex >= 0)
+			{
+				if (e.Button == MouseButtons.Right)
+				{
+					dGV_Orders.ClearSelection();
+					dGV_Orders.SelectionMode = DataGridViewSelectionMode.CellSelect;
+					dGV_Orders[e.ColumnIndex, e.RowIndex].Selected = true;
+				}
+
+				if (e.Button == MouseButtons.Left)
+				{
+					dGV_Orders.ClearSelection();
+					dGV_Orders.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+					dGV_Orders[e.ColumnIndex, e.RowIndex].Selected = true;
+				}
+			}
+		}
+
+		private void oShCMContextMenuStrip_Click(object sender, EventArgs e)
+		{
+			if (dGV_Details.GetCellCount(DataGridViewElementStates.Selected) > 0)
+			{
+				try
+				{
+					Clipboard.SetDataObject(dGV_Details.CurrentCell.Value.ToString().Trim());
+				}
+				catch (System.Runtime.InteropServices.ExternalException)
+				{
+					MessageBox.Show("Копирование невозможно");
+				}
+				finally
+				{
+					dGV_Details.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+					dGV_Details.CurrentCell.Selected = true;
+				}
+			}
+		}
+
+		private void dGV_Details_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+		{
+			if (e.RowIndex >= 0)
+			{
+				if (e.Button == MouseButtons.Right)
+				{
+					dGV_Details.ClearSelection();
+					dGV_Details.SelectionMode = DataGridViewSelectionMode.CellSelect;
+					dGV_Details[e.ColumnIndex, e.RowIndex].Selected = true;
+				}
+
+				if (e.Button == MouseButtons.Left)
+				{
+					dGV_Details.ClearSelection();
+					dGV_Details.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+					dGV_Details[e.ColumnIndex, e.RowIndex].Selected = true;
+				}
+			}
+		}
+	}
 }

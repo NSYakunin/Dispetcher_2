@@ -58,6 +58,7 @@ namespace Dispetcher2
 										$"Where FK_IdOrder = @FK_IdOrder AND[niipm].state in ('Утвержден', 'Архив', 'Проектирование') AND[niipm].type in ('Сборочная единица', 'Деталь') " +
 										$"ORDER BY Position";
 
+
 					cmd.Parameters.Add(new SqlParameter("@FK_IdOrder", SqlDbType.Int));
 					cmd.Parameters["@FK_IdOrder"].Value = qwe.ToString();
 					SqlDataAdapter adapter = new SqlDataAdapter();

@@ -34,7 +34,7 @@ namespace Dispetcher2.Class
                 long MaxID = 0;
                 //1)делаем запрос к базе и ищем макс IdLoodsman в таблице Sp_Details и грузим из ЛОЦМАНА всё где v.id>макс IdLoodsman
                 //SelectMaxPk_IdFromSp_Details(ref MaxID);
-                Select_SpDetails_From_Loodsman(900000, ref Dt_Sp, idloodsman);
+                Select_SpDetails_From_Loodsman(984417, ref Dt_Sp, idloodsman);
                 //****************************
                 if (Dt_Sp.Rows.Count > 0)
                 {
