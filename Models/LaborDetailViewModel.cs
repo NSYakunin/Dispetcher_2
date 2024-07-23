@@ -26,6 +26,10 @@ namespace Dispetcher2.Models
         public ObservableCollection<LaborReportRow> RowsView { get; set; }
         public ICommand ExcelCommand { get; set; }
         public ICommand CopyCommand { get; set; }
+
+        // Это действие будет вызвано по команде BackCommand. Устанавливается внешне
+        public Action CloseAction { get; set; }
+        public ICommand BackCommand { get; set; }
         public Visibility DetailCommandVisibility
         {
             get { return Visibility.Collapsed; }
@@ -111,13 +115,20 @@ namespace Dispetcher2.Models
             this.writer = writer;
             RowsView = new ObservableCollection<LaborReportRow>();
 
-            var c = new LaborCommand();
-            c.ExecuteAction = this.ProcessExcelCommand;
-            ExcelCommand = c;
+            ExcelCommand = new LaborCommand()
+            {
+                ExecuteAction = this.ProcessExcelCommand,
+            };
 
-            c = new LaborCommand();
-            c.ExecuteAction = this.ProcessCopyCommand;
-            CopyCommand = c;
+            CopyCommand = new LaborCommand()
+            {
+                ExecuteAction = this.ProcessCopyCommand,
+            };
+
+            BackCommand = new LaborCommand()
+            {
+                ExecuteAction = this.ProcessBackCommand,
+            };
 
             LoadVisibility = Visibility.Collapsed;
             MainVisibility = Visibility.Visible;
@@ -155,6 +166,11 @@ namespace Dispetcher2.Models
         {
             LoadVisibility = Visibility.Collapsed;
             MainVisibility = Visibility.Visible;
+        }
+
+        void ProcessBackCommand()
+        {
+            if (CloseAction != null) CloseAction();
         }
     }
 }

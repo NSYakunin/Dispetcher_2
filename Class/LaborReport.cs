@@ -191,6 +191,9 @@ namespace Dispetcher2.Class
                     ProcessOperations(se, name);
                 }
             }
+            // наименование
+            if (this.ReportRowOrder != null)
+                Row.Operations[LaborReport.nameName] = this.ReportRowOrder.Name;
             // цитата из ТЗ:
             // 2.7 Лимит трудоемкости, н/час
             if (Row.TotalPlanTime > TimeSpan.Zero)
@@ -288,6 +291,7 @@ namespace Dispetcher2.Class
 
     public class LaborReport
     {
+        public const string nameName = "Наименование";
         public const string quantityName = "Кол-во работников за год";
         public const string timeSheetName = "Табельное время за год";
         public const string restName = "Остаток на указанную дату";
@@ -352,8 +356,16 @@ namespace Dispetcher2.Class
         }
         public static string Format(TimeSpan ts)
         {
-            string s = $"{(int)ts.TotalHours:00}:{ts.Minutes:00}:{ts.Seconds:00}";
-            return s;
+            // форматирование результата как времени: 12:30:00
+            //string s = $"{(int)ts.TotalHours:00}:{ts.Minutes:00}:{ts.Seconds:00}";
+            //return s;
+
+            // форматирование результата в нормо-часах
+            int p = 0;
+            if (ts.Minutes > 0 || ts.Seconds > 0) p = 1;
+            double d = ts.TotalHours;
+            var r = Math.Round(d, p);
+            return Convert.ToString(r);
         }
         public void Load()
         {
@@ -539,11 +551,12 @@ namespace Dispetcher2.Class
         }
         LaborRowJob ProcessOrder(Order orderItem)
         {
-            string name = $"{orderItem.Number} {orderItem.Name}";
+            //string name = $"{orderItem.Number} {orderItem.Name}";
+            
 
             var job = new LaborRowJob()
             {
-                Row = new LaborReportRow() { Name = name },
+                Row = new LaborReportRow() { Name = orderItem.Number },
                 operations = operations,
                 details = details,
                 ReportRowDetail = null,
@@ -560,6 +573,8 @@ namespace Dispetcher2.Class
         public IEnumerable<string> GetColumns()
         {
             HashSet<string> NameList = new HashSet<string>();
+            // Столбец с наименованием заказа
+            NameList.Add(nameName);
             // цитата из ТЗ:
             // 2.7 Лимит трудоемкости, н/час
             NameList.Add(limitName);
