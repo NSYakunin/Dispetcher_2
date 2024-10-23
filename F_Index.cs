@@ -306,5 +306,12 @@ namespace Dispetcher2
             var f = factory.GetForm("Акт приёма-передачи. Гальваническое покрытие");
             Show(f);
         }
+
+        private void tSB_Control_Click(object sender, EventArgs e)
+        {
+            this.Text = "ПО \"Диспетчер\"" + " - Контроль";
+            var f = factory.GetForm("Заказы");
+            Show(f);
+        }
     }
 }
