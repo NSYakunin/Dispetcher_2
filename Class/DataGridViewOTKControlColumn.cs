@@ -7,11 +7,12 @@ using System.Windows.Forms;
 
 namespace Dispetcher2.Class
 {
-    internal class DataGridViewOTKControlColumn : DataGridViewColumn
+    public class DataGridViewOTKControlColumn : DataGridViewColumn
     {
         public DataGridViewOTKControlColumn()
             : base(new DataGridViewOTKControlCell())
         {
+            this.ValueType = typeof(CheckBoxState[]);
         }
 
         public override DataGridViewCell CellTemplate
@@ -23,7 +24,7 @@ namespace Dispetcher2.Class
             set
             {
                 if (value != null &&
-                !value.GetType().IsAssignableFrom(typeof(DataGridViewOTKControlCell)))
+                    !value.GetType().IsAssignableFrom(typeof(DataGridViewOTKControlCell)))
                 {
                     throw new InvalidCastException("Ячейка должна быть типа DataGridViewOTKControlCell");
                 }

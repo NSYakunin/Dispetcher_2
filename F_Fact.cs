@@ -112,7 +112,7 @@ namespace Dispetcher2
             dGV_Tehnology.Columns["Col_Oper"].DataPropertyName = DT_Tehnology.Columns["Oper"].ToString();
             dGV_Tehnology.Columns["Col_Tpd"].DataPropertyName = DT_Tehnology.Columns["Tpd"].ToString();
             dGV_Tehnology.Columns["Col_Tsh"].DataPropertyName = DT_Tehnology.Columns["Tsh"].ToString();
-            DT_Tehnology.Columns.Add("OTKControl", typeof(bool[]));
+            DT_Tehnology.Columns.Add("OTKControl", typeof(CheckBoxState[]));
             //***********************************************************************************************
             dGV_FactOperation.AutoGenerateColumns = false;
             dGV_FactOperation.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -144,6 +144,7 @@ namespace Dispetcher2
             otkColumn.ReadOnly = false;
             dGV_Tehnology.ReadOnly = false;
             otkColumn.DataPropertyName = "OTKControl";
+            otkColumn.ValueType = typeof(CheckBoxState[]); // Устанавливаем тип данных столбца
             dGV_Tehnology.Columns.Add(otkColumn);
             // После установки DataSource для dGV_Tehnology
             dGV_Tehnology.EditMode = DataGridViewEditMode.EditOnEnter;
@@ -242,7 +243,7 @@ namespace Dispetcher2
                         {
                             if (!row1.IsNewRow)
                             {
-                                row1.Cells["Col_OTKControl"].Value = new bool[] { false, false, false };
+                                row1.Cells["Col_OTKControl"].Value = new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
                             }
                         }
                     }

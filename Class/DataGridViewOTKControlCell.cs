@@ -2,190 +2,306 @@
 using System.Windows.Forms;
 using System;
 
-public class DataGridViewOTKControlCell : DataGridViewCell
+namespace Dispetcher2.Class
 {
-    // Размеры и отступы для галочек
-    private static int CheckBoxWidth = 25;
-    private static int CheckBoxHeight = 25;
-    private static int CheckBoxSpacing = 10;
-
-    public DataGridViewOTKControlCell()
+    public enum CheckBoxState
     {
-        this.ValueType = typeof(bool[]);
+        Unchecked,
+        Checked,
+        Crossed
     }
-
-    protected override void Paint(Graphics graphics, Rectangle clipBounds, Rectangle cellBounds, int rowIndex,
-        DataGridViewElementStates cellState, object value, object formattedValue, string errorText,
-        DataGridViewCellStyle cellStyle, DataGridViewAdvancedBorderStyle advancedBorderStyle, DataGridViewPaintParts paintParts)
+    public class DataGridViewOTKControlCell : DataGridViewCell
     {
-        // Получаем текущее значение ячейки
-        bool[] state = value as bool[] ?? new bool[] { false, false, false };
 
-        // Определяем цвет фона ячейки
-        Color cellBackColor = state[2] ? Color.LightGreen : cellStyle.BackColor;
 
-        // Рисуем фон ячейки
-        using (SolidBrush cellBackground = new SolidBrush(cellBackColor))
+        // Размеры и отступы для галочек
+        private static int CheckBoxWidth = 25;
+        private static int CheckBoxHeight = 25;
+        private static int CheckBoxSpacing = 10;
+
+        public DataGridViewOTKControlCell()
         {
-            graphics.FillRectangle(cellBackground, cellBounds);
+            this.ValueType = typeof(CheckBoxState[]);
         }
 
-        // Рисуем границы ячейки
-        PaintBorder(graphics, clipBounds, cellBounds, cellStyle, advancedBorderStyle);
-
-        // Вычисляем позиции для каждой галочки
-        int totalWidth = 3 * CheckBoxWidth + 2 * CheckBoxSpacing;
-        int startX = cellBounds.X + (cellBounds.Width - totalWidth) / 2;
-        int startY = cellBounds.Y + (cellBounds.Height - CheckBoxHeight) / 2;
-
-        for (int i = 0; i < 3; i++)
+        protected override void Paint(Graphics graphics, Rectangle clipBounds, Rectangle cellBounds, int rowIndex,
+                        DataGridViewElementStates cellState, object value, object formattedValue, string errorText,
+                        DataGridViewCellStyle cellStyle, DataGridViewAdvancedBorderStyle advancedBorderStyle, DataGridViewPaintParts paintParts)
         {
-            // Позиция и размер чекбокса
-            Rectangle cbRect = new Rectangle(startX + i * (CheckBoxWidth + CheckBoxSpacing),
-                                             startY, CheckBoxWidth, CheckBoxHeight);
+            // Получаем текущее значение ячейки
+            CheckBoxState[] state = value as CheckBoxState[] ?? new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
 
-            // Определяем состояние чекбокса
-            bool isChecked = state.Length > i && state[i];
-            bool isEnabled = !(state[2] && i < 2); // Блокируем первые два, если третий отмечен
+            bool isThirdCheckedOrCrossed = (state[2] == CheckBoxState.Checked || state[2] == CheckBoxState.Crossed);
 
-            ButtonState buttonState = ButtonState.Normal;
+            // Определяем цвет фона ячейки
+            Color cellBackColor = isThirdCheckedOrCrossed ? Color.LightGreen : cellStyle.BackColor;
 
-            if (!isEnabled)
+            // Рисуем фон ячейки
+            using (SolidBrush cellBackground = new SolidBrush(cellBackColor))
             {
-                buttonState |= ButtonState.Inactive;
-            }
-            if (isChecked)
-            {
-                buttonState |= ButtonState.Checked;
+                graphics.FillRectangle(cellBackground, cellBounds);
             }
 
-            // Рисуем чекбокс
-            ControlPaint.DrawCheckBox(graphics, cbRect, buttonState);
+            // Рисуем границы ячейки
+            PaintBorder(graphics, clipBounds, cellBounds, cellStyle, advancedBorderStyle);
 
-            // Рисуем номер только если чекбокс не отмечен и активен
-            if (!isChecked && isEnabled)
+            // Вычисляем позиции для каждой галочки
+            int totalWidth = 3 * CheckBoxWidth + 2 * CheckBoxSpacing;
+            int startX = cellBounds.X + (cellBounds.Width - totalWidth) / 2;
+            int startY = cellBounds.Y + (cellBounds.Height - CheckBoxHeight) / 2;
+
+            for (int i = 0; i < 3; i++)
             {
-                string number = (i + 1).ToString();
-                SizeF numberSize = graphics.MeasureString(number, cellStyle.Font);
+                // Позиция и размер чекбокса
+                Rectangle cbRect = new Rectangle(startX + i * (CheckBoxWidth + CheckBoxSpacing),
+                                                 startY, CheckBoxWidth, CheckBoxHeight);
 
-                // Вычисляем позицию для номера
-                PointF numberLocation = new PointF(
-                    cbRect.X + (cbRect.Width - numberSize.Width) / 2,
-                    cbRect.Y + (cbRect.Height - numberSize.Height) / 2
-                );
+                // Определяем состояние чекбокса
+                CheckBoxState cbState = state.Length > i ? state[i] : CheckBoxState.Unchecked;
+                bool isEnabled = !(isThirdCheckedOrCrossed && i < 2); // Блокируем первые два, если третий отмечен или с крестиком
 
-                // Рисуем номер
-                graphics.DrawString(number, cellStyle.Font, Brushes.Black, numberLocation);
-            }
-        }
-    }
+                ButtonState buttonState = ButtonState.Normal;
 
-    protected override void OnMouseClick(DataGridViewCellMouseEventArgs e)
-    {
-        base.OnMouseClick(e);
-
-        // Получаем координаты клика относительно ячейки
-        Point clickLocation = e.Location;
-
-        // Получаем текущее значение ячейки
-        bool[] state = this.Value as bool[];
-        if (state == null || state.Length != 3)
-        {
-            state = new bool[] { false, false, false };
-        }
-
-        // Вычисляем позиции для каждой галочки
-        int totalWidth = 3 * CheckBoxWidth + 2 * CheckBoxSpacing;
-        int startX = (this.Size.Width - totalWidth) / 2;
-        int startY = (this.Size.Height - CheckBoxHeight) / 2;
-
-        bool stateChanged = false;
-
-        for (int i = 0; i < 3; i++)
-        {
-            Rectangle cbRect = new Rectangle(startX + i * (CheckBoxWidth + CheckBoxSpacing),
-                                             startY, CheckBoxWidth, CheckBoxHeight);
-
-            if (cbRect.Contains(clickLocation))
-            {
-                if (state[2] && i < 2)
+                if (!isEnabled)
                 {
-                    // Если третий чекбокс отмечен, блокируем первые два
-                    break;
+                    buttonState |= ButtonState.Inactive;
                 }
 
-                if (i == 2)
-                {
-                    // Переключаем третий чекбокс
-                    state[2] = !state[2];
+                // Рисуем рамку чекбокса
+                ControlPaint.DrawCheckBox(graphics, cbRect, buttonState);
 
-                    if (state[2])
+                if (cbState == CheckBoxState.Checked)
+                {
+                    // Рисуем галочку
+                    ControlPaint.DrawCheckBox(graphics, cbRect, buttonState | ButtonState.Checked);
+                }
+                else if (cbState == CheckBoxState.Crossed)
+                {
+                    // Рисуем крестик
+                    using (Pen pen = new Pen(Color.Black, 2))
                     {
-                        // Сбрасываем первые два чекбокса, если третий отмечен
-                        state[0] = false;
-                        state[1] = false;
+                        graphics.DrawLine(pen, cbRect.X + 4, cbRect.Y + 4, cbRect.Right - 4, cbRect.Bottom - 4);
+                        graphics.DrawLine(pen, cbRect.Right - 4, cbRect.Y + 4, cbRect.X + 4, cbRect.Bottom - 4);
                     }
                 }
                 else
                 {
-                    // Переключаем первый или второй чекбокс
-                    state[i] = !state[i];
-                }
+                    // Рисуем номер только если чекбокс не отмечен и активен
+                    if (isEnabled)
+                    {
+                        string number = (i + 1).ToString();
+                        SizeF numberSize = graphics.MeasureString(number, cellStyle.Font);
 
-                stateChanged = true;
-                this.Value = state;
-                this.DataGridView.InvalidateCell(this);
-                this.DataGridView.NotifyCurrentCellDirty(true);
-                break;
+                        // Вычисляем позицию для номера
+                        PointF numberLocation = new PointF(
+                            cbRect.X + (cbRect.Width - numberSize.Width) / 2,
+                            cbRect.Y + (cbRect.Height - numberSize.Height) / 2
+                        );
+
+                        // Рисуем номер
+                        graphics.DrawString(number, cellStyle.Font, Brushes.Black, numberLocation);
+                    }
+                }
             }
         }
 
-        if (stateChanged)
+        protected override void OnMouseUp(DataGridViewCellMouseEventArgs e)
         {
-            // Перерисовываем ячейку, чтобы обновить фон
+            base.OnMouseUp(e);
+
+            if (e.Button == MouseButtons.Right)
+            {
+                // Получаем координаты клика относительно ячейки
+                Point clickLocation = e.Location;
+
+                // Вычисляем позиции для каждой галочки
+                int totalWidth = 3 * CheckBoxWidth + 2 * CheckBoxSpacing;
+                int startX = (this.Size.Width - totalWidth) / 2;
+                int startY = (this.Size.Height - CheckBoxHeight) / 2;
+
+                for (int i = 0; i < 3; i++)
+                {
+                    Rectangle cbRect = new Rectangle(startX + i * (CheckBoxWidth + CheckBoxSpacing),
+                                                     startY, CheckBoxWidth, CheckBoxHeight);
+
+                    if (cbRect.Contains(clickLocation))
+                    {
+                        // Создаем контекстное меню
+                        ContextMenuStrip contextMenu = new ContextMenuStrip();
+
+                        // Добавляем пункты меню
+                        ToolStripMenuItem item1 = new ToolStripMenuItem("Доработка");
+                        ToolStripMenuItem item2 = new ToolStripMenuItem("Брак");
+                        ToolStripMenuItem item3 = new ToolStripMenuItem("С разрешения конструктора");
+                        ToolStripMenuItem item4 = new ToolStripMenuItem("Прикрепить файл");
+
+                        int index = i; // Для использования в лямбда-выражении
+
+                        // Добавляем обработчики событий
+                        item1.Click += (sender, args) => { SetCheckBoxState(index, CheckBoxState.Crossed); };
+                        item2.Click += (sender, args) => { SetCheckBoxState(index, CheckBoxState.Crossed); };
+                        item3.Click += (sender, args) => { /* Реализовать при необходимости */ };
+                        item4.Click += (sender, args) => { /* Реализовать позже */ };
+
+                        // Добавляем пункты в меню
+                        contextMenu.Items.AddRange(new ToolStripItem[] { item1, item2, item3, item4 });
+
+                        // Отображаем меню
+                        contextMenu.Show(Cursor.Position);
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void SetCheckBoxState(int index, CheckBoxState newState)
+        {
+            // Получаем текущее значение ячейки
+            CheckBoxState[] state = this.Value as CheckBoxState[];
+            if (state == null || state.Length != 3)
+            {
+                state = new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
+            }
+
+            if (index == 2)
+            {
+                // Если устанавливаем третий чекбокс, сбрасываем первые два
+                state[2] = newState;
+                state[0] = CheckBoxState.Unchecked;
+                state[1] = CheckBoxState.Unchecked;
+            }
+            else
+            {
+                state[index] = newState;
+            }
+
+            this.Value = state;
             this.DataGridView.InvalidateCell(this);
+            this.DataGridView.NotifyCurrentCellDirty(true);
         }
-    }
 
-    public override object DefaultNewRowValue
-    {
-        get
+        protected override void OnMouseClick(DataGridViewCellMouseEventArgs e)
         {
-            return new bool[] { false, false, false };
+            base.OnMouseClick(e);
+
+            if (e.Button == MouseButtons.Left)
+            {
+                // Получаем координаты клика относительно ячейки
+                Point clickLocation = e.Location;
+
+                // Получаем текущее значение ячейки
+                CheckBoxState[] state = this.Value as CheckBoxState[];
+                if (state == null || state.Length != 3)
+                {
+                    state = new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
+                }
+
+                // Вычисляем позиции для каждой галочки
+                int totalWidth = 3 * CheckBoxWidth + 2 * CheckBoxSpacing;
+                int startX = (this.Size.Width - totalWidth) / 2;
+                int startY = (this.Size.Height - CheckBoxHeight) / 2;
+
+                bool stateChanged = false;
+
+                bool isThirdCheckedOrCrossed = (state[2] == CheckBoxState.Checked || state[2] == CheckBoxState.Crossed);
+
+                for (int i = 0; i < 3; i++)
+                {
+                    Rectangle cbRect = new Rectangle(startX + i * (CheckBoxWidth + CheckBoxSpacing),
+                                                     startY, CheckBoxWidth, CheckBoxHeight);
+
+                    if (cbRect.Contains(clickLocation))
+                    {
+                        if (isThirdCheckedOrCrossed && i < 2)
+                        {
+                            // Если третий чекбокс отмечен или с крестиком, блокируем первые два
+                            break;
+                        }
+
+                        if (i == 2)
+                        {
+                            // Переключаем третий чекбокс
+                            if (state[2] == CheckBoxState.Unchecked)
+                            {
+                                state[2] = CheckBoxState.Checked;
+                                // Сбрасываем первые два чекбокса, если третий отмечен
+                                state[0] = CheckBoxState.Unchecked;
+                                state[1] = CheckBoxState.Unchecked;
+                            }
+                            else
+                            {
+                                state[2] = CheckBoxState.Unchecked;
+                            }
+                        }
+                        else
+                        {
+                            // Переключаем первый или второй чекбокс
+                            if (state[i] == CheckBoxState.Unchecked)
+                            {
+                                state[i] = CheckBoxState.Checked;
+                            }
+                            else
+                            {
+                                state[i] = CheckBoxState.Unchecked;
+                            }
+                        }
+
+                        stateChanged = true;
+                        this.Value = state;
+                        this.DataGridView.InvalidateCell(this);
+                        this.DataGridView.NotifyCurrentCellDirty(true);
+                        break;
+                    }
+                }
+
+                if (stateChanged)
+                {
+                    // Перерисовываем ячейку, чтобы обновить фон
+                    this.DataGridView.InvalidateCell(this);
+                }
+            }
         }
-    }
 
-    public override object Clone()
-    {
-        DataGridViewOTKControlCell cell = (DataGridViewOTKControlCell)base.Clone();
-        return cell;
-    }
-
-    public override Type EditType
-    {
-        get
+        public override object DefaultNewRowValue
         {
-            return null;
+            get
+            {
+                return new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
+            }
         }
-    }
 
-    public override Type ValueType
-    {
-        get
+        public override object Clone()
         {
-            return typeof(bool[]);
+            DataGridViewOTKControlCell cell = (DataGridViewOTKControlCell)base.Clone();
+            return cell;
         }
-        set
-        {
-            base.ValueType = value;
-        }
-    }
 
-    public override Type FormattedValueType
-    {
-        get
+        public override Type EditType
         {
-            return typeof(string);
+            get
+            {
+                return null;
+            }
+        }
+
+        public override Type ValueType
+        {
+            get
+            {
+                return typeof(bool[]);
+            }
+            set
+            {
+                base.ValueType = value;
+            }
+        }
+
+        public override Type FormattedValueType
+        {
+            get
+            {
+                return typeof(string);
+            }
         }
     }
 }
