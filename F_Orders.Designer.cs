@@ -1041,7 +1041,7 @@
 			this.dGV_Tehnology.Margin = new System.Windows.Forms.Padding(5);
 			this.dGV_Tehnology.MultiSelect = false;
 			this.dGV_Tehnology.Name = "dGV_Tehnology";
-			this.dGV_Tehnology.ReadOnly = true;
+			//this.dGV_Tehnology.ReadOnly = true;
 			this.dGV_Tehnology.RowHeadersWidth = 4;
 			this.dGV_Tehnology.Size = new System.Drawing.Size(487, 156);
 			this.dGV_Tehnology.TabIndex = 5;

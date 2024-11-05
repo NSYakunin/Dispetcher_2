@@ -112,6 +112,7 @@ namespace Dispetcher2
             dGV_Tehnology.Columns["Col_Oper"].DataPropertyName = DT_Tehnology.Columns["Oper"].ToString();
             dGV_Tehnology.Columns["Col_Tpd"].DataPropertyName = DT_Tehnology.Columns["Tpd"].ToString();
             dGV_Tehnology.Columns["Col_Tsh"].DataPropertyName = DT_Tehnology.Columns["Tsh"].ToString();
+            DT_Tehnology.Columns.Add("OTKControl", typeof(bool[]));
             //***********************************************************************************************
             dGV_FactOperation.AutoGenerateColumns = false;
             dGV_FactOperation.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -134,6 +135,22 @@ namespace Dispetcher2
             cB_InDetail.Checked = true;
             if (Environment.UserName == "NSYakunin" || Environment.UserName == "IAPotapov") this.btnkoop.Visible = true;
             else this.btnkoop.Visible = false;
+
+            // Добавляем пользовательскую колонку
+            DataGridViewOTKControlColumn otkColumn = new DataGridViewOTKControlColumn();
+            otkColumn.Name = "Col_OTKControl";
+            otkColumn.HeaderText = "Контроль ОТК (Предъявление)";
+            otkColumn.Width = 120;
+            otkColumn.ReadOnly = false;
+            dGV_Tehnology.ReadOnly = false;
+            otkColumn.DataPropertyName = "OTKControl";
+            dGV_Tehnology.Columns.Add(otkColumn);
+
+            // После установки DataSource для dGV_Tehnology
+
+            dGV_Tehnology.EditMode = DataGridViewEditMode.EditOnEnter;
+            dGV_Tehnology.EditMode = DataGridViewEditMode.EditOnKeystrokeOrF2;
+
             // 
         }
 
@@ -262,6 +279,14 @@ namespace Dispetcher2
                         //Detail.GetTehnologyFromLoodsman(ref DT_Tehnology,false);
                         Detail.GetTehnologyFromLoodsman(ref DT_Tehnology, IdLoodsman);
                         if (DT_Tehnology.Rows.Count > 0) DT_Tehnology.Rows.Add(32, "Передача детали на СГД", 0, 0);//32 - Передача детали на СГД //Sp_Operations
+                                                                                                                   // После установки DataSource для dGV_Tehnology
+                        foreach (DataGridViewRow row1 in dGV_Tehnology.Rows)
+                        {
+                            if (!row1.IsNewRow)
+                            {
+                                row1.Cells["Col_OTKControl"].Value = new bool[] { false, false, false };
+                            }
+                        }
                     }
 
                     //*********************************************************************************************************************************
@@ -700,5 +725,11 @@ namespace Dispetcher2
 				}
 			}
 		}
-	}
+
+        private void DGV_Tehnology_DefaultValuesNeeded_1(object sender, DataGridViewRowEventArgs e)
+        {
+            // Устанавливаем значение по умолчанию для пользовательской ячейки ОТК контроля
+            e.Row.Cells["Col_OTKControl"].Value = new bool[] { false, false, false };
+        }
+    }
 }

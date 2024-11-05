@@ -168,6 +168,8 @@
     <Compile Include="Class\C_TimeSheetsV1.cs" />
     <Compile Include="Class\C_UpdaterSP.cs" />
     <Compile Include="Class\C_Users.cs" />
+    <Compile Include="Class\DataGridViewOTKControlCell.cs" />
+    <Compile Include="Class\DataGridViewOTKControlColumn.cs" />
     <Compile Include="Class\Detail.cs" />
     <Compile Include="Class\DispetcherContainer.cs" />
     <Compile Include="Class\Employee.cs" />
@@ -180,6 +182,7 @@
     <Compile Include="Class\LaborReport.cs" />
     <Compile Include="Class\Operation.cs" />
     <Compile Include="Class\Order.cs" />
+    <Compile Include="Class\OTKControlState.cs" />
     <Compile Include="Class\Receipt.cs" />
     <Compile Include="Class\RepositoryFactory.cs" />
     <Compile Include="Class\Server.cs" />
