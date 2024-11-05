@@ -145,12 +145,9 @@ namespace Dispetcher2
             dGV_Tehnology.ReadOnly = false;
             otkColumn.DataPropertyName = "OTKControl";
             dGV_Tehnology.Columns.Add(otkColumn);
-
             // После установки DataSource для dGV_Tehnology
-
             dGV_Tehnology.EditMode = DataGridViewEditMode.EditOnEnter;
             dGV_Tehnology.EditMode = DataGridViewEditMode.EditOnKeystrokeOrF2;
-
             // 
         }
 
@@ -190,7 +187,6 @@ namespace Dispetcher2
                 tB_ShcmDetail.Select(0, tB_ShcmDetail.Text.ToString().Length);
             }
         }
-
         private void dGV_Orders_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -227,44 +223,6 @@ namespace Dispetcher2
                 {
                     CurrencyManager cmgr = (CurrencyManager)dGV_Details.BindingContext[dGV_Details.DataSource, dGV_Details.DataMember];
                     DataRow row = ((DataRowView)cmgr.Current).Row;
-                    //------------------------------------------
-
-      //              object CurIdLoodsman = "";
-      //              object actualLoodsmanVersion = "";
-      //              object rigthtLoodsmanVersion = "";
-      //              string infoText = "";
-
-      //              using (var con = new SqlConnection())
-      //              {
-      //                  con.ConnectionString = config.ConnectionString;
-      //                  SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };
-      //                  cmd.CommandText = $"SELECT TOP 1 [IdLoodsman] FROM [Dispetcher2].[dbo].[Sp_Details] where ShcmDetail = '{row["ShcmDetail"]}'";
-      //                  cmd.Connection = con;
-      //                  cmd.Connection.Open();
-      //                  CurIdLoodsman = cmd.ExecuteScalar();
-      //                  if (CurIdLoodsman == null) throw new Exception("Неверно ввели название детали!");
-
-      //                  cmd.CommandText = $"SELECT [version] FROM [НИИПМ].[dbo].[rvwVersions] WHERE id = {CurIdLoodsman}";
-      //                  actualLoodsmanVersion = cmd.ExecuteScalar();
-
-
-      //                  //cmd.CommandText = $"SELECT TOP 1 [version] FROM [НИИПМ].[dbo].[rvwVersions]" +
-      //                  //    $" where product = '{row["ShcmDetail"]}' AND state = 'Утвержден' ORDER BY version DESC";
-      //                  cmd.CommandText = "SELECT TOP 1[version] FROM[НИИПМ].[dbo].[rvwVersions] where product = ShcmDetail AND state in ('Утвержден', 'Архив', 'Проектирование') " +
-      //                                  $"AND type in ('Сборочная единица', 'Деталь') ORDER BY version DESC";
-
-
-						//rigthtLoodsmanVersion = cmd.ExecuteScalar();
-
-      //                  infoText = $"Текущая версия {row["ShcmDetail"]} в Диспетчере - {actualLoodsmanVersion}\n" +
-      //                      $"Актуальная же версия в ЛОЦМАН -  {rigthtLoodsmanVersion}\nОбновите заказ.";
-      //              }
-
-      //              if (actualLoodsmanVersion.ToString() != rigthtLoodsmanVersion.ToString())
-      //              {
-      //                  MessageBox.Show($"{infoText}", "!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-      //              }
-                    //---------------------------------------------
 
                     if (row["IdLoodsman"] == DBNull.Value) //inside order
                     {
@@ -275,8 +233,8 @@ namespace Dispetcher2
                     else//Get technology from loodsman
                     {
                         long IdLoodsman = Convert.ToInt64(row["IdLoodsman"]);
-                        //C_Details Detail = new C_Details(IdLoodsman);
-                        //Detail.GetTehnologyFromLoodsman(ref DT_Tehnology,false);
+                        Console.WriteLine(IdLoodsman);
+
                         Detail.GetTehnologyFromLoodsman(ref DT_Tehnology, IdLoodsman);
                         if (DT_Tehnology.Rows.Count > 0) DT_Tehnology.Rows.Add(32, "Передача детали на СГД", 0, 0);//32 - Передача детали на СГД //Sp_Operations
                                                                                                                    // После установки DataSource для dGV_Tehnology
@@ -574,16 +532,6 @@ namespace Dispetcher2
         private void btn_SearchSHCM_F_Click(object sender, EventArgs e)
         {
             searchForm.ShowDialog();
-        }
-
-        private void groupBox1_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void dGV_FactOperation_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
         }
 
         private void btnkoop_Click(object sender, EventArgs e)

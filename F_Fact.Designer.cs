@@ -196,7 +196,6 @@ namespace Dispetcher2
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "ЩЦМ детали (ENTER -поиск)";
-            this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
             // 
             // tB_ShcmDetail
             // 
@@ -580,7 +579,6 @@ namespace Dispetcher2
             this.dGV_FactOperation.Size = new System.Drawing.Size(831, 151);
             this.dGV_FactOperation.TabIndex = 15;
             this.dGV_FactOperation.TabStop = false;
-            this.dGV_FactOperation.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dGV_FactOperation_CellContentClick);
             this.dGV_FactOperation.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dGV_FactOperation_KeyDown);
             // 
             // Col_FactOper
