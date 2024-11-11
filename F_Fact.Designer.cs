@@ -58,6 +58,7 @@ namespace Dispetcher2
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.dTimeP_Fact = new System.Windows.Forms.DateTimePicker();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.saveOTKBTN = new System.Windows.Forms.Button();
             this.btnkoop = new System.Windows.Forms.Button();
             this.btn_CloseAllWorks = new System.Windows.Forms.Button();
             this.cB_InDetail = new System.Windows.Forms.CheckBox();
@@ -83,7 +84,7 @@ namespace Dispetcher2
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.saveOTKBTN = new System.Windows.Forms.Button();
+            this.SaveInBD = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dGV_Orders)).BeginInit();
             this.OrderContextMenuStrip.SuspendLayout();
             this.gB_OrderName.SuspendLayout();
@@ -380,6 +381,7 @@ namespace Dispetcher2
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.SaveInBD);
             this.groupBox3.Controls.Add(this.saveOTKBTN);
             this.groupBox3.Controls.Add(this.btnkoop);
             this.groupBox3.Controls.Add(this.btn_CloseAllWorks);
@@ -399,11 +401,21 @@ namespace Dispetcher2
             this.groupBox3.TabIndex = 17;
             this.groupBox3.TabStop = false;
             // 
+            // saveOTKBTN
+            // 
+            this.saveOTKBTN.Location = new System.Drawing.Point(9, 220);
+            this.saveOTKBTN.Name = "saveOTKBTN";
+            this.saveOTKBTN.Size = new System.Drawing.Size(91, 23);
+            this.saveOTKBTN.TabIndex = 1014;
+            this.saveOTKBTN.Text = "Сохранить ОТК";
+            this.saveOTKBTN.UseVisualStyleBackColor = true;
+            this.saveOTKBTN.Click += new System.EventHandler(this.saveOTKBTN_Click);
+            // 
             // btnkoop
             // 
-            this.btnkoop.Location = new System.Drawing.Point(145, 220);
+            this.btnkoop.Location = new System.Drawing.Point(183, 220);
             this.btnkoop.Name = "btnkoop";
-            this.btnkoop.Size = new System.Drawing.Size(192, 24);
+            this.btnkoop.Size = new System.Drawing.Size(154, 24);
             this.btnkoop.TabIndex = 1013;
             this.btnkoop.Text = "Закрыть все на кооп";
             this.btnkoop.UseVisualStyleBackColor = true;
@@ -693,15 +705,15 @@ namespace Dispetcher2
             this.tableLayoutPanel1.Size = new System.Drawing.Size(984, 632);
             this.tableLayoutPanel1.TabIndex = 1001;
             // 
-            // saveOTKBTN
+            // SaveInBD
             // 
-            this.saveOTKBTN.Location = new System.Drawing.Point(9, 220);
-            this.saveOTKBTN.Name = "saveOTKBTN";
-            this.saveOTKBTN.Size = new System.Drawing.Size(115, 23);
-            this.saveOTKBTN.TabIndex = 1014;
-            this.saveOTKBTN.Text = "Сохранить ОТК";
-            this.saveOTKBTN.UseVisualStyleBackColor = true;
-            this.saveOTKBTN.Click += new System.EventHandler(this.saveOTKBTN_Click);
+            this.SaveInBD.Location = new System.Drawing.Point(107, 220);
+            this.SaveInBD.Name = "SaveInBD";
+            this.SaveInBD.Size = new System.Drawing.Size(66, 23);
+            this.SaveInBD.TabIndex = 1015;
+            this.SaveInBD.Text = "БД";
+            this.SaveInBD.UseVisualStyleBackColor = true;
+            this.SaveInBD.Click += new System.EventHandler(this.SaveInBD_Click);
             // 
             // F_Fact
             // 
@@ -794,5 +806,6 @@ namespace Dispetcher2
         private System.Windows.Forms.DataGridViewTextBoxColumn Col_Tpd;
         private System.Windows.Forms.DataGridViewTextBoxColumn Col_Tsh;
         private System.Windows.Forms.Button saveOTKBTN;
+        private System.Windows.Forms.Button SaveInBD;
     }
 }

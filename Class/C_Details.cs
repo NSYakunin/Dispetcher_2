@@ -34,35 +34,17 @@ namespace Dispetcher2.Class
                                                                               //cmd.CommandText = "SELECT v.product AS shcm,LEFT(v2.product, 3) + ' ' + att.value AS oper,Tpd.value AS Tpd,Tsh.value AS Tsh" + "\n" +
                                                                               //sel = "SELECT LEFT(v2.product, 3) + ' ' + att.value AS Oper,Tpd.asfloat AS Tpd,Tsh.asfloat AS Tsh";
                                                                               //sel = "SELECT LEFT(v2.product, 3) + ' ' + att.value AS Oper,Tpd.asfloat/60 AS Tpd,Tsh.asfloat/60 AS Tsh";
-                    cmd.CommandText = /*sel + "\n" +
-                                  "FROM rvwVersions AS v" + "\n" +
-                                  "INNER JOIN rvwRelations AS r ON r.idchild = v.id AND r.idlinktype = 33" + "\n" +
-                                  "INNER JOIN rvwRelations AS r2 ON r2.idparent = r.idparent AND r2.idlinktype = 32" + "\n" +
-                                  "INNER JOIN rvwVersions AS v2 ON v2.id = r2.idChild" + "\n" +
-                                  "INNER JOIN rvwAttributes AS att ON att.idversion = v2.id AND att.idattr = 235" + "\n" +
-                                  "INNER JOIN rvwAttributes AS Tpd ON Tpd.idversion = v2.id AND Tpd.idattr = 321" + "\n" +
-                                  "INNER JOIN rvwAttributes AS Tsh ON Tsh.idversion = v2.id AND Tsh.idattr = 195" + "\n" +
-                                  "WHERE v.id = @IdLoodsman" + "\n" + //IdLoodsman
-                                  "ORDER BY oper";*/
-                                      /*"SELECT ra.value + ' ' + att.value AS Oper,Tpd.asfloat AS Tpd,Tsh.asfloat AS Tsh " + "\n" +
-                                      "FROM rvwAttributes AS v" + "\n" +
-                                      "INNER JOIN rvwRelations AS r ON r.idchild = v.IdVersion AND r.idlinktype = 33" + "\n" +
-                                      "INNER JOIN rvwRelations AS r2 ON r2.idparent = r.idparent AND r2.idlinktype = 32" + "\n" +
-                                      "INNER JOIN rvwRelationAttributes ra ON ra.idrelation  = r2.id and ra.attrtype = 0" + "\n" +
-                                      "INNER JOIN rvwAttributes AS att ON att.idversion = r2.idChild AND att.idattr = 235" + "\n" +
-                                      "LEFT JOIN rvwAttributes AS Tpd ON Tpd.idversion = r2.idChild AND Tpd.idattr = 321" + "\n" +
-                                      "LEFT JOIN rvwAttributes AS Tsh ON Tsh.idversion = r2.idChild AND Tsh.idattr = 195" + "\n" +
-                                      "WHERE v.IdVersion = @IdLoodsman and v.idattr = 235" + "\n" +
-                                      "ORDER BY oper";*/
-                                      "Select ra.value + ' ' + att.value AS Oper,Tpd.value AS Tpd,Tsh.asfloat AS Tsh" + "\n" +
-                                      "FROM [НИИПМ].[dbo].[rvwRelations] r" + "\n" +
-                                      "INNER JOIN rvwRelations AS r2 ON r2.idparent = r.idparent AND r2.idlinktype = 32" + "\n" +
-                                      "INNER JOIN rvwRelationAttributes ra ON ra.idrelation  = r2.id and ra.attrtype = 0" + "\n" +
-                                      "INNER JOIN rvwAttributes AS att ON att.idversion = r2.idChild AND att.idattr = 235" + "\n" +
-                                      "LEFT JOIN rvwAttributes AS Tpd ON Tpd.idversion = r2.idChild AND Tpd.idattr = 321" + "\n" +
-                                      "LEFT JOIN rvwAttributes AS Tsh ON Tsh.idversion = r2.idChild AND Tsh.idattr = 195" + "\n" +
-                                      "where  r.idchild=@IdLoodsman and r.idlinktype=33" + "\n" +
-                                      "ORDER BY oper";
+                    cmd.CommandText =
+                        "SELECT ra.value + ' ' + att.value AS Oper, Tpd.value AS Tpd, Tsh.asfloat AS Tsh, @IdLoodsman AS IdLoodsman" + "\n" +
+                        "FROM [НИИПМ].[dbo].[rvwRelations] r" + "\n" +
+                        "INNER JOIN rvwRelations AS r2 ON r2.idparent = r.idparent AND r2.idlinktype = 32" + "\n" +
+                        "INNER JOIN rvwRelationAttributes ra ON ra.idrelation  = r2.id and ra.attrtype = 0" + "\n" +
+                        "INNER JOIN rvwAttributes AS att ON att.idversion = r2.idChild AND att.idattr = 235" + "\n" +
+                        "LEFT JOIN rvwAttributes AS Tpd ON Tpd.idversion = r2.idChild AND Tpd.idattr = 321" + "\n" +
+                        "LEFT JOIN rvwAttributes AS Tsh ON Tsh.idversion = r2.idChild AND Tsh.idattr = 195" + "\n" +
+                        "WHERE r.idchild = @IdLoodsman AND r.idlinktype = 33" + "\n" +
+                        "ORDER BY Oper";
+
                     cmd.Connection = con;
                     cmd.Parameters.Add(new SqlParameter("@IdLoodsman", SqlDbType.BigInt));
                     cmd.Parameters["@IdLoodsman"].Value = IdLoodsman;

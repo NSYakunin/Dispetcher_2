@@ -150,6 +150,14 @@ namespace Dispetcher2
             dGV_Tehnology.EditMode = DataGridViewEditMode.EditOnEnter;
             dGV_Tehnology.EditMode = DataGridViewEditMode.EditOnKeystrokeOrF2;
             // 
+
+            // Добавьте после инициализации других колонок
+            DataGridViewTextBoxColumn idLoodsmanColumn = new DataGridViewTextBoxColumn();
+            idLoodsmanColumn.Name = "Col_IdLoodsman";
+            idLoodsmanColumn.HeaderText = "IdLoodsman";
+            idLoodsmanColumn.DataPropertyName = "IdLoodsman";
+            idLoodsmanColumn.Visible = false; // Установите в true, если хотите отображать колонку
+            dGV_Tehnology.Columns.Add(idLoodsmanColumn);
         }
 
         private void F_Fact_Enter(object sender, EventArgs e)
@@ -239,9 +247,9 @@ namespace Dispetcher2
 
 
                             long IdLoodsman = Convert.ToInt64(row["IdLoodsman"]);
-  
-                            //string rowData = string.Join(Environment.NewLine, row.Table.Columns.Cast<DataColumn>().Select(c => $"{c.ColumnName}: {row[c]}"));
-                            //MessageBox.Show(rowData);
+
+                            string rowData = string.Join(Environment.NewLine, row.Table.Columns.Cast<DataColumn>().Select(c => $"{c.ColumnName}: {row[c]}"));
+                            MessageBox.Show(rowData);
 
                             Detail.GetTehnologyFromLoodsman(ref DT_Tehnology, IdLoodsman);
                             if (DT_Tehnology.Rows.Count > 0) DT_Tehnology.Rows.Add(32, "Передача детали на СГД", 0, 0);//32 - Передача детали на СГД //Sp_Operations
@@ -689,6 +697,108 @@ namespace Dispetcher2
         }
 
         private void saveOTKBTN_Click(object sender, EventArgs e)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            // Get the selected detail information from dGV_Details
+            string shcmDetail = "";
+            string pk_IdOrderDetail = "";
+            if (dGV_Details.CurrentRow != null)
+            {
+                DataRowView detailRowView = dGV_Details.CurrentRow.DataBoundItem as DataRowView;
+                if (detailRowView != null)
+                {
+                    DataRow detailRow = detailRowView.Row;
+                    shcmDetail = detailRow["ShcmDetail"].ToString();
+                    pk_IdOrderDetail = detailRow["PK_IdOrderDetail"].ToString();
+                }
+            }
+
+            // Get the selected order information from dGV_Orders
+            string orderNum = "";
+            if (dGV_Orders.CurrentRow != null)
+            {
+                DataRowView orderRowView = dGV_Orders.CurrentRow.DataBoundItem as DataRowView;
+                if (orderRowView != null)
+                {
+                    DataRow orderRow = orderRowView.Row;
+                    orderNum = orderRow["OrderNum"].ToString();
+                }
+            }
+
+            // Include the detail and order information in the output
+            sb.AppendLine($"OrderNum: {orderNum}");
+            sb.AppendLine($"ShcmDetail: {shcmDetail}");
+            sb.AppendLine($"PK_IdOrderDetail: {pk_IdOrderDetail}");
+            sb.AppendLine(new string('=', 50)); // Separator
+
+            // Loop through the rows of dGV_Tehnology
+            foreach (DataGridViewRow row in dGV_Tehnology.Rows)
+            {
+                // Skip new row placeholder if AllowUserToAddRows is true
+                if (row.IsNewRow) continue;
+
+                sb.AppendLine($"Строка {row.Index + 1}:");
+
+                foreach (DataGridViewCell cell in row.Cells)
+                {
+                    string columnName = cell.OwningColumn.HeaderText;
+                    string cellValue = "";
+
+                    if (cell.Value != null)
+                    {
+                        if (cell.OwningColumn.Name == "Col_OTKControl")
+                        {
+                            // Handle the custom OTKControl column
+                            CheckBoxState[] otkControlValue = cell.Value as CheckBoxState[];
+                            if (otkControlValue != null && otkControlValue.Length == 3)
+                            {
+                                cellValue = $"[{GetCheckBoxStateString(otkControlValue[0])}, {GetCheckBoxStateString(otkControlValue[1])}, {GetCheckBoxStateString(otkControlValue[2])}]";
+                            }
+                            else
+                            {
+                                cellValue = "[null]";
+                            }
+                        }
+                        else
+                        {
+                            cellValue = cell.Value.ToString();
+                        }
+                    }
+                    else
+                    {
+                        cellValue = "[null]";
+                    }
+
+                    sb.AppendLine($"{columnName}: {cellValue}");
+                }
+
+                sb.AppendLine(new string('-', 50)); // Separator between rows
+            }
+
+            // Display the collected data
+            MessageBox.Show(sb.ToString(), "Данные технологии", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        // Helper method to convert CheckBoxState to string
+        private string GetCheckBoxStateString(CheckBoxState state)
+        {
+            switch (state)
+            {
+                case CheckBoxState.Unchecked:
+                    return "Unchecked";
+                case CheckBoxState.Checked:
+                    return "Checked";
+                case CheckBoxState.CrossedBrown:
+                    return "CrossedBrown";
+                case CheckBoxState.CrossedRed:
+                    return "CrossedRed";
+                default:
+                    return "Unknown";
+            }
+        }
+
+        private void SaveInBD_Click(object sender, EventArgs e)
         {
 
         }
