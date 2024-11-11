@@ -222,49 +222,56 @@ namespace Dispetcher2
                 e.SuppressKeyPress = true;
                 if (dGV_Details.CurrentRow != null)
                 {
-                    CurrencyManager cmgr = (CurrencyManager)dGV_Details.BindingContext[dGV_Details.DataSource, dGV_Details.DataMember];
-                    DataRow row = ((DataRowView)cmgr.Current).Row;
-
-                    if (row["IdLoodsman"] == DBNull.Value) //inside order
+                    //CurrencyManager cmgr = (CurrencyManager)dGV_Details.BindingContext[dGV_Details.DataSource, dGV_Details.DataMember];
+                    //DataRow row = ((DataRowView)cmgr.Current).Row;
+                    DataRowView rowView = dGV_Details.CurrentRow.DataBoundItem as DataRowView;
+                    if (rowView != null)
                     {
-                        Detail.SelectTehnologyForType111(Convert.ToInt64(row["FK_IdDetail"]), ref DT_Tehnology);
-                    }
-
-                    //********************************************************************************************************************************
-                    else//Get technology from loodsman
-                    {
-                        long IdLoodsman = Convert.ToInt64(row["IdLoodsman"]);
-                        Console.WriteLine(IdLoodsman);
-
-                        Detail.GetTehnologyFromLoodsman(ref DT_Tehnology, IdLoodsman);
-                        if (DT_Tehnology.Rows.Count > 0) DT_Tehnology.Rows.Add(32, "Передача детали на СГД", 0, 0);//32 - Передача детали на СГД //Sp_Operations
-                                                                                                                   // После установки DataSource для dGV_Tehnology
-                        foreach (DataGridViewRow row1 in dGV_Tehnology.Rows)
+                        DataRow row = rowView.Row;
+                        if (row["IdLoodsman"] == DBNull.Value) //inside order
                         {
-                            if (!row1.IsNewRow)
+                            Detail.SelectTehnologyForType111(Convert.ToInt64(row["FK_IdDetail"]), ref DT_Tehnology);
+                        }
+
+                        //********************************************************************************************************************************
+                        else//Get technology from loodsman
+                        {
+
+
+                            long IdLoodsman = Convert.ToInt64(row["IdLoodsman"]);
+  
+                            //string rowData = string.Join(Environment.NewLine, row.Table.Columns.Cast<DataColumn>().Select(c => $"{c.ColumnName}: {row[c]}"));
+                            //MessageBox.Show(rowData);
+
+                            Detail.GetTehnologyFromLoodsman(ref DT_Tehnology, IdLoodsman);
+                            if (DT_Tehnology.Rows.Count > 0) DT_Tehnology.Rows.Add(32, "Передача детали на СГД", 0, 0);//32 - Передача детали на СГД //Sp_Operations
+                                                                                                                       // После установки DataSource для dGV_Tehnology
+                            foreach (DataGridViewRow row1 in dGV_Tehnology.Rows)
                             {
-                                row1.Cells["Col_OTKControl"].Value = new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
+                                if (!row1.IsNewRow)
+                                {
+                                    row1.Cells["Col_OTKControl"].Value = new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
+                                }
                             }
                         }
-                    }
 
-                    //*********************************************************************************************************************************
+                        //*********************************************************************************************************************************
                     
-                    long PK_IdOrderDetail = Convert.ToInt64(row["PK_IdOrderDetail"]);
+                        long PK_IdOrderDetail = Convert.ToInt64(row["PK_IdOrderDetail"]);
        
-                    if (cB_InDetail.Checked)
-                    {
-                        dGV_FactOperation.Columns["Col_DateFactOper"].Visible = true;
-                        dGV_FactOperation.Columns["Col_FK_LoginWorker"].Visible = true;
-                        Detail.SelectFullFactOperForDetail(PK_IdOrderDetail, ref DT_FactOper);
-                    }
-                    else
-                    {
-                        dGV_FactOperation.Columns["Col_DateFactOper"].Visible = false;
-                        dGV_FactOperation.Columns["Col_FK_LoginWorker"].Visible = false;
-                        Detail.SelectFactOperForDetail(PK_IdOrderDetail, ref DT_FactOper);
-                    }
-                    
+                        if (cB_InDetail.Checked)
+                        {
+                            dGV_FactOperation.Columns["Col_DateFactOper"].Visible = true;
+                            dGV_FactOperation.Columns["Col_FK_LoginWorker"].Visible = true;
+                            Detail.SelectFullFactOperForDetail(PK_IdOrderDetail, ref DT_FactOper);
+                        }
+                        else
+                        {
+                            dGV_FactOperation.Columns["Col_DateFactOper"].Visible = false;
+                            dGV_FactOperation.Columns["Col_FK_LoginWorker"].Visible = false;
+                            Detail.SelectFactOperForDetail(PK_IdOrderDetail, ref DT_FactOper);
+                        }
+                    } 
                 }
             }
         }
@@ -679,6 +686,11 @@ namespace Dispetcher2
         {
             // Устанавливаем значение по умолчанию для пользовательской ячейки ОТК контроля
             e.Row.Cells["Col_OTKControl"].Value = new bool[] { false, false, false };
+        }
+
+        private void saveOTKBTN_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

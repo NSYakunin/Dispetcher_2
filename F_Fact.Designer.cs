@@ -31,8 +31,8 @@ namespace Dispetcher2
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dGV_Orders = new System.Windows.Forms.DataGridView();
             this.Col_OrderNum = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.OrderContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -83,6 +83,7 @@ namespace Dispetcher2
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.saveOTKBTN = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dGV_Orders)).BeginInit();
             this.OrderContextMenuStrip.SuspendLayout();
             this.gB_OrderName.SuspendLayout();
@@ -281,8 +282,8 @@ namespace Dispetcher2
             // 
             // Col_Amount
             // 
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.Col_Amount.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.Col_Amount.DefaultCellStyle = dataGridViewCellStyle3;
             this.Col_Amount.Frozen = true;
             this.Col_Amount.HeaderText = "Кол-во";
             this.Col_Amount.MinimumWidth = 20;
@@ -379,6 +380,7 @@ namespace Dispetcher2
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.saveOTKBTN);
             this.groupBox3.Controls.Add(this.btnkoop);
             this.groupBox3.Controls.Add(this.btn_CloseAllWorks);
             this.groupBox3.Controls.Add(this.cB_InDetail);
@@ -605,8 +607,8 @@ namespace Dispetcher2
             // 
             // Col_AmountDetails
             // 
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.Col_AmountDetails.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.Col_AmountDetails.DefaultCellStyle = dataGridViewCellStyle4;
             this.Col_AmountDetails.HeaderText = "Кол-во";
             this.Col_AmountDetails.MinimumWidth = 20;
             this.Col_AmountDetails.Name = "Col_AmountDetails";
@@ -690,6 +692,16 @@ namespace Dispetcher2
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(984, 632);
             this.tableLayoutPanel1.TabIndex = 1001;
+            // 
+            // saveOTKBTN
+            // 
+            this.saveOTKBTN.Location = new System.Drawing.Point(9, 220);
+            this.saveOTKBTN.Name = "saveOTKBTN";
+            this.saveOTKBTN.Size = new System.Drawing.Size(115, 23);
+            this.saveOTKBTN.TabIndex = 1014;
+            this.saveOTKBTN.Text = "Сохранить ОТК";
+            this.saveOTKBTN.UseVisualStyleBackColor = true;
+            this.saveOTKBTN.Click += new System.EventHandler(this.saveOTKBTN_Click);
             // 
             // F_Fact
             // 
@@ -781,5 +793,6 @@ namespace Dispetcher2
         private System.Windows.Forms.DataGridViewTextBoxColumn Col_Oper;
         private System.Windows.Forms.DataGridViewTextBoxColumn Col_Tpd;
         private System.Windows.Forms.DataGridViewTextBoxColumn Col_Tsh;
+        private System.Windows.Forms.Button saveOTKBTN;
     }
 }
