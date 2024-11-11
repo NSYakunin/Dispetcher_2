@@ -487,7 +487,7 @@ namespace Dispetcher2.Class
                         long idLoodsman = Convert.ToInt64(dr["IdLoodsman"]);
 
                         // Retrieve the OperationID
-                        string getOperationIDQuery = "SELECT OperationID FROM Operations WHERE PK_IdOrderDetail = @PK_IdOrderDetail AND Oper = @Oper";
+                        string getOperationIDQuery = "SELECT OperationID FROM OperationsOTK WHERE PK_IdOrderDetail = @PK_IdOrderDetail AND Oper = @Oper";
                         SqlCommand cmdGetOperationID = new SqlCommand(getOperationIDQuery, con);
                         cmdGetOperationID.Parameters.AddWithValue("@PK_IdOrderDetail", PK_IdOrderDetail);
                         cmdGetOperationID.Parameters.AddWithValue("@Oper", oper);

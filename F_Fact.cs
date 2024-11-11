@@ -953,7 +953,7 @@ namespace Dispetcher2
         private int InsertOrUpdateOperation(SqlConnection con, SqlTransaction transaction, OperationData op)
         {
             // Check if operation already exists
-            string checkOperationQuery = "SELECT OperationID FROM Operations WHERE PK_IdOrderDetail = @PK_IdOrderDetail AND Oper = @Oper";
+            string checkOperationQuery = "SELECT OperationID FROM OperationsOTK WHERE PK_IdOrderDetail = @PK_IdOrderDetail AND Oper = @Oper";
             SqlCommand checkCmd = new SqlCommand(checkOperationQuery, con, transaction);
             checkCmd.Parameters.AddWithValue("@PK_IdOrderDetail", op.PK_IdOrderDetail);
             checkCmd.Parameters.AddWithValue("@Oper", op.Oper);
@@ -964,7 +964,7 @@ namespace Dispetcher2
             {
                 // Operation exists, update it
                 operationID = Convert.ToInt32(result);
-                string updateOperationQuery = "UPDATE Operations SET Tpd = @Tpd, Tsh = @Tsh, IdLoodsman = @IdLoodsman WHERE OperationID = @OperationID";
+                string updateOperationQuery = "UPDATE OperationsOTK SET Tpd = @Tpd, Tsh = @Tsh, IdLoodsman = @IdLoodsman WHERE OperationID = @OperationID";
                 SqlCommand updateCmd = new SqlCommand(updateOperationQuery, con, transaction);
                 updateCmd.Parameters.AddWithValue("@Tpd", (object)op.Tpd ?? DBNull.Value);
                 updateCmd.Parameters.AddWithValue("@Tsh", (object)op.Tsh ?? DBNull.Value);
@@ -975,7 +975,7 @@ namespace Dispetcher2
             else
             {
                 // Operation does not exist, insert it
-                string insertOperationQuery = "INSERT INTO Operations (PK_IdOrderDetail, Oper, Tpd, Tsh, IdLoodsman) OUTPUT INSERTED.OperationID VALUES (@PK_IdOrderDetail, @Oper, @Tpd, @Tsh, @IdLoodsman)";
+                string insertOperationQuery = "INSERT INTO OperationsOTK (PK_IdOrderDetail, Oper, Tpd, Tsh, IdLoodsman) OUTPUT INSERTED.OperationID VALUES (@PK_IdOrderDetail, @Oper, @Tpd, @Tsh, @IdLoodsman)";
                 SqlCommand insertCmd = new SqlCommand(insertOperationQuery, con, transaction);
                 insertCmd.Parameters.AddWithValue("@PK_IdOrderDetail", op.PK_IdOrderDetail);
                 insertCmd.Parameters.AddWithValue("@Oper", op.Oper);
