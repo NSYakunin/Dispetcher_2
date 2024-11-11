@@ -60,6 +60,8 @@ namespace Dispetcher2
             DT_Tehnology.Columns.Add("Oper", typeof(string));
             DT_Tehnology.Columns.Add("Tpd", typeof(int));
             DT_Tehnology.Columns.Add("Tsh", typeof(int));
+            DT_Tehnology.Columns.Add("IdLoodsman", typeof(long)); // Add this line
+            DT_Tehnology.Columns.Add("OTKControl", typeof(CheckBoxState[]));
             //*************************************************
             DT_FactOper.Columns.Add("LastOper", typeof(bool));
             DT_FactOper.Columns.Add("PK_IdFactOper", typeof(long));
@@ -112,7 +114,7 @@ namespace Dispetcher2
             dGV_Tehnology.Columns["Col_Oper"].DataPropertyName = DT_Tehnology.Columns["Oper"].ToString();
             dGV_Tehnology.Columns["Col_Tpd"].DataPropertyName = DT_Tehnology.Columns["Tpd"].ToString();
             dGV_Tehnology.Columns["Col_Tsh"].DataPropertyName = DT_Tehnology.Columns["Tsh"].ToString();
-            DT_Tehnology.Columns.Add("OTKControl", typeof(CheckBoxState[]));
+            //DT_Tehnology.Columns.Add("OTKControl", typeof(CheckBoxState[]));
             //***********************************************************************************************
             dGV_FactOperation.AutoGenerateColumns = false;
             dGV_FactOperation.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -236,6 +238,7 @@ namespace Dispetcher2
                     if (rowView != null)
                     {
                         DataRow row = rowView.Row;
+                        long PK_IdOrderDetail = Convert.ToInt64(row["PK_IdOrderDetail"]);
                         if (row["IdLoodsman"] == DBNull.Value) //inside order
                         {
                             Detail.SelectTehnologyForType111(Convert.ToInt64(row["FK_IdDetail"]), ref DT_Tehnology);
@@ -251,7 +254,7 @@ namespace Dispetcher2
                             string rowData = string.Join(Environment.NewLine, row.Table.Columns.Cast<DataColumn>().Select(c => $"{c.ColumnName}: {row[c]}"));
                             MessageBox.Show(rowData);
 
-                            Detail.GetTehnologyFromLoodsman(ref DT_Tehnology, IdLoodsman);
+                            Detail.GetTehnologyFromLoodsman2(ref DT_Tehnology, IdLoodsman, PK_IdOrderDetail);
                             if (DT_Tehnology.Rows.Count > 0) DT_Tehnology.Rows.Add(32, "Передача детали на СГД", 0, 0);//32 - Передача детали на СГД //Sp_Operations
                                                                                                                        // После установки DataSource для dGV_Tehnology
                             foreach (DataGridViewRow row1 in dGV_Tehnology.Rows)
@@ -265,7 +268,7 @@ namespace Dispetcher2
 
                         //*********************************************************************************************************************************
                     
-                        long PK_IdOrderDetail = Convert.ToInt64(row["PK_IdOrderDetail"]);
+                        
        
                         if (cB_InDetail.Checked)
                         {
@@ -781,6 +784,107 @@ namespace Dispetcher2
         }
 
         // Helper method to convert CheckBoxState to string
+
+        private void SaveInBD_Click(object sender, EventArgs e)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            // Get the selected detail information from dGV_Details
+            string shcmDetail = "";
+            string pk_IdOrderDetail = "";
+            if (dGV_Details.CurrentRow != null)
+            {
+                DataRowView detailRowView = dGV_Details.CurrentRow.DataBoundItem as DataRowView;
+                if (detailRowView != null)
+                {
+                    DataRow detailRow = detailRowView.Row;
+                    shcmDetail = detailRow["ShcmDetail"].ToString();
+                    pk_IdOrderDetail = detailRow["PK_IdOrderDetail"].ToString();
+                }
+            }
+
+            // Get the selected order information from dGV_Orders
+            string orderNum = "";
+            if (dGV_Orders.CurrentRow != null)
+            {
+                DataRowView orderRowView = dGV_Orders.CurrentRow.DataBoundItem as DataRowView;
+                if (orderRowView != null)
+                {
+                    DataRow orderRow = orderRowView.Row;
+                    orderNum = orderRow["OrderNum"].ToString();
+                }
+            }
+
+            // Include the detail and order information in the output
+            sb.AppendLine($"OrderNum: {orderNum}");
+            sb.AppendLine($"ShcmDetail: {shcmDetail}");
+            sb.AppendLine($"PK_IdOrderDetail: {pk_IdOrderDetail}");
+            sb.AppendLine(new string('=', 50)); // Separator
+
+            // Collect data from dGV_Tehnology to save to the database
+            List<OperationData> operationsToSave = new List<OperationData>();
+
+            // Loop through the rows of dGV_Tehnology
+            foreach (DataGridViewRow row in dGV_Tehnology.Rows)
+            {
+                // Skip new row placeholder if AllowUserToAddRows is true
+                if (row.IsNewRow) continue;
+
+                sb.AppendLine($"Строка {row.Index + 1}:");
+
+                string oper = row.Cells["Col_Oper"].Value?.ToString() ?? "";
+                string tpd = row.Cells["Col_Tpd"].Value?.ToString() ?? "";
+                string tsh = row.Cells["Col_Tsh"].Value?.ToString() ?? "";
+                //for (int i = 0; i < row.Cells.Count; i++)
+                //{
+                //    Console.WriteLine(row.Cells[i].Value.ToString());
+                //}
+                string idLoodsman = row.Cells[4].Value?.ToString() ?? "";
+
+                // Handle the custom OTKControl column
+                CheckBoxState[] otkControlValue = row.Cells["Col_OTKControl"].Value as CheckBoxState[];
+                string otkControlStates = "";
+
+                if (otkControlValue != null && otkControlValue.Length == 3)
+                {
+                    otkControlStates = $"[{GetCheckBoxStateString(otkControlValue[0])}, {GetCheckBoxStateString(otkControlValue[1])}, {GetCheckBoxStateString(otkControlValue[2])}]";
+                }
+                else
+                {
+                    otkControlStates = "[null]";
+                }
+
+                sb.AppendLine($"Oper: {oper}");
+                sb.AppendLine($"Tpd: {tpd}");
+                sb.AppendLine($"Tsh: {tsh}");
+                sb.AppendLine($"IdLoodsman: {idLoodsman}");
+                sb.AppendLine($"Контроль ОТК (Предъявление): {otkControlStates}");
+                sb.AppendLine(new string('-', 50)); // Separator between rows
+
+                // Prepare data for saving
+                operationsToSave.Add(new OperationData
+                {
+                    PK_IdOrderDetail = Convert.ToInt64(pk_IdOrderDetail),
+                    Oper = oper,
+                    Tpd = string.IsNullOrEmpty(tpd) ? (int?)null : Convert.ToInt32(tpd),
+                    Tsh = string.IsNullOrEmpty(tsh) ? (int?)null : Convert.ToInt32(tsh),
+                    IdLoodsman = string.IsNullOrEmpty(idLoodsman) ? (long?)null : Convert.ToInt64(idLoodsman),
+                    OTKControlValues = otkControlValue,
+                    ChangeDate = DateTime.Now // You might want to track individual change dates per checkbox
+                });
+            }
+
+            // Display the collected data
+            DialogResult result = MessageBox.Show(sb.ToString(), "Данные технологии", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+
+            if (result == DialogResult.OK)
+            {
+                // Save data to the database
+                SaveOperationsToDatabase(operationsToSave);
+            }
+        }
+
+        // Helper method to convert CheckBoxState to string
         private string GetCheckBoxStateString(CheckBoxState state)
         {
             switch (state)
@@ -798,9 +902,123 @@ namespace Dispetcher2
             }
         }
 
-        private void SaveInBD_Click(object sender, EventArgs e)
+        // Class to hold operation data for saving
+        private class OperationData
         {
+            public long PK_IdOrderDetail { get; set; }
+            public string Oper { get; set; }
+            public int? Tpd { get; set; }
+            public int? Tsh { get; set; }
+            public long? IdLoodsman { get; set; }
+            public CheckBoxState[] OTKControlValues { get; set; }
+            public DateTime ChangeDate { get; set; }
+        }
 
+        private void SaveOperationsToDatabase(List<OperationData> operations)
+        {
+            try
+            {
+                using (var con = new SqlConnection(config.ConnectionString))
+                {
+                    con.Open();
+                    using (var transaction = con.BeginTransaction())
+                    {
+                        foreach (var op in operations)
+                        {
+                            // Insert or update operation
+                            int operationID = InsertOrUpdateOperation(con, transaction, op);
+
+                            // Insert or update OTKControl data
+                            if (op.OTKControlValues != null && op.OTKControlValues.Length == 3)
+                            {
+                                for (int i = 0; i < 3; i++)
+                                {
+                                    InsertOrUpdateOTKControl(con, transaction, operationID, i, op.OTKControlValues[i], op.ChangeDate);
+                                }
+                            }
+                        }
+
+                        transaction.Commit();
+                    }
+                }
+
+                MessageBox.Show("Данные успешно сохранены в базу данных.", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка при сохранении данных: " + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private int InsertOrUpdateOperation(SqlConnection con, SqlTransaction transaction, OperationData op)
+        {
+            // Check if operation already exists
+            string checkOperationQuery = "SELECT OperationID FROM Operations WHERE PK_IdOrderDetail = @PK_IdOrderDetail AND Oper = @Oper";
+            SqlCommand checkCmd = new SqlCommand(checkOperationQuery, con, transaction);
+            checkCmd.Parameters.AddWithValue("@PK_IdOrderDetail", op.PK_IdOrderDetail);
+            checkCmd.Parameters.AddWithValue("@Oper", op.Oper);
+            object result = checkCmd.ExecuteScalar();
+
+            int operationID;
+            if (result != null)
+            {
+                // Operation exists, update it
+                operationID = Convert.ToInt32(result);
+                string updateOperationQuery = "UPDATE Operations SET Tpd = @Tpd, Tsh = @Tsh, IdLoodsman = @IdLoodsman WHERE OperationID = @OperationID";
+                SqlCommand updateCmd = new SqlCommand(updateOperationQuery, con, transaction);
+                updateCmd.Parameters.AddWithValue("@Tpd", (object)op.Tpd ?? DBNull.Value);
+                updateCmd.Parameters.AddWithValue("@Tsh", (object)op.Tsh ?? DBNull.Value);
+                updateCmd.Parameters.AddWithValue("@IdLoodsman", (object)op.IdLoodsman ?? DBNull.Value);
+                updateCmd.Parameters.AddWithValue("@OperationID", operationID);
+                updateCmd.ExecuteNonQuery();
+            }
+            else
+            {
+                // Operation does not exist, insert it
+                string insertOperationQuery = "INSERT INTO Operations (PK_IdOrderDetail, Oper, Tpd, Tsh, IdLoodsman) OUTPUT INSERTED.OperationID VALUES (@PK_IdOrderDetail, @Oper, @Tpd, @Tsh, @IdLoodsman)";
+                SqlCommand insertCmd = new SqlCommand(insertOperationQuery, con, transaction);
+                insertCmd.Parameters.AddWithValue("@PK_IdOrderDetail", op.PK_IdOrderDetail);
+                insertCmd.Parameters.AddWithValue("@Oper", op.Oper);
+                insertCmd.Parameters.AddWithValue("@Tpd", (object)op.Tpd ?? DBNull.Value);
+                insertCmd.Parameters.AddWithValue("@Tsh", (object)op.Tsh ?? DBNull.Value);
+                insertCmd.Parameters.AddWithValue("@IdLoodsman", (object)op.IdLoodsman ?? DBNull.Value);
+                operationID = (int)insertCmd.ExecuteScalar();
+            }
+
+            return operationID;
+        }
+
+        private void InsertOrUpdateOTKControl(SqlConnection con, SqlTransaction transaction, int operationID, int checkBoxIndex, CheckBoxState checkBoxState, DateTime changeDate)
+        {
+            // Check if OTKControl record exists
+            string checkOTKControlQuery = "SELECT OTKControlID FROM OTKControl WHERE OperationID = @OperationID AND CheckBoxIndex = @CheckBoxIndex";
+            SqlCommand checkCmd = new SqlCommand(checkOTKControlQuery, con, transaction);
+            checkCmd.Parameters.AddWithValue("@OperationID", operationID);
+            checkCmd.Parameters.AddWithValue("@CheckBoxIndex", checkBoxIndex);
+            object result = checkCmd.ExecuteScalar();
+
+            if (result != null)
+            {
+                // OTKControl record exists, update it
+                int otkControlID = Convert.ToInt32(result);
+                string updateOTKControlQuery = "UPDATE OTKControl SET CheckBoxState = @CheckBoxState, ChangeDate = @ChangeDate WHERE OTKControlID = @OTKControlID";
+                SqlCommand updateCmd = new SqlCommand(updateOTKControlQuery, con, transaction);
+                updateCmd.Parameters.AddWithValue("@CheckBoxState", (int)checkBoxState);
+                updateCmd.Parameters.AddWithValue("@ChangeDate", changeDate);
+                updateCmd.Parameters.AddWithValue("@OTKControlID", otkControlID);
+                updateCmd.ExecuteNonQuery();
+            }
+            else
+            {
+                // OTKControl record does not exist, insert it
+                string insertOTKControlQuery = "INSERT INTO OTKControl (OperationID, CheckBoxIndex, CheckBoxState, ChangeDate) VALUES (@OperationID, @CheckBoxIndex, @CheckBoxState, @ChangeDate)";
+                SqlCommand insertCmd = new SqlCommand(insertOTKControlQuery, con, transaction);
+                insertCmd.Parameters.AddWithValue("@OperationID", operationID);
+                insertCmd.Parameters.AddWithValue("@CheckBoxIndex", checkBoxIndex);
+                insertCmd.Parameters.AddWithValue("@CheckBoxState", (int)checkBoxState);
+                insertCmd.Parameters.AddWithValue("@ChangeDate", changeDate);
+                insertCmd.ExecuteNonQuery();
+            }
         }
     }
 }

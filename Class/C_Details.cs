@@ -442,6 +442,95 @@ namespace Dispetcher2.Class
             }
         }
 
+        public void GetTehnologyFromLoodsman2(ref DataTable DT, long IdLoodsman, long PK_IdOrderDetail)
+        {
+            try
+            {
+                DT.Clear();
+                using (var con = new SqlConnection())
+                {
+                    con.ConnectionString = config.LoodsmanConnectionString;
+                    SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };
+
+                    // Original query to get technology data
+                    cmd.CommandText =
+                        "SELECT ra.value + ' ' + att.value AS Oper, Tpd.value AS Tpd, Tsh.asfloat AS Tsh, @IdLoodsman AS IdLoodsman" + "\n" +
+                        "FROM [НИИПМ].[dbo].[rvwRelations] r" + "\n" +
+                        "INNER JOIN rvwRelations AS r2 ON r2.idparent = r.idparent AND r2.idlinktype = 32" + "\n" +
+                        "INNER JOIN rvwRelationAttributes ra ON ra.idrelation  = r2.id and ra.attrtype = 0" + "\n" +
+                        "INNER JOIN rvwAttributes AS att ON att.idversion = r2.idChild AND att.idattr = 235" + "\n" +
+                        "LEFT JOIN rvwAttributes AS Tpd ON Tpd.idversion = r2.idChild AND Tpd.idattr = 321" + "\n" +
+                        "LEFT JOIN rvwAttributes AS Tsh ON Tsh.idversion = r2.idChild AND Tsh.idattr = 195" + "\n" +
+                        "WHERE r.idchild = @IdLoodsman AND r.idlinktype = 33" + "\n" +
+                        "ORDER BY Oper";
+
+                    cmd.Connection = con;
+                    cmd.Parameters.Add(new SqlParameter("@IdLoodsman", SqlDbType.BigInt));
+                    cmd.Parameters["@IdLoodsman"].Value = IdLoodsman;
+
+                    SqlDataAdapter adapter = new SqlDataAdapter();
+                    adapter.SelectCommand = cmd;
+                    adapter.Fill(DT);
+                    adapter.Dispose();
+                    con.Close();
+                }
+
+                // Now, retrieve the OTKControl data from our database and merge it with DT
+                using (var con = new SqlConnection(config.ConnectionString))
+                {
+                    con.Open();
+
+                    foreach (DataRow dr in DT.Rows)
+                    {
+                        // Get the operation data from our database
+                        string oper = dr["Oper"].ToString();
+                        long idLoodsman = Convert.ToInt64(dr["IdLoodsman"]);
+
+                        // Retrieve the OperationID
+                        string getOperationIDQuery = "SELECT OperationID FROM Operations WHERE PK_IdOrderDetail = @PK_IdOrderDetail AND Oper = @Oper";
+                        SqlCommand cmdGetOperationID = new SqlCommand(getOperationIDQuery, con);
+                        cmdGetOperationID.Parameters.AddWithValue("@PK_IdOrderDetail", PK_IdOrderDetail);
+                        cmdGetOperationID.Parameters.AddWithValue("@Oper", oper);
+
+                        object result = cmdGetOperationID.ExecuteScalar();
+
+                        CheckBoxState[] otkControlStates = new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
+
+                        if (result != null)
+                        {
+                            int operationID = Convert.ToInt32(result);
+
+                            // Get the OTKControl data
+                            string getOTKControlQuery = "SELECT CheckBoxIndex, CheckBoxState FROM OTKControl WHERE OperationID = @OperationID";
+                            SqlCommand cmdGetOTKControl = new SqlCommand(getOTKControlQuery, con);
+                            cmdGetOTKControl.Parameters.AddWithValue("@OperationID", operationID);
+
+                            using (SqlDataReader reader = cmdGetOTKControl.ExecuteReader())
+                            {
+                                while (reader.Read())
+                                {
+                                    int index = reader.GetInt32(0);
+                                    CheckBoxState state = (CheckBoxState)reader.GetInt32(1);
+
+                                    if (index >= 0 && index < 3)
+                                    {
+                                        otkControlStates[index] = state;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Assign the OTKControl values to the DataRow
+                        dr["OTKControl"] = otkControlStates;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
 
 
 
