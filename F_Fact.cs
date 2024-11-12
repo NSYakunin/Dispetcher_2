@@ -823,13 +823,10 @@ namespace Dispetcher2
                 string oper = row.Cells["Col_Oper"].Value?.ToString() ?? "";
                 string tpd = row.Cells["Col_Tpd"].Value?.ToString() ?? "";
                 string tsh = row.Cells["Col_Tsh"].Value?.ToString() ?? "";
-                //for (int i = 0; i < row.Cells.Count; i++)
-                //{
-                //    Console.WriteLine(row.Cells[i].Value.ToString());
-                //}
+
                 string idLoodsman = row.Cells[4].Value?.ToString() ?? "";
 
-                // Handle the custom OTKControl column
+
                 CheckBoxState[] otkControlValue = row.Cells["Col_OTKControl"].Value as CheckBoxState[];
                 string otkControlStates = "";
 
@@ -847,9 +844,9 @@ namespace Dispetcher2
                 sb.AppendLine($"Tsh: {tsh}");
                 sb.AppendLine($"IdLoodsman: {idLoodsman}");
                 sb.AppendLine($"Контроль ОТК (Предъявление): {otkControlStates}");
-                sb.AppendLine(new string('-', 50)); // Separator between rows
+                sb.AppendLine(new string('-', 50));
 
-                // Prepare data for saving
+
                 operationsToSave.Add(new OperationData
                 {
                     PK_IdOrderDetail = Convert.ToInt64(pk_IdOrderDetail),
@@ -858,21 +855,19 @@ namespace Dispetcher2
                     Tsh = string.IsNullOrEmpty(tsh) ? (int?)null : Convert.ToInt32(tsh),
                     IdLoodsman = string.IsNullOrEmpty(idLoodsman) ? (long?)null : Convert.ToInt64(idLoodsman),
                     OTKControlValues = otkControlValue,
-                    ChangeDate = DateTime.Now // You might want to track individual change dates per checkbox
+                    ChangeDate = DateTime.Now
                 });
             }
 
-            // Display the collected data
             DialogResult result = MessageBox.Show(sb.ToString(), "Данные технологии", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
 
             if (result == DialogResult.OK)
             {
-                // Save data to the database
                 SaveOperationsToDatabase(operationsToSave);
             }
         }
 
-        // Helper method to convert CheckBoxState to string
+
         private string GetCheckBoxStateString(CheckBoxState state)
         {
             switch (state)
@@ -890,7 +885,6 @@ namespace Dispetcher2
             }
         }
 
-        // Class to hold operation data for saving
         private class OperationData
         {
             public long PK_IdOrderDetail { get; set; }
@@ -913,10 +907,8 @@ namespace Dispetcher2
                     {
                         foreach (var op in operations)
                         {
-                            // Insert or update operation
                             int operationID = InsertOrUpdateOperation(con, transaction, op);
 
-                            // Insert or update OTKControl data
                             if (op.OTKControlValues != null && op.OTKControlValues.Length == 3)
                             {
                                 for (int i = 0; i < 3; i++)
@@ -940,7 +932,6 @@ namespace Dispetcher2
 
         private int InsertOrUpdateOperation(SqlConnection con, SqlTransaction transaction, OperationData op)
         {
-            // Check if operation already exists
             string checkOperationQuery = "SELECT OperationID FROM OperationsOTK WHERE PK_IdOrderDetail = @PK_IdOrderDetail AND Oper = @Oper";
             SqlCommand checkCmd = new SqlCommand(checkOperationQuery, con, transaction);
             checkCmd.Parameters.AddWithValue("@PK_IdOrderDetail", op.PK_IdOrderDetail);
@@ -950,7 +941,6 @@ namespace Dispetcher2
             int operationID;
             if (result != null)
             {
-                // Operation exists, update it
                 operationID = Convert.ToInt32(result);
                 string updateOperationQuery = "UPDATE OperationsOTK SET Tpd = @Tpd, Tsh = @Tsh, IdLoodsman = @IdLoodsman WHERE OperationID = @OperationID";
                 SqlCommand updateCmd = new SqlCommand(updateOperationQuery, con, transaction);
@@ -962,7 +952,6 @@ namespace Dispetcher2
             }
             else
             {
-                // Operation does not exist, insert it
                 string insertOperationQuery = "INSERT INTO OperationsOTK (PK_IdOrderDetail, Oper, Tpd, Tsh, IdLoodsman) OUTPUT INSERTED.OperationID VALUES (@PK_IdOrderDetail, @Oper, @Tpd, @Tsh, @IdLoodsman)";
                 SqlCommand insertCmd = new SqlCommand(insertOperationQuery, con, transaction);
                 insertCmd.Parameters.AddWithValue("@PK_IdOrderDetail", op.PK_IdOrderDetail);
@@ -978,7 +967,6 @@ namespace Dispetcher2
 
         private void InsertOrUpdateOTKControl(SqlConnection con, SqlTransaction transaction, int operationID, int checkBoxIndex, CheckBoxState checkBoxState, DateTime changeDate)
         {
-            // Check if OTKControl record exists
             string checkOTKControlQuery = "SELECT OTKControlID FROM OTKControl WHERE OperationID = @OperationID AND CheckBoxIndex = @CheckBoxIndex";
             SqlCommand checkCmd = new SqlCommand(checkOTKControlQuery, con, transaction);
             checkCmd.Parameters.AddWithValue("@OperationID", operationID);
@@ -987,7 +975,6 @@ namespace Dispetcher2
 
             if (result != null)
             {
-                // OTKControl record exists, update it
                 int otkControlID = Convert.ToInt32(result);
                 string updateOTKControlQuery = "UPDATE OTKControl SET CheckBoxState = @CheckBoxState, ChangeDate = @ChangeDate WHERE OTKControlID = @OTKControlID";
                 SqlCommand updateCmd = new SqlCommand(updateOTKControlQuery, con, transaction);
@@ -998,7 +985,6 @@ namespace Dispetcher2
             }
             else
             {
-                // OTKControl record does not exist, insert it
                 string insertOTKControlQuery = "INSERT INTO OTKControl (OperationID, CheckBoxIndex, CheckBoxState, ChangeDate) VALUES (@OperationID, @CheckBoxIndex, @CheckBoxState, @ChangeDate)";
                 SqlCommand insertCmd = new SqlCommand(insertOTKControlQuery, con, transaction);
                 insertCmd.Parameters.AddWithValue("@OperationID", operationID);

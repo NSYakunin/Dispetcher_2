@@ -31,8 +31,8 @@ namespace Dispetcher2
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dGV_Orders = new System.Windows.Forms.DataGridView();
             this.Col_OrderNum = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.OrderContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -58,12 +58,11 @@ namespace Dispetcher2
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.dTimeP_Fact = new System.Windows.Forms.DateTimePicker();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.SaveInBD = new System.Windows.Forms.Button();
             this.saveOTKBTN = new System.Windows.Forms.Button();
             this.btnkoop = new System.Windows.Forms.Button();
             this.btn_CloseAllWorks = new System.Windows.Forms.Button();
             this.cB_InDetail = new System.Windows.Forms.CheckBox();
-            this.mBtnM_Brigade = new Dispetcher2.Controls.MyButtonMenu();
-            this.mBtnM_Worker = new Dispetcher2.Controls.MyButtonMenu();
             this.tB_Workers = new System.Windows.Forms.TextBox();
             this.btn_SaveTehnology = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
@@ -73,18 +72,19 @@ namespace Dispetcher2
             this.btn_SearchSHCM_F = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.dGV_FactOperation = new System.Windows.Forms.DataGridView();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.mBtnM_Brigade = new Dispetcher2.Controls.MyButtonMenu();
+            this.mBtnM_Worker = new Dispetcher2.Controls.MyButtonMenu();
             this.Col_FactOper = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Col_DateFactOper = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Col_FK_LoginWorker = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Col_AmountDetails = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Col_FactTpd = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Col_FactTsh = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.SaveInBD = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dGV_Orders)).BeginInit();
             this.OrderContextMenuStrip.SuspendLayout();
             this.gB_OrderName.SuspendLayout();
@@ -283,8 +283,8 @@ namespace Dispetcher2
             // 
             // Col_Amount
             // 
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.Col_Amount.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.Col_Amount.DefaultCellStyle = dataGridViewCellStyle1;
             this.Col_Amount.Frozen = true;
             this.Col_Amount.HeaderText = "Кол-во";
             this.Col_Amount.MinimumWidth = 20;
@@ -401,13 +401,25 @@ namespace Dispetcher2
             this.groupBox3.TabIndex = 17;
             this.groupBox3.TabStop = false;
             // 
+            // SaveInBD
+            // 
+            this.SaveInBD.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.SaveInBD.Location = new System.Drawing.Point(69, 220);
+            this.SaveInBD.Name = "SaveInBD";
+            this.SaveInBD.Size = new System.Drawing.Size(108, 23);
+            this.SaveInBD.TabIndex = 1015;
+            this.SaveInBD.Text = "Сохранить ОТК";
+            this.SaveInBD.UseVisualStyleBackColor = true;
+            this.SaveInBD.Click += new System.EventHandler(this.SaveInBD_Click);
+            // 
             // saveOTKBTN
             // 
+            this.saveOTKBTN.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.saveOTKBTN.Location = new System.Drawing.Point(9, 220);
             this.saveOTKBTN.Name = "saveOTKBTN";
-            this.saveOTKBTN.Size = new System.Drawing.Size(91, 23);
+            this.saveOTKBTN.Size = new System.Drawing.Size(54, 23);
             this.saveOTKBTN.TabIndex = 1014;
-            this.saveOTKBTN.Text = "Сохранить ОТК";
+            this.saveOTKBTN.Text = "Инфо";
             this.saveOTKBTN.UseVisualStyleBackColor = true;
             this.saveOTKBTN.Click += new System.EventHandler(this.saveOTKBTN_Click);
             // 
@@ -415,7 +427,7 @@ namespace Dispetcher2
             // 
             this.btnkoop.Location = new System.Drawing.Point(183, 220);
             this.btnkoop.Name = "btnkoop";
-            this.btnkoop.Size = new System.Drawing.Size(154, 24);
+            this.btnkoop.Size = new System.Drawing.Size(154, 23);
             this.btnkoop.TabIndex = 1013;
             this.btnkoop.Text = "Закрыть все на кооп";
             this.btnkoop.UseVisualStyleBackColor = true;
@@ -442,32 +454,6 @@ namespace Dispetcher2
             this.cB_InDetail.Text = "Подробно";
             this.cB_InDetail.UseVisualStyleBackColor = true;
             this.cB_InDetail.CheckedChanged += new System.EventHandler(this.cB_InDetail_CheckedChanged);
-            // 
-            // mBtnM_Brigade
-            // 
-            this.mBtnM_Brigade.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
-            this.mBtnM_Brigade.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.mBtnM_Brigade.Location = new System.Drawing.Point(92, 85);
-            this.mBtnM_Brigade.Margin = new System.Windows.Forms.Padding(4);
-            this.mBtnM_Brigade.Name = "mBtnM_Brigade";
-            this.mBtnM_Brigade.Size = new System.Drawing.Size(81, 27);
-            this.mBtnM_Brigade.TabIndex = 1009;
-            this.mBtnM_Brigade.Text = "Бригада";
-            this.mBtnM_Brigade.UseVisualStyleBackColor = true;
-            this.mBtnM_Brigade.Click += new System.EventHandler(this.mBtnM_Brigade_Click);
-            // 
-            // mBtnM_Worker
-            // 
-            this.mBtnM_Worker.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
-            this.mBtnM_Worker.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.mBtnM_Worker.Location = new System.Drawing.Point(3, 85);
-            this.mBtnM_Worker.Margin = new System.Windows.Forms.Padding(4);
-            this.mBtnM_Worker.Name = "mBtnM_Worker";
-            this.mBtnM_Worker.Size = new System.Drawing.Size(81, 27);
-            this.mBtnM_Worker.TabIndex = 1008;
-            this.mBtnM_Worker.Text = "Рабочий";
-            this.mBtnM_Worker.UseVisualStyleBackColor = true;
-            this.mBtnM_Worker.Click += new System.EventHandler(this.mBtnM_Worker_Click);
             // 
             // tB_Workers
             // 
@@ -595,52 +581,6 @@ namespace Dispetcher2
             this.dGV_FactOperation.TabStop = false;
             this.dGV_FactOperation.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dGV_FactOperation_KeyDown);
             // 
-            // Col_FactOper
-            // 
-            this.Col_FactOper.HeaderText = "Операция";
-            this.Col_FactOper.MinimumWidth = 20;
-            this.Col_FactOper.Name = "Col_FactOper";
-            this.Col_FactOper.ReadOnly = true;
-            this.Col_FactOper.Width = 245;
-            // 
-            // Col_DateFactOper
-            // 
-            this.Col_DateFactOper.HeaderText = "Дата";
-            this.Col_DateFactOper.Name = "Col_DateFactOper";
-            this.Col_DateFactOper.ReadOnly = true;
-            this.Col_DateFactOper.Width = 90;
-            // 
-            // Col_FK_LoginWorker
-            // 
-            this.Col_FK_LoginWorker.HeaderText = "Рабочий";
-            this.Col_FK_LoginWorker.Name = "Col_FK_LoginWorker";
-            this.Col_FK_LoginWorker.ReadOnly = true;
-            this.Col_FK_LoginWorker.Width = 300;
-            // 
-            // Col_AmountDetails
-            // 
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.Col_AmountDetails.DefaultCellStyle = dataGridViewCellStyle4;
-            this.Col_AmountDetails.HeaderText = "Кол-во";
-            this.Col_AmountDetails.MinimumWidth = 20;
-            this.Col_AmountDetails.Name = "Col_AmountDetails";
-            this.Col_AmountDetails.ReadOnly = true;
-            this.Col_AmountDetails.Width = 60;
-            // 
-            // Col_FactTpd
-            // 
-            this.Col_FactTpd.HeaderText = "Tpd, sec";
-            this.Col_FactTpd.Name = "Col_FactTpd";
-            this.Col_FactTpd.ReadOnly = true;
-            this.Col_FactTpd.Width = 50;
-            // 
-            // Col_FactTsh
-            // 
-            this.Col_FactTsh.HeaderText = "Tsh, sec";
-            this.Col_FactTsh.Name = "Col_FactTsh";
-            this.Col_FactTsh.ReadOnly = true;
-            this.Col_FactTsh.Width = 55;
-            // 
             // groupBox5
             // 
             this.groupBox5.Controls.Add(this.dGV_Details);
@@ -705,15 +645,77 @@ namespace Dispetcher2
             this.tableLayoutPanel1.Size = new System.Drawing.Size(984, 632);
             this.tableLayoutPanel1.TabIndex = 1001;
             // 
-            // SaveInBD
+            // mBtnM_Brigade
             // 
-            this.SaveInBD.Location = new System.Drawing.Point(107, 220);
-            this.SaveInBD.Name = "SaveInBD";
-            this.SaveInBD.Size = new System.Drawing.Size(66, 23);
-            this.SaveInBD.TabIndex = 1015;
-            this.SaveInBD.Text = "БД";
-            this.SaveInBD.UseVisualStyleBackColor = true;
-            this.SaveInBD.Click += new System.EventHandler(this.SaveInBD_Click);
+            this.mBtnM_Brigade.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
+            this.mBtnM_Brigade.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.mBtnM_Brigade.Location = new System.Drawing.Point(92, 85);
+            this.mBtnM_Brigade.Margin = new System.Windows.Forms.Padding(4);
+            this.mBtnM_Brigade.Name = "mBtnM_Brigade";
+            this.mBtnM_Brigade.Size = new System.Drawing.Size(81, 27);
+            this.mBtnM_Brigade.TabIndex = 1009;
+            this.mBtnM_Brigade.Text = "Бригада";
+            this.mBtnM_Brigade.UseVisualStyleBackColor = true;
+            this.mBtnM_Brigade.Click += new System.EventHandler(this.mBtnM_Brigade_Click);
+            // 
+            // mBtnM_Worker
+            // 
+            this.mBtnM_Worker.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
+            this.mBtnM_Worker.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.mBtnM_Worker.Location = new System.Drawing.Point(3, 85);
+            this.mBtnM_Worker.Margin = new System.Windows.Forms.Padding(4);
+            this.mBtnM_Worker.Name = "mBtnM_Worker";
+            this.mBtnM_Worker.Size = new System.Drawing.Size(81, 27);
+            this.mBtnM_Worker.TabIndex = 1008;
+            this.mBtnM_Worker.Text = "Рабочий";
+            this.mBtnM_Worker.UseVisualStyleBackColor = true;
+            this.mBtnM_Worker.Click += new System.EventHandler(this.mBtnM_Worker_Click);
+            // 
+            // Col_FactOper
+            // 
+            this.Col_FactOper.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Col_FactOper.HeaderText = "Операция";
+            this.Col_FactOper.MinimumWidth = 20;
+            this.Col_FactOper.Name = "Col_FactOper";
+            this.Col_FactOper.ReadOnly = true;
+            // 
+            // Col_DateFactOper
+            // 
+            this.Col_DateFactOper.HeaderText = "Дата";
+            this.Col_DateFactOper.Name = "Col_DateFactOper";
+            this.Col_DateFactOper.ReadOnly = true;
+            this.Col_DateFactOper.Width = 90;
+            // 
+            // Col_FK_LoginWorker
+            // 
+            this.Col_FK_LoginWorker.HeaderText = "Рабочий";
+            this.Col_FK_LoginWorker.Name = "Col_FK_LoginWorker";
+            this.Col_FK_LoginWorker.ReadOnly = true;
+            this.Col_FK_LoginWorker.Width = 300;
+            // 
+            // Col_AmountDetails
+            // 
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.Col_AmountDetails.DefaultCellStyle = dataGridViewCellStyle2;
+            this.Col_AmountDetails.HeaderText = "Кол-во";
+            this.Col_AmountDetails.MinimumWidth = 20;
+            this.Col_AmountDetails.Name = "Col_AmountDetails";
+            this.Col_AmountDetails.ReadOnly = true;
+            this.Col_AmountDetails.Width = 60;
+            // 
+            // Col_FactTpd
+            // 
+            this.Col_FactTpd.HeaderText = "Tpd, sec";
+            this.Col_FactTpd.Name = "Col_FactTpd";
+            this.Col_FactTpd.ReadOnly = true;
+            this.Col_FactTpd.Width = 50;
+            // 
+            // Col_FactTsh
+            // 
+            this.Col_FactTsh.HeaderText = "Tsh, sec";
+            this.Col_FactTsh.Name = "Col_FactTsh";
+            this.Col_FactTsh.ReadOnly = true;
+            this.Col_FactTsh.Width = 55;
             // 
             // F_Fact
             // 
@@ -790,12 +792,6 @@ namespace Dispetcher2
         private System.Windows.Forms.DataGridViewTextBoxColumn Col_NameDetail;
         private System.Windows.Forms.DataGridViewTextBoxColumn Col_Amount;
         private System.Windows.Forms.DataGridViewTextBoxColumn Col_NameType;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Col_FactOper;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Col_DateFactOper;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Col_FK_LoginWorker;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Col_AmountDetails;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Col_FactTpd;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Col_FactTsh;
         private System.Windows.Forms.Button btn_SearchSHCM_F;
         private System.Windows.Forms.Button btnkoop;
 		private System.Windows.Forms.ContextMenuStrip shCMContextMenuStrip;
@@ -807,5 +803,11 @@ namespace Dispetcher2
         private System.Windows.Forms.DataGridViewTextBoxColumn Col_Tsh;
         private System.Windows.Forms.Button saveOTKBTN;
         private System.Windows.Forms.Button SaveInBD;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Col_FactOper;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Col_DateFactOper;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Col_FK_LoginWorker;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Col_AmountDetails;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Col_FactTpd;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Col_FactTsh;
     }
 }
