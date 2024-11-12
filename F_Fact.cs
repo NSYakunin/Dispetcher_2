@@ -146,19 +146,18 @@ namespace Dispetcher2
             otkColumn.ReadOnly = false;
             dGV_Tehnology.ReadOnly = false;
             otkColumn.DataPropertyName = "OTKControl";
-            otkColumn.ValueType = typeof(CheckBoxState[]); // Устанавливаем тип данных столбца
+            otkColumn.ValueType = typeof(CheckBoxState[]);
             dGV_Tehnology.Columns.Add(otkColumn);
-            // После установки DataSource для dGV_Tehnology
+
+
             dGV_Tehnology.EditMode = DataGridViewEditMode.EditOnEnter;
             dGV_Tehnology.EditMode = DataGridViewEditMode.EditOnKeystrokeOrF2;
-            // 
 
-            // Добавьте после инициализации других колонок
             DataGridViewTextBoxColumn idLoodsmanColumn = new DataGridViewTextBoxColumn();
             idLoodsmanColumn.Name = "Col_IdLoodsman";
             idLoodsmanColumn.HeaderText = "IdLoodsman";
             idLoodsmanColumn.DataPropertyName = "IdLoodsman";
-            idLoodsmanColumn.Visible = false; // Установите в true, если хотите отображать колонку
+            idLoodsmanColumn.Visible = false;
             dGV_Tehnology.Columns.Add(idLoodsmanColumn);
         }
 
@@ -254,16 +253,19 @@ namespace Dispetcher2
                             string rowData = string.Join(Environment.NewLine, row.Table.Columns.Cast<DataColumn>().Select(c => $"{c.ColumnName}: {row[c]}"));
                             MessageBox.Show(rowData);
 
-                            Detail.GetTehnologyFromLoodsman2(ref DT_Tehnology, IdLoodsman, PK_IdOrderDetail);
-                            if (DT_Tehnology.Rows.Count > 0) DT_Tehnology.Rows.Add(32, "Передача детали на СГД", 0, 0);//32 - Передача детали на СГД //Sp_Operations
+                            Detail.GetTehnologyFromLoodsman2(ref DT_Tehnology, ref dGV_Tehnology, IdLoodsman, PK_IdOrderDetail);
+                            //if (DT_Tehnology.Rows.Count > 0)
+                            //{
+                            //    DT_Tehnology.Rows.Add(32, "Передача детали на СГД", 0, 0);//32 - Передача детали на СГД //Sp_Operations
+                            //}
                                                                                                                        // После установки DataSource для dGV_Tehnology
-                            foreach (DataGridViewRow row1 in dGV_Tehnology.Rows)
-                            {
-                                if (!row1.IsNewRow)
-                                {
-                                    row1.Cells["Col_OTKControl"].Value = new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
-                                }
-                            }
+                            //foreach (DataGridViewRow row1 in dGV_Tehnology.Rows)
+                            //{
+                            //    if (!row1.IsNewRow)
+                            //    {
+                            //        row1.Cells["Col_OTKControl"].Value = new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
+                            //    }
+                            //}
                         }
 
                         //*********************************************************************************************************************************

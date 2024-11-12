@@ -5,6 +5,7 @@ using System.Text;
 using System.Data.SqlClient;
 using System.Data;
 using System.Windows.Forms;
+using Dispetcher2.DialogsForms;
 
 namespace Dispetcher2.Class
 {
@@ -442,7 +443,7 @@ namespace Dispetcher2.Class
             }
         }
 
-        public void GetTehnologyFromLoodsman2(ref DataTable DT, long IdLoodsman, long PK_IdOrderDetail)
+        public void GetTehnologyFromLoodsman2(ref DataTable DT, ref DataGridView dgv, long IdLoodsman, long PK_IdOrderDetail)
         {
             try
             {
@@ -479,14 +480,18 @@ namespace Dispetcher2.Class
                 using (var con = new SqlConnection(config.ConnectionString))
                 {
                     con.Open();
+                    DT.Rows.Add(32, "Передача детали на СГД", 0, 0);
+                    for (int i = 0; i < DT.Rows.Count; i++)
+                    {
+                        dgv.Rows[i].Cells["Col_OTKControl"].Value = new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
+                    }
 
                     foreach (DataRow dr in DT.Rows)
                     {
-                        // Get the operation data from our database
-                        string oper = dr["Oper"].ToString();
-                        long idLoodsman = Convert.ToInt64(dr["IdLoodsman"]);
+                        dr["OTKControl"] = new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
 
-                        // Retrieve the OperationID
+                        string oper = dr["Oper"].ToString();
+
                         string getOperationIDQuery = "SELECT OperationID FROM OperationsOTK WHERE PK_IdOrderDetail = @PK_IdOrderDetail AND Oper = @Oper";
                         SqlCommand cmdGetOperationID = new SqlCommand(getOperationIDQuery, con);
                         cmdGetOperationID.Parameters.AddWithValue("@PK_IdOrderDetail", PK_IdOrderDetail);
@@ -520,8 +525,7 @@ namespace Dispetcher2.Class
                             }
                         }
 
-                        // Assign the OTKControl values to the DataRow
-                        dr["OTKControl"] = otkControlStates;
+                    dr["OTKControl"] = otkControlStates;
                     }
                 }
             }
