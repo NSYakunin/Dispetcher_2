@@ -253,24 +253,10 @@ namespace Dispetcher2
                             string rowData = string.Join(Environment.NewLine, row.Table.Columns.Cast<DataColumn>().Select(c => $"{c.ColumnName}: {row[c]}"));
                             MessageBox.Show(rowData);
 
-                            Detail.GetTehnologyFromLoodsman2(ref DT_Tehnology, ref dGV_Tehnology, IdLoodsman, PK_IdOrderDetail);
-                            //if (DT_Tehnology.Rows.Count > 0)
-                            //{
-                            //    DT_Tehnology.Rows.Add(32, "Передача детали на СГД", 0, 0);//32 - Передача детали на СГД //Sp_Operations
-                            //}
-                                                                                                                       // После установки DataSource для dGV_Tehnology
-                            //foreach (DataGridViewRow row1 in dGV_Tehnology.Rows)
-                            //{
-                            //    if (!row1.IsNewRow)
-                            //    {
-                            //        row1.Cells["Col_OTKControl"].Value = new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
-                            //    }
-                            //}
+                            Detail.GetTehnologyFromLoodsmanFordGV_Tehnology(ref DT_Tehnology, ref dGV_Tehnology, IdLoodsman, PK_IdOrderDetail);
                         }
 
                         //*********************************************************************************************************************************
-                    
-                        
        
                         if (cB_InDetail.Checked)
                         {
@@ -293,15 +279,15 @@ namespace Dispetcher2
         {
             if (chB_cooperation.Checked)
             {
-                _PK_IdBrigade = 0;//non target brigade
+                _PK_IdBrigade = 0;
                 _LoginWorker = "кооп";
                 tB_Workers.Text = "кооп";
                 
             }
             else
             {
-                _PK_IdBrigade = 0;//non target brigade
-                _LoginWorker = "";//non target worker
+                _PK_IdBrigade = 0;
+                _LoginWorker = "";
                 tB_Workers.Text = "";
             }
         }
@@ -310,8 +296,8 @@ namespace Dispetcher2
         private void mBtnM_Worker_Click(object sender, EventArgs e)
         {
             chB_cooperation.Checked = false;
-            _PK_IdBrigade = 0;//non target brigade
-            _LoginWorker = "";//non target worker
+            _PK_IdBrigade = 0;
+            _LoginWorker = "";
             tB_Workers.Text = "";
             
             dFWorkers.ShowDialog();
@@ -322,8 +308,8 @@ namespace Dispetcher2
         private void mBtnM_Brigade_Click(object sender, EventArgs e)
         {
             chB_cooperation.Checked = false;
-            _PK_IdBrigade = 0;//non target brigade
-            _LoginWorker = "";//non target worker
+            _PK_IdBrigade = 0;
+            _LoginWorker = "";
             tB_Workers.Text = "";
             
             dFBrigade.ShowDialog();

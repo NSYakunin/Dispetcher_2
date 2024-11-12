@@ -443,7 +443,7 @@ namespace Dispetcher2.Class
             }
         }
 
-        public void GetTehnologyFromLoodsman2(ref DataTable DT, ref DataGridView dgv, long IdLoodsman, long PK_IdOrderDetail)
+        public void GetTehnologyFromLoodsmanFordGV_Tehnology(ref DataTable DT, ref DataGridView dgv, long IdLoodsman, long PK_IdOrderDetail)
         {
             try
             {
