@@ -691,7 +691,7 @@ namespace Dispetcher2
         {
             StringBuilder sb = new StringBuilder();
 
-            // Get the selected detail information from dGV_Details
+            // Получить выбранную информацию из dGV_Details
             string shcmDetail = "";
             string pk_IdOrderDetail = "";
             if (dGV_Details.CurrentRow != null)
@@ -705,7 +705,7 @@ namespace Dispetcher2
                 }
             }
 
-            // Get the selected order information from dGV_Orders
+            // Получить информацию о выбранном заказе из dGV_Orders
             string orderNum = "";
             if (dGV_Orders.CurrentRow != null)
             {
@@ -717,16 +717,16 @@ namespace Dispetcher2
                 }
             }
 
-            // Include the detail and order information in the output
+            // Включить подробную информацию и информацию о заказе в выходные данные
             sb.AppendLine($"OrderNum: {orderNum}");
             sb.AppendLine($"ShcmDetail: {shcmDetail}");
             sb.AppendLine($"PK_IdOrderDetail: {pk_IdOrderDetail}");
-            sb.AppendLine(new string('=', 50)); // Separator
+            sb.AppendLine(new string('=', 50));
 
-            // Loop through the rows of dGV_Tehnology
+            // Пройдитесь по строкам dGV_Tehnology
             foreach (DataGridViewRow row in dGV_Tehnology.Rows)
             {
-                // Skip new row placeholder if AllowUserToAddRows is true
+                // Пропустить заполнитель новой строки, если значение AllowUserToAddRows равно true
                 if (row.IsNewRow) continue;
 
                 sb.AppendLine($"Строка {row.Index + 1}:");
@@ -740,7 +740,7 @@ namespace Dispetcher2
                     {
                         if (cell.OwningColumn.Name == "Col_OTKControl")
                         {
-                            // Handle the custom OTKControl column
+                            // Пользовательский столбец OTKControl
                             CheckBoxState[] otkControlValue = cell.Value as CheckBoxState[];
                             if (otkControlValue != null && otkControlValue.Length == 3)
                             {
@@ -764,20 +764,19 @@ namespace Dispetcher2
                     sb.AppendLine($"{columnName}: {cellValue}");
                 }
 
-                sb.AppendLine(new string('-', 50)); // Separator between rows
+                sb.AppendLine(new string('-', 50)); // Разделитель между строками
             }
 
-            // Display the collected data
+            // Отображение собранных данных
             MessageBox.Show(sb.ToString(), "Данные технологии", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        // Helper method to convert CheckBoxState to string
 
         private void SaveInBD_Click(object sender, EventArgs e)
         {
             StringBuilder sb = new StringBuilder();
 
-            // Get the selected detail information from dGV_Details
+            // Получаем выбранную подробную информацию из dGV_Details
             string shcmDetail = "";
             string pk_IdOrderDetail = "";
             if (dGV_Details.CurrentRow != null)
@@ -791,7 +790,7 @@ namespace Dispetcher2
                 }
             }
 
-            // Get the selected order information from dGV_Orders
+            // Получаем информацию о выбранном заказе из dGV_Orders
             string orderNum = "";
             if (dGV_Orders.CurrentRow != null)
             {
@@ -803,19 +802,17 @@ namespace Dispetcher2
                 }
             }
 
-            // Include the detail and order information in the output
+            // Включаем нформацию о заказе в выходные данные
             sb.AppendLine($"OrderNum: {orderNum}");
             sb.AppendLine($"ShcmDetail: {shcmDetail}");
             sb.AppendLine($"PK_IdOrderDetail: {pk_IdOrderDetail}");
-            sb.AppendLine(new string('=', 50)); // Separator
+            sb.AppendLine(new string('=', 50));
 
-            // Collect data from dGV_Tehnology to save to the database
+            // Собераем данные из dGV_Tehnology для сохранения в базе данных
             List<OperationData> operationsToSave = new List<OperationData>();
 
-            // Loop through the rows of dGV_Tehnology
             foreach (DataGridViewRow row in dGV_Tehnology.Rows)
             {
-                // Skip new row placeholder if AllowUserToAddRows is true
                 if (row.IsNewRow) continue;
 
                 sb.AppendLine($"Строка {row.Index + 1}:");
