@@ -29,8 +29,15 @@ namespace Dispetcher2.Class
             DataGridViewElementStates cellState, object value, object formattedValue, string errorText,
             DataGridViewCellStyle cellStyle, DataGridViewAdvancedBorderStyle advancedBorderStyle, DataGridViewPaintParts paintParts)
         {
+
+            OTKControlData otkData = this.Value as OTKControlData;
+            if (otkData == null)
+            {
+                otkData = new OTKControlData();
+            }
+
+            CheckBoxState[] state = otkData.States;
             // Получаем текущее значение ячейки
-            CheckBoxState[] state = value as CheckBoxState[] ?? new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
 
             bool isThirdChecked = (state[2] == CheckBoxState.Checked);
 
@@ -123,7 +130,13 @@ namespace Dispetcher2.Class
                 Point clickLocation = e.Location;
 
                 // Получаем текущее значение ячейки
-                CheckBoxState[] state = this.Value as CheckBoxState[];
+                OTKControlData otkData = this.Value as OTKControlData;
+                if (otkData == null)
+                {
+                    otkData = new OTKControlData();
+                }
+
+                CheckBoxState[] state = otkData.States;
                 if (state == null || state.Length != 3)
                 {
                     state = new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
@@ -165,7 +178,7 @@ namespace Dispetcher2.Class
                         }
                         else
                         {
-                            // Переключаем первый или второй чекбокс, если они не имеют крестиков
+                            // Переключаем первый или второй чекбокс
                             if (state[i] == CheckBoxState.Unchecked)
                             {
                                 state[i] = CheckBoxState.Checked;
@@ -174,11 +187,17 @@ namespace Dispetcher2.Class
                             {
                                 state[i] = CheckBoxState.Unchecked;
                             }
-                            // Если чекбокс имеет крестик, не меняем его состояние при клике левой кнопкой
                         }
 
                         stateChanged = true;
-                        this.Value = state;
+
+                        // Обновляем состояния в объекте OTKControlData
+                        otkData.States = state;
+
+                        // Обновляем значение ячейки
+                        this.Value = otkData;
+
+                        // Уведомляем DataGridView об изменении
                         this.DataGridView.InvalidateCell(this);
                         this.DataGridView.NotifyCurrentCellDirty(true);
                         break;
@@ -187,7 +206,7 @@ namespace Dispetcher2.Class
 
                 if (stateChanged)
                 {
-                    // Перерисовываем ячейку, чтобы обновить фон
+                    // Перерисовываем ячейку, чтобы обновить отображение
                     this.DataGridView.InvalidateCell(this);
                 }
             }
@@ -297,14 +316,8 @@ namespace Dispetcher2.Class
 
         public override Type ValueType
         {
-            get
-            {
-                return typeof(CheckBoxState[]);
-            }
-            set
-            {
-                base.ValueType = value;
-            }
+            get { return typeof(OTKControlData); }
+            set { base.ValueType = value; }
         }
 
         public override Type FormattedValueType

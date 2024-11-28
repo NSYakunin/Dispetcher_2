@@ -62,6 +62,8 @@ namespace Dispetcher2
             DT_Tehnology.Columns.Add("Tsh", typeof(int));
             DT_Tehnology.Columns.Add("IdLoodsman", typeof(long)); // Add this line
             DT_Tehnology.Columns.Add("OTKControl", typeof(CheckBoxState[]));
+            DT_Tehnology.Columns.Add("OTKControlData", typeof(OTKControlData));
+            DT_Tehnology.Columns.Add("OriginalOTKControlData", typeof(OTKControlData));
             //*************************************************
             DT_FactOper.Columns.Add("LastOper", typeof(bool));
             DT_FactOper.Columns.Add("PK_IdFactOper", typeof(long));
@@ -71,6 +73,7 @@ namespace Dispetcher2
             DT_FactOper.Columns.Add("AmountDetails", typeof(int));
             DT_FactOper.Columns.Add("FactTpd", typeof(int));
             DT_FactOper.Columns.Add("FactTsh", typeof(int));
+            dGV_Tehnology.CellToolTipTextNeeded += DGV_Tehnology_CellToolTipTextNeeded;
         }
         //***************************************************************
         System.Data.DataTable DT_Workers = new System.Data.DataTable();
@@ -138,16 +141,12 @@ namespace Dispetcher2
             if (Environment.UserName == "NSYakunin" || Environment.UserName == "IAPotapov") this.btnkoop.Visible = true;
             else this.btnkoop.Visible = false;
 
-            // Добавляем пользовательскую колонку
-            DataGridViewOTKControlColumn otkColumn = new DataGridViewOTKControlColumn();
-            otkColumn.Name = "Col_OTKControl";
-            otkColumn.HeaderText = "Контроль ОТК (Предъявление)";
-            otkColumn.Width = 120;
-            otkColumn.ReadOnly = false;
-            dGV_Tehnology.ReadOnly = false;
-            otkColumn.DataPropertyName = "OTKControl";
-            otkColumn.ValueType = typeof(CheckBoxState[]);
-            dGV_Tehnology.Columns.Add(otkColumn);
+            // При создании колонки
+            DataGridViewOTKControlColumn colOTKControl = new DataGridViewOTKControlColumn();
+            colOTKControl.Name = "Col_OTKControl";
+            colOTKControl.HeaderText = "OTK Control";
+            colOTKControl.DataPropertyName = "OTKControlData"; // Указываем правильное имя столбца
+            dGV_Tehnology.Columns.Add(colOTKControl);
 
 
             dGV_Tehnology.EditMode = DataGridViewEditMode.EditOnEnter;
@@ -159,6 +158,8 @@ namespace Dispetcher2
             idLoodsmanColumn.DataPropertyName = "IdLoodsman";
             idLoodsmanColumn.Visible = false;
             dGV_Tehnology.Columns.Add(idLoodsmanColumn);
+            dGV_Tehnology.CellToolTipTextNeeded += DGV_Tehnology_CellToolTipTextNeeded;
+            dGV_Tehnology.ShowCellToolTips = true;
         }
 
         private void F_Fact_Enter(object sender, EventArgs e)
@@ -774,6 +775,7 @@ namespace Dispetcher2
 
         private void SaveInBD_Click(object sender, EventArgs e)
         {
+            // ...
             StringBuilder sb = new StringBuilder();
 
             // Получаем выбранную подробную информацию из dGV_Details
@@ -789,79 +791,80 @@ namespace Dispetcher2
                     pk_IdOrderDetail = detailRow["PK_IdOrderDetail"].ToString();
                 }
             }
+            bool hasChanges = false;
+            string currentUser = Environment.UserName;
 
-            // Получаем информацию о выбранном заказе из dGV_Orders
-            string orderNum = "";
-            if (dGV_Orders.CurrentRow != null)
-            {
-                DataRowView orderRowView = dGV_Orders.CurrentRow.DataBoundItem as DataRowView;
-                if (orderRowView != null)
-                {
-                    DataRow orderRow = orderRowView.Row;
-                    orderNum = orderRow["OrderNum"].ToString();
-                }
-            }
-
-            // Включаем нформацию о заказе в выходные данные
-            sb.AppendLine($"OrderNum: {orderNum}");
-            sb.AppendLine($"ShcmDetail: {shcmDetail}");
-            sb.AppendLine($"PK_IdOrderDetail: {pk_IdOrderDetail}");
-            sb.AppendLine(new string('=', 50));
-
-            // Собераем данные из dGV_Tehnology для сохранения в базе данных
             List<OperationData> operationsToSave = new List<OperationData>();
 
             foreach (DataGridViewRow row in dGV_Tehnology.Rows)
             {
                 if (row.IsNewRow) continue;
 
-                sb.AppendLine($"Строка {row.Index + 1}:");
+                DataRow dataRow = ((DataRowView)row.DataBoundItem).Row;
 
-                string oper = row.Cells["Col_Oper"].Value?.ToString() ?? "";
-                string tpd = row.Cells["Col_Tpd"].Value?.ToString() ?? "";
-                string tsh = row.Cells["Col_Tsh"].Value?.ToString() ?? "";
+                OTKControlData currentData = dataRow["OTKControlData"] as OTKControlData;
+                OTKControlData originalData = dataRow["OriginalOTKControlData"] as OTKControlData;
 
-                string idLoodsman = row.Cells[4].Value?.ToString() ?? "";
+                bool isChanged = !AreOTKControlDataEqual(currentData, originalData);
 
-
-                CheckBoxState[] otkControlValue = row.Cells["Col_OTKControl"].Value as CheckBoxState[];
-                string otkControlStates = "";
-
-                if (otkControlValue != null && otkControlValue.Length == 3)
+                if (isChanged)
                 {
-                    otkControlStates = $"[{GetCheckBoxStateString(otkControlValue[0])}, {GetCheckBoxStateString(otkControlValue[1])}, {GetCheckBoxStateString(otkControlValue[2])}]";
+                    hasChanges = true;
+                }
+
+                // Собираем данные операции
+                OperationData opData = new OperationData
+                {
+                    PK_IdOrderDetail = Convert.ToInt64(pk_IdOrderDetail),
+                    Oper = dataRow["Oper"].ToString(),
+                    Tpd = dataRow["Tpd"] == DBNull.Value ? (int?)null : Convert.ToInt32(dataRow["Tpd"]),
+                    Tsh = dataRow["Tsh"] == DBNull.Value ? (int?)null : Convert.ToInt32(dataRow["Tsh"]),
+                    IdLoodsman = dataRow["IdLoodsman"] == DBNull.Value ? (long?)null : Convert.ToInt64(dataRow["IdLoodsman"]),
+                    OTKControlData = currentData,
+                    IsChanged = isChanged,
+                    ChangeDate = DateTime.Now
+                };
+
+                operationsToSave.Add(opData);
+            }
+
+            if (hasChanges)
+            {
+                NoteForm noteForm = new NoteForm();
+                if (noteForm.ShowDialog() == DialogResult.OK)
+                {
+                    string note = noteForm.NoteText;
+                    DateTime changeDate = DateTime.Now;
+                    SaveOperationsToDatabase(operationsToSave, note, currentUser, changeDate);
+
+                    // После успешного сохранения обновляем данные в DataGridView
+                    foreach (DataGridViewRow row in dGV_Tehnology.Rows)
+                    {
+                        if (row.IsNewRow) continue;
+
+                        DataRow dataRow = ((DataRowView)row.DataBoundItem).Row;
+                        OTKControlData currentData = dataRow["OTKControlData"] as OTKControlData;
+
+                        // Обновляем заметку, дату и пользователя
+                        currentData.Note = note;
+                        currentData.ChangeDate = changeDate;
+                        currentData.User = currentUser;
+
+                        // Обновляем OriginalOTKControlData
+                        dataRow["OriginalOTKControlData"] = currentData.Clone();
+                    }
                 }
                 else
                 {
-                    otkControlStates = "[null]";
+                    return;
                 }
-
-                sb.AppendLine($"Oper: {oper}");
-                sb.AppendLine($"Tpd: {tpd}");
-                sb.AppendLine($"Tsh: {tsh}");
-                sb.AppendLine($"IdLoodsman: {idLoodsman}");
-                sb.AppendLine($"Контроль ОТК (Предъявление): {otkControlStates}");
-                sb.AppendLine(new string('-', 50));
-
-
-                operationsToSave.Add(new OperationData
-                {
-                    PK_IdOrderDetail = Convert.ToInt64(pk_IdOrderDetail),
-                    Oper = oper,
-                    Tpd = string.IsNullOrEmpty(tpd) ? (int?)null : Convert.ToInt32(tpd),
-                    Tsh = string.IsNullOrEmpty(tsh) ? (int?)null : Convert.ToInt32(tsh),
-                    IdLoodsman = string.IsNullOrEmpty(idLoodsman) ? (long?)null : Convert.ToInt64(idLoodsman),
-                    OTKControlValues = otkControlValue,
-                    ChangeDate = DateTime.Now
-                });
             }
-
-            DialogResult result = MessageBox.Show(sb.ToString(), "Данные технологии", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
-
-            if (result == DialogResult.OK)
+            else
             {
-                SaveOperationsToDatabase(operationsToSave);
+                // Обработка случая, когда изменений нет
+                SaveOperationsToDatabase(operationsToSave, null, currentUser, DateTime.Now);
             }
+            dGV_Tehnology.Refresh();
         }
 
 
@@ -891,9 +894,11 @@ namespace Dispetcher2
             public long? IdLoodsman { get; set; }
             public CheckBoxState[] OTKControlValues { get; set; }
             public DateTime ChangeDate { get; set; }
+            public OTKControlData OTKControlData { get; set; }
+            public bool IsChanged { get; set; }
         }
 
-        private void SaveOperationsToDatabase(List<OperationData> operations)
+        private void SaveOperationsToDatabase(List<OperationData> operations, string note, string userName, DateTime changeDate)
         {
             try
             {
@@ -904,13 +909,16 @@ namespace Dispetcher2
                     {
                         foreach (var op in operations)
                         {
+                            // Сначала вставляем или обновляем запись в таблице OperationsOTK
                             int operationID = InsertOrUpdateOperation(con, transaction, op);
 
-                            if (op.OTKControlValues != null && op.OTKControlValues.Length == 3)
+                            // Проверяем, были ли изменения в OTKControlData
+                            if (op.IsChanged && op.OTKControlData != null && op.OTKControlData.States != null)
                             {
-                                for (int i = 0; i < 3; i++)
+                                for (int i = 0; i < op.OTKControlData.States.Length; i++)
                                 {
-                                    InsertOrUpdateOTKControl(con, transaction, operationID, i, op.OTKControlValues[i], op.ChangeDate);
+                                    // Вставляем или обновляем записи в таблице OTKControl
+                                    InsertOrUpdateOTKControl(con, transaction, operationID, i, op.OTKControlData.States[i], changeDate, note, userName);
                                 }
                             }
                         }
@@ -962,8 +970,9 @@ namespace Dispetcher2
             return operationID;
         }
 
-        private void InsertOrUpdateOTKControl(SqlConnection con, SqlTransaction transaction, int operationID, int checkBoxIndex, CheckBoxState checkBoxState, DateTime changeDate)
+        private void InsertOrUpdateOTKControl(SqlConnection con, SqlTransaction transaction, int operationID, int checkBoxIndex, CheckBoxState checkBoxState, DateTime changeDate, string note, string userName)
         {
+            // Проверяем, существует ли запись в таблице OTKControl для данного operationID и checkBoxIndex
             string checkOTKControlQuery = "SELECT OTKControlID FROM OTKControl WHERE OperationID = @OperationID AND CheckBoxIndex = @CheckBoxIndex";
             SqlCommand checkCmd = new SqlCommand(checkOTKControlQuery, con, transaction);
             checkCmd.Parameters.AddWithValue("@OperationID", operationID);
@@ -972,23 +981,60 @@ namespace Dispetcher2
 
             if (result != null)
             {
+                // Запись существует, выполняем обновление
                 int otkControlID = Convert.ToInt32(result);
-                string updateOTKControlQuery = "UPDATE OTKControl SET CheckBoxState = @CheckBoxState, ChangeDate = @ChangeDate WHERE OTKControlID = @OTKControlID";
+                string updateOTKControlQuery = "UPDATE OTKControl SET CheckBoxState = @CheckBoxState, ChangeDate = @ChangeDate, Note = @Note, [User] = @User WHERE OTKControlID = @OTKControlID";
                 SqlCommand updateCmd = new SqlCommand(updateOTKControlQuery, con, transaction);
                 updateCmd.Parameters.AddWithValue("@CheckBoxState", (int)checkBoxState);
                 updateCmd.Parameters.AddWithValue("@ChangeDate", changeDate);
+                updateCmd.Parameters.AddWithValue("@Note", (object)note ?? DBNull.Value);
+                updateCmd.Parameters.AddWithValue("@User", (object)userName ?? DBNull.Value);
                 updateCmd.Parameters.AddWithValue("@OTKControlID", otkControlID);
                 updateCmd.ExecuteNonQuery();
             }
             else
             {
-                string insertOTKControlQuery = "INSERT INTO OTKControl (OperationID, CheckBoxIndex, CheckBoxState, ChangeDate) VALUES (@OperationID, @CheckBoxIndex, @CheckBoxState, @ChangeDate)";
+                // Записи нет, выполняем вставку
+                string insertOTKControlQuery = "INSERT INTO OTKControl (OperationID, CheckBoxIndex, CheckBoxState, ChangeDate, Note, [User]) VALUES (@OperationID, @CheckBoxIndex, @CheckBoxState, @ChangeDate, @Note, @User)";
                 SqlCommand insertCmd = new SqlCommand(insertOTKControlQuery, con, transaction);
                 insertCmd.Parameters.AddWithValue("@OperationID", operationID);
                 insertCmd.Parameters.AddWithValue("@CheckBoxIndex", checkBoxIndex);
                 insertCmd.Parameters.AddWithValue("@CheckBoxState", (int)checkBoxState);
                 insertCmd.Parameters.AddWithValue("@ChangeDate", changeDate);
+                insertCmd.Parameters.AddWithValue("@Note", (object)note ?? DBNull.Value);
+                insertCmd.Parameters.AddWithValue("@User", (object)userName ?? DBNull.Value);
                 insertCmd.ExecuteNonQuery();
+            }
+        }
+
+        private bool AreOTKControlDataEqual(OTKControlData data1, OTKControlData data2)
+        {
+            if (data1 == null || data2 == null)
+                return false;
+
+            if (!data1.States.SequenceEqual(data2.States))
+                return false;
+
+            return true;
+        }
+
+        private void DGV_Tehnology_CellToolTipTextNeeded(object sender, DataGridViewCellToolTipTextNeededEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            {
+                DataGridViewCell cell = dGV_Tehnology[e.ColumnIndex, e.RowIndex];
+                if (cell.OwningColumn.Name == "Col_OTKControl")
+                {
+                    OTKControlData otkData = cell.Value as OTKControlData;
+                    if (otkData != null && !string.IsNullOrEmpty(otkData.Note))
+                    {
+                        e.ToolTipText = $"Примечание: {otkData.Note}\nДата: {otkData.ChangeDate}\nПользователь: {otkData.User}";
+                    }
+                    else
+                    {
+                        e.ToolTipText = null;
+                    }
+                }
             }
         }
     }

@@ -453,16 +453,17 @@ namespace Dispetcher2.Class
                     con.ConnectionString = config.LoodsmanConnectionString;
                     SqlCommand cmd = new SqlCommand() { CommandTimeout = 60 };
 
-                    // Original query to get technology data
+                    // Запрос для получения данных технологии из Loodsman
                     cmd.CommandText =
-                        "SELECT ra.value + ' ' + att.value AS Oper, Tpd.value AS Tpd, Tsh.asfloat AS Tsh, @IdLoodsman AS IdLoodsman" + "\n" +
-                        "FROM [НИИПМ].[dbo].[rvwRelations] r" + "\n" +
-                        "INNER JOIN rvwRelations AS r2 ON r2.idparent = r.idparent AND r2.idlinktype = 32" + "\n" +
-                        "INNER JOIN rvwRelationAttributes ra ON ra.idrelation  = r2.id and ra.attrtype = 0" + "\n" +
-                        "INNER JOIN rvwAttributes AS att ON att.idversion = r2.idChild AND att.idattr = 235" + "\n" +
-                        "LEFT JOIN rvwAttributes AS Tpd ON Tpd.idversion = r2.idChild AND Tpd.idattr = 321" + "\n" +
-                        "LEFT JOIN rvwAttributes AS Tsh ON Tsh.idversion = r2.idChild AND Tsh.idattr = 195" + "\n" +
-                        "WHERE r.idchild = @IdLoodsman AND r.idlinktype = 33" + "\n" +
+                        "SELECT ra.value + ' ' + att.value AS Oper, " +
+                        "Tpd.value AS Tpd, Tsh.asfloat AS Tsh, @IdLoodsman AS IdLoodsman " +
+                        "FROM [НИИПМ].[dbo].[rvwRelations] r " +
+                        "INNER JOIN rvwRelations AS r2 ON r2.idparent = r.idparent AND r2.idlinktype = 32 " +
+                        "INNER JOIN rvwRelationAttributes ra ON ra.idrelation = r2.id and ra.attrtype = 0 " +
+                        "INNER JOIN rvwAttributes AS att ON att.idversion = r2.idChild AND att.idattr = 235 " +
+                        "LEFT JOIN rvwAttributes AS Tpd ON Tpd.idversion = r2.idChild AND Tpd.idattr = 321 " +
+                        "LEFT JOIN rvwAttributes AS Tsh ON Tsh.idversion = r2.idChild AND Tsh.idattr = 195 " +
+                        "WHERE r.idchild = @IdLoodsman AND r.idlinktype = 33 " +
                         "ORDER BY Oper";
 
                     cmd.Connection = con;
@@ -476,22 +477,36 @@ namespace Dispetcher2.Class
                     con.Close();
                 }
 
-                // Now, retrieve the OTKControl data from our database and merge it with DT
+                // Добавляем операцию "Передача детали на СГД"
+                DataRow newRow = DT.NewRow();
+                newRow["Oper"] = "Передача детали на СГД";
+                newRow["Tpd"] = 0;
+                newRow["Tsh"] = 0;
+                newRow["IdLoodsman"] = IdLoodsman;
+                DT.Rows.Add(newRow);
+
+                // Добавляем новые столбцы для хранения OTKControlData
+                if (!DT.Columns.Contains("OTKControlData"))
+                    DT.Columns.Add("OTKControlData", typeof(OTKControlData));
+
+                if (!DT.Columns.Contains("OriginalOTKControlData"))
+                    DT.Columns.Add("OriginalOTKControlData", typeof(OTKControlData));
+
+                // Теперь получаем данные OTKControl из нашей базы данных и объединяем их с DT
                 using (var con = new SqlConnection(config.ConnectionString))
                 {
                     con.Open();
-                    DT.Rows.Add(32, "Передача детали на СГД", 0, 0);
-                    for (int i = 0; i < DT.Rows.Count; i++)
-                    {
-                        dgv.Rows[i].Cells["Col_OTKControl"].Value = new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
-                    }
 
                     foreach (DataRow dr in DT.Rows)
                     {
-                        dr["OTKControl"] = new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
-
                         string oper = dr["Oper"].ToString();
 
+                        // Инициализируем OTKControlData
+                        OTKControlData otkData = new OTKControlData();
+                        dr["OTKControlData"] = otkData;
+                        dr["OriginalOTKControlData"] = otkData.Clone();
+
+                        // Получаем OperationID из таблицы OperationsOTK
                         string getOperationIDQuery = "SELECT OperationID FROM OperationsOTK WHERE PK_IdOrderDetail = @PK_IdOrderDetail AND Oper = @Oper";
                         SqlCommand cmdGetOperationID = new SqlCommand(getOperationIDQuery, con);
                         cmdGetOperationID.Parameters.AddWithValue("@PK_IdOrderDetail", PK_IdOrderDetail);
@@ -499,14 +514,12 @@ namespace Dispetcher2.Class
 
                         object result = cmdGetOperationID.ExecuteScalar();
 
-                        CheckBoxState[] otkControlStates = new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
-
                         if (result != null)
                         {
                             int operationID = Convert.ToInt32(result);
 
-                            // Get the OTKControl data
-                            string getOTKControlQuery = "SELECT CheckBoxIndex, CheckBoxState FROM OTKControl WHERE OperationID = @OperationID";
+                            // Получаем данные из OTKControl
+                            string getOTKControlQuery = "SELECT CheckBoxIndex, CheckBoxState, Note, ChangeDate, [User] FROM OTKControl WHERE OperationID = @OperationID";
                             SqlCommand cmdGetOTKControl = new SqlCommand(getOTKControlQuery, con);
                             cmdGetOTKControl.Parameters.AddWithValue("@OperationID", operationID);
 
@@ -519,24 +532,42 @@ namespace Dispetcher2.Class
 
                                     if (index >= 0 && index < 3)
                                     {
-                                        otkControlStates[index] = state;
+                                        otkData.States[index] = state;
+                                    }
+
+                                    // Получаем заметку, дату и пользователя (берем из первой записи)
+                                    if (otkData.Note == string.Empty)
+                                    {
+                                        otkData.Note = reader["Note"] != DBNull.Value ? reader["Note"].ToString() : string.Empty;
+                                        otkData.ChangeDate = reader["ChangeDate"] != DBNull.Value ? Convert.ToDateTime(reader["ChangeDate"]) : DateTime.MinValue;
+                                        otkData.User = reader["User"] != DBNull.Value ? reader["User"].ToString() : string.Empty;
                                     }
                                 }
                             }
                         }
 
-                    dr["OTKControl"] = otkControlStates;
+                        // Обновляем значение в DataGridView
+                        dr["OTKControlData"] = otkData;
+                        dr["OriginalOTKControlData"] = otkData.Clone();
                     }
+                }
+
+                // Обновляем DataGridView
+                dgv.DataSource = DT;
+
+                // Устанавливаем значения ячеек для пользовательской колонки
+                foreach (DataGridViewRow row in dgv.Rows)
+                {
+                    DataRow dataRow = ((DataRowView)row.DataBoundItem).Row;
+                    OTKControlData otkData = dataRow["OTKControlData"] as OTKControlData;
+                    row.Cells["Col_OTKControl"].Value = otkData;
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Не работает. " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Ошибка при загрузке технологии: " + ex.Message, "ОШИБКА!!!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-
-
 
     }
 }
