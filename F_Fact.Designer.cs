@@ -63,6 +63,8 @@ namespace Dispetcher2
             this.btnkoop = new System.Windows.Forms.Button();
             this.btn_CloseAllWorks = new System.Windows.Forms.Button();
             this.cB_InDetail = new System.Windows.Forms.CheckBox();
+            this.mBtnM_Brigade = new Dispetcher2.Controls.MyButtonMenu();
+            this.mBtnM_Worker = new Dispetcher2.Controls.MyButtonMenu();
             this.tB_Workers = new System.Windows.Forms.TextBox();
             this.btn_SaveTehnology = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
@@ -72,19 +74,17 @@ namespace Dispetcher2
             this.btn_SearchSHCM_F = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.dGV_FactOperation = new System.Windows.Forms.DataGridView();
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.mBtnM_Brigade = new Dispetcher2.Controls.MyButtonMenu();
-            this.mBtnM_Worker = new Dispetcher2.Controls.MyButtonMenu();
             this.Col_FactOper = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Col_DateFactOper = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Col_FK_LoginWorker = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Col_AmountDetails = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Col_FactTpd = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Col_FactTsh = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)(this.dGV_Orders)).BeginInit();
             this.OrderContextMenuStrip.SuspendLayout();
             this.gB_OrderName.SuspendLayout();
@@ -400,6 +400,7 @@ namespace Dispetcher2
             this.groupBox3.Size = new System.Drawing.Size(340, 251);
             this.groupBox3.TabIndex = 17;
             this.groupBox3.TabStop = false;
+            this.groupBox3.Enter += new System.EventHandler(this.groupBox3_Enter);
             // 
             // SaveInBD
             // 
@@ -454,6 +455,32 @@ namespace Dispetcher2
             this.cB_InDetail.Text = "Подробно";
             this.cB_InDetail.UseVisualStyleBackColor = true;
             this.cB_InDetail.CheckedChanged += new System.EventHandler(this.cB_InDetail_CheckedChanged);
+            // 
+            // mBtnM_Brigade
+            // 
+            this.mBtnM_Brigade.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
+            this.mBtnM_Brigade.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.mBtnM_Brigade.Location = new System.Drawing.Point(92, 85);
+            this.mBtnM_Brigade.Margin = new System.Windows.Forms.Padding(4);
+            this.mBtnM_Brigade.Name = "mBtnM_Brigade";
+            this.mBtnM_Brigade.Size = new System.Drawing.Size(81, 27);
+            this.mBtnM_Brigade.TabIndex = 1009;
+            this.mBtnM_Brigade.Text = "Бригада";
+            this.mBtnM_Brigade.UseVisualStyleBackColor = true;
+            this.mBtnM_Brigade.Click += new System.EventHandler(this.mBtnM_Brigade_Click);
+            // 
+            // mBtnM_Worker
+            // 
+            this.mBtnM_Worker.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
+            this.mBtnM_Worker.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.mBtnM_Worker.Location = new System.Drawing.Point(3, 85);
+            this.mBtnM_Worker.Margin = new System.Windows.Forms.Padding(4);
+            this.mBtnM_Worker.Name = "mBtnM_Worker";
+            this.mBtnM_Worker.Size = new System.Drawing.Size(81, 27);
+            this.mBtnM_Worker.TabIndex = 1008;
+            this.mBtnM_Worker.Text = "Рабочий";
+            this.mBtnM_Worker.UseVisualStyleBackColor = true;
+            this.mBtnM_Worker.Click += new System.EventHandler(this.mBtnM_Worker_Click);
             // 
             // tB_Workers
             // 
@@ -581,6 +608,52 @@ namespace Dispetcher2
             this.dGV_FactOperation.TabStop = false;
             this.dGV_FactOperation.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dGV_FactOperation_KeyDown);
             // 
+            // Col_FactOper
+            // 
+            this.Col_FactOper.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Col_FactOper.HeaderText = "Операция";
+            this.Col_FactOper.MinimumWidth = 20;
+            this.Col_FactOper.Name = "Col_FactOper";
+            this.Col_FactOper.ReadOnly = true;
+            // 
+            // Col_DateFactOper
+            // 
+            this.Col_DateFactOper.HeaderText = "Дата";
+            this.Col_DateFactOper.Name = "Col_DateFactOper";
+            this.Col_DateFactOper.ReadOnly = true;
+            this.Col_DateFactOper.Width = 90;
+            // 
+            // Col_FK_LoginWorker
+            // 
+            this.Col_FK_LoginWorker.HeaderText = "Рабочий";
+            this.Col_FK_LoginWorker.Name = "Col_FK_LoginWorker";
+            this.Col_FK_LoginWorker.ReadOnly = true;
+            this.Col_FK_LoginWorker.Width = 300;
+            // 
+            // Col_AmountDetails
+            // 
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.Col_AmountDetails.DefaultCellStyle = dataGridViewCellStyle2;
+            this.Col_AmountDetails.HeaderText = "Кол-во";
+            this.Col_AmountDetails.MinimumWidth = 20;
+            this.Col_AmountDetails.Name = "Col_AmountDetails";
+            this.Col_AmountDetails.ReadOnly = true;
+            this.Col_AmountDetails.Width = 60;
+            // 
+            // Col_FactTpd
+            // 
+            this.Col_FactTpd.HeaderText = "Tpd, sec";
+            this.Col_FactTpd.Name = "Col_FactTpd";
+            this.Col_FactTpd.ReadOnly = true;
+            this.Col_FactTpd.Width = 50;
+            // 
+            // Col_FactTsh
+            // 
+            this.Col_FactTsh.HeaderText = "Tsh, sec";
+            this.Col_FactTsh.Name = "Col_FactTsh";
+            this.Col_FactTsh.ReadOnly = true;
+            this.Col_FactTsh.Width = 55;
+            // 
             // groupBox5
             // 
             this.groupBox5.Controls.Add(this.dGV_Details);
@@ -644,78 +717,6 @@ namespace Dispetcher2
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(984, 632);
             this.tableLayoutPanel1.TabIndex = 1001;
-            // 
-            // mBtnM_Brigade
-            // 
-            this.mBtnM_Brigade.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
-            this.mBtnM_Brigade.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.mBtnM_Brigade.Location = new System.Drawing.Point(92, 85);
-            this.mBtnM_Brigade.Margin = new System.Windows.Forms.Padding(4);
-            this.mBtnM_Brigade.Name = "mBtnM_Brigade";
-            this.mBtnM_Brigade.Size = new System.Drawing.Size(81, 27);
-            this.mBtnM_Brigade.TabIndex = 1009;
-            this.mBtnM_Brigade.Text = "Бригада";
-            this.mBtnM_Brigade.UseVisualStyleBackColor = true;
-            this.mBtnM_Brigade.Click += new System.EventHandler(this.mBtnM_Brigade_Click);
-            // 
-            // mBtnM_Worker
-            // 
-            this.mBtnM_Worker.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
-            this.mBtnM_Worker.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.mBtnM_Worker.Location = new System.Drawing.Point(3, 85);
-            this.mBtnM_Worker.Margin = new System.Windows.Forms.Padding(4);
-            this.mBtnM_Worker.Name = "mBtnM_Worker";
-            this.mBtnM_Worker.Size = new System.Drawing.Size(81, 27);
-            this.mBtnM_Worker.TabIndex = 1008;
-            this.mBtnM_Worker.Text = "Рабочий";
-            this.mBtnM_Worker.UseVisualStyleBackColor = true;
-            this.mBtnM_Worker.Click += new System.EventHandler(this.mBtnM_Worker_Click);
-            // 
-            // Col_FactOper
-            // 
-            this.Col_FactOper.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Col_FactOper.HeaderText = "Операция";
-            this.Col_FactOper.MinimumWidth = 20;
-            this.Col_FactOper.Name = "Col_FactOper";
-            this.Col_FactOper.ReadOnly = true;
-            // 
-            // Col_DateFactOper
-            // 
-            this.Col_DateFactOper.HeaderText = "Дата";
-            this.Col_DateFactOper.Name = "Col_DateFactOper";
-            this.Col_DateFactOper.ReadOnly = true;
-            this.Col_DateFactOper.Width = 90;
-            // 
-            // Col_FK_LoginWorker
-            // 
-            this.Col_FK_LoginWorker.HeaderText = "Рабочий";
-            this.Col_FK_LoginWorker.Name = "Col_FK_LoginWorker";
-            this.Col_FK_LoginWorker.ReadOnly = true;
-            this.Col_FK_LoginWorker.Width = 300;
-            // 
-            // Col_AmountDetails
-            // 
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.Col_AmountDetails.DefaultCellStyle = dataGridViewCellStyle2;
-            this.Col_AmountDetails.HeaderText = "Кол-во";
-            this.Col_AmountDetails.MinimumWidth = 20;
-            this.Col_AmountDetails.Name = "Col_AmountDetails";
-            this.Col_AmountDetails.ReadOnly = true;
-            this.Col_AmountDetails.Width = 60;
-            // 
-            // Col_FactTpd
-            // 
-            this.Col_FactTpd.HeaderText = "Tpd, sec";
-            this.Col_FactTpd.Name = "Col_FactTpd";
-            this.Col_FactTpd.ReadOnly = true;
-            this.Col_FactTpd.Width = 50;
-            // 
-            // Col_FactTsh
-            // 
-            this.Col_FactTsh.HeaderText = "Tsh, sec";
-            this.Col_FactTsh.Name = "Col_FactTsh";
-            this.Col_FactTsh.ReadOnly = true;
-            this.Col_FactTsh.Width = 55;
             // 
             // F_Fact
             // 

@@ -2,7 +2,6 @@
 using System.Windows.Forms;
 using System;
 
-
 namespace Dispetcher2.Class
 {
     public enum CheckBoxState
@@ -20,16 +19,33 @@ namespace Dispetcher2.Class
         private static int CheckBoxHeight = 25;
         private static int CheckBoxSpacing = 10;
 
+        // Поля для контекстного меню
+        private ContextMenuStrip contextMenu;
+        private int clickedCheckBoxIndex = -1; // Индекс чекбокса, на который кликнули
+
         public DataGridViewOTKControlCell()
         {
-            this.ValueType = typeof(CheckBoxState[]);
+            this.ValueType = typeof(OTKControlData);
+
+            // Инициализируем контекстное меню
+            contextMenu = new ContextMenuStrip();
+            contextMenu.ShowImageMargin = false; // Убираем отступ слева
+
+            // Добавляем пункты меню
+            contextMenu.Items.Add("Доработка").Click += (s, e) => { SetCheckBoxState(clickedCheckBoxIndex, CheckBoxState.CrossedBrown); };
+            contextMenu.Items.Add("Брак").Click += (s, e) => { SetCheckBoxState(clickedCheckBoxIndex, CheckBoxState.CrossedRed); };
+            contextMenu.Items.Add("С разрешения конструктора").Click += (s, e) => { /* Реализовать при необходимости */ };
+            contextMenu.Items.Add("Прикрепить файл").Click += (s, e) => { /* Реализовать позже */ };
+            contextMenu.Items.Add(new ToolStripSeparator());
+            contextMenu.Items.Add("Редактировать заметку").Click += (s, e) => { EditNote(); };
+            contextMenu.Items.Add("Сбросить").Click += (s, e) => { ResetCellState(); };
+            contextMenu.Items.Add("Сохранить").Click += (s, e) => { /* Заглушка для сохранения */ };
         }
 
         protected override void Paint(Graphics graphics, Rectangle clipBounds, Rectangle cellBounds, int rowIndex,
             DataGridViewElementStates cellState, object value, object formattedValue, string errorText,
             DataGridViewCellStyle cellStyle, DataGridViewAdvancedBorderStyle advancedBorderStyle, DataGridViewPaintParts paintParts)
         {
-
             OTKControlData otkData = this.Value as OTKControlData;
             if (otkData == null)
             {
@@ -37,16 +53,28 @@ namespace Dispetcher2.Class
             }
 
             CheckBoxState[] state = otkData.States;
-            // Получаем текущее значение ячейки
+            if (state == null || state.Length != 3)
+            {
+                state = new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
+            }
 
+            // Проверяем состояния
             bool isThirdChecked = (state[2] == CheckBoxState.Checked);
+            bool hasCrosses = (state[0] == CheckBoxState.CrossedRed || state[1] == CheckBoxState.CrossedRed || state[2] == CheckBoxState.CrossedRed);
 
-            // Определяем, есть ли крестики в первых двух чекбоксах
-            bool hasCrosses = (state[0] == CheckBoxState.CrossedBrown || state[0] == CheckBoxState.CrossedRed ||
-                               state[1] == CheckBoxState.CrossedBrown || state[1] == CheckBoxState.CrossedRed);
+            // Определяем, должны ли чекбоксы быть неактивными
+            bool isCellInactive = isThirdChecked || hasCrosses;
 
             // Определяем цвет фона ячейки
-            Color cellBackColor = (isThirdChecked || (hasCrosses && isThirdChecked)) ? Color.LightGreen : cellStyle.BackColor;
+            Color cellBackColor = cellStyle.BackColor;
+            if (hasCrosses)
+            {
+                cellBackColor = Color.DarkRed;
+            }
+            else if (isThirdChecked)
+            {
+                cellBackColor = Color.LightGreen;
+            }
 
             // Рисуем фон ячейки
             using (SolidBrush cellBackground = new SolidBrush(cellBackColor))
@@ -70,7 +98,9 @@ namespace Dispetcher2.Class
 
                 // Определяем состояние чекбокса
                 CheckBoxState cbState = state.Length > i ? state[i] : CheckBoxState.Unchecked;
-                bool isEnabled = !(isThirdChecked && i < 2); // Блокируем первые два, если третий отмечен
+
+                // Определяем, должен ли чекбокс быть неактивным
+                bool isEnabled = !isCellInactive;
 
                 ButtonState buttonState = ButtonState.Normal;
 
@@ -90,10 +120,10 @@ namespace Dispetcher2.Class
                 else if (cbState == CheckBoxState.CrossedBrown || cbState == CheckBoxState.CrossedRed)
                 {
                     // Определяем цвет крестика
-                    Color crossColor = cbState == CheckBoxState.CrossedBrown ? Color.Brown : Color.Red;
+                    Color crossColor = cbState == CheckBoxState.CrossedBrown ? Color.DarkKhaki : Color.Red;
 
                     // Рисуем крестик
-                    using (Pen pen = new Pen(crossColor, 2))
+                    using (Pen pen = new Pen(crossColor, 4))
                     {
                         graphics.DrawLine(pen, cbRect.X + 4, cbRect.Y + 4, cbRect.Right - 4, cbRect.Bottom - 4);
                         graphics.DrawLine(pen, cbRect.Right - 4, cbRect.Y + 4, cbRect.X + 4, cbRect.Bottom - 4);
@@ -126,9 +156,6 @@ namespace Dispetcher2.Class
 
             if (e.Button == MouseButtons.Left)
             {
-                // Получаем координаты клика относительно ячейки
-                Point clickLocation = e.Location;
-
                 // Получаем текущее значение ячейки
                 OTKControlData otkData = this.Value as OTKControlData;
                 if (otkData == null)
@@ -142,6 +169,17 @@ namespace Dispetcher2.Class
                     state = new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
                 }
 
+                // Проверяем состояния
+                bool isThirdChecked = (state[2] == CheckBoxState.Checked);
+                bool hasCrosses = (state[0] == CheckBoxState.CrossedRed || state[1] == CheckBoxState.CrossedRed || state[2] == CheckBoxState.CrossedRed);
+                bool isCellInactive = isThirdChecked || hasCrosses;
+
+                if (isCellInactive)
+                {
+                    // Блокируем изменение состояний
+                    return;
+                }
+
                 // Вычисляем позиции для каждой галочки
                 int totalWidth = 3 * CheckBoxWidth + 2 * CheckBoxSpacing;
                 int startX = (this.Size.Width - totalWidth) / 2;
@@ -149,21 +187,13 @@ namespace Dispetcher2.Class
 
                 bool stateChanged = false;
 
-                bool isThirdChecked = (state[2] == CheckBoxState.Checked);
-
                 for (int i = 0; i < 3; i++)
                 {
                     Rectangle cbRect = new Rectangle(startX + i * (CheckBoxWidth + CheckBoxSpacing),
                                                      startY, CheckBoxWidth, CheckBoxHeight);
 
-                    if (cbRect.Contains(clickLocation))
+                    if (cbRect.Contains(e.Location))
                     {
-                        if (isThirdChecked && i < 2)
-                        {
-                            // Если третий чекбокс отмечен, блокируем первые два
-                            break;
-                        }
-
                         if (i == 2)
                         {
                             // Переключаем третий чекбокс
@@ -183,7 +213,7 @@ namespace Dispetcher2.Class
                             {
                                 state[i] = CheckBoxState.Checked;
                             }
-                            else if (state[i] == CheckBoxState.Checked)
+                            else
                             {
                                 state[i] = CheckBoxState.Unchecked;
                             }
@@ -212,9 +242,9 @@ namespace Dispetcher2.Class
             }
         }
 
-        protected override void OnMouseUp(DataGridViewCellMouseEventArgs e)
+        protected override void OnMouseDown(DataGridViewCellMouseEventArgs e)
         {
-            base.OnMouseUp(e);
+            base.OnMouseDown(e);
 
             if (e.Button == MouseButtons.Right)
             {
@@ -233,32 +263,8 @@ namespace Dispetcher2.Class
 
                     if (cbRect.Contains(clickLocation))
                     {
-                        // Создаем контекстное меню
-                        ContextMenuStrip contextMenu = new ContextMenuStrip();
-                        contextMenu.ShowImageMargin = false; // Убираем отступ слева
-
-                        // Добавляем пункты меню
-                        ToolStripMenuItem item1 = new ToolStripMenuItem("Доработка");
-                        ToolStripMenuItem item2 = new ToolStripMenuItem("Брак");
-                        ToolStripMenuItem item3 = new ToolStripMenuItem("С разрешения конструктора");
-                        ToolStripMenuItem item4 = new ToolStripMenuItem("Прикрепить файл");
-                        ToolStripMenuItem item5 = new ToolStripMenuItem("Сбросить");
-                        ToolStripMenuItem item6 = new ToolStripMenuItem("Сохранить");
-
-                        int index = i; // Для использования в лямбда-выражении
-
-                        // Добавляем обработчики событий
-                        item1.Click += (sender, args) => { SetCheckBoxState(index, CheckBoxState.CrossedBrown); };
-                        item2.Click += (sender, args) => { SetCheckBoxState(index, CheckBoxState.CrossedRed); };
-                        item3.Click += (sender, args) => { /* Реализовать при необходимости */ };
-                        item4.Click += (sender, args) => { /* Реализовать позже */ };
-                        item5.Click += (sender, args) => { ResetCellState(); };
-                        item6.Click += (sender, args) => { /* Заглушка для сохранения */ };
-
-                        // Добавляем пункты в меню
-                        contextMenu.Items.AddRange(new ToolStripItem[] { item1, item2, item3, item4, new ToolStripSeparator(), item5, item6 });
-
-                        // Отображаем меню
+                        clickedCheckBoxIndex = i;
+                        // Отображаем контекстное меню
                         contextMenu.Show(Cursor.Position);
                         break;
                     }
@@ -294,19 +300,60 @@ namespace Dispetcher2.Class
         {
             // Сбрасываем состояние ячейки в исходное
             OTKControlData otkData = this.Value as OTKControlData;
-            CheckBoxState[] state = otkData.States;
-            state = new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
-            otkData.States = state;
+            if (otkData == null)
+            {
+                otkData = new OTKControlData();
+            }
+
+            otkData.States = new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
+
             this.Value = otkData;
             this.DataGridView.InvalidateCell(this);
             this.DataGridView.NotifyCurrentCellDirty(true);
+        }
+
+        private void EditNote()
+        {
+            // Открываем форму для редактирования заметки
+            OTKControlData otkData = this.Value as OTKControlData;
+            if (otkData == null)
+            {
+                otkData = new OTKControlData();
+            }
+
+            NoteForm noteForm = new NoteForm();
+            noteForm.NoteText = otkData.Note; // Передаем текущую заметку в форму
+
+            if (noteForm.ShowDialog() == DialogResult.OK)
+            {
+                // Обновляем заметку после изменений
+                otkData.Note = noteForm.NoteText;
+
+                if (string.IsNullOrEmpty(otkData.Note))
+                {
+                    // Если заметка была удалена, можно установить дату и пользователя в null или значения по умолчанию
+                    otkData.ChangeDate = DateTime.MinValue;
+                    otkData.User = string.Empty;
+                }
+                else
+                {
+                    // Если заметка обновлена, устанавливаем текущую дату и пользователя
+                    otkData.ChangeDate = DateTime.Now;
+                    otkData.User = Environment.UserName;
+                }
+
+                // Обновляем значение ячейки
+                this.Value = otkData;
+                this.DataGridView.InvalidateCell(this);
+                this.DataGridView.NotifyCurrentCellDirty(true);
+            }
         }
 
         public override object DefaultNewRowValue
         {
             get
             {
-                return new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
+                return new OTKControlData();
             }
         }
 

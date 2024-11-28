@@ -251,8 +251,8 @@ namespace Dispetcher2
 
                             long IdLoodsman = Convert.ToInt64(row["IdLoodsman"]);
 
-                            string rowData = string.Join(Environment.NewLine, row.Table.Columns.Cast<DataColumn>().Select(c => $"{c.ColumnName}: {row[c]}"));
-                            MessageBox.Show(rowData);
+                            //string rowData = string.Join(Environment.NewLine, row.Table.Columns.Cast<DataColumn>().Select(c => $"{c.ColumnName}: {row[c]}"));
+                            //MessageBox.Show(rowData);
 
                             Detail.GetTehnologyFromLoodsmanFordGV_Tehnology(ref DT_Tehnology, ref dGV_Tehnology, IdLoodsman, PK_IdOrderDetail);
                         }
@@ -831,6 +831,7 @@ namespace Dispetcher2
             if (hasChanges)
             {
                 NoteForm noteForm = new NoteForm();
+
                 if (noteForm.ShowDialog() == DialogResult.OK)
                 {
                     string note = noteForm.NoteText;
@@ -864,7 +865,7 @@ namespace Dispetcher2
                 // Обработка случая, когда изменений нет
                 SaveOperationsToDatabase(operationsToSave, null, currentUser, DateTime.Now);
             }
-            dGV_Tehnology.Refresh();
+            //dGV_Tehnology.Refresh();
         }
 
 
@@ -1036,6 +1037,11 @@ namespace Dispetcher2
                     }
                 }
             }
+        }
+
+        private void groupBox3_Enter(object sender, EventArgs e)
+        {
+
         }
     }
 }
