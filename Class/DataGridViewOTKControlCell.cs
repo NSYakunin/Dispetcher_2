@@ -293,8 +293,11 @@ namespace Dispetcher2.Class
         private void ResetCellState()
         {
             // Сбрасываем состояние ячейки в исходное
-            CheckBoxState[] state = new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
-            this.Value = state;
+            OTKControlData otkData = this.Value as OTKControlData;
+            CheckBoxState[] state = otkData.States;
+            state = new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
+            otkData.States = state;
+            this.Value = otkData;
             this.DataGridView.InvalidateCell(this);
             this.DataGridView.NotifyCurrentCellDirty(true);
         }
