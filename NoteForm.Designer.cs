@@ -33,7 +33,6 @@
             this.btnOK = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btnNO = new System.Windows.Forms.Button();
-            this.changeBTN = new System.Windows.Forms.Button();
             this.clearTextBox = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -79,7 +78,6 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.clearTextBox);
-            this.groupBox1.Controls.Add(this.changeBTN);
             this.groupBox1.Controls.Add(this.btnNO);
             this.groupBox1.Controls.Add(this.btnOK);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -98,18 +96,6 @@
             this.btnNO.TabIndex = 2;
             this.btnNO.Text = "Отмена";
             this.btnNO.UseVisualStyleBackColor = true;
-            this.btnNO.Click += new System.EventHandler(this.btnNO_Click);
-            // 
-            // changeBTN
-            // 
-            this.changeBTN.Location = new System.Drawing.Point(84, 16);
-            this.changeBTN.Name = "changeBTN";
-            this.changeBTN.Size = new System.Drawing.Size(117, 27);
-            this.changeBTN.TabIndex = 3;
-            this.changeBTN.Text = "Изменить заметку";
-            this.changeBTN.UseVisualStyleBackColor = true;
-            this.changeBTN.Visible = false;
-            this.changeBTN.Click += new System.EventHandler(this.changeBTN_Click);
             // 
             // clearTextBox
             // 
@@ -145,6 +131,5 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button btnNO;
         private System.Windows.Forms.Button clearTextBox;
-        private System.Windows.Forms.Button changeBTN;
     }
 }

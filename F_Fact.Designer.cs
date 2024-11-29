@@ -59,12 +59,9 @@ namespace Dispetcher2
             this.dTimeP_Fact = new System.Windows.Forms.DateTimePicker();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.SaveInBD = new System.Windows.Forms.Button();
-            this.saveOTKBTN = new System.Windows.Forms.Button();
             this.btnkoop = new System.Windows.Forms.Button();
             this.btn_CloseAllWorks = new System.Windows.Forms.Button();
             this.cB_InDetail = new System.Windows.Forms.CheckBox();
-            this.mBtnM_Brigade = new Dispetcher2.Controls.MyButtonMenu();
-            this.mBtnM_Worker = new Dispetcher2.Controls.MyButtonMenu();
             this.tB_Workers = new System.Windows.Forms.TextBox();
             this.btn_SaveTehnology = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
@@ -85,6 +82,8 @@ namespace Dispetcher2
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.mBtnM_Brigade = new Dispetcher2.Controls.MyButtonMenu();
+            this.mBtnM_Worker = new Dispetcher2.Controls.MyButtonMenu();
             ((System.ComponentModel.ISupportInitialize)(this.dGV_Orders)).BeginInit();
             this.OrderContextMenuStrip.SuspendLayout();
             this.gB_OrderName.SuspendLayout();
@@ -382,7 +381,6 @@ namespace Dispetcher2
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.SaveInBD);
-            this.groupBox3.Controls.Add(this.saveOTKBTN);
             this.groupBox3.Controls.Add(this.btnkoop);
             this.groupBox3.Controls.Add(this.btn_CloseAllWorks);
             this.groupBox3.Controls.Add(this.cB_InDetail);
@@ -404,25 +402,16 @@ namespace Dispetcher2
             // 
             // SaveInBD
             // 
+            this.SaveInBD.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.SaveInBD.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.SaveInBD.Location = new System.Drawing.Point(69, 220);
+            this.SaveInBD.Location = new System.Drawing.Point(7, 220);
             this.SaveInBD.Name = "SaveInBD";
             this.SaveInBD.Size = new System.Drawing.Size(108, 23);
             this.SaveInBD.TabIndex = 1015;
             this.SaveInBD.Text = "Сохранить ОТК";
             this.SaveInBD.UseVisualStyleBackColor = true;
             this.SaveInBD.Click += new System.EventHandler(this.SaveInBD_Click);
-            // 
-            // saveOTKBTN
-            // 
-            this.saveOTKBTN.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.saveOTKBTN.Location = new System.Drawing.Point(9, 220);
-            this.saveOTKBTN.Name = "saveOTKBTN";
-            this.saveOTKBTN.Size = new System.Drawing.Size(54, 23);
-            this.saveOTKBTN.TabIndex = 1014;
-            this.saveOTKBTN.Text = "Инфо";
-            this.saveOTKBTN.UseVisualStyleBackColor = true;
-            this.saveOTKBTN.Click += new System.EventHandler(this.saveOTKBTN_Click);
             // 
             // btnkoop
             // 
@@ -455,32 +444,6 @@ namespace Dispetcher2
             this.cB_InDetail.Text = "Подробно";
             this.cB_InDetail.UseVisualStyleBackColor = true;
             this.cB_InDetail.CheckedChanged += new System.EventHandler(this.cB_InDetail_CheckedChanged);
-            // 
-            // mBtnM_Brigade
-            // 
-            this.mBtnM_Brigade.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
-            this.mBtnM_Brigade.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.mBtnM_Brigade.Location = new System.Drawing.Point(92, 85);
-            this.mBtnM_Brigade.Margin = new System.Windows.Forms.Padding(4);
-            this.mBtnM_Brigade.Name = "mBtnM_Brigade";
-            this.mBtnM_Brigade.Size = new System.Drawing.Size(81, 27);
-            this.mBtnM_Brigade.TabIndex = 1009;
-            this.mBtnM_Brigade.Text = "Бригада";
-            this.mBtnM_Brigade.UseVisualStyleBackColor = true;
-            this.mBtnM_Brigade.Click += new System.EventHandler(this.mBtnM_Brigade_Click);
-            // 
-            // mBtnM_Worker
-            // 
-            this.mBtnM_Worker.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
-            this.mBtnM_Worker.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.mBtnM_Worker.Location = new System.Drawing.Point(3, 85);
-            this.mBtnM_Worker.Margin = new System.Windows.Forms.Padding(4);
-            this.mBtnM_Worker.Name = "mBtnM_Worker";
-            this.mBtnM_Worker.Size = new System.Drawing.Size(81, 27);
-            this.mBtnM_Worker.TabIndex = 1008;
-            this.mBtnM_Worker.Text = "Рабочий";
-            this.mBtnM_Worker.UseVisualStyleBackColor = true;
-            this.mBtnM_Worker.Click += new System.EventHandler(this.mBtnM_Worker_Click);
             // 
             // tB_Workers
             // 
@@ -718,6 +681,32 @@ namespace Dispetcher2
             this.tableLayoutPanel1.Size = new System.Drawing.Size(984, 632);
             this.tableLayoutPanel1.TabIndex = 1001;
             // 
+            // mBtnM_Brigade
+            // 
+            this.mBtnM_Brigade.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
+            this.mBtnM_Brigade.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.mBtnM_Brigade.Location = new System.Drawing.Point(92, 85);
+            this.mBtnM_Brigade.Margin = new System.Windows.Forms.Padding(4);
+            this.mBtnM_Brigade.Name = "mBtnM_Brigade";
+            this.mBtnM_Brigade.Size = new System.Drawing.Size(81, 27);
+            this.mBtnM_Brigade.TabIndex = 1009;
+            this.mBtnM_Brigade.Text = "Бригада";
+            this.mBtnM_Brigade.UseVisualStyleBackColor = true;
+            this.mBtnM_Brigade.Click += new System.EventHandler(this.mBtnM_Brigade_Click);
+            // 
+            // mBtnM_Worker
+            // 
+            this.mBtnM_Worker.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
+            this.mBtnM_Worker.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.mBtnM_Worker.Location = new System.Drawing.Point(3, 85);
+            this.mBtnM_Worker.Margin = new System.Windows.Forms.Padding(4);
+            this.mBtnM_Worker.Name = "mBtnM_Worker";
+            this.mBtnM_Worker.Size = new System.Drawing.Size(81, 27);
+            this.mBtnM_Worker.TabIndex = 1008;
+            this.mBtnM_Worker.Text = "Рабочий";
+            this.mBtnM_Worker.UseVisualStyleBackColor = true;
+            this.mBtnM_Worker.Click += new System.EventHandler(this.mBtnM_Worker_Click);
+            // 
             // F_Fact
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -802,7 +791,6 @@ namespace Dispetcher2
         private System.Windows.Forms.DataGridViewTextBoxColumn Col_Oper;
         private System.Windows.Forms.DataGridViewTextBoxColumn Col_Tpd;
         private System.Windows.Forms.DataGridViewTextBoxColumn Col_Tsh;
-        private System.Windows.Forms.Button saveOTKBTN;
         private System.Windows.Forms.Button SaveInBD;
         private System.Windows.Forms.DataGridViewTextBoxColumn Col_FactOper;
         private System.Windows.Forms.DataGridViewTextBoxColumn Col_DateFactOper;

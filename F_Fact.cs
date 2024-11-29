@@ -1010,6 +1010,7 @@ namespace Dispetcher2
 
         private bool AreOTKControlDataEqual(OTKControlData data1, OTKControlData data2)
         {
+            if (data1.Note != data2.Note) return false;
             if (data1 == null || data2 == null)
                 return false;
 

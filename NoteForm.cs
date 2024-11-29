@@ -18,12 +18,6 @@ namespace Dispetcher2
             set { textBoxNote.Text = value; }
         }
 
-        public void ClearTextBoxVis(bool flag)
-        {
-            changeBTN.Visible = flag;
-        }
-
-
         public NoteForm()
         {
             InitializeComponent();
@@ -49,32 +43,6 @@ namespace Dispetcher2
         private void clearTextBox_Click(object sender, EventArgs e)
         {
             textBoxNote.Clear();
-        }
-
-        private void btnNO_Click(object sender, EventArgs e)
-        {
-            changeBTN.Visible = false;
-            this.Close();
-        }
-
-        private void changeBTN_Click(object sender, EventArgs e)
-        {
-            string newNote = textBoxNote.Text.Trim();
-
-            if (string.IsNullOrEmpty(newNote))
-            {
-                // Если текст пустой, удаляем заметку
-                NoteText = string.Empty;
-            }
-            else
-            {
-                // Обновляем заметку
-                NoteText = newNote;
-            }
-
-            // Закрываем форму с DialogResult.OK, чтобы вызвать обновление в вызывающем коде
-            this.DialogResult = DialogResult.OK;
-            this.Close();
         }
     }
 }
