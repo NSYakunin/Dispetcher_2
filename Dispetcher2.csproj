@@ -181,11 +181,13 @@
     <Compile Include="Class\KitUpdater.cs" />
     <Compile Include="Class\LaborReport.cs" />
     <Compile Include="Class\Operation.cs" />
+    <Compile Include="Class\OperationData.cs" />
     <Compile Include="Class\Order.cs" />
     <Compile Include="Class\OTKControlData.cs" />
     <Compile Include="Class\OTKControlState.cs" />
     <Compile Include="Class\Receipt.cs" />
     <Compile Include="Class\RepositoryFactory.cs" />
+    <Compile Include="Class\SaveOTK.cs" />
     <Compile Include="Class\Server.cs" />
     <Compile Include="Class\WorkDay.cs" />
     <Compile Include="Class\С_TreeViewOrders.cs" />
