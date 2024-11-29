@@ -314,13 +314,14 @@ namespace Dispetcher2.Class
 
         private void EditNote()
         {
-            // Открываем форму для редактирования заметки
+            // Получаем объект OTKControlData из значения ячейки
             OTKControlData otkData = this.Value as OTKControlData;
             if (otkData == null)
             {
                 otkData = new OTKControlData();
             }
 
+            // Открываем форму для редактирования заметки
             NoteForm noteForm = new NoteForm();
             noteForm.NoteText = otkData.Note; // Передаем текущую заметку в форму
 
@@ -331,7 +332,7 @@ namespace Dispetcher2.Class
 
                 if (string.IsNullOrEmpty(otkData.Note))
                 {
-                    // Если заметка была удалена, можно установить дату и пользователя в null или значения по умолчанию
+                    // Если заметка была удалена, устанавливаем дату и пользователя в значения по умолчанию
                     otkData.ChangeDate = DateTime.MinValue;
                     otkData.User = string.Empty;
                 }
@@ -344,8 +345,24 @@ namespace Dispetcher2.Class
 
                 // Обновляем значение ячейки
                 this.Value = otkData;
-                this.DataGridView.InvalidateCell(this);
+
+                // Уведомляем DataGridView об изменении
                 this.DataGridView.NotifyCurrentCellDirty(true);
+
+                // Сохраняем изменения сразу
+                DataGridView dataGridView = this.DataGridView;
+                F_Fact form = dataGridView.FindForm() as F_Fact;
+                if (form != null)
+                {
+                    // Используем OwningRow для получения строки, в которой произошло редактирование
+                    DataGridViewRow row = this.OwningRow;
+
+                    // Вызываем метод сохранения, передавая корректную строку
+                    form.SaveOTKControlData(row);
+                }
+
+                // Обновляем отображение ячейки
+                this.DataGridView.InvalidateCell(this);
             }
         }
 

@@ -17,5 +17,6 @@ namespace Dispetcher2.Class
         public DateTime ChangeDate { get; set; }
         public OTKControlData OTKControlData { get; set; }
         public bool IsChanged { get; set; }
+        public bool IsStateChanged { get; set; }
     }
 }

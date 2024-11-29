@@ -22,6 +22,7 @@ namespace Dispetcher2.Class
             dGV_Tehnology = dgv2;
             this.config = config;
         }
+
         public void SaveMethod()
         {
             StringBuilder sb = new StringBuilder();
@@ -40,6 +41,7 @@ namespace Dispetcher2.Class
                 }
             }
             bool hasChanges = false;
+            bool hasStateChanges = false;
             string currentUser = Environment.UserName;
 
             List<OperationData> operationsToSave = new List<OperationData>();
@@ -54,10 +56,15 @@ namespace Dispetcher2.Class
                 OTKControlData originalData = dataRow["OriginalOTKControlData"] as OTKControlData;
 
                 bool isChanged = !AreOTKControlDataEqual(currentData, originalData);
+                bool isStateChanged = !AreOTKControlDataStatesEqual(currentData, originalData);
 
                 if (isChanged)
                 {
                     hasChanges = true;
+                }
+                if (isStateChanged)
+                {
+                    hasStateChanges = true;
                 }
 
                 // Собираем данные операции
@@ -70,6 +77,7 @@ namespace Dispetcher2.Class
                     IdLoodsman = dataRow["IdLoodsman"] == DBNull.Value ? (long?)null : Convert.ToInt64(dataRow["IdLoodsman"]),
                     OTKControlData = currentData,
                     IsChanged = isChanged,
+                    IsStateChanged = isStateChanged,
                     ChangeDate = DateTime.Now
                 };
 
@@ -78,51 +86,80 @@ namespace Dispetcher2.Class
 
             if (hasChanges)
             {
-                NoteForm noteForm = new NoteForm();
-
-                if (noteForm.ShowDialog() == DialogResult.OK)
+                string note = null;
+                if (hasStateChanges)
                 {
-                    string note = noteForm.NoteText;
-                    DateTime changeDate = DateTime.Now;
-                    SaveOperationsToDatabase(operationsToSave, note, currentUser, changeDate);
+                    // Если были изменения в состояниях чекбоксов, открываем окно заметки
+                    NoteForm noteForm = new NoteForm();
 
-                    // После успешного сохранения обновляем данные в DataGridView
-                    //foreach (DataGridViewRow row in dGV_Tehnology.Rows)
-                    //{
-                    //    if (row.IsNewRow) continue;
-
-                    //    DataRow dataRow = ((DataRowView)row.DataBoundItem).Row;
-                    //    OTKControlData currentData = dataRow["OTKControlData"] as OTKControlData;
-
-                    //    // Обновляем заметку, дату и пользователя
-                    //    currentData.Note = note;
-                    //    currentData.ChangeDate = changeDate;
-                    //    currentData.User = currentUser;
-
-                    //    // Обновляем OriginalOTKControlData
-                    //    dataRow["OriginalOTKControlData"] = currentData.Clone();
-                    //}
+                    if (noteForm.ShowDialog() == DialogResult.OK)
+                    {
+                        note = noteForm.NoteText;
+                    }
+                    else
+                    {
+                        // Если пользователь отменил ввод заметки, отменяем сохранение
+                        return;
+                    }
                 }
-                else
+
+                DateTime changeDate = DateTime.Now;
+                SaveOperationsToDatabase(operationsToSave, note, currentUser, changeDate);
+
+                // После успешного сохранения обновляем OriginalOTKControlData
+                foreach (var op in operationsToSave)
                 {
-                    return;
+                    // Используем метод FindDataRowByOper
+                    DataRow dataRow = FindDataRowByOper(op.Oper);
+                    if (dataRow != null)
+                    {
+                        dataRow["OriginalOTKControlData"] = op.OTKControlData.Clone();
+                    }
                 }
             }
             else
             {
-                // Обработка случая, когда изменений нет
-                SaveOperationsToDatabase(operationsToSave, null, currentUser, DateTime.Now);
+                MessageBox.Show("Нет изменений для сохранения.", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            //dGV_Tehnology.Refresh();
+            
         }
 
-        private bool AreOTKControlDataEqual(OTKControlData data1, OTKControlData data2)
+        private DataRow FindDataRowByOper(string oper)
         {
-            if (data1.Note != data2.Note) return false;
+            DataTable dataTable = dGV_Tehnology.DataSource as DataTable;
+            if (dataTable != null)
+            {
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    if (row["Oper"].ToString() == oper)
+                    {
+                        return row;
+                    }
+                }
+            }
+            return null;
+        }
+
+        private bool AreOTKControlDataStatesEqual(OTKControlData data1, OTKControlData data2)
+        {
             if (data1 == null || data2 == null)
                 return false;
 
             if (!data1.States.SequenceEqual(data2.States))
+                return false;
+
+            return true;
+        }
+
+        public static bool AreOTKControlDataEqual(OTKControlData data1, OTKControlData data2)
+        {
+            if (data1 == null || data2 == null)
+                return false;
+
+            if (!data1.States.SequenceEqual(data2.States))
+                return false;
+
+            if (data1.Note != data2.Note)
                 return false;
 
             return true;
@@ -148,7 +185,9 @@ namespace Dispetcher2.Class
                                 for (int i = 0; i < op.OTKControlData.States.Length; i++)
                                 {
                                     // Вставляем или обновляем записи в таблице OTKControl
-                                    InsertOrUpdateOTKControl(con, transaction, operationID, i, op.OTKControlData.States[i], changeDate, note, userName);
+                                    string noteToSave = note ?? op.OTKControlData.Note;
+
+                                    InsertOrUpdateOTKControl(con, transaction, operationID, i, op.OTKControlData.States[i], changeDate, noteToSave, userName);
                                 }
                             }
                         }
@@ -235,6 +274,56 @@ namespace Dispetcher2.Class
                 insertCmd.Parameters.AddWithValue("@User", (object)userName ?? DBNull.Value);
                 insertCmd.ExecuteNonQuery();
             }
+        }
+
+        public void SaveSingleRow(DataRow dataRow)
+        {
+            // Получаем PK_IdOrderDetail из текущей строки деталей
+            string pk_IdOrderDetail = "";
+            if (dGV_Details.CurrentRow != null)
+            {
+                DataRowView detailRowView = dGV_Details.CurrentRow.DataBoundItem as DataRowView;
+                if (detailRowView != null)
+                {
+                    DataRow detailRow = detailRowView.Row;
+                    pk_IdOrderDetail = detailRow["PK_IdOrderDetail"].ToString();
+                }
+            }
+
+            if (string.IsNullOrEmpty(pk_IdOrderDetail))
+            {
+                MessageBox.Show("PK_IdOrderDetail отсутствует.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            OTKControlData currentData = dataRow["OTKControlData"] as OTKControlData;
+
+            string currentUser = Environment.UserName;
+            DateTime changeDate = DateTime.Now;
+
+            // Собираем данные операции
+            OperationData opData = new OperationData
+            {
+                PK_IdOrderDetail = Convert.ToInt64(pk_IdOrderDetail),
+                Oper = dataRow["Oper"].ToString(),
+                Tpd = dataRow["Tpd"] == DBNull.Value ? (int?)null : Convert.ToInt32(dataRow["Tpd"]),
+                Tsh = dataRow["Tsh"] == DBNull.Value ? (int?)null : Convert.ToInt32(dataRow["Tsh"]),
+                IdLoodsman = dataRow["IdLoodsman"] == DBNull.Value ? (long?)null : Convert.ToInt64(dataRow["IdLoodsman"]),
+                OTKControlData = currentData,
+                IsChanged = true,
+                IsStateChanged = false, // Предполагаем, что при редактировании заметки состояния не менялись
+                ChangeDate = changeDate
+            };
+
+            List<OperationData> operationsToSave = new List<OperationData> { opData };
+
+            SaveOperationsToDatabase(operationsToSave, currentData.Note, currentUser, changeDate);
+
+            // Обновляем OriginalOTKControlData
+            dataRow["OriginalOTKControlData"] = currentData.Clone();
+
+            // Обновляем DataGridView
+            dGV_Tehnology.Refresh();
         }
     }
 }

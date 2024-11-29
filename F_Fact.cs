@@ -74,6 +74,7 @@ namespace Dispetcher2
             DT_FactOper.Columns.Add("FactTpd", typeof(int));
             DT_FactOper.Columns.Add("FactTsh", typeof(int));
             dGV_Tehnology.CellToolTipTextNeeded += DGV_Tehnology_CellToolTipTextNeeded;
+            dGV_Tehnology.CellValueChanged += DGV_Tehnology_CellValueChanged;
         }
         //***************************************************************
         System.Data.DataTable DT_Workers = new System.Data.DataTable();
@@ -693,7 +694,7 @@ namespace Dispetcher2
         {
             SaveOTK saveOTK = new SaveOTK(dGV_Details, dGV_Tehnology, config);
             saveOTK.SaveMethod();
-            this.Refresh();
+            dGV_Tehnology.Refresh();
         }
 
         
@@ -716,6 +717,51 @@ namespace Dispetcher2
                     }
                 }
             }
+        }
+
+        private void DGV_Tehnology_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            {
+                DataGridViewColumn column = dGV_Tehnology.Columns[e.ColumnIndex];
+                if (column.Name == "Col_OTKControl")
+                {
+                    DataGridViewRow row = dGV_Tehnology.Rows[e.RowIndex];
+                    DataRow dataRow = ((DataRowView)row.DataBoundItem).Row;
+
+                    OTKControlData currentData = dataRow["OTKControlData"] as OTKControlData;
+                    OTKControlData originalData = dataRow["OriginalOTKControlData"] as OTKControlData;
+
+                    bool isChanged = !SaveOTK.AreOTKControlDataEqual(currentData, originalData);
+
+                    if (isChanged)
+                    {
+                        // Сохраняем данные
+                        SaveOTK saveOTK = new SaveOTK(dGV_Details, dGV_Tehnology, config);
+                        saveOTK.SaveSingleRow(dataRow);
+
+                        // Обновляем OriginalOTKControlData
+                        dataRow["OriginalOTKControlData"] = currentData.Clone();
+                    }
+                }
+            }
+        }
+
+        public void SaveOTKControlData(DataGridViewRow row)
+        {
+            if (row == null) return;
+
+            DataRow dataRow = ((DataRowView)row.DataBoundItem).Row;
+
+            SaveOTK saveOTK = new SaveOTK(dGV_Details, dGV_Tehnology, config);
+            saveOTK.SaveSingleRow(dataRow);
+
+            // Обновляем OriginalOTKControlData
+            OTKControlData currentData = dataRow["OTKControlData"] as OTKControlData;
+            dataRow["OriginalOTKControlData"] = currentData.Clone();
+
+            // Обновляем DataGridView для отображения изменений
+            dGV_Tehnology.Refresh();
         }
     }
 }
