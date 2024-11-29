@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Dispetcher2.Class
 {
-    public class OTKControlData : ICloneable
+    public class OTKControlData : ICloneable, INotifyPropertyChanged
     {
         public CheckBoxState[] States { get; set; }
         public string Note { get; set; }
@@ -19,6 +20,12 @@ namespace Dispetcher2.Class
             Note = string.Empty;
             ChangeDate = DateTime.MinValue;
             User = string.Empty;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         public object Clone()

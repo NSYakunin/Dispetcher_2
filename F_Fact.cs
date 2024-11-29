@@ -694,7 +694,6 @@ namespace Dispetcher2
         {
             SaveOTK saveOTK = new SaveOTK(dGV_Details, dGV_Tehnology, config);
             saveOTK.SaveMethod();
-            dGV_Tehnology.Refresh();
         }
 
         

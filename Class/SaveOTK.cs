@@ -114,14 +114,19 @@ namespace Dispetcher2.Class
                     if (dataRow != null)
                     {
                         dataRow["OriginalOTKControlData"] = op.OTKControlData.Clone();
+
+                        // Обновляем значение в DataRow для отображения новой заметки
+                        dataRow["OTKControlData"] = op.OTKControlData;
                     }
                 }
+
+                // Обновляем DataGridView для отображения изменений
+                dGV_Tehnology.Refresh();
             }
             else
             {
                 MessageBox.Show("Нет изменений для сохранения.", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            
         }
 
         private DataRow FindDataRowByOper(string oper)
