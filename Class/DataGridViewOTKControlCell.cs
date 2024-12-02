@@ -99,9 +99,17 @@ namespace Dispetcher2.Class
             }
         }
 
-        protected override void Paint(Graphics graphics, Rectangle clipBounds, Rectangle cellBounds, int rowIndex,
-            DataGridViewElementStates cellState, object value, object formattedValue, string errorText,
-            DataGridViewCellStyle cellStyle, DataGridViewAdvancedBorderStyle advancedBorderStyle, DataGridViewPaintParts paintParts)
+        protected override void Paint(Graphics graphics,
+                                      Rectangle clipBounds,
+                                      Rectangle cellBounds,
+                                      int rowIndex, 
+                                      DataGridViewElementStates cellState,
+                                      object value,
+                                      object formattedValue,
+                                      string errorText, 
+                                      DataGridViewCellStyle cellStyle,
+                                      DataGridViewAdvancedBorderStyle advancedBorderStyle,
+                                      DataGridViewPaintParts paintParts)
         {
             OTKControlData otkData = this.Value as OTKControlData;
             if (otkData == null)
