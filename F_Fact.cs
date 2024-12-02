@@ -29,7 +29,7 @@ namespace Dispetcher2
         dF_Workers dFWorkers;
         // Внешняя зависимость! Требуется заменить на шаблон Абстрактная Фабрика
         F_SearchSHCM searchForm;
-        private IConfig config;
+        public IConfig config;
 
         public F_Fact(IConfig config)
         {
@@ -805,7 +805,7 @@ namespace Dispetcher2
             }
         }
 
-        private int GetOperationID(long PK_IdOrderDetail, string Oper)
+        public int GetOperationID(long PK_IdOrderDetail, string Oper)
         {
             int operationID = 0;
             using (SqlConnection con = new SqlConnection(config.ConnectionString))
@@ -860,22 +860,22 @@ namespace Dispetcher2
 
         public void HandleViewFiles(long PK_IdOrderDetail, string Oper, long? IdLoodsman)
         {
-            int OperationID = GetOperationID(PK_IdOrderDetail, Oper);
+            int operationID = GetOperationID(PK_IdOrderDetail, Oper);
 
-            if (OperationID == 0)
+            if (operationID == 0)
             {
                 MessageBox.Show("OperationID не найден.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            string targetDirectory = $@"\\Ascon\Dispetcher\DispetcherDock\OperationID_{OperationID}";
+            string targetDirectory = $@"\\Ascon\Dispetcher\DispetcherDock\OperationID_{operationID}";
             if (!Directory.Exists(targetDirectory))
             {
                 MessageBox.Show("Нет прикрепленных файлов для данной операции.", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            FilesForm filesForm = new FilesForm(targetDirectory);
+            FilesForm filesForm = new FilesForm(targetDirectory, operationID);
             filesForm.ShowDialog();
         }
     }

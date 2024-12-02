@@ -2,6 +2,8 @@
 using System.Windows.Forms;
 using System;
 using System.Data;
+using Dispetcher2.DialogsForms;
+using System.IO;
 
 namespace Dispetcher2.Class
 {
@@ -46,6 +48,7 @@ namespace Dispetcher2.Class
 
         private void ViewFiles()
         {
+           
             // Получаем данные аналогично методу AttachFile
             DataGridViewRow dgRow = this.OwningRow;
             DataRow dataRow = ((DataRowView)dgRow.DataBoundItem).Row;
@@ -63,24 +66,36 @@ namespace Dispetcher2.Class
         }
         private void AttachFile()
         {
-            // Получаем DataRow текущей строки в dGV_Tehnology
+            // Получаем данные из текущей строки
             DataGridViewRow dgRow = this.OwningRow;
             DataRow dataRow = ((DataRowView)dgRow.DataBoundItem).Row;
 
-            // Извлекаем необходимые данные из dataRow
             string Oper = dataRow["Oper"].ToString();
-            long? IdLoodsman = dataRow["IdLoodsman"] != DBNull.Value ? (long?)Convert.ToInt64(dataRow["IdLoodsman"]) : null;
-            string User = Environment.UserName;
 
-            // Получаем форму
             DataGridView dataGridView = this.DataGridView;
             F_Fact form = dataGridView.FindForm() as F_Fact;
             if (form != null)
             {
-                // Получаем PK_IdOrderDetail через метод формы
                 long PK_IdOrderDetail = form.GetCurrentPK_IdOrderDetail();
 
-                form.HandleAttachFile(PK_IdOrderDetail, Oper, IdLoodsman, User);
+                // Получаем OperationID
+                int OperationID = form.GetOperationID(PK_IdOrderDetail, Oper);
+
+                if (OperationID == 0)
+                {
+                    MessageBox.Show("OperationID не найден.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                string targetDirectory = $@"\\Ascon\Dispetcher\DispetcherDock\OperationID_{OperationID}";
+                if (!Directory.Exists(targetDirectory))
+                {
+                    Directory.CreateDirectory(targetDirectory);
+                }
+
+                // Открываем форму FilesForm с параметром autoOpenAddDialog = true
+                FilesForm filesForm = new FilesForm(targetDirectory, OperationID, autoOpenAddDialog: true, autoCloseAfterAdd: true);
+                filesForm.ShowDialog();
             }
         }
 

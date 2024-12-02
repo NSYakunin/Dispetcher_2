@@ -32,10 +32,11 @@
             this.listViewFiles = new System.Windows.Forms.ListView();
             this.columnHeaderFileName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeaderSize = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeaderCreationDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeaderModifiedDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeaderUploadDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeaderUploadedBy = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.btnAdd = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
+            this.btnRename = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // listViewFiles
@@ -46,14 +47,14 @@
             this.listViewFiles.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeaderFileName,
             this.columnHeaderSize,
-            this.columnHeaderCreationDate,
-            this.columnHeaderModifiedDate});
+            this.columnHeaderUploadDate,
+            this.columnHeaderUploadedBy});
             this.listViewFiles.FullRowSelect = true;
             this.listViewFiles.HideSelection = false;
             this.listViewFiles.Location = new System.Drawing.Point(9, 10);
             this.listViewFiles.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.listViewFiles.Name = "listViewFiles";
-            this.listViewFiles.Size = new System.Drawing.Size(549, 275);
+            this.listViewFiles.Size = new System.Drawing.Size(700, 275);
             this.listViewFiles.TabIndex = 0;
             this.listViewFiles.UseCompatibleStateImageBehavior = false;
             this.listViewFiles.View = System.Windows.Forms.View.Details;
@@ -69,15 +70,15 @@
             this.columnHeaderSize.Text = "Размер";
             this.columnHeaderSize.Width = 80;
             // 
-            // columnHeaderCreationDate
+            // columnHeaderUploadDate
             // 
-            this.columnHeaderCreationDate.Text = "Дата создания";
-            this.columnHeaderCreationDate.Width = 130;
+            this.columnHeaderUploadDate.Text = "Дата загрузки";
+            this.columnHeaderUploadDate.Width = 130;
             // 
-            // columnHeaderModifiedDate
+            // columnHeaderUploadedBy
             // 
-            this.columnHeaderModifiedDate.Text = "Дата изменения";
-            this.columnHeaderModifiedDate.Width = 130;
+            this.columnHeaderUploadedBy.Text = "Загружено пользователем";
+            this.columnHeaderUploadedBy.Width = 150;
             // 
             // btnAdd
             // 
@@ -85,7 +86,7 @@
             this.btnAdd.Location = new System.Drawing.Point(9, 288);
             this.btnAdd.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnAdd.Name = "btnAdd";
-            this.btnAdd.Size = new System.Drawing.Size(64, 24);
+            this.btnAdd.Size = new System.Drawing.Size(88, 24);
             this.btnAdd.TabIndex = 1;
             this.btnAdd.Text = "Добавить...";
             this.btnAdd.UseVisualStyleBackColor = true;
@@ -94,7 +95,7 @@
             // btnDelete
             // 
             this.btnDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnDelete.Location = new System.Drawing.Point(77, 288);
+            this.btnDelete.Location = new System.Drawing.Point(101, 289);
             this.btnDelete.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(64, 24);
@@ -103,11 +104,24 @@
             this.btnDelete.UseVisualStyleBackColor = true;
             this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
+            // btnRename
+            // 
+            this.btnRename.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnRename.Location = new System.Drawing.Point(170, 289);
+            this.btnRename.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnRename.Name = "btnRename";
+            this.btnRename.Size = new System.Drawing.Size(101, 24);
+            this.btnRename.TabIndex = 3;
+            this.btnRename.Text = "Переименовать";
+            this.btnRename.UseVisualStyleBackColor = true;
+            this.btnRename.Click += new System.EventHandler(this.btnRename_Click);
+            // 
             // FilesForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(566, 323);
+            this.ClientSize = new System.Drawing.Size(717, 323);
+            this.Controls.Add(this.btnRename);
             this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.btnAdd);
             this.Controls.Add(this.listViewFiles);
@@ -126,9 +140,10 @@
         private System.Windows.Forms.ListView listViewFiles;
         private System.Windows.Forms.ColumnHeader columnHeaderFileName;
         private System.Windows.Forms.ColumnHeader columnHeaderSize;
-        private System.Windows.Forms.ColumnHeader columnHeaderCreationDate;
-        private System.Windows.Forms.ColumnHeader columnHeaderModifiedDate;
+        private System.Windows.Forms.ColumnHeader columnHeaderUploadDate;
+        private System.Windows.Forms.ColumnHeader columnHeaderUploadedBy;
         private System.Windows.Forms.Button btnAdd;
         private System.Windows.Forms.Button btnDelete;
+        private System.Windows.Forms.Button btnRename;
     }
 }
