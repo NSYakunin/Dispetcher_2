@@ -272,6 +272,12 @@
     <Compile Include="DialogsForms\dF_Workers.Designer.cs">
       <DependentUpon>dF_Workers.cs</DependentUpon>
     </Compile>
+    <Compile Include="FilesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FilesForm.Designer.cs">
+      <DependentUpon>FilesForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="F_DeleteOrder.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -414,6 +420,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DialogsForms\dF_Workers.resx">
       <DependentUpon>dF_Workers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FilesForm.resx">
+      <DependentUpon>FilesForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="F_Brigade.resx">
       <DependentUpon>F_Brigade.cs</DependentUpon>

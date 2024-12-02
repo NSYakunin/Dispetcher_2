@@ -106,23 +106,12 @@ namespace Dispetcher2.Class
                 DateTime changeDate = DateTime.Now;
                 SaveOperationsToDatabase(operationsToSave, note, currentUser, changeDate);
 
-                // После успешного сохранения обновляем OriginalOTKControlData
-                foreach (var op in operationsToSave)
-                {
-                    // Используем метод FindDataRowByOper
-                    DataRow dataRow = FindDataRowByOper(op.Oper);
-                    if (dataRow != null)
-                    {
-                        dataRow["OriginalOTKControlData"] = op.OTKControlData.Clone();
 
-                        // Обновляем значение в DataRow для отображения новой заметки
-                        dataRow["OTKControlData"] = op.OTKControlData;
-                    }
-                }
 
-                // Обновляем DataGridView для отображения изменений
-                dGV_Tehnology.Refresh();
+
             }
+
+
             else
             {
                 MessageBox.Show("Нет изменений для сохранения.", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);

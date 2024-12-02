@@ -9,10 +9,49 @@ namespace Dispetcher2.Class
 {
     public class OTKControlData : ICloneable, INotifyPropertyChanged
     {
-        public CheckBoxState[] States { get; set; }
-        public string Note { get; set; }
-        public DateTime ChangeDate { get; set; }
-        public string User { get; set; }
+        private CheckBoxState[] _states;
+        public CheckBoxState[] States
+        {
+            get => _states;
+            set
+            {
+                _states = value;
+                OnPropertyChanged(nameof(States));
+            }
+        }
+
+        private string _note;
+        public string Note
+        {
+            get => _note;
+            set
+            {
+                _note = value;
+                OnPropertyChanged(nameof(Note));
+            }
+        }
+
+        private DateTime _changeDate;
+        public DateTime ChangeDate
+        {
+            get => _changeDate;
+            set
+            {
+                _changeDate = value;
+                OnPropertyChanged(nameof(ChangeDate));
+            }
+        }
+
+        private string _user;
+        public string User
+        {
+            get => _user;
+            set
+            {
+                _user = value;
+                OnPropertyChanged(nameof(User));
+            }
+        }
 
         public OTKControlData()
         {

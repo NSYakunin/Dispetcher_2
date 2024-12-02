@@ -37,12 +37,30 @@ namespace Dispetcher2.Class
             contextMenu.Items.Add("Брак").Click += (s, e) => { SetCheckBoxState(clickedCheckBoxIndex, CheckBoxState.CrossedRed); };
             contextMenu.Items.Add("С разрешения конструктора").Click += (s, e) => { /* Реализовать при необходимости */ };
             contextMenu.Items.Add("Прикрепить файл").Click += (s, e) => { AttachFile(); };
+            contextMenu.Items.Add("Просмотреть файлы").Click += (s, e) => { ViewFiles(); };
             contextMenu.Items.Add(new ToolStripSeparator());
             contextMenu.Items.Add("Редактировать заметку").Click += (s, e) => { EditNote(); };
             contextMenu.Items.Add("Сбросить").Click += (s, e) => { ResetCellState(); };
             contextMenu.Items.Add("Сохранить").Click += (s, e) => { /* Заглушка для сохранения */ };
         }
 
+        private void ViewFiles()
+        {
+            // Получаем данные аналогично методу AttachFile
+            DataGridViewRow dgRow = this.OwningRow;
+            DataRow dataRow = ((DataRowView)dgRow.DataBoundItem).Row;
+
+            string Oper = dataRow["Oper"].ToString();
+            long? IdLoodsman = dataRow["IdLoodsman"] != DBNull.Value ? (long?)Convert.ToInt64(dataRow["IdLoodsman"]) : null;
+
+            DataGridView dataGridView = this.DataGridView;
+            F_Fact form = dataGridView.FindForm() as F_Fact;
+            if (form != null)
+            {
+                long PK_IdOrderDetail = form.GetCurrentPK_IdOrderDetail();
+                form.HandleViewFiles(PK_IdOrderDetail, Oper, IdLoodsman);
+            }
+        }
         private void AttachFile()
         {
             // Получаем DataRow текущей строки в dGV_Tehnology
@@ -54,22 +72,13 @@ namespace Dispetcher2.Class
             long? IdLoodsman = dataRow["IdLoodsman"] != DBNull.Value ? (long?)Convert.ToInt64(dataRow["IdLoodsman"]) : null;
             string User = Environment.UserName;
 
-            // Получаем форму и dGV_Details
+            // Получаем форму
             DataGridView dataGridView = this.DataGridView;
             F_Fact form = dataGridView.FindForm() as F_Fact;
             if (form != null)
             {
-                // Получаем PK_IdOrderDetail из dGV_Details
-                long PK_IdOrderDetail = 0;
-                if (form.dGV_Details.CurrentRow != null)
-                {
-                    DataRowView detailRowView = form.dGV_Details.CurrentRow.DataBoundItem as DataRowView;
-                    if (detailRowView != null)
-                    {
-                        DataRow detailRow = detailRowView.Row;
-                        PK_IdOrderDetail = Convert.ToInt64(detailRow["PK_IdOrderDetail"]);
-                    }
-                }
+                // Получаем PK_IdOrderDetail через метод формы
+                long PK_IdOrderDetail = form.GetCurrentPK_IdOrderDetail();
 
                 form.HandleAttachFile(PK_IdOrderDetail, Oper, IdLoodsman, User);
             }

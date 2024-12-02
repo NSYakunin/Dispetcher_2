@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Controls.Primitives;
@@ -770,9 +771,38 @@ namespace Dispetcher2
             // Получаем OperationID из базы данных
             int OperationID = GetOperationID(PK_IdOrderDetail, Oper);
 
-            // Здесь вы можете открыть диалоговое окно для выбора файла и сохранить его
-            // в базе данных или файловой системе, связав с OperationID и другими данными
-            MessageBox.Show($"OperationID: {OperationID}\nPK_IdOrderDetail: {PK_IdOrderDetail}\nOper: {Oper}\nIdLoodsman: {IdLoodsman}\nUser: {User}", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            if (OperationID == 0)
+            {
+                MessageBox.Show("OperationID не найден.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Открываем диалог выбора файла
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Multiselect = true;
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string targetDirectory = $@"\\Ascon\Dispetcher\DispetcherDock\OperationID_{OperationID}";
+                if (!Directory.Exists(targetDirectory))
+                {
+                    Directory.CreateDirectory(targetDirectory);
+                }
+
+                foreach (string fileName in openFileDialog.FileNames)
+                {
+                    string destFileName = Path.Combine(targetDirectory, Path.GetFileName(fileName));
+
+                    // Добавляем суффикс с датой и пользователем к имени файла
+                    string newFileName = $"{Path.GetFileNameWithoutExtension(destFileName)}_{DateTime.Now:yyyyMMddHHmmss}_{User}{Path.GetExtension(destFileName)}";
+                    string fullDestPath = Path.Combine(targetDirectory, newFileName);
+
+                    File.Copy(fileName, fullDestPath);
+
+                    // Здесь можно сохранить информацию о файле в базе данных, если необходимо
+                }
+
+                MessageBox.Show("Файлы успешно прикреплены.", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
 
         private int GetOperationID(long PK_IdOrderDetail, string Oper)
@@ -793,6 +823,60 @@ namespace Dispetcher2
                 }
             }
             return operationID;
+        }
+
+        public long GetCurrentPK_IdOrderDetail()
+        {
+            long PK_IdOrderDetail = 0;
+            if (dGV_Details.InvokeRequired)
+            {
+                dGV_Details.Invoke(new MethodInvoker(delegate
+                {
+                    if (dGV_Details.CurrentRow != null)
+                    {
+                        DataRowView detailRowView = dGV_Details.CurrentRow.DataBoundItem as DataRowView;
+                        if (detailRowView != null)
+                        {
+                            DataRow detailRow = detailRowView.Row;
+                            PK_IdOrderDetail = Convert.ToInt64(detailRow["PK_IdOrderDetail"]);
+                        }
+                    }
+                }));
+            }
+            else
+            {
+                if (dGV_Details.CurrentRow != null)
+                {
+                    DataRowView detailRowView = dGV_Details.CurrentRow.DataBoundItem as DataRowView;
+                    if (detailRowView != null)
+                    {
+                        DataRow detailRow = detailRowView.Row;
+                        PK_IdOrderDetail = Convert.ToInt64(detailRow["PK_IdOrderDetail"]);
+                    }
+                }
+            }
+            return PK_IdOrderDetail;
+        }
+
+        public void HandleViewFiles(long PK_IdOrderDetail, string Oper, long? IdLoodsman)
+        {
+            int OperationID = GetOperationID(PK_IdOrderDetail, Oper);
+
+            if (OperationID == 0)
+            {
+                MessageBox.Show("OperationID не найден.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            string targetDirectory = $@"\\Ascon\Dispetcher\DispetcherDock\OperationID_{OperationID}";
+            if (!Directory.Exists(targetDirectory))
+            {
+                MessageBox.Show("Нет прикрепленных файлов для данной операции.", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            FilesForm filesForm = new FilesForm(targetDirectory);
+            filesForm.ShowDialog();
         }
     }
 }
