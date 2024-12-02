@@ -753,7 +753,7 @@ namespace Dispetcher2
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.TextBox tB_ShcmDetail;
         private System.Windows.Forms.TextBox tB_OrderNum;
-        private System.Windows.Forms.DataGridView dGV_Details;
+        public System.Windows.Forms.DataGridView dGV_Details;
         private System.Windows.Forms.DataGridView dGV_Tehnology;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.DateTimePicker dTimeP_Fact;

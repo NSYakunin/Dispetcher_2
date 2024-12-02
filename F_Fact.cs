@@ -40,6 +40,7 @@ namespace Dispetcher2
             this.config = config;
 
 
+
             InitializeComponent();
             DT_Workers.Columns.Add("PK_Login", typeof(string));
             //*************************************************
@@ -229,6 +230,7 @@ namespace Dispetcher2
         private void dGV_Details_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
+
             {
                 e.SuppressKeyPress = true;
                 if (dGV_Details.CurrentRow != null)
@@ -761,6 +763,36 @@ namespace Dispetcher2
 
             // Обновляем DataGridView для отображения изменений
             dGV_Tehnology.Refresh();
+        }
+
+        public void HandleAttachFile(long PK_IdOrderDetail, string Oper, long? IdLoodsman, string User)
+        {
+            // Получаем OperationID из базы данных
+            int OperationID = GetOperationID(PK_IdOrderDetail, Oper);
+
+            // Здесь вы можете открыть диалоговое окно для выбора файла и сохранить его
+            // в базе данных или файловой системе, связав с OperationID и другими данными
+            MessageBox.Show($"OperationID: {OperationID}\nPK_IdOrderDetail: {PK_IdOrderDetail}\nOper: {Oper}\nIdLoodsman: {IdLoodsman}\nUser: {User}", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private int GetOperationID(long PK_IdOrderDetail, string Oper)
+        {
+            int operationID = 0;
+            using (SqlConnection con = new SqlConnection(config.ConnectionString))
+            {
+                string query = "SELECT OperationID FROM OperationsOTK WHERE PK_IdOrderDetail = @PK_IdOrderDetail AND Oper = @Oper";
+                SqlCommand cmd = new SqlCommand(query, con);
+                cmd.Parameters.AddWithValue("@PK_IdOrderDetail", PK_IdOrderDetail);
+                cmd.Parameters.AddWithValue("@Oper", Oper);
+
+                con.Open();
+                object result = cmd.ExecuteScalar();
+                if (result != null)
+                {
+                    operationID = Convert.ToInt32(result);
+                }
+            }
+            return operationID;
         }
     }
 }
