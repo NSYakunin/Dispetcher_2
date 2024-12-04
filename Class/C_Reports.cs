@@ -1093,7 +1093,6 @@ namespace Dispetcher2.Class
                                           "From OrdersDetails" + "\n" +
                                           "left Join Sp_Details on Sp_Details.PK_IdDetail=OrdersDetails.FK_IdDetail" + "\n" +
                                           "Where FK_IdOrder = @PK_IdOrder" + "\n" +
-                            //"Order by Position";
                                           "Order by ShcmDetail";
                     }
                     if (NameRep == "Form6")
@@ -1103,7 +1102,6 @@ namespace Dispetcher2.Class
                                           "Inner Join Sp_Details ON Sp_Details.PK_IdDetail=od.FK_IdDetail" + "\n" +
                                           "Inner Join vwCountOrdersDetails cod ON cod.FK_IdOrder = od.FK_IdOrder and cod.FK_IdDetail = od.FK_IdDetail" + "\n" +
                                           "Where od.FK_IdOrder = @PK_IdOrder" + "\n" +
-                                          //"Order by Position";
                                           "Order by ShcmDetail";
                     }
                     cmd.Parameters.Add(new SqlParameter("@PK_IdOrder", SqlDbType.Int));
@@ -1197,8 +1195,7 @@ namespace Dispetcher2.Class
                     ExcelWorkSheet.PageSetup.BottomMargin = ExcelApp.CentimetersToPoints(0.75);
                     ExcelWorkSheet.PageSetup.HeaderMargin = ExcelApp.CentimetersToPoints(0.3);
                     ExcelWorkSheet.PageSetup.FooterMargin = ExcelApp.CentimetersToPoints(0.3);
-                    //ExcelWorkSheet.Application.StandardFontSize = 10;
-                    //ExcelWorkSheet.Application.Cells.HorizontalAlignment = Excel.Constants.xlCenter;
+
                     //Редактирование созданного документа
                     ((Excel.Range)ExcelWorkSheet.Columns[1]).ColumnWidth = 2;
                     ((Excel.Range)ExcelWorkSheet.Columns[2]).ColumnWidth = 5;
@@ -1213,19 +1210,7 @@ namespace Dispetcher2.Class
                     ((Excel.Range)ExcelWorkSheet.Columns[16]).ColumnWidth = 8;
                     ((Excel.Range)ExcelWorkSheet.Columns[17]).ColumnWidth = 8;
                     ((Excel.Range)ExcelWorkSheet.Columns[18]).ColumnWidth = 12;
-                    //Формат времени
-                    /*((Excel.Range)ExcelWorkSheet.Columns[8]).NumberFormat = "hh:mm:ss";
-                    ((Excel.Range)ExcelWorkSheet.Columns[9]).NumberFormat = "h:mm:ss";
-                    ((Excel.Range)ExcelWorkSheet.Columns[10]).NumberFormat = "h:mm:ss";
-                    ((Excel.Range)ExcelWorkSheet.Columns[11]).NumberFormat = "h:mm:ss";
-                    ((Excel.Range)ExcelWorkSheet.Columns[12]).NumberFormat = "h:mm:ss";
-                    ((Excel.Range)ExcelWorkSheet.Columns[13]).NumberFormat = "h:mm:ss";
-                    ((Excel.Range)ExcelWorkSheet.Columns[14]).NumberFormat = "h:mm:ss";
-                    ((Excel.Range)ExcelWorkSheet.Columns[15]).NumberFormat = "h:mm:ss";
-                    ((Excel.Range)ExcelWorkSheet.Columns[18]).NumberFormat = "h:mm:ss";*/
-                    //Формат шапки
-                    //((Excel.Range)ExcelWorkSheet.get_Range("A1:R10")).NumberFormat = "";
-                        //**********************
+
                     ((Excel.Range)ExcelWorkSheet.Cells[1, 2]).Value2 = "Форма №6";
                     ((Excel.Range)ExcelWorkSheet.Cells[1, 2]).Font.Bold = 1;
                     ((Excel.Range)ExcelWorkSheet.Cells[1, 13]).Value2 = "Утверждаю";
@@ -1283,9 +1268,6 @@ namespace Dispetcher2.Class
                     int NumRow = 11;
                     int MaxColumn = 0;
 
-
-
-
                     loadTreeSubMenu(ref NumRow, 2, 0, ExcelWorkSheet, ref MaxColumn, "Form6");
                     ((Excel.Range)ExcelWorkSheet.get_Range("B11", "S" + NumRow)).Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
                     ((Excel.Range)ExcelWorkSheet.get_Range("B" + NumRow + ":F" + NumRow)).Merge();
@@ -1293,8 +1275,6 @@ namespace Dispetcher2.Class
                     ((Excel.Range)ExcelWorkSheet.get_Range("B" + NumRow + ":S" + NumRow)).Font.Bold = 1;
                     ((Excel.Range)ExcelWorkSheet.get_Range("B" + NumRow + ":S" + NumRow)).HorizontalAlignment = Excel.Constants.xlCenter;
                     ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 2]).HorizontalAlignment = Excel.Constants.xlLeft;
-
-
 
                     if (_OperGroupFactTime[0] > 0) ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 8]).Value2 = IntToTime(_OperGroupFactTime[0]); // Заготов
                     if (_OperGroupFactTime[1] > 0) ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 9]).Value2 = IntToTime(_OperGroupFactTime[1]); // Токар
@@ -1307,7 +1287,6 @@ namespace Dispetcher2.Class
                     if (_OperGroupFactTime[8] > 0) ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 18]).Value2 = IntToTime(_OperGroupFactTime[8]); // Контроль ОТК
                     if(_OperGroupFactTime[9] > 0)((Excel.Range)ExcelWorkSheet.Cells[NumRow, 16]).Value2 = IntToTime(_OperGroupFactTime[9]); // Заточная (технол.)
                     if (_OperGroupFactTime[11] > 0) ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 19]).Value2 = IntToTime(_OperGroupFactTime[11]); // Итого
-
 
                     NumRow += 1;
                     ((Excel.Range)ExcelWorkSheet.get_Range("B11", "R" + NumRow)).Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
@@ -1348,22 +1327,6 @@ namespace Dispetcher2.Class
                     if(_OperGroupFactTime[8] > 0)((Excel.Range)ExcelWorkSheet.Cells[NumRow, 18]).Value2 = IntToTime(_OperGroupFactTime[8] - _FactTime[8]);
                     if (_OperGroupFactTime[9] > 0)((Excel.Range)ExcelWorkSheet.Cells[NumRow, 16]).Value2 = IntToTime(_OperGroupFactTime[9] - _FactTime[9]); // Заточная (технол.)
                     if (_OperGroupFactTime[11] > 0) ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 19]).Value2 = IntToTime(_OperGroupFactTime[11] - _FactTime[11]);
-
-
-                    /*((Excel.Range)ExcelWorkSheet.Cells[NumRow, 9]).NumberFormat = "h:mm:ss";
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 10]).Formula = "=SUM(J11:J" + (NumRow - 1) + ")";
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 9]).FormulaHidden = true;
-                    ((Excel.Range)ExcelWorkSheet.Cells[NumRow, 9]).Calculate();
-                    string LetterMaxColumn = ((Excel.Range)ExcelWorkSheet.Columns[MaxColumn - 1]).Address;
-                    LetterMaxColumn = LetterMaxColumn.Remove(0, 1).Remove(LetterMaxColumn.IndexOf(":") - 1);
-                    ((Excel.Range)ExcelWorkSheet.get_Range("I1", LetterMaxColumn + 1)).ColumnWidth = 25;
-                    ((Excel.Range)ExcelWorkSheet.get_Range("A1", LetterMaxColumn + (_DT.Rows.Count - 2))).WrapText = true;
-                    ((Excel.Range)ExcelWorkSheet.get_Range("A5", LetterMaxColumn + (_DT.Rows.Count - 2))).Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
-
-                    ((Excel.Range)ExcelWorkSheet.get_Range((NumRow - 1) + ":" + (NumRow - 1))).Group();*/
-
-                    //************************************
-
 
                     MessageBox.Show("Формирование отчета завершено.", "Успех!!!", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }

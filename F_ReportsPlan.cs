@@ -65,9 +65,6 @@ namespace Dispetcher2
             DataRow row = ((DataRowView)cmgr.Current).Row;
             int PK_IdOrder = Convert.ToInt32(row["PK_IdOrder"]);
             
-
-            //PK_IdOrder = 138;//только для разработки  (тест)
-            //tB_OrderNumInfo.Text = "20544304";//только для разработки (тест)
             RepForm6.PlanSheduleForm6(PK_IdOrder, tB_OrderNumInfo.Text.Trim(), tB_OrderName.Text.Trim());
         }
 
