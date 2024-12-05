@@ -111,6 +111,11 @@ namespace Dispetcher2.Class
                                       DataGridViewAdvancedBorderStyle advancedBorderStyle,
                                       DataGridViewPaintParts paintParts)
         {
+            if (this.ReadOnly)
+            {
+                cellStyle.BackColor = Color.LightGray;
+                cellStyle.ForeColor = Color.DarkGray;
+            }
             OTKControlData otkData = this.Value as OTKControlData;
             if (otkData == null)
             {
@@ -217,10 +222,17 @@ namespace Dispetcher2.Class
 
         protected override void OnMouseClick(DataGridViewCellMouseEventArgs e)
         {
+            if (this.ReadOnly)
+            {
+                return;
+            }
             base.OnMouseClick(e);
+
 
             if (e.Button == MouseButtons.Left)
             {
+                // Получаем индекс чекбокса по позиции клика
+                int checkboxIndex = GetCheckboxIndexAtPoint(e.Location);
                 // Получаем текущее значение ячейки
                 OTKControlData otkData = this.Value as OTKControlData;
                 if (otkData == null)
@@ -238,6 +250,8 @@ namespace Dispetcher2.Class
                 bool isThirdChecked = (state[2] == CheckBoxState.Checked);
                 bool hasCrosses = (state[0] == CheckBoxState.CrossedRed || state[1] == CheckBoxState.CrossedRed || state[2] == CheckBoxState.CrossedRed);
                 bool isCellInactive = isThirdChecked || hasCrosses;
+
+
 
                 if (isCellInactive)
                 {
@@ -295,6 +309,7 @@ namespace Dispetcher2.Class
                         // Уведомляем DataGridView об изменении
                         this.DataGridView.InvalidateCell(this);
                         this.DataGridView.NotifyCurrentCellDirty(true);
+                        this.DataGridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
                         break;
                     }
                 }
@@ -309,6 +324,10 @@ namespace Dispetcher2.Class
 
         protected override void OnMouseDown(DataGridViewCellMouseEventArgs e)
         {
+            if (this.ReadOnly)
+            {
+                return;
+            }
             base.OnMouseDown(e);
 
             if (e.Button == MouseButtons.Right)
@@ -375,6 +394,15 @@ namespace Dispetcher2.Class
             this.Value = otkData;
             this.DataGridView.InvalidateCell(this);
             this.DataGridView.NotifyCurrentCellDirty(true);
+
+            // Уведомляем форму о сбросе ячейки
+            DataGridView dataGridView = this.DataGridView;
+            F_Fact form = dataGridView.FindForm() as F_Fact;
+            if (form != null)
+            {
+                // Передаем строку, в которой произошел сброс
+                form.CellReset(this.OwningRow);
+            }
         }
 
         private void EditNote()
@@ -429,6 +457,34 @@ namespace Dispetcher2.Class
                 // Обновляем отображение ячейки
                 this.DataGridView.InvalidateCell(this);
             }
+        }
+
+        private int GetCheckboxIndexAtPoint(Point point)
+        {
+            OTKControlData otkData = this.Value as OTKControlData;
+            if (otkData == null || otkData.States == null)
+                return -1;
+
+            int numberOfCheckboxes = otkData.States.Length;
+            int checkboxWidth = 14;
+            int checkboxHeight = 14;
+            int totalCheckboxesWidth = numberOfCheckboxes * checkboxWidth + (numberOfCheckboxes - 1) * 4;
+            int startX = this.ContentBounds.X + (this.ContentBounds.Width - totalCheckboxesWidth) / 2;
+            int startY = this.ContentBounds.Y + (this.ContentBounds.Height - checkboxHeight) / 2;
+
+            // Корректируем координаты относительно начала ячейки
+            Point cellRelativePoint = new Point(point.X - this.ContentBounds.X, point.Y - this.ContentBounds.Y);
+
+            for (int i = 0; i < numberOfCheckboxes; i++)
+            {
+                Rectangle checkboxRect = new Rectangle(startX + i * (checkboxWidth + 4) - this.ContentBounds.X, startY - this.ContentBounds.Y, checkboxWidth, checkboxHeight);
+                if (checkboxRect.Contains(cellRelativePoint))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
         }
 
         public override object DefaultNewRowValue

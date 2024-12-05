@@ -92,6 +92,7 @@ namespace Dispetcher2
         string _LoginWorker = "";//non target worker
         //***************************************************************
 
+
         private void F_Fact_Load(object sender, EventArgs e)
         {
             dTimeP_Fact.Value = DateTime.Now;
@@ -162,7 +163,10 @@ namespace Dispetcher2
             idLoodsmanColumn.Visible = false;
             dGV_Tehnology.Columns.Add(idLoodsmanColumn);
             dGV_Tehnology.CellToolTipTextNeeded += DGV_Tehnology_CellToolTipTextNeeded;
+            dGV_Tehnology.CellValueChanged += DGV_Tehnology_CellValueChanged;
             dGV_Tehnology.ShowCellToolTips = true;
+            SetReadOnlyCells();
+            CheckIfAllRowsDone();
         }
 
         private void F_Fact_Enter(object sender, EventArgs e)
@@ -246,6 +250,8 @@ namespace Dispetcher2
                         if (row["IdLoodsman"] == DBNull.Value) //inside order
                         {
                             Detail.SelectTehnologyForType111(Convert.ToInt64(row["FK_IdDetail"]), ref DT_Tehnology);
+                            SetReadOnlyCells();
+                            CheckIfAllRowsDone();
                         }
 
                         //********************************************************************************************************************************
@@ -259,6 +265,8 @@ namespace Dispetcher2
                             //MessageBox.Show(rowData);
 
                             Detail.GetTehnologyFromLoodsmanFordGV_Tehnology(ref DT_Tehnology, ref dGV_Tehnology, IdLoodsman, PK_IdOrderDetail);
+                            SetReadOnlyCells();
+                            CheckIfAllRowsDone();
                         }
 
                         //*********************************************************************************************************************************
@@ -268,12 +276,16 @@ namespace Dispetcher2
                             dGV_FactOperation.Columns["Col_DateFactOper"].Visible = true;
                             dGV_FactOperation.Columns["Col_FK_LoginWorker"].Visible = true;
                             Detail.SelectFullFactOperForDetail(PK_IdOrderDetail, ref DT_FactOper);
+                            SetReadOnlyCells();
+                            CheckIfAllRowsDone();
                         }
                         else
                         {
                             dGV_FactOperation.Columns["Col_DateFactOper"].Visible = false;
                             dGV_FactOperation.Columns["Col_FK_LoginWorker"].Visible = false;
                             Detail.SelectFactOperForDetail(PK_IdOrderDetail, ref DT_FactOper);
+                            SetReadOnlyCells();
+                            CheckIfAllRowsDone();
                         }
                     } 
                 }
@@ -697,6 +709,7 @@ namespace Dispetcher2
         {
             SaveOTK saveOTK = new SaveOTK(dGV_Details, dGV_Tehnology, config);
             saveOTK.SaveMethod();
+            CheckIfAllRowsDone();
         }
 
         
@@ -877,6 +890,113 @@ namespace Dispetcher2
 
             FilesForm filesForm = new FilesForm(targetDirectory, operationID);
             filesForm.ShowDialog();
+        }
+
+        private void SetReadOnlyCells()
+        {
+            foreach (DataGridViewRow row in dGV_Tehnology.Rows)
+            {
+                if (row.Cells["Col_Oper"].Value != null)
+                {
+                    string operValue = row.Cells["Col_Oper"].Value.ToString().Split(' ')[1];
+                    if (operValue == "Контроль ОТК" || operValue == "Контроль")
+                    {
+                        DataGridViewCell cell = row.Cells["Col_OTKControl"];
+                        cell.ReadOnly = true;
+                        cell.Style.BackColor = Color.LightGray;
+                        cell.Style.ForeColor = Color.DarkGray;
+                    }
+                    else
+                    {
+                        DataGridViewCell cell = row.Cells["Col_OTKControl"];
+                        cell.ReadOnly = false;
+                        cell.Style.BackColor = dGV_Tehnology.DefaultCellStyle.BackColor;
+                        cell.Style.ForeColor = dGV_Tehnology.DefaultCellStyle.ForeColor;
+                    }
+                }
+            }
+        }
+
+        private void CheckIfAllRowsDone()
+        {
+            bool allDone = true;
+            DataGridViewRow kontrolRow = null;
+
+            foreach (DataGridViewRow row in dGV_Tehnology.Rows)
+            {
+                if (row.Cells["Col_Oper"].Value == null)
+                    continue;
+
+                string operValue = row.Cells["Col_Oper"].Value.ToString().Split(' ')[1];
+                if (operValue == "Контроль ОТК" || operValue == "Контроль")
+                {
+                    kontrolRow = row;
+                    continue;
+                }
+
+                // Проверяем, что строка "закрыта"
+                OTKControlData otkData = row.Cells["Col_OTKControl"].Value as OTKControlData;
+                if (otkData == null || otkData.States == null || otkData.States.Length < 3 || otkData.States[2] != CheckBoxState.Checked)
+                {
+                    if (operValue != "Контроль ОТК" || operValue != "Контроль")
+                    {
+                        allDone = false;
+                    }
+                    // Не прерываем цикл, нам может понадобиться найти строку "Контроль"
+                }
+            }
+
+            if (kontrolRow != null)
+            {
+                DataGridViewCell cell = kontrolRow.Cells["Col_OTKControl"];
+                OTKControlData otkData = cell.Value as OTKControlData;
+                if (otkData == null)
+                {
+                    otkData = new OTKControlData();
+                }
+
+                if (allDone)
+                {
+                    // Все остальные строки закрыты - "Контроль" закрываем
+                    otkData.States = new CheckBoxState[] { CheckBoxState.Checked, CheckBoxState.Checked, CheckBoxState.Checked };
+                    cell.ReadOnly = true;
+                    cell.Style.BackColor = Color.LightGreen;
+                    cell.Style.ForeColor = dGV_Tehnology.DefaultCellStyle.ForeColor;
+                }
+                else
+                {
+                    // Не все строки закрыты - "Контроль" возвращаем к обычному виду
+                    otkData.States = new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
+                    //cell.ReadOnly = false;
+                    cell.Style.BackColor = dGV_Tehnology.DefaultCellStyle.BackColor;
+                    cell.Style.ForeColor = dGV_Tehnology.DefaultCellStyle.ForeColor;
+                }
+
+                cell.Value = otkData;
+
+                // Сохраняем изменения в БД для строки "Контроль ОТК"/"Контроль"
+                //SaveRowInDB(kontrolRow);
+            }
+        }
+
+        private void SaveRowInDB(DataGridViewRow row)
+        {
+            if (row == null) return;
+            DataRow dataRow = ((DataRowView)row.DataBoundItem).Row;
+
+            SaveOTK saveOTK = new SaveOTK(dGV_Details, dGV_Tehnology, config);
+            saveOTK.SaveSingleRow(dataRow);
+
+            // Метод SaveSingleRow должен обрабатывать сохранение OperationID и других данных
+        }
+
+        public void CellReset(DataGridViewRow row)
+        {
+            // Сохраняем изменения в базе данных для сброшенной строки
+            SaveRowInDB(row);
+
+            // После сброса состояния ячейки переоцениваем состояние строки "Контроль ОТК"/"Контроль"
+            CheckIfAllRowsDone();
         }
     }
 }
