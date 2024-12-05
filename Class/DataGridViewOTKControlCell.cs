@@ -77,6 +77,10 @@ namespace Dispetcher2.Class
             if (form != null)
             {
                 long PK_IdOrderDetail = form.GetCurrentPK_IdOrderDetail();
+                string orderName = "";
+                string shcmDetail = "";
+                orderName = form.GetOrderName();
+                shcmDetail = form.GetShcmDetail();
 
                 // Получаем OperationID
                 int OperationID = form.GetOperationID(PK_IdOrderDetail, Oper);

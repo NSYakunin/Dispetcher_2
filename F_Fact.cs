@@ -871,6 +871,22 @@ namespace Dispetcher2
             return PK_IdOrderDetail;
         }
 
+        public string GetOrderName()
+        {
+            string orderName = "";
+            orderName = dGV_Orders.CurrentCell.Value.ToString();
+
+            return orderName;
+        }
+
+        public string GetShcmDetail()
+        {
+            string shcmDetail = "";
+            shcmDetail = dGV_Details.CurrentRow.Cells[1].Value.ToString();
+
+            return shcmDetail;
+        }
+
         public void HandleViewFiles(long PK_IdOrderDetail, string Oper, long? IdLoodsman)
         {
             int operationID = GetOperationID(PK_IdOrderDetail, Oper);
