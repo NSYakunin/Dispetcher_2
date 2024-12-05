@@ -319,6 +319,47 @@ namespace Dispetcher2.Class
                     // Перерисовываем ячейку, чтобы обновить отображение
                     this.DataGridView.InvalidateCell(this);
                 }
+                var flag = true;
+                foreach (DataGridViewRow row in this.DataGridView.Rows)
+                {
+                    
+                    var control = row.Cells["Col_Oper"].Value.ToString().Split(' ')[1];
+                    OTKControlData oTKControlData = row.Cells["Col_OTKControl"].Value as OTKControlData;
+                    DataGridViewCell cell = row.Cells["Col_OTKControl"];
+                    if (control == "Контроль ОТК" || control == "Контроль")
+                    {
+
+                        continue;
+                    }
+                    else
+                    {
+                        if (oTKControlData.States[2] == CheckBoxState.Unchecked)
+                        {
+                            flag = false;
+                            break;
+                        }
+                    }
+                }
+
+                foreach (DataGridViewRow row in this.DataGridView.Rows)
+                {
+                    var control = row.Cells["Col_Oper"].Value.ToString().Split(' ')[1];
+                    
+                    OTKControlData oTKControlData = row.Cells["Col_OTKControl"].Value as OTKControlData;
+                    CheckBoxState[] state2 = oTKControlData.States;
+                    DataGridViewCell cell = row.Cells["Col_OTKControl"];
+                    if ((control == "Контроль ОТК" || control == "Контроль") && flag)
+                    {
+                        state2[2] = CheckBoxState.Checked;
+                        oTKControlData.States = state2;
+                        this.Value = oTKControlData;
+                    }
+                }
+
+                // Уведомляем DataGridView об изменении
+                this.DataGridView.InvalidateCell(this);
+                this.DataGridView.NotifyCurrentCellDirty(true);
+                this.DataGridView.CommitEdit(DataGridViewDataErrorContexts.Commit);
             }
         }
 
@@ -391,7 +432,11 @@ namespace Dispetcher2.Class
 
             otkData.States = new CheckBoxState[] { CheckBoxState.Unchecked, CheckBoxState.Unchecked, CheckBoxState.Unchecked };
 
+            Style.BackColor = this.DataGridView.DefaultCellStyle.BackColor;
+            Style.ForeColor = this.DataGridView.DefaultCellStyle.ForeColor;
+
             this.Value = otkData;
+
             this.DataGridView.InvalidateCell(this);
             this.DataGridView.NotifyCurrentCellDirty(true);
 
