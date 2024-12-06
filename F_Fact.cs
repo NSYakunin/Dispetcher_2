@@ -887,7 +887,7 @@ namespace Dispetcher2
             return shcmDetail;
         }
 
-        public void HandleViewFiles(long PK_IdOrderDetail, string Oper, long? IdLoodsman)
+        public void HandleViewFiles(long PK_IdOrderDetail, string Oper, long? IdLoodsman, string OrderName, string Shcm)
         {
             int operationID = GetOperationID(PK_IdOrderDetail, Oper);
 
@@ -897,7 +897,7 @@ namespace Dispetcher2
                 return;
             }
 
-            string targetDirectory = $@"\\Ascon\Dispetcher\DispetcherDock\OperationID_{operationID}";
+            string targetDirectory = $@"\\Ascon\Dispetcher\DispetcherDock\Заказ № {OrderName}\{Shcm}\OperationID_{operationID}";
             if (!Directory.Exists(targetDirectory))
             {
                 MessageBox.Show("Нет прикрепленных файлов для данной операции.", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);

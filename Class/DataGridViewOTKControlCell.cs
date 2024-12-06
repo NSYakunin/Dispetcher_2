@@ -60,8 +60,12 @@ namespace Dispetcher2.Class
             F_Fact form = dataGridView.FindForm() as F_Fact;
             if (form != null)
             {
+                string orderName = "";
+                string shcmDetail = "";
+                orderName = form.GetOrderName();
+                shcmDetail = form.GetShcmDetail();
                 long PK_IdOrderDetail = form.GetCurrentPK_IdOrderDetail();
-                form.HandleViewFiles(PK_IdOrderDetail, Oper, IdLoodsman);
+                form.HandleViewFiles(PK_IdOrderDetail, Oper, IdLoodsman, orderName, shcmDetail);
             }
         }
         private void AttachFile()
@@ -91,7 +95,7 @@ namespace Dispetcher2.Class
                     return;
                 }
 
-                string targetDirectory = $@"\\Ascon\Dispetcher\DispetcherDock\OperationID_{OperationID}";
+                string targetDirectory = $@"\\Ascon\Dispetcher\DispetcherDock\Заказ № {orderName}\{shcmDetail}\OperationID_{OperationID}";
                 if (!Directory.Exists(targetDirectory))
                 {
                     Directory.CreateDirectory(targetDirectory);

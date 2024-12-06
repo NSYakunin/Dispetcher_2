@@ -503,9 +503,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="app.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="app.config" />
     <None Include="d2k.pfx" />
     <None Include="Dispetcher2_TemporaryKey.pfx" />
     <None Include="packages.config" />
