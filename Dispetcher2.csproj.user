@@ -1,8 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectView>ProjectFiles</ProjectView>
-    <PublishUrlHistory>\\ascon\Dispetcher\UpdatesDisp2\Application Files\|\\filesrv\Производство\Программисты\DispPublic\|\\Ascon\Dispetcher\UpdatesDisp2\Application Files\|\\Ascon\Dispetcher\UpdatesDisp2\|C:\Users\NSYakunin\Desktop\testD\</PublishUrlHistory>
+    <PublishUrlHistory>\\Ascon\Dispetcher\Тест Диспетчара\|\\ascon\Dispetcher\UpdatesDisp2\Application Files\|\\filesrv\Производство\Программисты\DispPublic\|\\Ascon\Dispetcher\UpdatesDisp2\Application Files\|\\Ascon\Dispetcher\UpdatesDisp2\</PublishUrlHistory>
     <InstallUrlHistory>\\Ascon\Dispetcher\UpdatesDisp2\|\\Ascon\Dispetcher\|\\Ascon\Dispetcher\UpdatesDisp2\Application Files\|\\Users\NSYakunin\Desktop\testD\|\\ASCON\Dispetcher\UpdatesDisp2\Application Files\</InstallUrlHistory>
     <SupportUrlHistory />
     <UpdateUrlHistory>\\ascon\Dispetcher\UpdatesDisp2\Application Files\|\\Ascon\Dispetcher\UpdatesDisp2\Application Files\|\\Ascon\Dispetcher\|http://localhost/Dispetcher2/</UpdateUrlHistory>
