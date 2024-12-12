@@ -37,13 +37,13 @@ namespace Dispetcher2.Class
             // Добавляем пункты меню
             contextMenu.Items.Add("Доработка").Click += (s, e) => { SetCheckBoxState(clickedCheckBoxIndex, CheckBoxState.CrossedBrown); };
             contextMenu.Items.Add("Брак").Click += (s, e) => { SetCheckBoxState(clickedCheckBoxIndex, CheckBoxState.CrossedRed); };
-            contextMenu.Items.Add("С разрешения конструктора").Click += (s, e) => { /* Реализовать при необходимости */ };
+            //contextMenu.Items.Add("С разрешения конструктора").Click += (s, e) => { /* Реализовать при необходимости */ };
             contextMenu.Items.Add("Прикрепить файл").Click += (s, e) => { AttachFile(); };
             contextMenu.Items.Add("Просмотреть файлы").Click += (s, e) => { ViewFiles(); };
             contextMenu.Items.Add(new ToolStripSeparator());
             contextMenu.Items.Add("Редактировать заметку").Click += (s, e) => { EditNote(); };
             contextMenu.Items.Add("Сбросить").Click += (s, e) => { ResetCellState(); };
-            contextMenu.Items.Add("Сохранить").Click += (s, e) => { /* Заглушка для сохранения */ };
+            //contextMenu.Items.Add("Сохранить").Click += (s, e) => { /* Заглушка для сохранения */ };
         }
 
         private void ViewFiles()
@@ -177,15 +177,15 @@ namespace Dispetcher2.Class
                 // Определяем состояние чекбокса
                 CheckBoxState cbState = state.Length > i ? state[i] : CheckBoxState.Unchecked;
 
-                // Определяем, должен ли чекбокс быть неактивным
-                bool isEnabled = !isCellInactive;
+                //// Определяем, должен ли чекбокс быть неактивным
+                //bool isEnabled = !isCellInactive;
 
                 ButtonState buttonState = ButtonState.Normal;
 
-                if (!isEnabled)
-                {
-                    buttonState |= ButtonState.Inactive;
-                }
+                //if (!isEnabled)
+                //{
+                //    buttonState |= ButtonState.Inactive;
+                //}
 
                 // Рисуем рамку чекбокса
                 ControlPaint.DrawCheckBox(graphics, cbRect, buttonState);
@@ -207,24 +207,24 @@ namespace Dispetcher2.Class
                         graphics.DrawLine(pen, cbRect.Right - 4, cbRect.Y + 4, cbRect.X + 4, cbRect.Bottom - 4);
                     }
                 }
-                else
-                {
-                    // Рисуем номер только если чекбокс не отмечен и активен
-                    if (isEnabled)
-                    {
-                        string number = (i + 1).ToString();
-                        SizeF numberSize = graphics.MeasureString(number, cellStyle.Font);
+                //else
+                //{
+                //    // Рисуем номер только если чекбокс не отмечен и активен
+                //    if (isEnabled)
+                //    {
+                //        string number = (i + 1).ToString();
+                //        SizeF numberSize = graphics.MeasureString(number, cellStyle.Font);
 
-                        // Вычисляем позицию для номера
-                        PointF numberLocation = new PointF(
-                            cbRect.X + (cbRect.Width - numberSize.Width) / 2,
-                            cbRect.Y + (cbRect.Height - numberSize.Height) / 2
-                        );
+                //        // Вычисляем позицию для номера
+                //        PointF numberLocation = new PointF(
+                //            cbRect.X + (cbRect.Width - numberSize.Width) / 2,
+                //            cbRect.Y + (cbRect.Height - numberSize.Height) / 2
+                //        );
 
-                        // Рисуем номер
-                        graphics.DrawString(number, cellStyle.Font, Brushes.Black, numberLocation);
-                    }
-                }
+                //        // Рисуем номер
+                //        graphics.DrawString(number, cellStyle.Font, Brushes.Black, numberLocation);
+                //    }
+                //}
             }
         }
 
@@ -261,11 +261,11 @@ namespace Dispetcher2.Class
 
 
 
-                if (isCellInactive)
-                {
-                    // Блокируем изменение состояний
-                    return;
-                }
+                //if (isCellInactive)
+                //{
+                //    // Блокируем изменение состояний
+                //    return;
+                //}
 
                 // Вычисляем позиции для каждой галочки
                 int totalWidth = 3 * CheckBoxWidth + 2 * CheckBoxSpacing;
@@ -327,42 +327,42 @@ namespace Dispetcher2.Class
                     // Перерисовываем ячейку, чтобы обновить отображение
                     this.DataGridView.InvalidateCell(this);
                 }
-                var flag = true;
-                foreach (DataGridViewRow row in this.DataGridView.Rows)
-                {
+                //var flag = true;
+                //foreach (DataGridViewRow row in this.DataGridView.Rows)
+                //{
                     
-                    var control = row.Cells["Col_Oper"].Value.ToString().Split(' ')[1];
-                    OTKControlData oTKControlData = row.Cells["Col_OTKControl"].Value as OTKControlData;
-                    DataGridViewCell cell = row.Cells["Col_OTKControl"];
-                    if (control == "Контроль ОТК" || control == "Контроль")
-                    {
+                //    var control = row.Cells["Col_Oper"].Value.ToString().Split(' ')[1];
+                //    OTKControlData oTKControlData = row.Cells["Col_OTKControl"].Value as OTKControlData;
+                //    DataGridViewCell cell = row.Cells["Col_OTKControl"];
+                //    if (control == "Контроль ОТК" || control == "Контроль")
+                //    {
 
-                        continue;
-                    }
-                    else
-                    {
-                        if (oTKControlData.States[2] == CheckBoxState.Unchecked)
-                        {
-                            flag = false;
-                            break;
-                        }
-                    }
-                }
+                //        continue;
+                //    }
+                //    else
+                //    {
+                //        if (oTKControlData.States[2] == CheckBoxState.Unchecked)
+                //        {
+                //            flag = false;
+                //            break;
+                //        }
+                //    }
+                //}
 
-                foreach (DataGridViewRow row in this.DataGridView.Rows)
-                {
-                    var control = row.Cells["Col_Oper"].Value.ToString().Split(' ')[1];
+                //foreach (DataGridViewRow row in this.DataGridView.Rows)
+                //{
+                //    var control = row.Cells["Col_Oper"].Value.ToString().Split(' ')[1];
                     
-                    OTKControlData oTKControlData = row.Cells["Col_OTKControl"].Value as OTKControlData;
-                    CheckBoxState[] state2 = oTKControlData.States;
-                    DataGridViewCell cell = row.Cells["Col_OTKControl"];
-                    if ((control == "Контроль ОТК" || control == "Контроль") && flag)
-                    {
-                        state2[2] = CheckBoxState.Checked;
-                        oTKControlData.States = state2;
-                        this.Value = oTKControlData;
-                    }
-                }
+                //    OTKControlData oTKControlData = row.Cells["Col_OTKControl"].Value as OTKControlData;
+                //    CheckBoxState[] state2 = oTKControlData.States;
+                //    DataGridViewCell cell = row.Cells["Col_OTKControl"];
+                //    if ((control == "Контроль ОТК" || control == "Контроль") && flag)
+                //    {
+                //        state2[2] = CheckBoxState.Checked;
+                //        oTKControlData.States = state2;
+                //        this.Value = oTKControlData;
+                //    }
+                //}
 
                 // Уведомляем DataGridView об изменении
                 this.DataGridView.InvalidateCell(this);

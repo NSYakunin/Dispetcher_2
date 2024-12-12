@@ -165,8 +165,7 @@ namespace Dispetcher2
             dGV_Tehnology.CellToolTipTextNeeded += DGV_Tehnology_CellToolTipTextNeeded;
             dGV_Tehnology.CellValueChanged += DGV_Tehnology_CellValueChanged;
             dGV_Tehnology.ShowCellToolTips = true;
-            SetReadOnlyCells();
-            CheckIfAllRowsDone();
+
         }
 
         private void F_Fact_Enter(object sender, EventArgs e)
@@ -250,8 +249,7 @@ namespace Dispetcher2
                         if (row["IdLoodsman"] == DBNull.Value) //inside order
                         {
                             Detail.SelectTehnologyForType111(Convert.ToInt64(row["FK_IdDetail"]), ref DT_Tehnology);
-                            SetReadOnlyCells();
-                            CheckIfAllRowsDone();
+
                         }
 
                         //********************************************************************************************************************************
@@ -265,8 +263,7 @@ namespace Dispetcher2
                             //MessageBox.Show(rowData);
 
                             Detail.GetTehnologyFromLoodsmanFordGV_Tehnology(ref DT_Tehnology, ref dGV_Tehnology, IdLoodsman, PK_IdOrderDetail);
-                            SetReadOnlyCells();
-                            CheckIfAllRowsDone();
+ 
                         }
 
                         //*********************************************************************************************************************************
@@ -276,16 +273,13 @@ namespace Dispetcher2
                             dGV_FactOperation.Columns["Col_DateFactOper"].Visible = true;
                             dGV_FactOperation.Columns["Col_FK_LoginWorker"].Visible = true;
                             Detail.SelectFullFactOperForDetail(PK_IdOrderDetail, ref DT_FactOper);
-                            SetReadOnlyCells();
-                            CheckIfAllRowsDone();
+   
                         }
                         else
                         {
                             dGV_FactOperation.Columns["Col_DateFactOper"].Visible = false;
                             dGV_FactOperation.Columns["Col_FK_LoginWorker"].Visible = false;
                             Detail.SelectFactOperForDetail(PK_IdOrderDetail, ref DT_FactOper);
-                            SetReadOnlyCells();
-                            CheckIfAllRowsDone();
                         }
                     } 
                 }
@@ -709,7 +703,6 @@ namespace Dispetcher2
         {
             SaveOTK saveOTK = new SaveOTK(dGV_Details, dGV_Tehnology, config);
             saveOTK.SaveMethod();
-            CheckIfAllRowsDone();
         }
 
         
@@ -1012,7 +1005,6 @@ namespace Dispetcher2
             SaveRowInDB(row);
 
             // После сброса состояния ячейки переоцениваем состояние строки "Контроль ОТК"/"Контроль"
-            CheckIfAllRowsDone();
         }
     }
 }
