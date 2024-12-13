@@ -12,7 +12,8 @@ namespace Dispetcher2.Class
         Unchecked,
         Checked,
         CrossedBrown,
-        CrossedRed
+        CrossedRed,
+        CrossedBlue,
     }
 
     public class DataGridViewOTKControlCell : DataGridViewCell
@@ -37,6 +38,8 @@ namespace Dispetcher2.Class
             // Добавляем пункты меню
             contextMenu.Items.Add("Доработка").Click += (s, e) => { SetCheckBoxState(clickedCheckBoxIndex, CheckBoxState.CrossedBrown); };
             contextMenu.Items.Add("Брак").Click += (s, e) => { SetCheckBoxState(clickedCheckBoxIndex, CheckBoxState.CrossedRed); };
+            contextMenu.Items.Add("Частично закрыто").Click += (s, e) => { SetCheckBoxState(clickedCheckBoxIndex, CheckBoxState.CrossedBlue); };
+
             //contextMenu.Items.Add("С разрешения конструктора").Click += (s, e) => { /* Реализовать при необходимости */ };
             contextMenu.Items.Add("Прикрепить файл").Click += (s, e) => { AttachFile(); };
             contextMenu.Items.Add("Просмотреть файлы").Click += (s, e) => { ViewFiles(); };
@@ -195,10 +198,12 @@ namespace Dispetcher2.Class
                     // Рисуем галочку
                     ControlPaint.DrawCheckBox(graphics, cbRect, buttonState | ButtonState.Checked);
                 }
-                else if (cbState == CheckBoxState.CrossedBrown || cbState == CheckBoxState.CrossedRed)
+                else if (cbState == CheckBoxState.CrossedBrown || cbState == CheckBoxState.CrossedRed || cbState == CheckBoxState.CrossedBlue)
                 {
                     // Определяем цвет крестика
-                    Color crossColor = cbState == CheckBoxState.CrossedBrown ? Color.DarkKhaki : Color.Red;
+                    Color crossColor = cbState == CheckBoxState.CrossedBrown ? Color.DarkKhaki
+                                     : cbState == CheckBoxState.CrossedRed? Color.Red
+                                     : Color.Blue;
 
                     // Рисуем крестик
                     using (Pen pen = new Pen(crossColor, 4))

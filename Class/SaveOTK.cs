@@ -105,10 +105,6 @@ namespace Dispetcher2.Class
 
                 DateTime changeDate = DateTime.Now;
                 SaveOperationsToDatabase(operationsToSave, note, currentUser, changeDate);
-
-
-
-
             }
 
 
