@@ -163,7 +163,7 @@ namespace Dispetcher2
             idLoodsmanColumn.Visible = false;
             dGV_Tehnology.Columns.Add(idLoodsmanColumn);
             dGV_Tehnology.CellToolTipTextNeeded += DGV_Tehnology_CellToolTipTextNeeded;
-            dGV_Tehnology.CellValueChanged += DGV_Tehnology_CellValueChanged;
+            //dGV_Tehnology.CellValueChanged += DGV_Tehnology_CellValueChanged;
             dGV_Tehnology.ShowCellToolTips = true;
 
         }

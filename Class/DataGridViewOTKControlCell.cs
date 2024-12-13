@@ -42,7 +42,7 @@ namespace Dispetcher2.Class
             contextMenu.Items.Add("Просмотреть файлы").Click += (s, e) => { ViewFiles(); };
             contextMenu.Items.Add(new ToolStripSeparator());
             contextMenu.Items.Add("Редактировать заметку").Click += (s, e) => { EditNote(); };
-            contextMenu.Items.Add("Сбросить").Click += (s, e) => { ResetCellState(); };
+            //contextMenu.Items.Add("Сбросить").Click += (s, e) => { ResetCellState(); };
             //contextMenu.Items.Add("Сохранить").Click += (s, e) => { /* Заглушка для сохранения */ };
         }
 
