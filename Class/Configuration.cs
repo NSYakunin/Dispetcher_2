@@ -19,6 +19,7 @@ namespace Dispetcher2.Class
         ОперацииВыполненныеРабочим = 117,
         Трудоемкость = 66,
         Гальваника = 77,
+        ОтчетОТК = 123,
     }
     public interface IConfig
     {

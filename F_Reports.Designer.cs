@@ -129,11 +129,19 @@ namespace Dispetcher2
             this.bTNBirkiOld = new System.Windows.Forms.Button();
             this.tabPageRepOTC = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.panel10 = new System.Windows.Forms.Panel();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dGV_OrdersOTK = new System.Windows.Forms.DataGridView();
+            this.Col_OrderNumOTK = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.tB_OrderNumOTK = new System.Windows.Forms.TextBox();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.tB_OrderNumInfoOTK = new System.Windows.Forms.TextBox();
+            this.tB_OrderNameOTK = new System.Windows.Forms.TextBox();
+            this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.btn_repOTK = new System.Windows.Forms.Button();
+            this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.myTabC_Reports.SuspendLayout();
             this.tPageRep3.SuspendLayout();
@@ -170,8 +178,13 @@ namespace Dispetcher2
             this.tabPageRepOTC.SuspendLayout();
             this.tableLayoutPanel6.SuspendLayout();
             this.panel10.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dGV_OrdersOTK)).BeginInit();
             this.groupBox4.SuspendLayout();
+            this.groupBox5.SuspendLayout();
+            this.tableLayoutPanel7.SuspendLayout();
+            this.groupBox7.SuspendLayout();
+            this.groupBox8.SuspendLayout();
+            this.groupBox9.SuspendLayout();
             this.SuspendLayout();
             // 
             // myTabC_Reports
@@ -1267,8 +1280,8 @@ namespace Dispetcher2
             // tableLayoutPanel6
             // 
             this.tableLayoutPanel6.ColumnCount = 2;
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 35.27013F));
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 64.72987F));
             this.tableLayoutPanel6.Controls.Add(this.panel10, 0, 0);
             this.tableLayoutPanel6.Controls.Add(this.groupBox5, 1, 0);
             this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1280,73 +1293,182 @@ namespace Dispetcher2
             this.tableLayoutPanel6.Size = new System.Drawing.Size(981, 597);
             this.tableLayoutPanel6.TabIndex = 0;
             // 
-            // groupBox5
-            // 
-            this.groupBox5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox5.Location = new System.Drawing.Point(493, 3);
-            this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(485, 591);
-            this.groupBox5.TabIndex = 1;
-            this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "groupBox5";
-            // 
             // panel10
             // 
-            this.panel10.Controls.Add(this.dataGridView1);
+            this.panel10.Controls.Add(this.dGV_OrdersOTK);
             this.panel10.Controls.Add(this.groupBox4);
             this.panel10.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel10.Location = new System.Drawing.Point(3, 3);
             this.panel10.Name = "panel10";
-            this.panel10.Size = new System.Drawing.Size(484, 591);
+            this.panel10.Size = new System.Drawing.Size(339, 591);
             this.panel10.TabIndex = 3;
             // 
-            // dataGridView1
+            // dGV_OrdersOTK
             // 
-            this.dataGridView1.AllowUserToAddRows = false;
-            this.dataGridView1.AllowUserToDeleteRows = false;
-            this.dataGridView1.BackgroundColor = System.Drawing.SystemColors.Window;
-            this.dataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.dataGridViewTextBoxColumn1});
-            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridView1.Location = new System.Drawing.Point(0, 46);
-            this.dataGridView1.Margin = new System.Windows.Forms.Padding(4);
-            this.dataGridView1.MultiSelect = false;
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.RowHeadersWidth = 4;
-            this.dataGridView1.Size = new System.Drawing.Size(484, 545);
-            this.dataGridView1.TabIndex = 11;
-            this.dataGridView1.TabStop = false;
+            this.dGV_OrdersOTK.AllowUserToAddRows = false;
+            this.dGV_OrdersOTK.AllowUserToDeleteRows = false;
+            this.dGV_OrdersOTK.BackgroundColor = System.Drawing.SystemColors.Window;
+            this.dGV_OrdersOTK.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.dGV_OrdersOTK.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dGV_OrdersOTK.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Col_OrderNumOTK});
+            this.dGV_OrdersOTK.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dGV_OrdersOTK.Location = new System.Drawing.Point(0, 46);
+            this.dGV_OrdersOTK.Margin = new System.Windows.Forms.Padding(4);
+            this.dGV_OrdersOTK.MultiSelect = false;
+            this.dGV_OrdersOTK.Name = "dGV_OrdersOTK";
+            this.dGV_OrdersOTK.ReadOnly = true;
+            this.dGV_OrdersOTK.RowHeadersWidth = 4;
+            this.dGV_OrdersOTK.Size = new System.Drawing.Size(339, 545);
+            this.dGV_OrdersOTK.TabIndex = 11;
+            this.dGV_OrdersOTK.TabStop = false;
             // 
-            // dataGridViewTextBoxColumn1
+            // Col_OrderNumOTK
             // 
-            this.dataGridViewTextBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.dataGridViewTextBoxColumn1.HeaderText = "№ заказа";
-            this.dataGridViewTextBoxColumn1.MinimumWidth = 100;
-            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
-            this.dataGridViewTextBoxColumn1.ReadOnly = true;
+            this.Col_OrderNumOTK.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Col_OrderNumOTK.HeaderText = "№ заказа";
+            this.Col_OrderNumOTK.MinimumWidth = 100;
+            this.Col_OrderNumOTK.Name = "Col_OrderNumOTK";
+            this.Col_OrderNumOTK.ReadOnly = true;
             // 
             // groupBox4
             // 
-            this.groupBox4.Controls.Add(this.textBox1);
+            this.groupBox4.Controls.Add(this.tB_OrderNumOTK);
             this.groupBox4.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox4.Location = new System.Drawing.Point(0, 0);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(484, 46);
+            this.groupBox4.Size = new System.Drawing.Size(339, 46);
             this.groupBox4.TabIndex = 1;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Поиск (№ заказа)";
             // 
+            // tB_OrderNumOTK
+            // 
+            this.tB_OrderNumOTK.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tB_OrderNumOTK.Location = new System.Drawing.Point(3, 19);
+            this.tB_OrderNumOTK.MaxLength = 50;
+            this.tB_OrderNumOTK.Name = "tB_OrderNumOTK";
+            this.tB_OrderNumOTK.Size = new System.Drawing.Size(333, 23);
+            this.tB_OrderNumOTK.TabIndex = 1;
+            this.tB_OrderNumOTK.TextChanged += new System.EventHandler(this.tB_OrderNumOTK_TextChanged);
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.tableLayoutPanel7);
+            this.groupBox5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox5.Location = new System.Drawing.Point(348, 3);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(630, 591);
+            this.groupBox5.TabIndex = 1;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Enter += new System.EventHandler(this.groupBox5_Enter);
+            // 
+            // tableLayoutPanel7
+            // 
+            this.tableLayoutPanel7.ColumnCount = 1;
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel7.Controls.Add(this.groupBox7, 0, 1);
+            this.tableLayoutPanel7.Controls.Add(this.groupBox8, 0, 2);
+            this.tableLayoutPanel7.Controls.Add(this.groupBox9, 0, 0);
+            this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel7.Location = new System.Drawing.Point(3, 19);
+            this.tableLayoutPanel7.Name = "tableLayoutPanel7";
+            this.tableLayoutPanel7.RowCount = 3;
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 37.44856F));
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 62.55144F));
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 252F));
+            this.tableLayoutPanel7.Size = new System.Drawing.Size(624, 569);
+            this.tableLayoutPanel7.TabIndex = 0;
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Controls.Add(this.tB_OrderNumInfoOTK);
+            this.groupBox7.Controls.Add(this.tB_OrderNameOTK);
+            this.groupBox7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox7.Location = new System.Drawing.Point(3, 121);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(618, 192);
+            this.groupBox7.TabIndex = 1001;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "Наименование заказа";
+            // 
+            // tB_OrderNumInfoOTK
+            // 
+            this.tB_OrderNumInfoOTK.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tB_OrderNumInfoOTK.BackColor = System.Drawing.SystemColors.Info;
+            this.tB_OrderNumInfoOTK.Location = new System.Drawing.Point(3, 19);
+            this.tB_OrderNumInfoOTK.Margin = new System.Windows.Forms.Padding(4);
+            this.tB_OrderNumInfoOTK.MaxLength = 20;
+            this.tB_OrderNumInfoOTK.Name = "tB_OrderNumInfoOTK";
+            this.tB_OrderNumInfoOTK.ReadOnly = true;
+            this.tB_OrderNumInfoOTK.Size = new System.Drawing.Size(608, 23);
+            this.tB_OrderNumInfoOTK.TabIndex = 3;
+            this.tB_OrderNumInfoOTK.TabStop = false;
+            // 
+            // tB_OrderNameOTK
+            // 
+            this.tB_OrderNameOTK.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tB_OrderNameOTK.BackColor = System.Drawing.SystemColors.Info;
+            this.tB_OrderNameOTK.Location = new System.Drawing.Point(0, 50);
+            this.tB_OrderNameOTK.Margin = new System.Windows.Forms.Padding(4);
+            this.tB_OrderNameOTK.MaxLength = 20;
+            this.tB_OrderNameOTK.Multiline = true;
+            this.tB_OrderNameOTK.Name = "tB_OrderNameOTK";
+            this.tB_OrderNameOTK.ReadOnly = true;
+            this.tB_OrderNameOTK.Size = new System.Drawing.Size(611, 135);
+            this.tB_OrderNameOTK.TabIndex = 2;
+            this.tB_OrderNameOTK.TabStop = false;
+            // 
+            // groupBox8
+            // 
+            this.groupBox8.Controls.Add(this.btn_repOTK);
+            this.groupBox8.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox8.Location = new System.Drawing.Point(3, 319);
+            this.groupBox8.Name = "groupBox8";
+            this.groupBox8.Size = new System.Drawing.Size(618, 100);
+            this.groupBox8.TabIndex = 1002;
+            this.groupBox8.TabStop = false;
+            // 
+            // btn_repOTK
+            // 
+            this.btn_repOTK.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btn_repOTK.Location = new System.Drawing.Point(3, 19);
+            this.btn_repOTK.Margin = new System.Windows.Forms.Padding(4);
+            this.btn_repOTK.Name = "btn_repOTK";
+            this.btn_repOTK.Size = new System.Drawing.Size(612, 41);
+            this.btn_repOTK.TabIndex = 1002;
+            this.btn_repOTK.Text = "Сформировать";
+            this.btn_repOTK.UseVisualStyleBackColor = false;
+            this.btn_repOTK.Click += new System.EventHandler(this.btn_repOTK_Click);
+            // 
+            // groupBox9
+            // 
+            this.groupBox9.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.groupBox9.Controls.Add(this.textBox1);
+            this.groupBox9.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox9.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.groupBox9.Location = new System.Drawing.Point(3, 3);
+            this.groupBox9.Name = "groupBox9";
+            this.groupBox9.Size = new System.Drawing.Size(618, 112);
+            this.groupBox9.TabIndex = 1003;
+            this.groupBox9.TabStop = false;
+            // 
             // textBox1
             // 
-            this.textBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox1.Location = new System.Drawing.Point(3, 19);
-            this.textBox1.MaxLength = 50;
+            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.textBox1.Location = new System.Drawing.Point(166, 61);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(478, 23);
-            this.textBox1.TabIndex = 1;
+            this.textBox1.Size = new System.Drawing.Size(283, 24);
+            this.textBox1.TabIndex = 0;
+            this.textBox1.Text = "Отчёт \"Контроль ОТК\"";
+            this.textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // F_Reports
             // 
@@ -1408,9 +1530,16 @@ namespace Dispetcher2
             this.tabPageRepOTC.ResumeLayout(false);
             this.tableLayoutPanel6.ResumeLayout(false);
             this.panel10.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dGV_OrdersOTK)).EndInit();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
+            this.tableLayoutPanel7.ResumeLayout(false);
+            this.groupBox7.ResumeLayout(false);
+            this.groupBox7.PerformLayout();
+            this.groupBox8.ResumeLayout(false);
+            this.groupBox9.ResumeLayout(false);
+            this.groupBox9.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1517,10 +1646,18 @@ namespace Dispetcher2
         private System.Windows.Forms.TabPage tabPageRepOTC;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
         private System.Windows.Forms.Panel panel10;
-        private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridView dGV_OrdersOTK;
         private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox tB_OrderNumOTK;
         private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
+        private System.Windows.Forms.GroupBox groupBox7;
+        private System.Windows.Forms.TextBox tB_OrderNumInfoOTK;
+        private System.Windows.Forms.TextBox tB_OrderNameOTK;
+        private System.Windows.Forms.GroupBox groupBox8;
+        private System.Windows.Forms.Button btn_repOTK;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Col_OrderNumOTK;
+        private System.Windows.Forms.GroupBox groupBox9;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }

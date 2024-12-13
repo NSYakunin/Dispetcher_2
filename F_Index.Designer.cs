@@ -49,12 +49,14 @@
             this.движениеДеталейToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.laborToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.актПриёмаПередачиГальваническоеПокрытиеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ОтчетОТК = new System.Windows.Forms.ToolStripMenuItem();
             this.tSSB_Users = new System.Windows.Forms.ToolStripSplitButton();
             this.рабочиеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.бригадыToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.производственныйКалендарьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.табельToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.jobToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tSB_Control = new System.Windows.Forms.ToolStripButton();
             this.tSSB_Settings = new System.Windows.Forms.ToolStripSplitButton();
             this.toolStripMenuItemUsers = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemOther = new System.Windows.Forms.ToolStripMenuItem();
@@ -62,7 +64,6 @@
             this.toolStripMI_HelpUser = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMI_HelpAdmin = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripHideChildMenu = new System.Windows.Forms.MenuStrip();
-            this.tSB_Control = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1.SuspendLayout();
             this.tS_menu.SuspendLayout();
             this.SuspendLayout();
@@ -186,7 +187,8 @@
             this.отчетПоВыполненнымОперациямразрToolStripMenuItem,
             this.движениеДеталейToolStripMenuItem1,
             this.laborToolStripMenuItem,
-            this.актПриёмаПередачиГальваническоеПокрытиеToolStripMenuItem});
+            this.актПриёмаПередачиГальваническоеПокрытиеToolStripMenuItem,
+            this.ОтчетОТК});
             this.tSSB_Reports.Font = new System.Drawing.Font("Segoe UI", 12F);
             this.tSSB_Reports.Image = global::Dispetcher2.Properties.Resources.Report;
             this.tSSB_Reports.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -259,6 +261,13 @@
             this.актПриёмаПередачиГальваническоеПокрытиеToolStripMenuItem.Text = "Акт приёма-передачи. Гальваническое покрытие";
             this.актПриёмаПередачиГальваническоеПокрытиеToolStripMenuItem.Click += new System.EventHandler(this.актПриёмаПередачиГальваническоеПокрытиеToolStripMenuItem_Click);
             // 
+            // ОтчетОТК
+            // 
+            this.ОтчетОТК.Name = "ОтчетОТК";
+            this.ОтчетОТК.Size = new System.Drawing.Size(510, 26);
+            this.ОтчетОТК.Text = "Отчет ОТК";
+            this.ОтчетОТК.Click += new System.EventHandler(this.ОтчетОТК_Click);
+            // 
             // tSSB_Users
             // 
             this.tSSB_Users.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -309,6 +318,16 @@
             this.jobToolStripMenuItem.Size = new System.Drawing.Size(298, 26);
             this.jobToolStripMenuItem.Text = "Специальности";
             this.jobToolStripMenuItem.Click += new System.EventHandler(this.jobToolStripMenuItem_Click);
+            // 
+            // tSB_Control
+            // 
+            this.tSB_Control.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.tSB_Control.Image = ((System.Drawing.Image)(resources.GetObject("tSB_Control.Image")));
+            this.tSB_Control.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tSB_Control.Name = "tSB_Control";
+            this.tSB_Control.Size = new System.Drawing.Size(106, 28);
+            this.tSB_Control.Text = "Контроль";
+            this.tSB_Control.Click += new System.EventHandler(this.tSB_Control_Click);
             // 
             // tSSB_Settings
             // 
@@ -374,16 +393,6 @@
             this.menuStripHideChildMenu.Text = "menuStripHideChildMenu";
             this.menuStripHideChildMenu.Visible = false;
             // 
-            // tSB_Control
-            // 
-            this.tSB_Control.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.tSB_Control.Image = ((System.Drawing.Image)(resources.GetObject("tSB_Control.Image")));
-            this.tSB_Control.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tSB_Control.Name = "tSB_Control";
-            this.tSB_Control.Size = new System.Drawing.Size(106, 28);
-            this.tSB_Control.Text = "Контроль";
-            this.tSB_Control.Click += new System.EventHandler(this.tSB_Control_Click);
-            // 
             // F_Index
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -447,6 +456,7 @@
         private System.Windows.Forms.ToolStripMenuItem jobToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem актПриёмаПередачиГальваническоеПокрытиеToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton tSB_Control;
+        private System.Windows.Forms.ToolStripMenuItem ОтчетОТК;
     }
 }
 

@@ -81,7 +81,8 @@ namespace Dispetcher2
             if (config.SelectedReportMode == ReportMode.ОтчетНаряд
                 || config.SelectedReportMode == ReportMode.ДвижениеДеталей
                 || config.SelectedReportMode == ReportMode.ОтчетВыполненным
-                || config.SelectedReportMode == ReportMode.Гальваника)
+                || config.SelectedReportMode == ReportMode.Гальваника
+                || config.SelectedReportMode == ReportMode.ОтчетОТК)
             {
                 DT_Orders.Columns.Add("PK_IdOrder", typeof(int));
                 DT_Orders.Columns.Add("OrderNum", typeof(string));
@@ -161,10 +162,25 @@ namespace Dispetcher2
                 orders.SelectOrdersData(2, ref DT_Orders);//2-opened
             }
 
-            if (config.SelectedReportMode == ReportMode.Гальваника)//Движение деталей
+            if (config.SelectedReportMode == ReportMode.Гальваника)
             {
                 myTabC_Reports.SelectedTab = tabPageGalvan;
                 loaddGVGalvan(galvanStart.Value.Date, galvanEnd.Value.Date);
+            }
+
+            if (config.SelectedReportMode == ReportMode.ОтчетОТК)
+            {
+                myTabC_Reports.SelectedTab = tabPageRepOTC;
+                dGV_OrdersOTK.AutoGenerateColumns = false;
+                dGV_OrdersOTK.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                dGV_OrdersOTK.RowsDefaultCellStyle.BackColor = SystemColors.Info;
+                BS_Orders.DataSource = DT_Orders;
+                dGV_OrdersOTK.DataSource = BS_Orders;
+                dGV_OrdersOTK.Columns["Col_OrderNumOTK"].DataPropertyName = DT_Orders.Columns["OrderNum"].ToString();
+                //Bindings
+                tB_OrderNameOTK.DataBindings.Add("Text", BS_Orders, "OrderName", false, DataSourceUpdateMode.OnPropertyChanged);
+                tB_OrderNumInfoOTK.DataBindings.Add("Text", BS_Orders, "OrderNum", false, DataSourceUpdateMode.OnPropertyChanged);
+                orders.SelectOrdersData(2, ref DT_Orders);//2-opened
             }
 
         }
@@ -1254,6 +1270,21 @@ namespace Dispetcher2
                 string selectedItem = "'" + cLB_rep3Workers.SelectedItem.ToString() + "'";
                 selectedItems.Remove(selectedItem);
             }
+        }
+
+        private void groupBox5_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tB_OrderNumOTK_TextChanged(object sender, EventArgs e)
+        {
+            BS_Orders.Filter = " OrderNum like '%" + tB_OrderNumOTK.Text.ToString().Trim() + "%'";
+        }
+
+        private void btn_repOTK_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show($"Отчет по заказу {tB_OrderNumInfoOTK.Text}", "Формирование отчета!", MessageBoxButtons.OK);
         }
     }
 }

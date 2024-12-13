@@ -166,6 +166,11 @@ namespace Dispetcher2.Class
                         f = new F_Reports(config, converter);
                         return f;
 
+                    case "Отчет ОТК":
+                        config.SelectedReportMode = ReportMode.ОтчетОТК;
+                        f = new F_Reports(config, converter);
+                        return f;
+
                     case "ПРОИЗВОДСТВО-ПЛАН":
                         f = new F_Planning(config);
                         return f;
