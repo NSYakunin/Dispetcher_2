@@ -166,6 +166,7 @@ namespace Dispetcher2
             //dGV_Tehnology.CellValueChanged += DGV_Tehnology_CellValueChanged;
             dGV_Tehnology.ShowCellToolTips = true;
 
+            pbHelp.Image = Properties.Resources.question_icon; // Добавьте иконку вопросика в ресурсы проекта
         }
 
         private void F_Fact_Enter(object sender, EventArgs e)
