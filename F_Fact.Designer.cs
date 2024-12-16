@@ -52,9 +52,6 @@ namespace Dispetcher2
             this.shCMContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.oShCMContextMenuStrip = new System.Windows.Forms.ToolStripMenuItem();
             this.dGV_Tehnology = new System.Windows.Forms.DataGridView();
-            this.Col_Oper = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Col_Tpd = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Col_Tsh = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.dTimeP_Fact = new System.Windows.Forms.DateTimePicker();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -62,6 +59,8 @@ namespace Dispetcher2
             this.btnkoop = new System.Windows.Forms.Button();
             this.btn_CloseAllWorks = new System.Windows.Forms.Button();
             this.cB_InDetail = new System.Windows.Forms.CheckBox();
+            this.mBtnM_Brigade = new Dispetcher2.Controls.MyButtonMenu();
+            this.mBtnM_Worker = new Dispetcher2.Controls.MyButtonMenu();
             this.tB_Workers = new System.Windows.Forms.TextBox();
             this.btn_SaveTehnology = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
@@ -82,8 +81,9 @@ namespace Dispetcher2
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.mBtnM_Brigade = new Dispetcher2.Controls.MyButtonMenu();
-            this.mBtnM_Worker = new Dispetcher2.Controls.MyButtonMenu();
+            this.Col_Oper = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Col_Tpd = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Col_Tsh = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dGV_Orders)).BeginInit();
             this.OrderContextMenuStrip.SuspendLayout();
             this.gB_OrderName.SuspendLayout();
@@ -338,27 +338,6 @@ namespace Dispetcher2
             this.dGV_Tehnology.TabStop = false;
             this.dGV_Tehnology.DefaultValuesNeeded += new System.Windows.Forms.DataGridViewRowEventHandler(this.DGV_Tehnology_DefaultValuesNeeded_1);
             // 
-            // Col_Oper
-            // 
-            this.Col_Oper.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Col_Oper.HeaderText = "Операция";
-            this.Col_Oper.MinimumWidth = 20;
-            this.Col_Oper.Name = "Col_Oper";
-            // 
-            // Col_Tpd
-            // 
-            this.Col_Tpd.HeaderText = "Tpd, sec";
-            this.Col_Tpd.MinimumWidth = 20;
-            this.Col_Tpd.Name = "Col_Tpd";
-            this.Col_Tpd.Width = 65;
-            // 
-            // Col_Tsh
-            // 
-            this.Col_Tsh.HeaderText = "Tsh, sec";
-            this.Col_Tsh.MinimumWidth = 20;
-            this.Col_Tsh.Name = "Col_Tsh";
-            this.Col_Tsh.Width = 70;
-            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.dGV_Tehnology);
@@ -443,6 +422,32 @@ namespace Dispetcher2
             this.cB_InDetail.Text = "Подробно";
             this.cB_InDetail.UseVisualStyleBackColor = true;
             this.cB_InDetail.CheckedChanged += new System.EventHandler(this.cB_InDetail_CheckedChanged);
+            // 
+            // mBtnM_Brigade
+            // 
+            this.mBtnM_Brigade.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
+            this.mBtnM_Brigade.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.mBtnM_Brigade.Location = new System.Drawing.Point(92, 85);
+            this.mBtnM_Brigade.Margin = new System.Windows.Forms.Padding(4);
+            this.mBtnM_Brigade.Name = "mBtnM_Brigade";
+            this.mBtnM_Brigade.Size = new System.Drawing.Size(81, 27);
+            this.mBtnM_Brigade.TabIndex = 1009;
+            this.mBtnM_Brigade.Text = "Бригада";
+            this.mBtnM_Brigade.UseVisualStyleBackColor = true;
+            this.mBtnM_Brigade.Click += new System.EventHandler(this.mBtnM_Brigade_Click);
+            // 
+            // mBtnM_Worker
+            // 
+            this.mBtnM_Worker.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
+            this.mBtnM_Worker.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.mBtnM_Worker.Location = new System.Drawing.Point(3, 85);
+            this.mBtnM_Worker.Margin = new System.Windows.Forms.Padding(4);
+            this.mBtnM_Worker.Name = "mBtnM_Worker";
+            this.mBtnM_Worker.Size = new System.Drawing.Size(81, 27);
+            this.mBtnM_Worker.TabIndex = 1008;
+            this.mBtnM_Worker.Text = "Рабочий";
+            this.mBtnM_Worker.UseVisualStyleBackColor = true;
+            this.mBtnM_Worker.Click += new System.EventHandler(this.mBtnM_Worker_Click);
             // 
             // tB_Workers
             // 
@@ -680,31 +685,29 @@ namespace Dispetcher2
             this.tableLayoutPanel1.Size = new System.Drawing.Size(984, 632);
             this.tableLayoutPanel1.TabIndex = 1001;
             // 
-            // mBtnM_Brigade
+            // Col_Oper
             // 
-            this.mBtnM_Brigade.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
-            this.mBtnM_Brigade.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.mBtnM_Brigade.Location = new System.Drawing.Point(92, 85);
-            this.mBtnM_Brigade.Margin = new System.Windows.Forms.Padding(4);
-            this.mBtnM_Brigade.Name = "mBtnM_Brigade";
-            this.mBtnM_Brigade.Size = new System.Drawing.Size(81, 27);
-            this.mBtnM_Brigade.TabIndex = 1009;
-            this.mBtnM_Brigade.Text = "Бригада";
-            this.mBtnM_Brigade.UseVisualStyleBackColor = true;
-            this.mBtnM_Brigade.Click += new System.EventHandler(this.mBtnM_Brigade_Click);
+            this.Col_Oper.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Col_Oper.HeaderText = "Операция";
+            this.Col_Oper.MinimumWidth = 20;
+            this.Col_Oper.Name = "Col_Oper";
+            this.Col_Oper.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
-            // mBtnM_Worker
+            // Col_Tpd
             // 
-            this.mBtnM_Worker.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption;
-            this.mBtnM_Worker.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.mBtnM_Worker.Location = new System.Drawing.Point(3, 85);
-            this.mBtnM_Worker.Margin = new System.Windows.Forms.Padding(4);
-            this.mBtnM_Worker.Name = "mBtnM_Worker";
-            this.mBtnM_Worker.Size = new System.Drawing.Size(81, 27);
-            this.mBtnM_Worker.TabIndex = 1008;
-            this.mBtnM_Worker.Text = "Рабочий";
-            this.mBtnM_Worker.UseVisualStyleBackColor = true;
-            this.mBtnM_Worker.Click += new System.EventHandler(this.mBtnM_Worker_Click);
+            this.Col_Tpd.HeaderText = "Tpd, sec";
+            this.Col_Tpd.MinimumWidth = 20;
+            this.Col_Tpd.Name = "Col_Tpd";
+            this.Col_Tpd.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Col_Tpd.Width = 65;
+            // 
+            // Col_Tsh
+            // 
+            this.Col_Tsh.HeaderText = "Tsh, sec";
+            this.Col_Tsh.MinimumWidth = 20;
+            this.Col_Tsh.Name = "Col_Tsh";
+            this.Col_Tsh.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Col_Tsh.Width = 70;
             // 
             // F_Fact
             // 
@@ -787,9 +790,6 @@ namespace Dispetcher2
 		private System.Windows.Forms.ContextMenuStrip OrderContextMenuStrip;
 		private System.Windows.Forms.ToolStripMenuItem OrdersContextMenuStrip;
 		private System.Windows.Forms.ToolStripMenuItem oShCMContextMenuStrip;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Col_Oper;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Col_Tpd;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Col_Tsh;
         private System.Windows.Forms.Button SaveInBD;
         private System.Windows.Forms.DataGridViewTextBoxColumn Col_FactOper;
         private System.Windows.Forms.DataGridViewTextBoxColumn Col_DateFactOper;
@@ -797,5 +797,8 @@ namespace Dispetcher2
         private System.Windows.Forms.DataGridViewTextBoxColumn Col_AmountDetails;
         private System.Windows.Forms.DataGridViewTextBoxColumn Col_FactTpd;
         private System.Windows.Forms.DataGridViewTextBoxColumn Col_FactTsh;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Col_Oper;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Col_Tpd;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Col_Tsh;
     }
 }

@@ -30,6 +30,7 @@ using Task = System.Threading.Tasks.Task;
 using System.Windows.Documents;
 using System.Windows.Media.Media3D;
 using System.Windows.Controls;
+using System.Configuration;
 
 namespace Dispetcher2
 {
@@ -1284,7 +1285,214 @@ namespace Dispetcher2
 
         private void btn_repOTK_Click(object sender, EventArgs e)
         {
-            MessageBox.Show($"Отчет по заказу {tB_OrderNumInfoOTK.Text}", "Формирование отчета!", MessageBoxButtons.OK);
+            // Проверка на ввод имени заказа
+            string orderNum = tB_OrderNumInfoOTK.Text.Trim();
+            if (string.IsNullOrEmpty(orderNum))
+            {
+                MessageBox.Show("Введите номер заказа.");
+                return;
+            }
+
+            // Инициализация переменных
+            int pk_IdOrder = 0;
+            string orderName = string.Empty;
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(config.ConnectionString))
+                {
+                    conn.Open();
+
+                    // Получаем PK_IdOrder и OrderName по номеру заказа
+                    string orderQuery = @"SELECT PK_IdOrder, OrderName 
+                                      FROM [Orders] 
+                                      WHERE OrderNum = @OrderNum";
+
+                    using (SqlCommand cmd = new SqlCommand(orderQuery, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@OrderNum", orderNum);
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                pk_IdOrder = reader.GetInt32(0); // PK_IdOrder
+                                orderName = reader.GetString(1);  // OrderName
+                            }
+                            else
+                            {
+                                MessageBox.Show("Заказ с таким номером не найден.");
+                                return;
+                            }
+                        }
+                    }
+
+                    // Получаем данные о деталях заказа с дополнительными полями
+                    DataTable dtDetails = new DataTable();
+                    string detailsQuery = @"
+                    SELECT 
+                        od.Position,
+                        sd.ShcmDetail,
+                        sd.NameDetail,
+                        std.NameType
+                    FROM OrdersDetails od
+                    INNER JOIN Sp_Details sd ON od.FK_IdDetail = sd.PK_IdDetail
+                    INNER JOIN Sp_TypeDetails std ON sd.FK_IdTypeDetail = std.PK_IdTypeDetail
+                    WHERE od.FK_IdOrder = @IdOrder
+                    ORDER BY od.Position";
+
+                    using (SqlCommand cmd = new SqlCommand(detailsQuery, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@IdOrder", pk_IdOrder);
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            da.Fill(dtDetails);
+                        }
+                    }
+
+                    // Получаем данные о крепежах заказа
+                    DataTable dtFasteners = new DataTable();
+                    string fastenersQuery = @"
+                    SELECT 
+                        OrdersFasteners.Position,
+                        OrdersFasteners.NameFasteners,
+                        OrdersFasteners.AmountFasteners,
+                        OrdersFasteners.MeasureUnit,
+                        std.NameType AS TypeFasteners
+                    FROM OrdersFasteners
+                    INNER JOIN Sp_TypeDetails std ON OrdersFasteners.FK_IdTypeFasteners = std.PK_IdTypeDetail
+                    WHERE OrdersFasteners.FK_IdOrder = @IdOrder
+                    ORDER BY OrdersFasteners.Position";
+
+                    using (SqlCommand cmd = new SqlCommand(fastenersQuery, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@IdOrder", pk_IdOrder);
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        {
+                            da.Fill(dtFasteners);
+                        }
+                    }
+
+                    // Формируем Excel-файл с использованием EPPlus
+                    using (ExcelPackage pck = new ExcelPackage())
+                    {
+                        var ws = pck.Workbook.Worksheets.Add("Отчет");
+
+                        int currentRow = 1;
+
+                        // Заголовок отчета с именем заказа
+                        ws.Cells[currentRow, 1].Value = $"Отчет по заказу: {orderNum}";
+                        ws.Cells[currentRow, 1, currentRow, 6].Merge = true; // Объединяем ячейки для заголовка
+                        ws.Cells[currentRow, 1].Style.Font.Bold = true;
+                        ws.Cells[currentRow, 1].Style.Font.Size = 16;
+                        ws.Cells[currentRow, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        currentRow += 2; // Переходим к следующей строке после заголовка
+
+                        // Раздел для деталей
+                        ws.Cells[currentRow, 1].Value = "Детали заказа";
+                        ws.Cells[currentRow, 1].Style.Font.Bold = true;
+                        currentRow++;
+
+                        // Заголовки таблицы деталей
+                        ws.Cells[currentRow, 1].Value = "Номер позиции";
+                        ws.Cells[currentRow, 2].Value = "ЩЦМ детали";
+                        ws.Cells[currentRow, 3].Value = "Название детали";
+                        ws.Cells[currentRow, 4].Value = "Тип детали";
+
+                        ws.Cells[currentRow, 1, currentRow, 4].Style.Font.Bold = true;
+                        ws.Cells[currentRow, 1, currentRow, 4].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        ws.Cells[currentRow, 1, currentRow, 4].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        ws.Cells[currentRow, 1, currentRow, 4].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                        currentRow++;
+
+                        // Заполнение данных о деталях
+                        int posNumber = 1;
+                        foreach (DataRow dr in dtDetails.Rows)
+                        {
+                            ws.Cells[currentRow, 1].Value = posNumber; // Номер позиции
+                            ws.Cells[currentRow, 2].Value = dr["ShcmDetail"]?.ToString();
+                            ws.Cells[currentRow, 3].Value = dr["NameDetail"]?.ToString();
+                            ws.Cells[currentRow, 4].Value = dr["NameType"]?.ToString();
+
+                            currentRow++;
+                            posNumber++;
+                        }
+
+                        // Автонастройка ширины столбцов и установка фиксированной ширины для первого столбца
+                        ws.Column(1).Width = 15; // Устанавливаем узкую ширину для "Номер позиции"
+                        ws.Column(2).AutoFit();
+                        ws.Column(3).AutoFit();
+                        ws.Column(4).AutoFit();
+
+                        currentRow += 2; // Переходим к следующей секции
+
+                        // Раздел для крепежей
+                        ws.Cells[currentRow, 1].Value = "Крепежи заказа";
+                        ws.Cells[currentRow, 1].Style.Font.Bold = true;
+                        currentRow++;
+
+                        // Заголовки таблицы крепежей
+                        ws.Cells[currentRow, 1].Value = "Номер позиции";
+                        ws.Cells[currentRow, 2].Value = "Название крепежа";
+                        ws.Cells[currentRow, 3].Value = "Количество";
+                        ws.Cells[currentRow, 4].Value = "Единица измерения";
+                        ws.Cells[currentRow, 5].Value = "Тип крепежа";
+
+                        ws.Cells[currentRow, 1, currentRow, 5].Style.Font.Bold = true;
+                        ws.Cells[currentRow, 1, currentRow, 5].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        ws.Cells[currentRow, 1, currentRow, 5].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        ws.Cells[currentRow, 1, currentRow, 5].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                        currentRow++;
+
+                        // Заполнение данных о крепежах
+                        posNumber = 1;
+                        foreach (DataRow dr in dtFasteners.Rows)
+                        {
+                            ws.Cells[currentRow, 1].Value = posNumber; // Номер позиции
+                            ws.Cells[currentRow, 2].Value = dr["NameFasteners"]?.ToString();
+                            ws.Cells[currentRow, 3].Value = dr["AmountFasteners"] != DBNull.Value ? Convert.ToDouble(dr["AmountFasteners"]) : 0;
+                            ws.Cells[currentRow, 4].Value = dr["MeasureUnit"]?.ToString();
+                            ws.Cells[currentRow, 5].Value = dr["TypeFasteners"]?.ToString();
+
+                            currentRow++;
+                            posNumber++;
+                        }
+
+                        // Автонастройка ширины столбцов и установка фиксированной ширины для первого столбца
+                        ws.Column(1).Width = 15; // Устанавливаем узкую ширину для "Номер позиции"
+                        ws.Column(2).AutoFit();
+                        ws.Column(3).AutoFit();
+                        ws.Column(4).AutoFit();
+                        ws.Column(5).AutoFit();
+
+                        // Дополнительное форматирование (границы таблиц)
+                        using (var range = ws.Cells[1, 1, currentRow - 1, 5])
+                        {
+                            range.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            range.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                            range.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                            range.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                        }
+
+                        // Сохранение файла через SaveFileDialog
+                        using (SaveFileDialog sfd = new SaveFileDialog())
+                        {
+                            sfd.Filter = "Excel files (*.xlsx)|*.xlsx";
+                            sfd.Title = "Сохранить отчет";
+                            sfd.FileName = $"Отчет ОТК по заказу_{orderNum}.xlsx";
+                            if (sfd.ShowDialog() == DialogResult.OK)
+                            {
+                                File.WriteAllBytes(sfd.FileName, pck.GetAsByteArray());
+                                MessageBox.Show("Отчет успешно сформирован и сохранен.");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Произошла ошибка: {ex.Message}");
+            }
         }
     }
 }

@@ -168,7 +168,7 @@ namespace Dispetcher2
 
             // Добавьте PictureBox в конструкторе формы или в методе инициализации
             PictureBox pbHelp = new PictureBox();
-            pbHelp.Image = Properties.Resources.; // Добавьте иконку вопросика в ресурсы проекта
+            pbHelp.Image = Properties.Resources.icons8_скопировать_30; // Добавьте иконку вопросика в ресурсы проекта
             pbHelp.SizeMode = PictureBoxSizeMode.StretchImage;
             pbHelp.Size = new Size(16, 16);
             pbHelp.Cursor = Cursors.Hand;
