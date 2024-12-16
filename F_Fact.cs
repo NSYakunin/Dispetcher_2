@@ -166,7 +166,17 @@ namespace Dispetcher2
             //dGV_Tehnology.CellValueChanged += DGV_Tehnology_CellValueChanged;
             dGV_Tehnology.ShowCellToolTips = true;
 
-            pbHelp.Image = Properties.Resources.question_icon; // Добавьте иконку вопросика в ресурсы проекта
+            // Добавьте PictureBox в конструкторе формы или в методе инициализации
+            PictureBox pbHelp = new PictureBox();
+            pbHelp.Image = Properties.Resources.; // Добавьте иконку вопросика в ресурсы проекта
+            pbHelp.SizeMode = PictureBoxSizeMode.StretchImage;
+            pbHelp.Size = new Size(16, 16);
+            pbHelp.Cursor = Cursors.Hand;
+            pbHelp.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            pbHelp.Location = new System.Drawing.Point(dGV_Tehnology.Width - pbHelp.Width - 5, 5); // Расположение в правом верхнем углу
+            pbHelp.BringToFront();
+            this.Controls.Add(pbHelp);
+
         }
 
         private void F_Fact_Enter(object sender, EventArgs e)

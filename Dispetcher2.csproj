@@ -528,6 +528,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Computer.ico" />
+    <Content Include="Resources\question_icon.png" />
     <None Include="Resources\icons8-скопировать-30.png" />
     <None Include="Picture\Search.png" />
     <None Include="Picture\help32.png" />
