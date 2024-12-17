@@ -31,6 +31,7 @@ using System.Windows.Documents;
 using System.Windows.Media.Media3D;
 using System.Windows.Controls;
 using System.Configuration;
+using System.Diagnostics;
 
 namespace Dispetcher2
 {
@@ -1302,7 +1303,7 @@ namespace Dispetcher2
                 {
                     conn.Open();
 
-                    // Получаем PK_IdOrder и OrderName по номеру заказа
+                    // 1. Получаем PK_IdOrder и OrderName по номеру заказа
                     string orderQuery = @"SELECT PK_IdOrder, OrderName 
                                       FROM [Orders] 
                                       WHERE OrderNum = @OrderNum";
@@ -1325,21 +1326,21 @@ namespace Dispetcher2
                         }
                     }
 
-                    // Получаем данные о деталях (добавляем PK_IdOrderDetail и AmountDetails)
+                    // 2. Получаем данные о деталях (PK_IdOrderDetail, AmountDetails и т.д.)
                     DataTable dtDetails = new DataTable();
                     string detailsQuery = @"
-                    SELECT 
-                        od.PK_IdOrderDetail,
-                        od.Position,
-                        od.AmountDetails,
-                        sd.ShcmDetail,
-                        sd.NameDetail,
-                        std.NameType
-                    FROM OrdersDetails od
-                    INNER JOIN Sp_Details sd ON od.FK_IdDetail = sd.PK_IdDetail
-                    INNER JOIN Sp_TypeDetails std ON sd.FK_IdTypeDetail = std.PK_IdTypeDetail
-                    WHERE od.FK_IdOrder = @IdOrder
-                    ORDER BY od.Position";
+                SELECT 
+                    od.PK_IdOrderDetail,
+                    od.Position,
+                    od.AmountDetails,
+                    sd.ShcmDetail,
+                    sd.NameDetail,
+                    std.NameType
+                FROM OrdersDetails od
+                INNER JOIN Sp_Details sd ON od.FK_IdDetail = sd.PK_IdDetail
+                INNER JOIN Sp_TypeDetails std ON sd.FK_IdTypeDetail = std.PK_IdTypeDetail
+                WHERE od.FK_IdOrder = @IdOrder
+                ORDER BY od.Position";
 
                     using (SqlCommand cmd = new SqlCommand(detailsQuery, conn))
                     {
@@ -1350,19 +1351,19 @@ namespace Dispetcher2
                         }
                     }
 
-                    // Получаем данные о крепежах (с AmountFasteners)
+                    // 3. Получаем данные о крепежах (AmountFasteners и т.д.)
                     DataTable dtFasteners = new DataTable();
                     string fastenersQuery = @"
-                    SELECT 
-                        OrdersFasteners.Position,
-                        OrdersFasteners.NameFasteners,
-                        OrdersFasteners.AmountFasteners,
-                        OrdersFasteners.MeasureUnit,
-                        std.NameType AS TypeFasteners
-                    FROM OrdersFasteners
-                    INNER JOIN Sp_TypeDetails std ON OrdersFasteners.FK_IdTypeFasteners = std.PK_IdTypeDetail
-                    WHERE OrdersFasteners.FK_IdOrder = @IdOrder
-                    ORDER BY OrdersFasteners.Position";
+                SELECT 
+                    OrdersFasteners.Position,
+                    OrdersFasteners.NameFasteners,
+                    OrdersFasteners.AmountFasteners,
+                    OrdersFasteners.MeasureUnit,
+                    std.NameType AS TypeFasteners
+                FROM OrdersFasteners
+                INNER JOIN Sp_TypeDetails std ON OrdersFasteners.FK_IdTypeFasteners = std.PK_IdTypeDetail
+                WHERE OrdersFasteners.FK_IdOrder = @IdOrder
+                ORDER BY OrdersFasteners.Position";
 
                     using (SqlCommand cmd = new SqlCommand(fastenersQuery, conn))
                     {
@@ -1373,19 +1374,31 @@ namespace Dispetcher2
                         }
                     }
 
-                    // Получаем статусы ОТК для деталей
-                    // Сначала соберем все PK_IdOrderDetail
+                    // 4. Логика определения статуса "Принято"/"Частично готово"/"" (пусто)
+                    //    по условию:
+                    //    - Ищем все записи в OperationsOTK, где Oper LIKE '%Контроль ОТК%'
+                    //    - Для каждой OperationID смотрим в OTKControlID.
+                    //      Если есть запись с CheckBoxIndex=2 и CheckBoxState=1 => "Принято"
+                    //      Если есть записи с CheckBoxIndex=2, но ни одна не имеет CheckBoxState=1 => "Частично готово"
+                    //      Если нет записей с CheckBoxIndex=2 => (статус пустой)
+
+                    // Сначала собираем PK_IdOrderDetail из dtDetails
                     var detailIds = dtDetails.AsEnumerable().Select(r => r.Field<long>("PK_IdOrderDetail")).ToList();
+
+                    // Словарь: [PK_IdOrderDetail] -> Статус
                     Dictionary<long, string> otkStatusByDetail = new Dictionary<long, string>();
 
                     if (detailIds.Count > 0)
                     {
-                        string ids = string.Join(",", detailIds);
-                        string otkQuery = @"
-                        SELECT o.PK_IdOrderDetail, c.CheckBoxState
-                        FROM OperationsOTK o
-                        LEFT JOIN [OTKControl] c ON o.OperationID = c.OperationID
-                        WHERE o.PK_IdOrderDetail IN (" + ids + @")";
+                        // Получим из OperationsOTK все записи, где PK_IdOrderDetail IN detailIds и Oper LIKE '%Контроль ОТК%'
+                        string joinedIds = string.Join(",", detailIds);
+                        string otkQuery = $@"
+                    SELECT o.PK_IdOrderDetail, o.OperationID
+                    FROM OperationsOTK o
+                    WHERE o.Oper LIKE '%Контроль%'
+                      AND o.PK_IdOrderDetail IN ({joinedIds})";
+
+                        Console.WriteLine(otkQuery);
 
                         DataTable dtOtk = new DataTable();
                         using (SqlCommand cmd = new SqlCommand(otkQuery, conn))
@@ -1398,55 +1411,93 @@ namespace Dispetcher2
 
                         // Группируем по PK_IdOrderDetail
                         var groups = dtOtk.AsEnumerable().GroupBy(r => r.Field<long>("PK_IdOrderDetail"));
+
                         foreach (var grp in groups)
                         {
-                            var states = grp.Select(g => g["CheckBoxState"]).ToList();
+                            long detailId = grp.Key;
+                            var operationIds = grp.Select(r => r.Field<int>("OperationID")).Distinct().ToList();
 
-                            // Если нет ни одной записи в OTKControlID (CheckBoxState - null),
-                            // значит все строки null или вообще ни одной. Проверим:
-                            if (!states.Any() || states.All(s => s == DBNull.Value))
+
+                            // Если нет operationIds (что маловероятно, но вдруг?), статус пустой
+                            if (operationIds.Count == 0)
                             {
-                                // Нет записей - статус пустой
-                                otkStatusByDetail[grp.Key] = "";
+                                otkStatusByDetail[detailId] = "";
                                 continue;
                             }
 
-                            // Фильтруем null-ы
-                            var intStates = states.Where(s => s != DBNull.Value).Select(s => Convert.ToInt32(s)).ToList();
+                            // Смотрим, какие есть CheckBoxIndex и CheckBoxState в OTKControlID для этих OperationID
+                            // Объединяем всё в один IN (...)
+                            string joinedOpIds = string.Join(",", operationIds);
 
-                            if (intStates.Count == 0)
+                            string controlQuery = $@"
+                                SELECT CheckBoxIndex, CheckBoxState
+                                FROM [OTKControl]
+                                WHERE OperationID IN ({joinedOpIds})";
+
+
+                            DataTable dtControl = new DataTable();
+                            using (SqlCommand cmd = new SqlCommand(controlQuery, conn))
                             {
-                                // Нет валидных статусов
-                                otkStatusByDetail[grp.Key] = "";
+                                using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                                {
+                                    da.Fill(dtControl);
+                                }
                             }
-                            else if (intStates.All(st => st == 1))
+
+                            // Если в dtControl нет записей, значит нет данных по ОТК — статус пустой
+                            if (dtControl.Rows.Count == 0)
                             {
-                                // Все 2 - Принято
-                                otkStatusByDetail[grp.Key] = "Принято";
+                                otkStatusByDetail[detailId] = "";
+                                continue;
+                            }
+
+                            // Проверяем условия
+                            // 1. Есть ли хотя бы один (CheckBoxIndex=2, CheckBoxState=1)?
+                            bool foundGreen = dtControl.AsEnumerable().Any(r =>
+                                r.Field<int>("CheckBoxIndex") == 2 &&
+                                r.Field<int>("CheckBoxState") == 1);
+
+
+
+                            if (foundGreen)
+                            {
+                                // Есть хотя бы одна запись (2,1) => "Принято" (зелёный)
+                                otkStatusByDetail[detailId] = "Принято";
                             }
                             else
                             {
-                                // Есть что-то кроме 2 - Частично готово
-                                otkStatusByDetail[grp.Key] = "Частично готово";
+                                // Есть записи с CheckBoxIndex=2, но ни одна не имеет CheckBoxState=1 => "Частично готово"
+                                bool foundAny = dtControl.AsEnumerable().Any(r =>
+                                    r.Field<int>("CheckBoxIndex") == 2);
+
+                                if (foundAny)
+                                {
+                                    otkStatusByDetail[detailId] = "Частично готово";
+                                }
+                                else
+                                {
+                                    // Нет записей с CheckBoxIndex=2 => статус пустой
+                                    otkStatusByDetail[detailId] = "";
+                                }
                             }
                         }
 
-                        // Проверим детали, у которых нет записей вообще в OTK
+                        // Для тех деталей, которые не попали в dtOtk (нет Oper='Контроль ОТК'), оставим пустой статус
                         foreach (var id in detailIds)
                         {
                             if (!otkStatusByDetail.ContainsKey(id))
-                                otkStatusByDetail[id] = ""; // Пусто, если ни одной записи
+                                otkStatusByDetail[id] = "";
                         }
                     }
 
-                    // Формируем Excel-файл
+                    // 5. Формируем Excel-файл с помощью EPPlus
                     using (ExcelPackage pck = new ExcelPackage())
                     {
                         var ws = pck.Workbook.Worksheets.Add("Отчет");
 
                         int currentRow = 1;
 
-                        // Заголовок отчета с именем заказа
+                        // Заголовок отчета
                         ws.Cells[currentRow, 1].Value = $"Отчет по заказу: {orderNum}";
                         ws.Cells[currentRow, 1, currentRow, 6].Merge = true;
                         ws.Cells[currentRow, 1].Style.Font.Bold = true;
@@ -1481,24 +1532,24 @@ namespace Dispetcher2
                         int posNumber = 1;
                         foreach (DataRow dr in dtDetails.Rows)
                         {
-                            long detailId = (long)dr["PK_IdOrderDetail"];
+                            long detailId = dr.Field<long>("PK_IdOrderDetail");
                             string shcm = dr["ShcmDetail"]?.ToString() ?? "";
                             string nameDetail = dr["NameDetail"]?.ToString() ?? "";
                             string typeDetail = dr["NameType"]?.ToString() ?? "";
-                            double amount = dr["AmountDetails"] != DBNull.Value ? Convert.ToDouble(dr["AmountDetails"]) : 0.0;
+                            //double amount = dr.Field<double?>("AmountDetails") ?? 0.0;
+                            double amountFastener = dr["AmountDetails"] != DBNull.Value ? Convert.ToDouble(dr["AmountDetails"]) : 0.0;
 
-                            string status = "";
-                            if (otkStatusByDetail.ContainsKey(detailId))
-                                status = otkStatusByDetail[detailId];
+                            // Статус ОТК
+                            string status = otkStatusByDetail.ContainsKey(detailId) ? otkStatusByDetail[detailId] : "";
 
                             ws.Cells[currentRow, 1].Value = posNumber;
                             ws.Cells[currentRow, 2].Value = shcm;
                             ws.Cells[currentRow, 3].Value = nameDetail;
                             ws.Cells[currentRow, 4].Value = typeDetail;
-                            ws.Cells[currentRow, 5].Value = amount;
+                            ws.Cells[currentRow, 5].Value = amountFastener;
                             ws.Cells[currentRow, 6].Value = status;
 
-                            // Форматирование статуса ОТК
+                            // Окраска статуса
                             if (status == "Принято")
                             {
                                 ws.Cells[currentRow, 6].Style.Fill.PatternType = ExcelFillStyle.Solid;
@@ -1509,13 +1560,13 @@ namespace Dispetcher2
                                 ws.Cells[currentRow, 6].Style.Fill.PatternType = ExcelFillStyle.Solid;
                                 ws.Cells[currentRow, 6].Style.Fill.BackgroundColor.SetColor(Color.BurlyWood);
                             }
-                            // Если статус пустой - без заливки
+                            // Если статус пустой — оставляем без заливки
 
                             currentRow++;
                             posNumber++;
                         }
 
-                        // Ширина столбцов
+                        // Настройка ширины столбцов
                         ws.Column(1).Width = 15;
                         ws.Column(2).AutoFit();
                         ws.Column(3).AutoFit();
@@ -1552,7 +1603,7 @@ namespace Dispetcher2
                         foreach (DataRow dr in dtFasteners.Rows)
                         {
                             string nameFastener = dr["NameFasteners"]?.ToString() ?? "";
-                            double amountFastener = dr["AmountFasteners"] != DBNull.Value ? Convert.ToDouble(dr["AmountFasteners"]) : 0.0;
+                            double amountFastener = dr.Field<double?>("AmountFasteners") ?? 0.0;
                             string measureUnit = dr["MeasureUnit"]?.ToString() ?? "";
                             string typeFastener = dr["TypeFasteners"]?.ToString() ?? "";
 
@@ -1566,14 +1617,15 @@ namespace Dispetcher2
                             posNumber++;
                         }
 
+                        // Настройка ширины столбцов
                         ws.Column(1).Width = 15;
                         ws.Column(2).AutoFit();
                         ws.Column(3).AutoFit();
                         ws.Column(4).AutoFit();
                         ws.Column(5).AutoFit();
 
-                        // Обрамляем границы всех данных
-                        int maxCol = Math.Max(6, 5); // 6 столбцов в деталях, 5 в крепежах
+                        // Обрамляем границы всех данных (максимум 6 столбцов у таблицы деталей)
+                        int maxCol = 6;
                         using (var fullRange = ws.Cells[1, 1, currentRow - 1, maxCol])
                         {
                             fullRange.Style.Border.Top.Style = ExcelBorderStyle.Thin;
@@ -1582,18 +1634,12 @@ namespace Dispetcher2
                             fullRange.Style.Border.Right.Style = ExcelBorderStyle.Thin;
                         }
 
-                        // Сохранение файла
-                        using (SaveFileDialog sfd = new SaveFileDialog())
-                        {
-                            sfd.Filter = "Excel files (*.xlsx)|*.xlsx";
-                            sfd.Title = "Сохранить отчет";
-                            sfd.FileName = $"Отчет ОТК по заказу №{orderNum}.xlsx";
-                            if (sfd.ShowDialog() == DialogResult.OK)
-                            {
-                                File.WriteAllBytes(sfd.FileName, pck.GetAsByteArray());
-                                MessageBox.Show("Отчет успешно сформирован и сохранен.");
-                            }
-                        }
+                        // Сохранение файла во временную папку
+                        string tempFilePath = Path.Combine(Path.GetTempPath(), $"ReportOTK_{orderNum}_{Guid.NewGuid()}.xlsx");
+                        File.WriteAllBytes(tempFilePath, pck.GetAsByteArray());
+
+                        // Открытие файла с помощью приложения по умолчанию (обычно Excel)
+                        Process.Start(new ProcessStartInfo(tempFilePath) { UseShellExecute = true });
                     }
                 }
             }
