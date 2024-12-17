@@ -1329,18 +1329,18 @@ namespace Dispetcher2
                     // 2. Получаем данные о деталях
                     DataTable dtDetails = new DataTable();
                     string detailsQuery = @"
-                SELECT 
-                    od.PK_IdOrderDetail,
-                    od.Position,
-                    od.AmountDetails,
-                    sd.ShcmDetail,
-                    sd.NameDetail,
-                    std.NameType
-                FROM OrdersDetails od
-                INNER JOIN Sp_Details sd ON od.FK_IdDetail = sd.PK_IdDetail
-                INNER JOIN Sp_TypeDetails std ON sd.FK_IdTypeDetail = std.PK_IdTypeDetail
-                WHERE od.FK_IdOrder = @IdOrder
-                ORDER BY od.Position";
+                                        SELECT 
+                                            od.PK_IdOrderDetail,
+                                            od.Position,
+                                            od.AmountDetails,
+                                            sd.ShcmDetail,
+                                            sd.NameDetail,
+                                            std.NameType
+                                        FROM OrdersDetails od
+                                        INNER JOIN Sp_Details sd ON od.FK_IdDetail = sd.PK_IdDetail
+                                        INNER JOIN Sp_TypeDetails std ON sd.FK_IdTypeDetail = std.PK_IdTypeDetail
+                                        WHERE od.FK_IdOrder = @IdOrder
+                                        ORDER BY od.Position";
 
                     using (SqlCommand cmd = new SqlCommand(detailsQuery, conn))
                     {
@@ -1354,16 +1354,16 @@ namespace Dispetcher2
                     // 3. Получаем данные о крепежах
                     DataTable dtFasteners = new DataTable();
                     string fastenersQuery = @"
-                SELECT 
-                    OrdersFasteners.Position,
-                    OrdersFasteners.NameFasteners,
-                    OrdersFasteners.AmountFasteners,
-                    OrdersFasteners.MeasureUnit,
-                    std.NameType AS TypeFasteners
-                FROM OrdersFasteners
-                INNER JOIN Sp_TypeDetails std ON OrdersFasteners.FK_IdTypeFasteners = std.PK_IdTypeDetail
-                WHERE OrdersFasteners.FK_IdOrder = @IdOrder
-                ORDER BY OrdersFasteners.Position";
+                                        SELECT 
+                                            OrdersFasteners.Position,
+                                            OrdersFasteners.NameFasteners,
+                                            OrdersFasteners.AmountFasteners,
+                                            OrdersFasteners.MeasureUnit,
+                                            std.NameType AS TypeFasteners
+                                        FROM OrdersFasteners
+                                        INNER JOIN Sp_TypeDetails std ON OrdersFasteners.FK_IdTypeFasteners = std.PK_IdTypeDetail
+                                        WHERE OrdersFasteners.FK_IdOrder = @IdOrder
+                                        ORDER BY OrdersFasteners.Position";
 
                     using (SqlCommand cmd = new SqlCommand(fastenersQuery, conn))
                     {
@@ -1391,10 +1391,10 @@ namespace Dispetcher2
                     {
                         string joinedIds = string.Join(",", detailIds);
                         string otkQuery = $@"
-                    SELECT o.PK_IdOrderDetail, o.OperationID
-                    FROM OperationsOTK o
-                    WHERE o.Oper LIKE '%Контроль%'
-                      AND o.PK_IdOrderDetail IN ({joinedIds})";
+                                        SELECT o.PK_IdOrderDetail, o.OperationID
+                                        FROM OperationsOTK o
+                                        WHERE o.Oper LIKE '%Контроль%'
+                                          AND o.PK_IdOrderDetail IN ({joinedIds})";
 
                         DataTable dtOtk = new DataTable();
                         using (SqlCommand cmd = new SqlCommand(otkQuery, conn))
@@ -1428,9 +1428,9 @@ namespace Dispetcher2
 
                             string joinedOpIds = string.Join(",", operationIds);
                             string controlQuery = $@"
-                        SELECT CheckBoxIndex, CheckBoxState
-                        FROM [OTKControl]
-                        WHERE OperationID IN ({joinedOpIds})";
+                                                SELECT CheckBoxIndex, CheckBoxState
+                                                FROM [OTKControl]
+                                                WHERE OperationID IN ({joinedOpIds})";
 
                             DataTable dtControl = new DataTable();
                             using (SqlCommand cmd = new SqlCommand(controlQuery, conn))
@@ -1701,7 +1701,7 @@ namespace Dispetcher2
                         }
 
                         // Сохранение файла во временную папку
-                        string tempFilePath = Path.Combine(Path.GetTempPath(), $"ReportOTK_{orderNum}_{Guid.NewGuid()}.xlsx");
+                        string tempFilePath = Path.Combine(Path.GetTempPath(), $"Отчет ОТК по заказу № {orderNum}.xlsx");
                         File.WriteAllBytes(tempFilePath, pck.GetAsByteArray());
 
                         // Открытие файла с помощью приложения по умолчанию
