@@ -1305,8 +1305,8 @@ namespace Dispetcher2
 
                     // 1. Получаем PK_IdOrder и OrderName по номеру заказа
                     string orderQuery = @"SELECT PK_IdOrder, OrderName 
-                                      FROM [Orders] 
-                                      WHERE OrderNum = @OrderNum";
+                                  FROM [Orders] 
+                                  WHERE OrderNum = @OrderNum";
 
                     using (SqlCommand cmd = new SqlCommand(orderQuery, conn))
                     {
@@ -1326,7 +1326,7 @@ namespace Dispetcher2
                         }
                     }
 
-                    // 2. Получаем данные о деталях (PK_IdOrderDetail, AmountDetails и т.д.)
+                    // 2. Получаем данные о деталях
                     DataTable dtDetails = new DataTable();
                     string detailsQuery = @"
                 SELECT 
@@ -1351,7 +1351,7 @@ namespace Dispetcher2
                         }
                     }
 
-                    // 3. Получаем данные о крепежах (AmountFasteners и т.д.)
+                    // 3. Получаем данные о крепежах
                     DataTable dtFasteners = new DataTable();
                     string fastenersQuery = @"
                 SELECT 
@@ -1374,31 +1374,27 @@ namespace Dispetcher2
                         }
                     }
 
-                    // 4. Логика определения статуса "Принято"/"Частично готово"/"" (пусто)
-                    //    по условию:
-                    //    - Ищем все записи в OperationsOTK, где Oper LIKE '%Контроль ОТК%'
-                    //    - Для каждой OperationID смотрим в OTKControlID.
-                    //      Если есть запись с CheckBoxIndex=2 и CheckBoxState=1 => "Принято"
-                    //      Если есть записи с CheckBoxIndex=2, но ни одна не имеет CheckBoxState=1 => "Частично готово"
-                    //      Если нет записей с CheckBoxIndex=2 => (статус пустой)
-
-                    // Сначала собираем PK_IdOrderDetail из dtDetails
+                    // 4. Логика определения статусов по новой схеме:
+                    // Для каждой детали проверяем данные в OperationsOTK и OTKControl
                     var detailIds = dtDetails.AsEnumerable().Select(r => r.Field<long>("PK_IdOrderDetail")).ToList();
 
-                    // Словарь: [PK_IdOrderDetail] -> Статус
-                    Dictionary<long, string> otkStatusByDetail = new Dictionary<long, string>();
+                    // Словари для статусов предъявлений и итогового статуса
+                    Dictionary<long, string> statusIndex0 = new Dictionary<long, string>();
+                    Dictionary<long, string> statusIndex1 = new Dictionary<long, string>();
+                    Dictionary<long, string> statusIndex2 = new Dictionary<long, string>();
+                    Dictionary<long, string> finalStatus = new Dictionary<long, string>();
+
+                    // Соберём данные из OperationsOTK
+                    var checkBoxStatesByDetail = new Dictionary<long, List<(int CheckBoxIndex, int CheckBoxState)>>();
 
                     if (detailIds.Count > 0)
                     {
-                        // Получим из OperationsOTK все записи, где PK_IdOrderDetail IN detailIds и Oper LIKE '%Контроль ОТК%'
                         string joinedIds = string.Join(",", detailIds);
                         string otkQuery = $@"
                     SELECT o.PK_IdOrderDetail, o.OperationID
                     FROM OperationsOTK o
                     WHERE o.Oper LIKE '%Контроль%'
                       AND o.PK_IdOrderDetail IN ({joinedIds})";
-
-                        Console.WriteLine(otkQuery);
 
                         DataTable dtOtk = new DataTable();
                         using (SqlCommand cmd = new SqlCommand(otkQuery, conn))
@@ -1409,31 +1405,32 @@ namespace Dispetcher2
                             }
                         }
 
-                        // Группируем по PK_IdOrderDetail
-                        var groups = dtOtk.AsEnumerable().GroupBy(r => r.Field<long>("PK_IdOrderDetail"));
+                        // Группируем OperationID по деталям
+                        var detailToOperations = dtOtk.AsEnumerable()
+                            .GroupBy(r => r.Field<long>("PK_IdOrderDetail"))
+                            .ToDictionary(g => g.Key, g => g.Select(rr => rr.Field<int>("OperationID")).Distinct().ToList());
 
-                        foreach (var grp in groups)
+                        foreach (var detailId in detailIds)
                         {
-                            long detailId = grp.Key;
-                            var operationIds = grp.Select(r => r.Field<int>("OperationID")).Distinct().ToList();
-
-
-                            // Если нет operationIds (что маловероятно, но вдруг?), статус пустой
-                            if (operationIds.Count == 0)
+                            if (!detailToOperations.ContainsKey(detailId))
                             {
-                                otkStatusByDetail[detailId] = "";
+                                // Нет операций "Контроль"
+                                checkBoxStatesByDetail[detailId] = new List<(int, int)>();
                                 continue;
                             }
 
-                            // Смотрим, какие есть CheckBoxIndex и CheckBoxState в OTKControlID для этих OperationID
-                            // Объединяем всё в один IN (...)
+                            var operationIds = detailToOperations[detailId];
+                            if (operationIds.Count == 0)
+                            {
+                                checkBoxStatesByDetail[detailId] = new List<(int, int)>();
+                                continue;
+                            }
+
                             string joinedOpIds = string.Join(",", operationIds);
-
                             string controlQuery = $@"
-                                SELECT CheckBoxIndex, CheckBoxState
-                                FROM [OTKControl]
-                                WHERE OperationID IN ({joinedOpIds})";
-
+                        SELECT CheckBoxIndex, CheckBoxState
+                        FROM [OTKControl]
+                        WHERE OperationID IN ({joinedOpIds})";
 
                             DataTable dtControl = new DataTable();
                             using (SqlCommand cmd = new SqlCommand(controlQuery, conn))
@@ -1444,53 +1441,93 @@ namespace Dispetcher2
                                 }
                             }
 
-                            // Если в dtControl нет записей, значит нет данных по ОТК — статус пустой
-                            if (dtControl.Rows.Count == 0)
+                            var statesList = dtControl.AsEnumerable()
+                                .Select(r => (CheckBoxIndex: r.Field<int>("CheckBoxIndex"), CheckBoxState: r.Field<int>("CheckBoxState")))
+                                .ToList();
+
+                            checkBoxStatesByDetail[detailId] = statesList;
+                        }
+
+                        // Функция определения статуса по списку состояний для конкретного CheckBoxIndex
+                        string GetStatusForIndex(List<int> states)
+                        {
+                            if (states == null || states.Count == 0)
                             {
-                                otkStatusByDetail[detailId] = "";
-                                continue;
+                                // Нет записей - пусто
+                                return "";
                             }
-
-                            // Проверяем условия
-                            // 1. Есть ли хотя бы один (CheckBoxIndex=2, CheckBoxState=1)?
-                            bool foundGreen = dtControl.AsEnumerable().Any(r =>
-                                r.Field<int>("CheckBoxIndex") == 2 &&
-                                r.Field<int>("CheckBoxState") == 1);
-
-
-
-                            if (foundGreen)
+                            // Если есть хотя бы один CheckBoxState=1
+                            if (states.Contains(1))
                             {
-                                // Есть хотя бы одна запись (2,1) => "Принято" (зелёный)
-                                otkStatusByDetail[detailId] = "Принято";
+                                return "Принято"; // зелёный фон
                             }
                             else
                             {
-                                // Есть записи с CheckBoxIndex=2, но ни одна не имеет CheckBoxState=1 => "Частично готово"
-                                bool foundAny = dtControl.AsEnumerable().Any(r =>
-                                    r.Field<int>("CheckBoxIndex") == 2);
-
-                                if (foundAny)
-                                {
-                                    otkStatusByDetail[detailId] = "Частично готово";
-                                }
-                                else
-                                {
-                                    // Нет записей с CheckBoxIndex=2 => статус пустой
-                                    otkStatusByDetail[detailId] = "";
-                                }
+                                // Есть записи, но ни одна не 1
+                                return "Не принято"; // коричневый фон
                             }
                         }
 
-                        // Для тех деталей, которые не попали в dtOtk (нет Oper='Контроль ОТК'), оставим пустой статус
-                        foreach (var id in detailIds)
+                        foreach (var detailId in detailIds)
                         {
-                            if (!otkStatusByDetail.ContainsKey(id))
-                                otkStatusByDetail[id] = "";
+                            var statesList = checkBoxStatesByDetail[detailId];
+                            // Группируем по CheckBoxIndex
+                            var indexGroups = statesList.GroupBy(s => s.CheckBoxIndex)
+                                                        .ToDictionary(g => g.Key, g => g.Select(x => x.CheckBoxState).ToList());
+
+                            var s0 = GetStatusForIndex(indexGroups.ContainsKey(0) ? indexGroups[0] : new List<int>());
+                            var s1 = GetStatusForIndex(indexGroups.ContainsKey(1) ? indexGroups[1] : new List<int>());
+                            var s2 = GetStatusForIndex(indexGroups.ContainsKey(2) ? indexGroups[2] : new List<int>());
+
+                            statusIndex0[detailId] = s0;
+                            statusIndex1[detailId] = s1;
+                            statusIndex2[detailId] = s2;
+
+                            bool anyRecord = statesList.Count > 0;
+                            bool anyAccepted = (s0 == "Принято" || s1 == "Принято" || s2 == "Принято");
+                            bool anyNotAccepted = (s0 == "Не принято" || s1 == "Не принято" || s2 == "Не принято");
+
+                            string final;
+                            if (!anyRecord)
+                            {
+                                final = "";
+                            }
+                            else if (anyAccepted)
+                            {
+                                final = "Принято";
+                            }
+                            else if (anyNotAccepted)
+                            {
+                                final = "Не принято";
+                            }
+                            else
+                            {
+                                final = "";
+                            }
+
+                            finalStatus[detailId] = final;
+                        }
+                    }
+                    else
+                    {
+                        // Нет деталей
+                        foreach (var detailId in detailIds)
+                        {
+                            statusIndex0[detailId] = "";
+                            statusIndex1[detailId] = "";
+                            statusIndex2[detailId] = "";
+                            finalStatus[detailId] = "";
                         }
                     }
 
-                    // 5. Формируем Excel-файл с помощью EPPlus
+                    // Подсчет статистики для процента готовых
+                    int totalDetails = dtDetails.Rows.Count;
+                    int acceptedFirst = 0;
+                    int acceptedSecond = 0;
+                    int acceptedThird = 0;
+                    int acceptedOverall = 0;
+
+                    // 5. Формируем Excel-файл
                     using (ExcelPackage pck = new ExcelPackage())
                     {
                         var ws = pck.Workbook.Worksheets.Add("Отчет");
@@ -1499,7 +1536,7 @@ namespace Dispetcher2
 
                         // Заголовок отчета
                         ws.Cells[currentRow, 1].Value = $"Отчет по заказу: {orderNum}";
-                        ws.Cells[currentRow, 1, currentRow, 6].Merge = true;
+                        ws.Cells[currentRow, 1, currentRow, 9].Merge = true;
                         ws.Cells[currentRow, 1].Style.Font.Bold = true;
                         ws.Cells[currentRow, 1].Style.Font.Size = 16;
                         ws.Cells[currentRow, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
@@ -1516,9 +1553,12 @@ namespace Dispetcher2
                         ws.Cells[currentRow, 3].Value = "Название детали";
                         ws.Cells[currentRow, 4].Value = "Тип детали";
                         ws.Cells[currentRow, 5].Value = "Количество";
-                        ws.Cells[currentRow, 6].Value = "Статус ОТК";
+                        ws.Cells[currentRow, 6].Value = "Первое предъявление";
+                        ws.Cells[currentRow, 7].Value = "Второе предъявление";
+                        ws.Cells[currentRow, 8].Value = "Третье предъявление";
+                        ws.Cells[currentRow, 9].Value = "Статус ОТК";
 
-                        using (var headerRange = ws.Cells[currentRow, 1, currentRow, 6])
+                        using (var headerRange = ws.Cells[currentRow, 1, currentRow, 9])
                         {
                             headerRange.Style.Font.Bold = true;
                             headerRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
@@ -1528,51 +1568,69 @@ namespace Dispetcher2
                         }
 
                         currentRow++;
-
                         int posNumber = 1;
+
+                        // Метод для окраски ячеек
+                        void ApplyColor(ExcelRange cell, string statusText)
+                        {
+                            if (statusText == "Принято")
+                            {
+                                cell.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                                cell.Style.Fill.BackgroundColor.SetColor(Color.LightGreen);
+                            }
+                            else if (statusText == "Не принято")
+                            {
+                                cell.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                                cell.Style.Fill.BackgroundColor.SetColor(Color.BurlyWood);
+                            }
+                            // Пусто - без заливки
+                        }
+
+                        // Заполняем строки с деталями
                         foreach (DataRow dr in dtDetails.Rows)
                         {
                             long detailId = dr.Field<long>("PK_IdOrderDetail");
                             string shcm = dr["ShcmDetail"]?.ToString() ?? "";
                             string nameDetail = dr["NameDetail"]?.ToString() ?? "";
                             string typeDetail = dr["NameType"]?.ToString() ?? "";
-                            //double amount = dr.Field<double?>("AmountDetails") ?? 0.0;
-                            double amountFastener = dr["AmountDetails"] != DBNull.Value ? Convert.ToDouble(dr["AmountDetails"]) : 0.0;
+                            double amountDetail = dr["AmountDetails"] != DBNull.Value ? Convert.ToDouble(dr["AmountDetails"]) : 0.0;
 
-                            // Статус ОТК
-                            string status = otkStatusByDetail.ContainsKey(detailId) ? otkStatusByDetail[detailId] : "";
+                            string s0 = statusIndex0.ContainsKey(detailId) ? statusIndex0[detailId] : "";
+                            string s1 = statusIndex1.ContainsKey(detailId) ? statusIndex1[detailId] : "";
+                            string s2 = statusIndex2.ContainsKey(detailId) ? statusIndex2[detailId] : "";
+                            string final = finalStatus.ContainsKey(detailId) ? finalStatus[detailId] : "";
 
                             ws.Cells[currentRow, 1].Value = posNumber;
                             ws.Cells[currentRow, 2].Value = shcm;
                             ws.Cells[currentRow, 3].Value = nameDetail;
                             ws.Cells[currentRow, 4].Value = typeDetail;
-                            ws.Cells[currentRow, 5].Value = amountFastener;
-                            ws.Cells[currentRow, 6].Value = status;
+                            ws.Cells[currentRow, 5].Value = amountDetail;
+                            ws.Cells[currentRow, 6].Value = s0;
+                            ws.Cells[currentRow, 7].Value = s1;
+                            ws.Cells[currentRow, 8].Value = s2;
+                            ws.Cells[currentRow, 9].Value = final;
 
-                            // Окраска статуса
-                            if (status == "Принято")
-                            {
-                                ws.Cells[currentRow, 6].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                                ws.Cells[currentRow, 6].Style.Fill.BackgroundColor.SetColor(Color.LightGreen);
-                            }
-                            else if (status == "Частично готово")
-                            {
-                                ws.Cells[currentRow, 6].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                                ws.Cells[currentRow, 6].Style.Fill.BackgroundColor.SetColor(Color.BurlyWood);
-                            }
-                            // Если статус пустой — оставляем без заливки
+                            // Окраска
+                            ApplyColor(ws.Cells[currentRow, 6], s0);
+                            ApplyColor(ws.Cells[currentRow, 7], s1);
+                            ApplyColor(ws.Cells[currentRow, 8], s2);
+                            ApplyColor(ws.Cells[currentRow, 9], final);
+
+                            // Подсчет статистики
+                            if (s0 == "Принято") acceptedFirst++;
+                            if (s1 == "Принято") acceptedSecond++;
+                            if (s2 == "Принято") acceptedThird++;
+                            if (final == "Принято") acceptedOverall++;
 
                             currentRow++;
                             posNumber++;
                         }
 
                         // Настройка ширины столбцов
-                        ws.Column(1).Width = 15;
-                        ws.Column(2).AutoFit();
-                        ws.Column(3).AutoFit();
-                        ws.Column(4).AutoFit();
-                        ws.Column(5).AutoFit();
-                        ws.Column(6).AutoFit();
+                        for (int col = 1; col <= 9; col++)
+                        {
+                            ws.Column(col).AutoFit();
+                        }
 
                         currentRow += 2;
 
@@ -1617,16 +1675,24 @@ namespace Dispetcher2
                             posNumber++;
                         }
 
-                        // Настройка ширины столбцов
-                        ws.Column(1).Width = 15;
-                        ws.Column(2).AutoFit();
-                        ws.Column(3).AutoFit();
-                        ws.Column(4).AutoFit();
-                        ws.Column(5).AutoFit();
+                        // Добавляем строку "Процент готовых" после крепежей
+                        currentRow += 2;
+                        ws.Cells[currentRow, 1].Value = "Процент готовых:";
+                        ws.Cells[currentRow, 1].Style.Font.Bold = true;
 
-                        // Обрамляем границы всех данных (максимум 6 столбцов у таблицы деталей)
-                        int maxCol = 6;
-                        using (var fullRange = ws.Cells[1, 1, currentRow - 1, maxCol])
+                        double pFirst = totalDetails > 0 ? (double)acceptedFirst / totalDetails * 100.0 : 0.0;
+                        double pSecond = totalDetails > 0 ? (double)acceptedSecond / totalDetails * 100.0 : 0.0;
+                        double pThird = totalDetails > 0 ? (double)acceptedThird / totalDetails * 100.0 : 0.0;
+                        double pOverall = totalDetails > 0 ? (double)acceptedOverall / totalDetails * 100.0 : 0.0;
+
+                        ws.Cells[currentRow, 6].Value = $"{pFirst:F2}%";
+                        ws.Cells[currentRow, 7].Value = $"{pSecond:F2}%";
+                        ws.Cells[currentRow, 8].Value = $"{pThird:F2}%";
+                        ws.Cells[currentRow, 9].Value = $"{pOverall:F2}%";
+
+                        // Обрамляем границы всех данных
+                        int maxCol = 9;
+                        using (var fullRange = ws.Cells[1, 1, currentRow, maxCol])
                         {
                             fullRange.Style.Border.Top.Style = ExcelBorderStyle.Thin;
                             fullRange.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
@@ -1638,7 +1704,7 @@ namespace Dispetcher2
                         string tempFilePath = Path.Combine(Path.GetTempPath(), $"ReportOTK_{orderNum}_{Guid.NewGuid()}.xlsx");
                         File.WriteAllBytes(tempFilePath, pck.GetAsByteArray());
 
-                        // Открытие файла с помощью приложения по умолчанию (обычно Excel)
+                        // Открытие файла с помощью приложения по умолчанию
                         Process.Start(new ProcessStartInfo(tempFilePath) { UseShellExecute = true });
                     }
                 }
