@@ -1421,6 +1421,7 @@ namespace Dispetcher2
 
                             int state = statesForIndex[0];
                             if (state == 1) return "Принято";
+                            if (state == 0) return "";
                             return "Не принято"; // раз есть запись, но не 1, то "Не принято"
                         }
 
