@@ -1329,18 +1329,18 @@ namespace Dispetcher2
                     // 2. Получаем данные о деталях
                     DataTable dtDetails = new DataTable();
                     string detailsQuery = @"
-                                        SELECT 
-                                            od.PK_IdOrderDetail,
-                                            od.Position,
-                                            od.AmountDetails,
-                                            sd.ShcmDetail,
-                                            sd.NameDetail,
-                                            std.NameType
-                                        FROM OrdersDetails od
-                                        INNER JOIN Sp_Details sd ON od.FK_IdDetail = sd.PK_IdDetail
-                                        INNER JOIN Sp_TypeDetails std ON sd.FK_IdTypeDetail = std.PK_IdTypeDetail
-                                        WHERE od.FK_IdOrder = @IdOrder
-                                        ORDER BY od.Position";
+                                    SELECT 
+                                        od.PK_IdOrderDetail,
+                                        od.Position,
+                                        od.AmountDetails,
+                                        sd.ShcmDetail,
+                                        sd.NameDetail,
+                                        std.NameType
+                                    FROM OrdersDetails od
+                                    INNER JOIN Sp_Details sd ON od.FK_IdDetail = sd.PK_IdDetail
+                                    INNER JOIN Sp_TypeDetails std ON sd.FK_IdTypeDetail = std.PK_IdTypeDetail
+                                    WHERE od.FK_IdOrder = @IdOrder
+                                    ORDER BY od.Position";
 
                     using (SqlCommand cmd = new SqlCommand(detailsQuery, conn))
                     {
@@ -1354,16 +1354,16 @@ namespace Dispetcher2
                     // 3. Получаем данные о крепежах
                     DataTable dtFasteners = new DataTable();
                     string fastenersQuery = @"
-                                        SELECT 
-                                            OrdersFasteners.Position,
-                                            OrdersFasteners.NameFasteners,
-                                            OrdersFasteners.AmountFasteners,
-                                            OrdersFasteners.MeasureUnit,
-                                            std.NameType AS TypeFasteners
-                                        FROM OrdersFasteners
-                                        INNER JOIN Sp_TypeDetails std ON OrdersFasteners.FK_IdTypeFasteners = std.PK_IdTypeDetail
-                                        WHERE OrdersFasteners.FK_IdOrder = @IdOrder
-                                        ORDER BY OrdersFasteners.Position";
+                                    SELECT 
+                                        OrdersFasteners.Position,
+                                        OrdersFasteners.NameFasteners,
+                                        OrdersFasteners.AmountFasteners,
+                                        OrdersFasteners.MeasureUnit,
+                                        std.NameType AS TypeFasteners
+                                    FROM OrdersFasteners
+                                    INNER JOIN Sp_TypeDetails std ON OrdersFasteners.FK_IdTypeFasteners = std.PK_IdTypeDetail
+                                    WHERE OrdersFasteners.FK_IdOrder = @IdOrder
+                                    ORDER BY OrdersFasteners.Position";
 
                     using (SqlCommand cmd = new SqlCommand(fastenersQuery, conn))
                     {
@@ -1375,26 +1375,22 @@ namespace Dispetcher2
                     }
 
                     // 4. Логика определения статусов по новой схеме:
-                    // Для каждой детали проверяем данные в OperationsOTK и OTKControl
                     var detailIds = dtDetails.AsEnumerable().Select(r => r.Field<long>("PK_IdOrderDetail")).ToList();
 
-                    // Словари для статусов предъявлений и итогового статуса
+                    // Словари для статусов по трем предъявлениям и финального статуса
                     Dictionary<long, string> statusIndex0 = new Dictionary<long, string>();
                     Dictionary<long, string> statusIndex1 = new Dictionary<long, string>();
                     Dictionary<long, string> statusIndex2 = new Dictionary<long, string>();
                     Dictionary<long, string> finalStatus = new Dictionary<long, string>();
 
-                    // Соберём данные из OperationsOTK
-                    var checkBoxStatesByDetail = new Dictionary<long, List<(int CheckBoxIndex, int CheckBoxState)>>();
-
                     if (detailIds.Count > 0)
                     {
                         string joinedIds = string.Join(",", detailIds);
                         string otkQuery = $@"
-                                        SELECT o.PK_IdOrderDetail, o.OperationID
-                                        FROM OperationsOTK o
-                                        WHERE o.Oper LIKE '%Контроль%'
-                                          AND o.PK_IdOrderDetail IN ({joinedIds})";
+                                    SELECT o.PK_IdOrderDetail, o.OperationID
+                                    FROM OperationsOTK o
+                                    WHERE o.Oper LIKE '%Контроль%'
+                                      AND o.PK_IdOrderDetail IN ({joinedIds})";
 
                         DataTable dtOtk = new DataTable();
                         using (SqlCommand cmd = new SqlCommand(otkQuery, conn))
@@ -1410,27 +1406,45 @@ namespace Dispetcher2
                             .GroupBy(r => r.Field<long>("PK_IdOrderDetail"))
                             .ToDictionary(g => g.Key, g => g.Select(rr => rr.Field<int>("OperationID")).Distinct().ToList());
 
+                        // Функция преобразования CheckBoxState в статус
+                        string ConvertStateToStatus(List<int> statesForIndex)
+                        {
+                            // Нам нужна последняя запись по этому OperationID, но мы решили брать из последней операции целиком,
+                            // поэтому у нас statesForIndex — это список состояний по одному CheckBoxIndex, но для одной операции
+                            // (мы выберем позже только одну операцию). Предположим, что там один элемент (т.к. одна операция - одна запись).
+                            // Если элементов несколько, нужно уточнить логику. Здесь предполагается 1:1 к операции.
+                            // Если список пуст, возвращаем пусто.
+                            if (statesForIndex == null || statesForIndex.Count == 0)
+                            {
+                                return "";
+                            }
+
+                            int state = statesForIndex[0];
+                            if (state == 1) return "Принято";
+                            return "Не принято"; // раз есть запись, но не 1, то "Не принято"
+                        }
+
                         foreach (var detailId in detailIds)
                         {
-                            if (!detailToOperations.ContainsKey(detailId))
+                            // Определяем последнюю операцию для данной детали
+                            if (!detailToOperations.ContainsKey(detailId) || detailToOperations[detailId].Count == 0)
                             {
                                 // Нет операций "Контроль"
-                                checkBoxStatesByDetail[detailId] = new List<(int, int)>();
+                                statusIndex0[detailId] = "";
+                                statusIndex1[detailId] = "";
+                                statusIndex2[detailId] = "";
+                                finalStatus[detailId] = "";
                                 continue;
                             }
 
                             var operationIds = detailToOperations[detailId];
-                            if (operationIds.Count == 0)
-                            {
-                                checkBoxStatesByDetail[detailId] = new List<(int, int)>();
-                                continue;
-                            }
+                            // Берем последний (максимальный) OperationID
+                            int lastOperationID = operationIds.Max();
 
-                            string joinedOpIds = string.Join(",", operationIds);
                             string controlQuery = $@"
-                                                SELECT CheckBoxIndex, CheckBoxState
-                                                FROM [OTKControl]
-                                                WHERE OperationID IN ({joinedOpIds})";
+                                            SELECT CheckBoxIndex, CheckBoxState
+                                            FROM [OTKControl]
+                                            WHERE OperationID = {lastOperationID}";
 
                             DataTable dtControl = new DataTable();
                             using (SqlCommand cmd = new SqlCommand(controlQuery, conn))
@@ -1441,68 +1455,39 @@ namespace Dispetcher2
                                 }
                             }
 
-                            var statesList = dtControl.AsEnumerable()
-                                .Select(r => (CheckBoxIndex: r.Field<int>("CheckBoxIndex"), CheckBoxState: r.Field<int>("CheckBoxState")))
-                                .ToList();
-
-                            checkBoxStatesByDetail[detailId] = statesList;
-                        }
-
-                        // Функция определения статуса по списку состояний для конкретного CheckBoxIndex
-                        string GetStatusForIndex(List<int> states)
-                        {
-                            if (states == null || states.Count == 0)
-                            {
-                                // Нет записей - пусто
-                                return "";
-                            }
-                            // Если есть хотя бы один CheckBoxState=1
-                            if (states.Contains(1))
-                            {
-                                return "Принято"; // зелёный фон
-                            }
-                            else
-                            {
-                                // Есть записи, но ни одна не 1
-                                return "Не принято"; // коричневый фон
-                            }
-                        }
-
-                        foreach (var detailId in detailIds)
-                        {
-                            var statesList = checkBoxStatesByDetail[detailId];
                             // Группируем по CheckBoxIndex
-                            var indexGroups = statesList.GroupBy(s => s.CheckBoxIndex)
-                                                        .ToDictionary(g => g.Key, g => g.Select(x => x.CheckBoxState).ToList());
+                            var indexGroups = dtControl.AsEnumerable()
+                                            .GroupBy(r => r.Field<int>("CheckBoxIndex"))
+                                            .ToDictionary(g => g.Key, g => g.Select(x => x.Field<int>("CheckBoxState")).ToList());
 
-                            var s0 = GetStatusForIndex(indexGroups.ContainsKey(0) ? indexGroups[0] : new List<int>());
-                            var s1 = GetStatusForIndex(indexGroups.ContainsKey(1) ? indexGroups[1] : new List<int>());
-                            var s2 = GetStatusForIndex(indexGroups.ContainsKey(2) ? indexGroups[2] : new List<int>());
+                            // Для каждого CheckBoxIndex (0, 1, 2) применяем логику
+                            // Если нет записей — пусто.
+                            // Если есть и CheckBoxState=1 — "Принято".
+                            // Если есть и CheckBoxState &ne; 1 — "Не принято".
+
+                            string s0 = indexGroups.ContainsKey(0) ? ConvertStateToStatus(indexGroups[0]) : "";
+                            string s1 = indexGroups.ContainsKey(1) ? ConvertStateToStatus(indexGroups[1]) : "";
+                            string s2 = indexGroups.ContainsKey(2) ? ConvertStateToStatus(indexGroups[2]) : "";
 
                             statusIndex0[detailId] = s0;
                             statusIndex1[detailId] = s1;
                             statusIndex2[detailId] = s2;
 
-                            bool anyRecord = statesList.Count > 0;
-                            bool anyAccepted = (s0 == "Принято" || s1 == "Принято" || s2 == "Принято");
-                            bool anyNotAccepted = (s0 == "Не принято" || s1 == "Не принято" || s2 == "Не принято");
-
-                            string final;
-                            if (!anyRecord)
+                            // Теперь формируем финальный статус.
+                            // Последний актуальный статус (не пустой) из с0, с1, с2 (считая, что третье предъявление - самое "позднее", 
+                            // второе - следом, первое - самое раннее).
+                            string final = "";
+                            if (!string.IsNullOrEmpty(s2))
                             {
-                                final = "";
+                                final = s2;
                             }
-                            else if (anyAccepted)
+                            else if (!string.IsNullOrEmpty(s1))
                             {
-                                final = "Принято";
+                                final = s1;
                             }
-                            else if (anyNotAccepted)
+                            else if (!string.IsNullOrEmpty(s0))
                             {
-                                final = "Не принято";
-                            }
-                            else
-                            {
-                                final = "";
+                                final = s0;
                             }
 
                             finalStatus[detailId] = final;
