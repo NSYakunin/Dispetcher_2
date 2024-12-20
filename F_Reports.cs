@@ -1283,7 +1283,6 @@ namespace Dispetcher2
         {
             BS_Orders.Filter = " OrderNum like '%" + tB_OrderNumOTK.Text.ToString().Trim() + "%'";
         }
-
         private void btn_repOTK_Click(object sender, EventArgs e)
         {
             // Проверка ввода
@@ -1329,18 +1328,18 @@ namespace Dispetcher2
                     // 2. Получаем данные о деталях
                     DataTable dtDetails = new DataTable();
                     string detailsQuery = @"
-                                    SELECT 
-                                        od.PK_IdOrderDetail,
-                                        od.Position,
-                                        od.AmountDetails,
-                                        sd.ShcmDetail,
-                                        sd.NameDetail,
-                                        std.NameType
-                                    FROM OrdersDetails od
-                                    INNER JOIN Sp_Details sd ON od.FK_IdDetail = sd.PK_IdDetail
-                                    INNER JOIN Sp_TypeDetails std ON sd.FK_IdTypeDetail = std.PK_IdTypeDetail
-                                    WHERE od.FK_IdOrder = @IdOrder
-                                    ORDER BY od.Position";
+                SELECT 
+                    od.PK_IdOrderDetail,
+                    od.Position,
+                    od.AmountDetails,
+                    sd.ShcmDetail,
+                    sd.NameDetail,
+                    std.NameType
+                FROM OrdersDetails od
+                INNER JOIN Sp_Details sd ON od.FK_IdDetail = sd.PK_IdDetail
+                INNER JOIN Sp_TypeDetails std ON sd.FK_IdTypeDetail = std.PK_IdTypeDetail
+                WHERE od.FK_IdOrder = @IdOrder
+                ORDER BY od.Position";
 
                     using (SqlCommand cmd = new SqlCommand(detailsQuery, conn))
                     {
@@ -1354,16 +1353,16 @@ namespace Dispetcher2
                     // 3. Получаем данные о крепежах
                     DataTable dtFasteners = new DataTable();
                     string fastenersQuery = @"
-                                    SELECT 
-                                        OrdersFasteners.Position,
-                                        OrdersFasteners.NameFasteners,
-                                        OrdersFasteners.AmountFasteners,
-                                        OrdersFasteners.MeasureUnit,
-                                        std.NameType AS TypeFasteners
-                                    FROM OrdersFasteners
-                                    INNER JOIN Sp_TypeDetails std ON OrdersFasteners.FK_IdTypeFasteners = std.PK_IdTypeDetail
-                                    WHERE OrdersFasteners.FK_IdOrder = @IdOrder
-                                    ORDER BY OrdersFasteners.Position";
+                SELECT 
+                    OrdersFasteners.Position,
+                    OrdersFasteners.NameFasteners,
+                    OrdersFasteners.AmountFasteners,
+                    OrdersFasteners.MeasureUnit,
+                    std.NameType AS TypeFasteners
+                FROM OrdersFasteners
+                INNER JOIN Sp_TypeDetails std ON OrdersFasteners.FK_IdTypeFasteners = std.PK_IdTypeDetail
+                WHERE OrdersFasteners.FK_IdOrder = @IdOrder
+                ORDER BY OrdersFasteners.Position";
 
                     using (SqlCommand cmd = new SqlCommand(fastenersQuery, conn))
                     {
@@ -1374,10 +1373,9 @@ namespace Dispetcher2
                         }
                     }
 
-                    // 4. Логика определения статусов по новой схеме:
+                    // 4. Логика определения статусов
                     var detailIds = dtDetails.AsEnumerable().Select(r => r.Field<long>("PK_IdOrderDetail")).ToList();
 
-                    // Словари для статусов по трем предъявлениям и финального статуса
                     Dictionary<long, string> statusIndex0 = new Dictionary<long, string>();
                     Dictionary<long, string> statusIndex1 = new Dictionary<long, string>();
                     Dictionary<long, string> statusIndex2 = new Dictionary<long, string>();
@@ -1387,10 +1385,10 @@ namespace Dispetcher2
                     {
                         string joinedIds = string.Join(",", detailIds);
                         string otkQuery = $@"
-                                    SELECT o.PK_IdOrderDetail, o.OperationID
-                                    FROM OperationsOTK o
-                                    WHERE o.Oper LIKE '%Контроль%'
-                                      AND o.PK_IdOrderDetail IN ({joinedIds})";
+                    SELECT o.PK_IdOrderDetail, o.OperationID
+                    FROM OperationsOTK o
+                    WHERE o.Oper LIKE '%Контроль%'
+                      AND o.PK_IdOrderDetail IN ({joinedIds})";
 
                         DataTable dtOtk = new DataTable();
                         using (SqlCommand cmd = new SqlCommand(otkQuery, conn))
@@ -1401,19 +1399,12 @@ namespace Dispetcher2
                             }
                         }
 
-                        // Группируем OperationID по деталям
                         var detailToOperations = dtOtk.AsEnumerable()
                             .GroupBy(r => r.Field<long>("PK_IdOrderDetail"))
                             .ToDictionary(g => g.Key, g => g.Select(rr => rr.Field<int>("OperationID")).Distinct().ToList());
 
-                        // Функция преобразования CheckBoxState в статус
                         string ConvertStateToStatus(List<int> statesForIndex)
                         {
-                            // Нам нужна последняя запись по этому OperationID, но мы решили брать из последней операции целиком,
-                            // поэтому у нас statesForIndex — это список состояний по одному CheckBoxIndex, но для одной операции
-                            // (мы выберем позже только одну операцию). Предположим, что там один элемент (т.к. одна операция - одна запись).
-                            // Если элементов несколько, нужно уточнить логику. Здесь предполагается 1:1 к операции.
-                            // Если список пуст, возвращаем пусто.
                             if (statesForIndex == null || statesForIndex.Count == 0)
                             {
                                 return "";
@@ -1422,15 +1413,13 @@ namespace Dispetcher2
                             int state = statesForIndex[0];
                             if (state == 1) return "Принято";
                             if (state == 0) return "";
-                            return "Не принято"; // раз есть запись, но не 1, то "Не принято"
+                            return "Не принято";
                         }
 
                         foreach (var detailId in detailIds)
                         {
-                            // Определяем последнюю операцию для данной детали
                             if (!detailToOperations.ContainsKey(detailId) || detailToOperations[detailId].Count == 0)
                             {
-                                // Нет операций "Контроль"
                                 statusIndex0[detailId] = "";
                                 statusIndex1[detailId] = "";
                                 statusIndex2[detailId] = "";
@@ -1439,13 +1428,12 @@ namespace Dispetcher2
                             }
 
                             var operationIds = detailToOperations[detailId];
-                            // Берем последний (максимальный) OperationID
                             int lastOperationID = operationIds.Max();
 
                             string controlQuery = $@"
-                                            SELECT CheckBoxIndex, CheckBoxState
-                                            FROM [OTKControl]
-                                            WHERE OperationID = {lastOperationID}";
+                        SELECT CheckBoxIndex, CheckBoxState
+                        FROM [OTKControl]
+                        WHERE OperationID = {lastOperationID}";
 
                             DataTable dtControl = new DataTable();
                             using (SqlCommand cmd = new SqlCommand(controlQuery, conn))
@@ -1456,47 +1444,120 @@ namespace Dispetcher2
                                 }
                             }
 
-                            // Группируем по CheckBoxIndex
                             var indexGroups = dtControl.AsEnumerable()
-                                            .GroupBy(r => r.Field<int>("CheckBoxIndex"))
-                                            .ToDictionary(g => g.Key, g => g.Select(x => x.Field<int>("CheckBoxState")).ToList());
-
-                            // Для каждого CheckBoxIndex (0, 1, 2) применяем логику
-                            // Если нет записей — пусто.
-                            // Если есть и CheckBoxState=1 — "Принято".
-                            // Если есть и CheckBoxState &ne; 1 — "Не принято".
+                                    .GroupBy(r => r.Field<int>("CheckBoxIndex"))
+                                    .ToDictionary(g => g.Key, g => g.Select(x => x.Field<int>("CheckBoxState")).ToList());
 
                             string s0 = indexGroups.ContainsKey(0) ? ConvertStateToStatus(indexGroups[0]) : "";
                             string s1 = indexGroups.ContainsKey(1) ? ConvertStateToStatus(indexGroups[1]) : "";
                             string s2 = indexGroups.ContainsKey(2) ? ConvertStateToStatus(indexGroups[2]) : "";
 
-                            statusIndex0[detailId] = s0;
-                            statusIndex1[detailId] = s1;
-                            statusIndex2[detailId] = s2;
+                            // Новая логика определения финального статуса
+                            // (оставляем как есть, логика уже прописана)
+                            if (s0 == "Принято" && s1 == "Принято" && s2 == "Принято")
+                            {
+                                statusIndex0[detailId] = "Принято";
+                                statusIndex1[detailId] = "Принято";
+                                statusIndex2[detailId] = "Принято";
+                                finalStatus[detailId] = "Принято";
+                            }
+                            else if (s0 == "Не принято" && s1 == "Принято")
+                            {
+                                statusIndex0[detailId] = "Не принято";
+                                statusIndex1[detailId] = "Принято";
+                                statusIndex2[detailId] = "Принято";
+                                finalStatus[detailId] = "Принято";
+                            }
+                            else if (s0 == "Не принято" && s1 == "Не принято" && s2 == "Принято")
+                            {
+                                statusIndex0[detailId] = "Не принято";
+                                statusIndex1[detailId] = "Не принято";
+                                statusIndex2[detailId] = "Принято";
+                                finalStatus[detailId] = "Принято";
+                            }
+                            else if (s0 == "Принято" && s1 == "" && s2 == "")
+                            {
+                                statusIndex0[detailId] = "Принято";
+                                statusIndex1[detailId] = "Принято";
+                                statusIndex2[detailId] = "Принято";
+                                finalStatus[detailId] = "Принято";
+                            }
+                            else if (s0 == "Принято" && s1 == "Принято" && s2 == "")
+                            {
+                                statusIndex0[detailId] = "Принято";
+                                statusIndex1[detailId] = "Принято";
+                                statusIndex2[detailId] = "Принято";
+                                finalStatus[detailId] = "Принято";
+                            }
+                            else if (s0 == "Не принято" && s1 == "Не принято" && s2 == "Не принято")
+                            {
+                                statusIndex0[detailId] = "Не принято";
+                                statusIndex1[detailId] = "Не принято";
+                                statusIndex2[detailId] = "Не принято";
+                                finalStatus[detailId] = "Не принято";
+                            }
 
-                            // Теперь формируем финальный статус.
-                            // Последний актуальный статус (не пустой) из с0, с1, с2 (считая, что третье предъявление - самое "позднее", 
-                            // второе - следом, первое - самое раннее).
-                            string final = "";
-                            if (!string.IsNullOrEmpty(s2))
+                            else if (s0 == "Не принято" && s1 == "" && s2 == "Принято")
                             {
-                                final = s2;
+                                statusIndex0[detailId] = "Не принято";
+                                statusIndex1[detailId] = "";
+                                statusIndex2[detailId] = "Принято";
+                                finalStatus[detailId] = "Принято";
                             }
-                            else if (!string.IsNullOrEmpty(s1))
+                            else if (s0 == "Не принято" && s1 == "" && s2 == "")
                             {
-                                final = s1;
+                                statusIndex0[detailId] = "Не принято";
+                                statusIndex1[detailId] = "";
+                                statusIndex2[detailId] = "";
+                                finalStatus[detailId] = "Не принято";
                             }
-                            else if (!string.IsNullOrEmpty(s0))
+                            else if (s0 == "Не принято" && s1 == "Не принято" && s2 == "")
                             {
-                                final = s0;
+                                statusIndex0[detailId] = "Не принято";
+                                statusIndex1[detailId] = "Не принято";
+                                statusIndex2[detailId] = "";
+                                finalStatus[detailId] = "Не принято";
                             }
-
-                            finalStatus[detailId] = final;
+                            else if (s0 == "" && s1 == "" && s2 == "Не принято")
+                            {
+                                statusIndex0[detailId] = "";
+                                statusIndex1[detailId] = "";
+                                statusIndex2[detailId] = "Не принято";
+                                finalStatus[detailId] = "Не принято";
+                            }
+                            else if (s0 == "" && s1 == "Не принято" && s2 == "Не принято")
+                            {
+                                statusIndex0[detailId] = "";
+                                statusIndex1[detailId] = "Не принято";
+                                statusIndex2[detailId] = "Не принято";
+                                finalStatus[detailId] = "Не принято";
+                            }
+                            else if (s0 == "" && s1 == "" && s2 == "Принято")
+                            {
+                                statusIndex0[detailId] = "";
+                                statusIndex1[detailId] = "";
+                                statusIndex2[detailId] = "Принято";
+                                finalStatus[detailId] = "Принято";
+                            }
+                            else if (s0 == "" && s1 == "Принято" && s2 == "Принято")
+                            {
+                                statusIndex0[detailId] = "";
+                                statusIndex1[detailId] = "Принято";
+                                statusIndex2[detailId] = "Принято";
+                                finalStatus[detailId] = "Принято";
+                            }
+                            else
+                            {
+                                // Если ни одно условие не подошло
+                                finalStatus[detailId] = "";
+                                statusIndex0[detailId] = s0;
+                                statusIndex1[detailId] = s1;
+                                statusIndex2[detailId] = s2;
+                            }
                         }
                     }
                     else
                     {
-                        // Нет деталей
                         foreach (var detailId in detailIds)
                         {
                             statusIndex0[detailId] = "";
@@ -1506,12 +1567,26 @@ namespace Dispetcher2
                         }
                     }
 
-                    // Подсчет статистики для процента готовых
-                    int totalDetails = dtDetails.Rows.Count;
-                    int acceptedFirst = 0;
-                    int acceptedSecond = 0;
-                    int acceptedThird = 0;
-                    int acceptedOverall = 0;
+                    // Подсчет статистики (без крепежей)
+                    var nonFastenerRows = dtDetails.AsEnumerable().Where(r => r.Field<string>("NameType") != "Крепеж").ToList();
+                    int totalDetails = nonFastenerRows.Count;
+                    int totalSum = nonFastenerRows.Sum(r => r.Field<int>("AmountDetails"));
+                    int acceptedSum = nonFastenerRows
+                        .Where(r => finalStatus.ContainsKey(r.Field<long>("PK_IdOrderDetail")) && finalStatus[r.Field<long>("PK_IdOrderDetail")] == "Принято")
+                        .Sum(r => r.Field<int>("AmountDetails"));
+
+                    // Процент готовых
+                    double pOverall = totalSum > 0 ? ((double)acceptedSum / totalSum) * 100.0 : 0.0;
+
+                    // Подсчет процентов по первому, второму, третьему предъявлению
+                    // Для каждого предъявления считаем количество "Принято" среди nonFastenerRows
+                    int countS0 = nonFastenerRows.Count(r => statusIndex0.ContainsKey(r.Field<long>("PK_IdOrderDetail")) && statusIndex0[r.Field<long>("PK_IdOrderDetail")] == "Принято");
+                    int countS1 = nonFastenerRows.Count(r => statusIndex1.ContainsKey(r.Field<long>("PK_IdOrderDetail")) && statusIndex1[r.Field<long>("PK_IdOrderDetail")] == "Принято");
+                    int countS2 = nonFastenerRows.Count(r => statusIndex2.ContainsKey(r.Field<long>("PK_IdOrderDetail")) && statusIndex2[r.Field<long>("PK_IdOrderDetail")] == "Принято");
+
+                    double pS0 = totalDetails > 0 ? (double)countS0 / totalDetails * 100.0 : 0.0;
+                    double pS1 = totalDetails > 0 ? (double)countS1 / totalDetails * 100.0 : 0.0;
+                    double pS2 = totalDetails > 0 ? (double)countS2 / totalDetails * 100.0 : 0.0;
 
                     // 5. Формируем Excel-файл
                     using (ExcelPackage pck = new ExcelPackage())
@@ -1534,7 +1609,7 @@ namespace Dispetcher2
                         currentRow++;
 
                         // Заголовки таблицы деталей
-                        ws.Cells[currentRow, 1].Value = "Номер позиции";
+                        ws.Cells[currentRow, 1].Value = "№";
                         ws.Cells[currentRow, 2].Value = "ЩЦМ детали";
                         ws.Cells[currentRow, 3].Value = "Название детали";
                         ws.Cells[currentRow, 4].Value = "Тип детали";
@@ -1554,9 +1629,9 @@ namespace Dispetcher2
                         }
 
                         currentRow++;
+                        int startDetailsRow = currentRow;
                         int posNumber = 1;
 
-                        // Метод для окраски ячеек
                         void ApplyColor(ExcelRange cell, string statusText)
                         {
                             if (statusText == "Принято")
@@ -1579,7 +1654,7 @@ namespace Dispetcher2
                             string shcm = dr["ShcmDetail"]?.ToString() ?? "";
                             string nameDetail = dr["NameDetail"]?.ToString() ?? "";
                             string typeDetail = dr["NameType"]?.ToString() ?? "";
-                            double amountDetail = dr["AmountDetails"] != DBNull.Value ? Convert.ToDouble(dr["AmountDetails"]) : 0.0;
+                            int amountDetail = dr.Field<int>("AmountDetails");
 
                             string s0 = statusIndex0.ContainsKey(detailId) ? statusIndex0[detailId] : "";
                             string s1 = statusIndex1.ContainsKey(detailId) ? statusIndex1[detailId] : "";
@@ -1602,20 +1677,26 @@ namespace Dispetcher2
                             ApplyColor(ws.Cells[currentRow, 8], s2);
                             ApplyColor(ws.Cells[currentRow, 9], final);
 
-                            // Подсчет статистики
-                            if (s0 == "Принято") acceptedFirst++;
-                            if (s1 == "Принято") acceptedSecond++;
-                            if (s2 == "Принято") acceptedThird++;
-                            if (final == "Принято") acceptedOverall++;
-
                             currentRow++;
                             posNumber++;
                         }
 
-                        // Настройка ширины столбцов
-                        for (int col = 1; col <= 9; col++)
+                        // Добавляем строку с процентами под предъявлениями
+                        ws.Cells[currentRow, 1].Value = "Процент (от общего кол-ва деталей без крепежа):";
+                        ws.Cells[currentRow, 1, currentRow, 4].Merge = true;
+                        ws.Cells[currentRow, 1].Style.Font.Bold = true;
+
+                        ws.Cells[currentRow, 6].Value = pS0 > 0 ? $"{pS0:F2}%" : "0%";
+                        ws.Cells[currentRow, 7].Value = pS1 > 0 ? $"{pS1:F2}%" : "0%";
+                        ws.Cells[currentRow, 8].Value = pS2 > 0 ? $"{pS2:F2}%" : "0%";
+
+                        using (var percentRange = ws.Cells[currentRow, 1, currentRow, 9])
                         {
-                            ws.Column(col).AutoFit();
+                            percentRange.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                            percentRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                            percentRange.Style.Font.Bold = true;
+                            percentRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                            percentRange.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.AliceBlue);
                         }
 
                         currentRow += 2;
@@ -1625,14 +1706,16 @@ namespace Dispetcher2
                         ws.Cells[currentRow, 1].Style.Font.Bold = true;
                         currentRow++;
 
-                        // Заголовки таблицы крепежей
+                        // Заголовки таблицы крепежей с выравниванием столбца "Количество"
+                        // согласно указаниям: "Количество" под тем же столбцом, что и в деталях (столбец 5)
                         ws.Cells[currentRow, 1].Value = "Номер позиции";
-                        ws.Cells[currentRow, 2].Value = "Название крепежа";
-                        ws.Cells[currentRow, 3].Value = "Количество";
-                        ws.Cells[currentRow, 4].Value = "Единица измерения";
-                        ws.Cells[currentRow, 5].Value = "Тип крепежа";
+                        ws.Cells[currentRow, 2].Value = "ЩЦМ детали (пусто для крепежа)";
+                        ws.Cells[currentRow, 3].Value = "Название крепежа";
+                        ws.Cells[currentRow, 4].Value = "Тип";
+                        ws.Cells[currentRow, 5].Value = "Количество";
+                        ws.Cells[currentRow, 6].Value = "Измерения";
 
-                        using (var headerRange = ws.Cells[currentRow, 1, currentRow, 5])
+                        using (var headerRange = ws.Cells[currentRow, 1, currentRow, 6])
                         {
                             headerRange.Style.Font.Bold = true;
                             headerRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
@@ -1642,7 +1725,6 @@ namespace Dispetcher2
                         }
 
                         currentRow++;
-
                         posNumber = 1;
                         foreach (DataRow dr in dtFasteners.Rows)
                         {
@@ -1652,33 +1734,49 @@ namespace Dispetcher2
                             string typeFastener = dr["TypeFasteners"]?.ToString() ?? "";
 
                             ws.Cells[currentRow, 1].Value = posNumber;
-                            ws.Cells[currentRow, 2].Value = nameFastener;
-                            ws.Cells[currentRow, 3].Value = amountFastener;
-                            ws.Cells[currentRow, 4].Value = measureUnit;
-                            ws.Cells[currentRow, 5].Value = typeFastener;
+                            ws.Cells[currentRow, 2].Value = ""; // Пусто (нет ЩЦМ для крепежа)
+                            ws.Cells[currentRow, 3].Value = nameFastener;
+                            ws.Cells[currentRow, 4].Value = typeFastener;
+                            ws.Cells[currentRow, 5].Value = amountFastener;
+                            ws.Cells[currentRow, 6].Value = measureUnit;
 
                             currentRow++;
                             posNumber++;
                         }
 
-                        // Добавляем строку "Процент готовых" после крепежей
+                        // Добавляем строку "Процент готовых:" после крепежей
                         currentRow += 2;
                         ws.Cells[currentRow, 1].Value = "Процент готовых:";
                         ws.Cells[currentRow, 1].Style.Font.Bold = true;
 
-                        double pFirst = totalDetails > 0 ? (double)acceptedFirst / totalDetails * 100.0 : 0.0;
-                        double pSecond = totalDetails > 0 ? (double)acceptedSecond / totalDetails * 100.0 : 0.0;
-                        double pThird = totalDetails > 0 ? (double)acceptedThird / totalDetails * 100.0 : 0.0;
-                        double pOverall = totalDetails > 0 ? (double)acceptedOverall / totalDetails * 100.0 : 0.0;
+                        ws.Cells[currentRow, 3, currentRow, 5].Merge = true;
+                        ws.Cells[currentRow, 3].Value = $"Количество готовых деталей (без крепежа): ({acceptedSum}/{totalSum})";
 
-                        ws.Cells[currentRow, 6].Value = $"{pFirst:F2}%";
-                        ws.Cells[currentRow, 7].Value = $"{pSecond:F2}%";
-                        ws.Cells[currentRow, 8].Value = $"{pThird:F2}%";
+                        using (var headerRange = ws.Cells[currentRow, 3, currentRow, 5])
+                        {
+                            headerRange.Style.Font.Bold = true;
+                            headerRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+                            headerRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                            headerRange.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.AliceBlue);
+                            headerRange.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                        }
+
                         ws.Cells[currentRow, 9].Value = $"{pOverall:F2}%";
 
+                        // После внесения всех данных выравниваем ширину колонок
+                        // Сначала автофит
+                        for (int col = 1; col <= 9; col++)
+                        {
+                            ws.Column(col).AutoFit();
+                        }
+
+                        // Первая колонка: ограничим ширину под 5-значное число
+                        // Примерно ширина 7 подходит
+                        ws.Column(1).Width = 7;
+
                         // Обрамляем границы всех данных
-                        int maxCol = 9;
-                        using (var fullRange = ws.Cells[1, 1, currentRow, maxCol])
+                        int maxRow = currentRow;
+                        using (var fullRange = ws.Cells[1, 1, maxRow, 9])
                         {
                             fullRange.Style.Border.Top.Style = ExcelBorderStyle.Thin;
                             fullRange.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
@@ -1690,7 +1788,7 @@ namespace Dispetcher2
                         string tempFilePath = Path.Combine(Path.GetTempPath(), $"Отчет ОТК по заказу № {orderNum}.xlsx");
                         File.WriteAllBytes(tempFilePath, pck.GetAsByteArray());
 
-                        // Открытие файла с помощью приложения по умолчанию
+                        // Открытие файла
                         Process.Start(new ProcessStartInfo(tempFilePath) { UseShellExecute = true });
                     }
                 }
