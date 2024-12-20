@@ -1283,6 +1283,7 @@ namespace Dispetcher2
         {
             BS_Orders.Filter = " OrderNum like '%" + tB_OrderNumOTK.Text.ToString().Trim() + "%'";
         }
+
         private void btn_repOTK_Click(object sender, EventArgs e)
         {
             // Проверка ввода
@@ -1304,8 +1305,8 @@ namespace Dispetcher2
 
                     // 1. Получаем PK_IdOrder и OrderName по номеру заказа
                     string orderQuery = @"SELECT PK_IdOrder, OrderName 
-                                  FROM [Orders] 
-                                  WHERE OrderNum = @OrderNum";
+                          FROM [Orders] 
+                          WHERE OrderNum = @OrderNum";
 
                     using (SqlCommand cmd = new SqlCommand(orderQuery, conn))
                     {
@@ -1328,18 +1329,18 @@ namespace Dispetcher2
                     // 2. Получаем данные о деталях
                     DataTable dtDetails = new DataTable();
                     string detailsQuery = @"
-                SELECT 
-                    od.PK_IdOrderDetail,
-                    od.Position,
-                    od.AmountDetails,
-                    sd.ShcmDetail,
-                    sd.NameDetail,
-                    std.NameType
-                FROM OrdersDetails od
-                INNER JOIN Sp_Details sd ON od.FK_IdDetail = sd.PK_IdDetail
-                INNER JOIN Sp_TypeDetails std ON sd.FK_IdTypeDetail = std.PK_IdTypeDetail
-                WHERE od.FK_IdOrder = @IdOrder
-                ORDER BY od.Position";
+        SELECT 
+            od.PK_IdOrderDetail,
+            od.Position,
+            od.AmountDetails,
+            sd.ShcmDetail,
+            sd.NameDetail,
+            std.NameType
+        FROM OrdersDetails od
+        INNER JOIN Sp_Details sd ON od.FK_IdDetail = sd.PK_IdDetail
+        INNER JOIN Sp_TypeDetails std ON sd.FK_IdTypeDetail = std.PK_IdTypeDetail
+        WHERE od.FK_IdOrder = @IdOrder
+        ORDER BY od.Position";
 
                     using (SqlCommand cmd = new SqlCommand(detailsQuery, conn))
                     {
@@ -1353,16 +1354,16 @@ namespace Dispetcher2
                     // 3. Получаем данные о крепежах
                     DataTable dtFasteners = new DataTable();
                     string fastenersQuery = @"
-                SELECT 
-                    OrdersFasteners.Position,
-                    OrdersFasteners.NameFasteners,
-                    OrdersFasteners.AmountFasteners,
-                    OrdersFasteners.MeasureUnit,
-                    std.NameType AS TypeFasteners
-                FROM OrdersFasteners
-                INNER JOIN Sp_TypeDetails std ON OrdersFasteners.FK_IdTypeFasteners = std.PK_IdTypeDetail
-                WHERE OrdersFasteners.FK_IdOrder = @IdOrder
-                ORDER BY OrdersFasteners.Position";
+        SELECT 
+            OrdersFasteners.Position,
+            OrdersFasteners.NameFasteners,
+            OrdersFasteners.AmountFasteners,
+            OrdersFasteners.MeasureUnit,
+            std.NameType AS TypeFasteners
+        FROM OrdersFasteners
+        INNER JOIN Sp_TypeDetails std ON OrdersFasteners.FK_IdTypeFasteners = std.PK_IdTypeDetail
+        WHERE OrdersFasteners.FK_IdOrder = @IdOrder
+        ORDER BY OrdersFasteners.Position";
 
                     using (SqlCommand cmd = new SqlCommand(fastenersQuery, conn))
                     {
@@ -1385,10 +1386,10 @@ namespace Dispetcher2
                     {
                         string joinedIds = string.Join(",", detailIds);
                         string otkQuery = $@"
-                    SELECT o.PK_IdOrderDetail, o.OperationID
-                    FROM OperationsOTK o
-                    WHERE o.Oper LIKE '%Контроль%'
-                      AND o.PK_IdOrderDetail IN ({joinedIds})";
+            SELECT o.PK_IdOrderDetail, o.OperationID
+            FROM OperationsOTK o
+            WHERE o.Oper LIKE '%Контроль%'
+              AND o.PK_IdOrderDetail IN ({joinedIds})";
 
                         DataTable dtOtk = new DataTable();
                         using (SqlCommand cmd = new SqlCommand(otkQuery, conn))
@@ -1431,9 +1432,9 @@ namespace Dispetcher2
                             int lastOperationID = operationIds.Max();
 
                             string controlQuery = $@"
-                        SELECT CheckBoxIndex, CheckBoxState
-                        FROM [OTKControl]
-                        WHERE OperationID = {lastOperationID}";
+                SELECT CheckBoxIndex, CheckBoxState
+                FROM [OTKControl]
+                WHERE OperationID = {lastOperationID}";
 
                             DataTable dtControl = new DataTable();
                             using (SqlCommand cmd = new SqlCommand(controlQuery, conn))
@@ -1452,13 +1453,19 @@ namespace Dispetcher2
                             string s1 = indexGroups.ContainsKey(1) ? ConvertStateToStatus(indexGroups[1]) : "";
                             string s2 = indexGroups.ContainsKey(2) ? ConvertStateToStatus(indexGroups[2]) : "";
 
-                            // Новая логика определения финального статуса
-                            // (оставляем как есть, логика уже прописана)
+                            // Логика определения финального статуса
                             if (s0 == "Принято" && s1 == "Принято" && s2 == "Принято")
                             {
                                 statusIndex0[detailId] = "Принято";
                                 statusIndex1[detailId] = "Принято";
                                 statusIndex2[detailId] = "Принято";
+                                finalStatus[detailId] = "Принято";
+                            }
+                            else if(s0 == "" && s1 == "Принято" && s2 == "")
+                            {
+                                statusIndex0[detailId] = "";
+                                statusIndex1[detailId] = "Принято";
+                                statusIndex2[detailId] = "";
                                 finalStatus[detailId] = "Принято";
                             }
                             else if (s0 == "Не принято" && s1 == "Принято")
@@ -1469,6 +1476,13 @@ namespace Dispetcher2
                                 finalStatus[detailId] = "Принято";
                             }
                             else if (s0 == "Не принято" && s1 == "Не принято" && s2 == "Принято")
+                            {
+                                statusIndex0[detailId] = "Не принято";
+                                statusIndex1[detailId] = "Не принято";
+                                statusIndex2[detailId] = "Принято";
+                                finalStatus[detailId] = "Принято";
+                            }
+                            else if (s0 == "Не принято" && s1 == "" && s2 == "Принято")
                             {
                                 statusIndex0[detailId] = "Не принято";
                                 statusIndex1[detailId] = "Не принято";
@@ -1495,14 +1509,6 @@ namespace Dispetcher2
                                 statusIndex1[detailId] = "Не принято";
                                 statusIndex2[detailId] = "Не принято";
                                 finalStatus[detailId] = "Не принято";
-                            }
-
-                            else if (s0 == "Не принято" && s1 == "" && s2 == "Принято")
-                            {
-                                statusIndex0[detailId] = "Не принято";
-                                statusIndex1[detailId] = "";
-                                statusIndex2[detailId] = "Принято";
-                                finalStatus[detailId] = "Принято";
                             }
                             else if (s0 == "Не принято" && s1 == "" && s2 == "")
                             {
@@ -1575,8 +1581,12 @@ namespace Dispetcher2
                         .Where(r => finalStatus.ContainsKey(r.Field<long>("PK_IdOrderDetail")) && finalStatus[r.Field<long>("PK_IdOrderDetail")] == "Принято")
                         .Sum(r => r.Field<int>("AmountDetails"));
 
-                    // Процент готовых
-                    double pOverall = totalSum > 0 ? ((double)acceptedSum / totalSum) * 100.0 : 0.0;
+                    // Новые переменные для подсчета количества принятых деталей
+                    int acceptedDetails = nonFastenerRows
+                        .Count(r => finalStatus.ContainsKey(r.Field<long>("PK_IdOrderDetail")) && finalStatus[r.Field<long>("PK_IdOrderDetail")] == "Принято");
+
+                    // Процент готовых на основе количества деталей
+                    double pOverall = totalDetails > 0 ? ((double)acceptedDetails / totalDetails) * 100.0 : 0.0;
 
                     // Подсчет процентов по первому, второму, третьему предъявлению
                     // Для каждого предъявления считаем количество "Принято" среди nonFastenerRows
@@ -1629,7 +1639,6 @@ namespace Dispetcher2
                         }
 
                         currentRow++;
-                        int startDetailsRow = currentRow;
                         int posNumber = 1;
 
                         void ApplyColor(ExcelRange cell, string statusText)
@@ -1761,6 +1770,7 @@ namespace Dispetcher2
                             headerRange.Style.Border.BorderAround(ExcelBorderStyle.Thin);
                         }
 
+                        // Обновленный расчет процента готовых на основе количества деталей
                         ws.Cells[currentRow, 9].Value = $"{pOverall:F2}%";
 
                         // После внесения всех данных выравниваем ширину колонок
